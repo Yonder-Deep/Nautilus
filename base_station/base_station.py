@@ -169,7 +169,6 @@ class BaseStation_Receive(threading.Thread):
 
     def run(self):
         """ Main threaded loop for the base station. """
-        inc = 0
         # Begin our main loop for this thread.
 
         global connected
@@ -351,7 +350,6 @@ class BaseStation_Send(threading.Thread):
 
     def run(self):
         """ Main sending threaded loop for the base station. """
-        inc = 0
         global connected
         # Begin our main loop for this thread.
         while True:
@@ -394,8 +392,6 @@ class BaseStation_Send(threading.Thread):
                 # Try to read line from radio.
                 try:
                     self.radio.write(0xFFFFFF)
-                    print(str(inc))
-                    inc += 1
                     # This is where secured/synchronous code should go.
                     if connected and self.manual_mode:
                         if self.joy is not None:  # and self.joy.connected() and self.nav_controller is not None:

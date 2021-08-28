@@ -168,7 +168,10 @@ class Main():
         """ Evaluates the commands/tasks given to us in the in-queue. These commands are
         passed as basic string objects. """
         while (self.in_q.empty() is False):
-            eval("self." + self.in_q.get())
+            try:
+                eval("self." + self.in_q.get())
+            except Exception as e:
+                print("Task evaluation error: ", str(e))
 
         self.root.after(REFRESH_TIME, self.check_tasks)
 
