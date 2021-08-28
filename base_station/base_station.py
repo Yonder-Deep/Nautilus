@@ -42,7 +42,8 @@ NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle s
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 
 # determines if connected to BS
-connected = False  # TODO locks
+connected = False
+lock = threading.Lock()
 
 
 class BaseStation_Receive(threading.Thread):
@@ -172,6 +173,7 @@ class BaseStation_Receive(threading.Thread):
         # Begin our main loop for this thread.
 
         global connected
+        global lock
 
         while True:
             time.sleep(0.5)
@@ -179,10 +181,12 @@ class BaseStation_Receive(threading.Thread):
             # Always try to update connection status
             if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
                 # We are NOT connected to AUV, but we previously ('before') were. Status has changed to failed.
+                lock.acquire()
                 if connected is True:
                     self.out_q.put("set_connection(False)")
                     self.log("Lost connection to AUV.")
                     connected = False
+                lock.release()
 
             # This executes if we never had a radio object, or it got disconnected.
             if self.radio is None or not os.path.exists(RADIO_PATH):
@@ -219,10 +223,12 @@ class BaseStation_Receive(threading.Thread):
                         # PING case
                         if intline == PING:
                             self.time_since_last_ping = time.time()
+                            lock.acquire()
                             if connected is False:
                                 self.log("Connection to AUV verified.")
                                 self.out_q.put("set_connection(True)")
                                 connected = True
+                            lock.release()
                         # Data cases
                         else:
                             decode_command(self, header, intline)
@@ -312,11 +318,13 @@ class BaseStation_Send(threading.Thread):
 
     def test_motor(self, motor):
         """ Attempts to send the AUV a signal to test a given motor. """
-
+        lock.acquire()
         if not connected:
+            lock.release()
             self.log("Cannot test " + motor +
                      " motor(s) because there is no connection to the AUV.")
         else:
+            lock.release()
             if (motor == 'Forward'):
                 self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
             elif (motor == 'Left'):
@@ -330,27 +338,33 @@ class BaseStation_Send(threading.Thread):
 
     def abort_mission(self):
         """ Attempts to abort the mission for the AUV."""
+        lock.acquire()
         if not connected:
+            lock.release()
             self.log(
                 "Cannot abort mission because there is no connection to the AUV.")
         else:
+            lock.release()
             # self.radio.write("abort_mission()")
             self.log("Sending task: abort_mission()")
             self.manual_mode = True
 
     def start_mission(self, mission):
         """  Attempts to start a mission and send to AUV. """
-
+        lock.acquire()
         if connected is False:
+            lock.release()
             self.log("Cannot start mission " + str(mission) +
                      " because there is no connection to the AUV.")
         else:
+            lock.release()
             self.radio.write(MISSION_ENCODE | mission)
             self.log('Sending task: start_mission(' + str(mission) + ')')
 
     def run(self):
         """ Main sending threaded loop for the base station. """
         global connected
+        global lock
         # Begin our main loop for this thread.
         while True:
             time.sleep(0.5)
@@ -393,7 +407,9 @@ class BaseStation_Send(threading.Thread):
                 try:
                     self.radio.write(0xFFFFFF)
                     # This is where secured/synchronous code should go.
+                    lock.acquire()
                     if connected and self.manual_mode:
+                        lock.release()
                         if self.joy is not None:  # and self.joy.connected() and self.nav_controller is not None:
                             try:
                                 self.nav_controller.handle()
@@ -401,6 +417,8 @@ class BaseStation_Send(threading.Thread):
                                 print("[XBOX]\t" + str(self.nav_controller.get_data()))
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
+                    else:
+                        lock.release()
                 except Exception as e:
                     print(str(e))
                     self.radio.close()
@@ -435,10 +453,13 @@ class BaseStation(threading.Thread):
 
     def download_data(self):
         """ Function calls download data function """
+        lock.acquire()
         if connected is True:
+            lock.release()
             # self.radio.write("d_data()")
             self.log("Sending download data command to AUV.")
         else:
+            lock.release()
             self.log("Cannot download data because there is no connection to the AUV.")
 
     def mission_started(self, index):
@@ -461,9 +482,6 @@ def main():
 
     # Create a BS (base station) and GUI object thread.
     try:
-        #threaded_bs = BaseStation(to_BS, to_GUI)
-        # threaded_bs.start()
-
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
 

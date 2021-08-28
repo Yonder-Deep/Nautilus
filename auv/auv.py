@@ -41,7 +41,7 @@ MAX_TIME = 600
 MAX_ITERATION_COUNT = MAX_TIME / THREAD_SLEEP_DELAY / 7
 
 # determines if connected to BS
-connected = False  # TODO locks
+connected = False
 lock = threading.Lock()
 
 
@@ -409,13 +409,10 @@ class AUV_Send(threading.Thread):
 
 def main():
     """ Main function that is run upon execution of auv.py """
-    # auv_r_thread = threading.Thread(target=AUV_Receive(), args=[])
-    # auv_s_thread = threading.Thread(target=AUV_Send(), args=[])
     auv_r_thread = AUV_Receive()
     auv_s_thread = AUV_Send()
     auv_r_thread.start()
     auv_s_thread.start()
-    # TODO test lock
 
 
 if __name__ == '__main__':  # If we are executing this file as main
