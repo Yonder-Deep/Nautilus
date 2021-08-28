@@ -248,10 +248,8 @@ class BaseStation_Send(threading.Thread):
         self.joy = None
         self.connected_to_auv = False
         self.nav_controller = None
-        self.gps = None
         self.in_q = in_q
         self.out_q = out_q
-        self.gps_q = Queue()
         self.manual_mode = True
         self.time_since_last_ping = 0.0
 
@@ -290,13 +288,6 @@ class BaseStation_Send(threading.Thread):
             self.log("Warning: Cannot find Xbox 360 controller.")
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-
-        # Try to assign our GPS object connection to GPSD
-        try:
-            self.gps = GPS(self.gps_q)
-            self.log("Successfully connected to GPS socket service.")
-        except:
-            self.log("Warning: Could not connect to a GPS socket service.")
 
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
