@@ -400,8 +400,8 @@ class AUV_Send(threading.Thread):
                             WATER_DEPTH_DATA = pressure * 10.2
 
                             self.radio.write(depth_encode, 3)
-
-                    lock.release()
+                    else:
+                        lock.release()
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
