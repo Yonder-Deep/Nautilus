@@ -41,6 +41,9 @@ MAX_TURN_SPEED = 50
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 
+# determines if connected to BS
+connected = False  # TODO locks
+
 
 class BaseStation_Receive(threading.Thread):
     def __init__(self, in_q=None, out_q=None):
@@ -51,7 +54,6 @@ class BaseStation_Receive(threading.Thread):
         # Instance variables
         self.radio = None
         self.joy = None
-        self.connected_to_auv = False
         self.nav_controller = None
         self.gps = None
         self.in_q = in_q
@@ -169,16 +171,19 @@ class BaseStation_Receive(threading.Thread):
         """ Main threaded loop for the base station. """
         inc = 0
         # Begin our main loop for this thread.
+
+        global connected
+
         while True:
             time.sleep(0.5)
 
             # Always try to update connection status
             if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
                 # We are NOT connected to AUV, but we previously ('before') were. Status has changed to failed.
-                if self.connected_to_auv is True:
+                if connected is True:
                     self.out_q.put("set_connection(False)")
                     self.log("Lost connection to AUV.")
-                    self.connected_to_auv = False
+                    connected = False
 
             # This executes if we never had a radio object, or it got disconnected.
             if self.radio is None or not os.path.exists(RADIO_PATH):
@@ -215,10 +220,10 @@ class BaseStation_Receive(threading.Thread):
                         # PING case
                         if intline == PING:
                             self.time_since_last_ping = time.time()
-                            if self.connected_to_auv is False:
+                            if connected is False:
                                 self.log("Connection to AUV verified.")
                                 self.out_q.put("set_connection(True)")
-                                self.connected_to_auv = True
+                                connected = True
                         # Data cases
                         else:
                             decode_command(self, header, intline)
@@ -249,7 +254,6 @@ class BaseStation_Send(threading.Thread):
         # Instance variables
         self.radio = None
         self.joy = None
-        self.connected_to_auv = False
         self.nav_controller = None
         self.in_q = in_q
         self.out_q = out_q
@@ -310,7 +314,7 @@ class BaseStation_Send(threading.Thread):
     def test_motor(self, motor):
         """ Attempts to send the AUV a signal to test a given motor. """
 
-        if not self.connected_to_auv:
+        if not connected:
             self.log("Cannot test " + motor +
                      " motor(s) because there is no connection to the AUV.")
         else:
@@ -327,7 +331,7 @@ class BaseStation_Send(threading.Thread):
 
     def abort_mission(self):
         """ Attempts to abort the mission for the AUV."""
-        if not self.connected_to_auv:
+        if not connected:
             self.log(
                 "Cannot abort mission because there is no connection to the AUV.")
         else:
@@ -338,7 +342,7 @@ class BaseStation_Send(threading.Thread):
     def start_mission(self, mission):
         """  Attempts to start a mission and send to AUV. """
 
-        if self.connected_to_auv is False:
+        if connected is False:
             self.log("Cannot start mission " + str(mission) +
                      " because there is no connection to the AUV.")
         else:
@@ -348,6 +352,7 @@ class BaseStation_Send(threading.Thread):
     def run(self):
         """ Main sending threaded loop for the base station. """
         inc = 0
+        global connected
         # Begin our main loop for this thread.
         while True:
             time.sleep(0.5)
@@ -392,7 +397,7 @@ class BaseStation_Send(threading.Thread):
                     print(str(inc))
                     inc += 1
                     # This is where secured/synchronous code should go.
-                    if self.connected_to_auv and self.manual_mode:
+                    if connected and self.manual_mode:
                         if self.joy is not None:  # and self.joy.connected() and self.nav_controller is not None:
                             try:
                                 self.nav_controller.handle()
@@ -434,7 +439,7 @@ class BaseStation(threading.Thread):
 
     def download_data(self):
         """ Function calls download data function """
-        if self.connected_to_auv is True:
+        if connected is True:
             # self.radio.write("d_data()")
             self.log("Sending download data command to AUV.")
         else:
