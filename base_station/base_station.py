@@ -60,6 +60,9 @@ class BaseStation_Receive(threading.Thread):
         self.manual_mode = True
         self.time_since_last_ping = 0.0
 
+        # Call super-class constructor
+        threading.Thread.__init__(self)
+
         # Get all non-default callable methods in this class
         self.methods = [m for m in dir(BaseStation) if not m.startswith(
             '__') and not m.startswith('_')]
@@ -252,6 +255,9 @@ class BaseStation_Send(threading.Thread):
         self.out_q = out_q
         self.manual_mode = True
         self.time_since_last_ping = 0.0
+
+        # Call super-class constructor
+        threading.Thread.__init__(self)
 
         # Get all non-default callable methods in this class
         self.methods = [m for m in dir(BaseStation) if not m.startswith(
@@ -459,9 +465,11 @@ def main():
 
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
+
         bs_r_thread.start()
         bs_s_thread.start()
-    except:
+    except Exception as e:
+        print("Err: ", str(e))
         print("[MAIN] Base Station initialization failed. Closing...")
         sys.exit()
 
