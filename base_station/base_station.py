@@ -42,16 +42,12 @@ NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle s
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 
 
-class BaseStation(threading.Thread):
-    """ Base station class that acts as the brain for the entire base station. """
-
+class BaseStation_Receive(threading.Thread):
     def __init__(self, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
         # Call super-class constructor
-        threading.Thread.__init__(self)
-
         # Instance variables
         self.radio = None
         self.joy = None
@@ -127,18 +123,6 @@ class BaseStation(threading.Thread):
 
         self.main.log("Controller is connected.")
 
-    def check_tasks(self):
-        """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
-
-        while not self.in_q.empty():
-            task = "self." + self.in_q.get()
-            # Try to evaluate the task in the in_q.
-            try:
-                eval(task)
-            except Exception as e:
-                print("Failed to evaluate in_q task: ", task)
-                print("\t Error received was: ", str(e))
-
     def auv_data(self, heading, temperature, pressure, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
 
@@ -170,6 +154,162 @@ class BaseStation(threading.Thread):
         # else:
         #    self.log("The AUV did not report its latitude and longitude.")
 
+    def mission_failed(self):
+        """ Mission return failure from AUV. """
+        self.manual_mode = True
+        self.out_q.put("set_vehicle(True)")
+        self.log("Enforced switch to manual mode.")
+
+        self.log("The current mission has failed.")
+
+    def run(self):
+        """ Main threaded loop for the base station. """
+        inc = 0
+        # Begin our main loop for this thread.
+        while True:
+            time.sleep(0.5)
+
+            # Always try to update connection status
+            if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
+                # We are NOT connected to AUV, but we previously ('before') were. Status has changed to failed.
+                if self.connected_to_auv is True:
+                    self.out_q.put("set_connection(False)")
+                    self.log("Lost connection to AUV.")
+                    self.connected_to_auv = False
+
+            # This executes if we never had a radio object, or it got disconnected.
+            if self.radio is None or not os.path.exists(RADIO_PATH):
+                # This executes if we HAD a radio object, but it got disconnected.
+                if self.radio is not None and not os.path.exists(RADIO_PATH):
+                    self.log("Radio device has been disconnected.")
+                    self.radio.close()
+
+                # Try to assign us a new Radio object
+                try:
+                    self.radio = Radio(RADIO_PATH)
+                    self.log(
+                        "Radio device has been found on RADIO_PATH.")
+                except Exception as e:
+                    print("Radio error: ", str(e))
+
+            # If we have a Radio object device, but we aren't connected to the AUV
+            else:
+                # Try to read line from radio.
+                try:
+
+                    # Read 7 bytes
+                    line = self.radio.read(7)
+
+                    while(line != b'' and len(line) == 7):
+                        print('read line')
+                        intline = int.from_bytes(line, "big")
+                        # intline = int(line,2)
+                        checksum = Crc32.confirm(intline)
+                        if not checksum:
+                            continue
+                        intline = intline >> 32
+                        header = intline >> 21     # get first 3 bits
+                        # PING case
+                        if intline == PING:
+                            self.time_since_last_ping = time.time()
+                            if self.connected_to_auv is False:
+                                self.log("Connection to AUV verified.")
+                                self.out_q.put("set_connection(True)")
+                                self.connected_to_auv = True
+                        # Data cases
+                        else:
+                            decode_command(self, header, intline)
+
+                        line = self.radio.read(7)
+
+                    self.radio.flush()
+
+                except Exception as e:
+                    print(str(e))
+                    self.radio.close()
+                    self.radio = None
+                    self.log("Radio device has been disconnected.")
+                    continue
+
+            time.sleep(THREAD_SLEEP_DELAY)
+
+    def log(self, message):
+        """ Logs the message to the GUI console by putting the function into the output-queue. """
+        self.out_q.put("log('" + message + "')")
+
+
+class BaseStation_Send(threading.Thread):
+    def __init__(self, in_q=None, out_q=None):
+        """ Initialize Serial Port and Class Variables
+        debug: debugging flag """
+
+        # Instance variables
+        self.radio = None
+        self.joy = None
+        self.connected_to_auv = False
+        self.nav_controller = None
+        self.gps = None
+        self.in_q = in_q
+        self.out_q = out_q
+        self.gps_q = Queue()
+        self.manual_mode = True
+        self.time_since_last_ping = 0.0
+
+        # Get all non-default callable methods in this class
+        self.methods = [m for m in dir(BaseStation) if not m.startswith(
+            '__') and not m.startswith('_')]
+
+        # Try to assign our radio object
+        try:
+            self.radio = Radio(RADIO_PATH)
+            self.log("Successfully found radio device on RADIO_PATH.")
+        except:
+            self.log(
+                "Warning: Cannot find radio device. Ensure RADIO_PATH is correct.")
+
+        # Try to connect our Xbox 360 controller.
+
+# XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
+        try:
+            print("case0")
+            self.joy = Xbox()
+            print("case1")
+
+            # self.joy = Joystick()
+            self.log("Successfuly found Xbox 360 controller.")
+            print("case2")
+
+            self.nav_controller = NavController(self.joy)
+            print("case3")
+
+            self.log("Successfully created a Navigation with Controller object.")
+            print("case4")
+
+        except Exception as e:  # TODO
+            self.log(str(e))
+            self.log("Warning: Cannot find Xbox 360 controller.")
+
+# XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
+
+        # Try to assign our GPS object connection to GPSD
+        try:
+            self.gps = GPS(self.gps_q)
+            self.log("Successfully connected to GPS socket service.")
+        except:
+            self.log("Warning: Could not connect to a GPS socket service.")
+
+    def check_tasks(self):
+        """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
+
+        while not self.in_q.empty():
+            task = "self." + self.in_q.get()
+            # Try to evaluate the task in the in_q.
+            try:
+                eval(task)
+            except Exception as e:
+                print("Failed to evaluate in_q task: ", task)
+                print("\t Error received was: ", str(e))
+
     def test_motor(self, motor):
         """ Attempts to send the AUV a signal to test a given motor. """
 
@@ -198,14 +338,6 @@ class BaseStation(threading.Thread):
             self.log("Sending task: abort_mission()")
             self.manual_mode = True
 
-    def mission_failed(self):
-        """ Mission return failure from AUV. """
-        self.manual_mode = True
-        self.out_q.put("set_vehicle(True)")
-        self.log("Enforced switch to manual mode.")
-
-        self.log("The current mission has failed.")
-
     def start_mission(self, mission):
         """  Attempts to start a mission and send to AUV. """
 
@@ -217,20 +349,12 @@ class BaseStation(threading.Thread):
             self.log('Sending task: start_mission(' + str(mission) + ')')
 
     def run(self):
-        """ Main threaded loop for the base station. """
+        """ Main sending threaded loop for the base station. """
         inc = 0
         # Begin our main loop for this thread.
         while True:
             time.sleep(0.5)
             self.check_tasks()
-
-            # Always try to update connection status
-            if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
-                # We are NOT connected to AUV, but we previously ('before') were. Status has changed to failed.
-                if self.connected_to_auv is True:
-                    self.out_q.put("set_connection(False)")
-                    self.log("Lost connection to AUV.")
-                    self.connected_to_auv = False
 
             # Check if we have an Xbox controller
             if self.joy is None:
@@ -279,52 +403,21 @@ class BaseStation(threading.Thread):
                                 print("[XBOX]\t" + str(self.nav_controller.get_data()))
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
-
-                    # Reffer (probably around 2-3 commands)
-                    # lines = self.radio.read_bytes()
-                    # lines = lines.decode('utf-8')
-                    # lines = lines.split("\n")
-
-                    # lines = self.radio.readlines()
-                    # self.radio.flush()
-
-                    #
-
-                    # Read 7 bytes
-                    line = self.radio.read(7)
-
-                    while(line != b'' and len(line) == 7):
-                        print('read line')
-                        intline = int.from_bytes(line, "big")
-                        # intline = int(line,2)
-                        checksum = Crc32.confirm(intline)
-                        if not checksum:
-                            continue
-                        intline = intline >> 32
-                        header = intline >> 21     # get first 3 bits
-                        # PING case
-                        if intline == PING:
-                            self.time_since_last_ping = time.time()
-                            if self.connected_to_auv is False:
-                                self.log("Connection to AUV verified.")
-                                self.out_q.put("set_connection(True)")
-                                self.connected_to_auv = True
-                        # Data cases
-                        else:
-                            decode_command(self, header, intline)
-
-                        line = self.radio.read(7)
-
-                    self.radio.flush()
-
                 except Exception as e:
                     print(str(e))
                     self.radio.close()
                     self.radio = None
                     self.log("Radio device has been disconnected.")
                     continue
-
             time.sleep(THREAD_SLEEP_DELAY)
+
+    def log(self, message):
+        """ Logs the message to the GUI console by putting the function into the output-queue. """
+        self.out_q.put("log('" + message + "')")
+
+
+class BaseStation(threading.Thread):
+    """ Base station class that acts as the brain for the entire base station. """
 
     def close(self):
         """ Function that is executed upon the closure of the GUI (passed from input-queue). """
@@ -350,10 +443,6 @@ class BaseStation(threading.Thread):
         else:
             self.log("Cannot download data because there is no connection to the AUV.")
 
-    def log(self, message):
-        """ Logs the message to the GUI console by putting the function into the output-queue. """
-        self.out_q.put("log('" + message + "')")
-
     def mission_started(self, index):
         """ When AUV sends mission started, switch to mission mode """
         if index == 0:  # Echo location mission.
@@ -374,8 +463,13 @@ def main():
 
     # Create a BS (base station) and GUI object thread.
     try:
-        threaded_bs = BaseStation(to_BS, to_GUI)
-        threaded_bs.start()
+        #threaded_bs = BaseStation(to_BS, to_GUI)
+        # threaded_bs.start()
+
+        bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
+        bs_s_thread = BaseStation_Send(to_BS, to_GUI)
+        bs_r_thread.start()
+        bs_s_thread.start()
     except:
         print("[MAIN] Base Station initialization failed. Closing...")
         sys.exit()
