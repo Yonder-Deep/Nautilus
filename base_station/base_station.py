@@ -413,13 +413,13 @@ class BaseStation_Send(threading.Thread):
         """ Logs the message to the GUI console by putting the function into the output-queue. """
         self.out_q.put("log('" + message + "')")
 
-
-class BaseStation(threading.Thread):
-    """ Base station class that acts as the brain for the entire base station. """
-
     def close(self):
         """ Function that is executed upon the closure of the GUI (passed from input-queue). """
         os._exit(1)  # => Force-exit the process immediately.
+
+
+class BaseStation(threading.Thread):
+    """ Base station class that acts as the brain for the entire base station. """
 
     def d(self, bytes):
         # TODO

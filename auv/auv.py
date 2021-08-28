@@ -42,6 +42,7 @@ MAX_ITERATION_COUNT = MAX_TIME / THREAD_SLEEP_DELAY / 7
 
 # determines if connected to BS
 connected = False  # TODO locks
+lock = threading.Lock()
 
 
 def log(val):
@@ -151,6 +152,7 @@ class AUV_Receive(threading.Thread):
 
             # Always try to update connection status.
             if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
+                lock.acquire()
                 # Line read was EMPTY, but 'before' connection status was successful? Connection verification failed.
                 if connected is True:
                     log("Lost connection to BS.")
@@ -164,6 +166,8 @@ class AUV_Receive(threading.Thread):
                         self.radio.flush()
 
                     connected = False
+
+                lock.release()
 
             if self.radio is None or self.radio.is_open() is False:
                 try:  # Try to connect to our devices.
@@ -188,7 +192,8 @@ class AUV_Receive(threading.Thread):
                         if intline == 0xFFFFFF:  # We have a ping!
                             self.time_since_last_ping = time.time()
                             print("ping if statement")
-                            #print(line)
+                            # print(line)
+                            lock.acquire()
                             if connected is False:
                                 log("Connection to BS verified.")
                                 connected = True
@@ -196,7 +201,7 @@ class AUV_Receive(threading.Thread):
                                 # TODO test case: set motor speeds
                                 data = [1, 2, 3, 4]
                                 self.x(data)
-
+                            lock.release()
                         else:
                             # Line was read, but it was not equal to a BS_PING
 
@@ -342,9 +347,9 @@ class AUV_Send(threading.Thread):
                     # self.radio.write(AUV_PING)
                     print("write")
                     self.radio.write(0xFFFFFF, 3)
-
+                    lock.acquire()
                     if connected is True:  # Send our AUV packet as well.
-
+                        lock.release()
                         # TODO default values in case we could not read anything
                         heading = 0
                         temperature = 0
@@ -395,6 +400,9 @@ class AUV_Send(threading.Thread):
                             WATER_DEPTH_DATA = pressure * 10.2
 
                             self.radio.write(depth_encode, 3)
+
+                    lock.release()
+
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
 
@@ -407,7 +415,7 @@ def main():
     auv_s_thread = AUV_Send()
     auv_r_thread.start()
     auv_s_thread.start()
-    # TODO test
+    # TODO test lock
 
 
 if __name__ == '__main__':  # If we are executing this file as main
