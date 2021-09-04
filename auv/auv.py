@@ -207,10 +207,9 @@ class AUV_Receive(threading.Thread):
 
                             # Decode into a normal utd-8 encoded string and delete newline character
                             #message = line.decode('utf-8').replace("\n", "")
-                            log(line)
+                            print("NON-PING LINE READ WAS", str(line))
                             message = intline
                             log("Possible command found. Line read was: " + str(message))
-                            log(type(message))
                             # message = int(message)
                             # 0000001XSY or 0000000X
 
