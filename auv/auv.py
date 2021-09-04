@@ -10,11 +10,13 @@ import time
 import math
 
 # Custom imports
+from queue import Queue
 from api import Radio
 from api import IMU
 from api import Crc32
 from api import PressureSensor
 from api import MotorController
+from api import MotorQueue
 from missions import *
 
 # Constants for the AUV
@@ -55,8 +57,7 @@ def log(val):
 class AUV_Receive(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def run(self):
-        """ Constructor for the AUV """
+    def __init__(self, queue):
         self.radio = None
         self.pressure_sensor = None
         self.imu = None
@@ -64,6 +65,12 @@ class AUV_Receive(threading.Thread):
         self.time_since_last_ping = 0.0
         self.current_mission = None
         self.timer = 0
+        self.motor_queue = queue
+        threading.Thread.__init__(self)
+
+
+    def run(self):
+        """ Constructor for the AUV """
 
         # Get all non-default callable methods in this class
         self.methods = [m for m in dir(AUV_Receive) if not m.startswith('__')]
@@ -109,38 +116,6 @@ class AUV_Receive(threading.Thread):
         else:
             raise Exception('No implementation for motor name: ', motor)
 
-    def run_motors(self, x, y):
-        # stops auv
-        self.mc.zero_out_motors()
-
-        forward_speed = 0
-        turn_speed = 0
-
-        # turn right
-        if (y > 0):
-            turn_speed = 90
-        # turn left
-        elif (y < 0):
-            turn_speed = -90
-
-        # turn auv
-        self.mc.update_motor_speeds([0, turn_speed, 0, 0])
-
-        # TODO implement so motors run until we've turned y degrees
-
-        time.sleep(5)
-
-        self.mc.zero_out_motors()
-
-        # move forward
-        if (x != 0):
-            forward_speed = 90
-            self.mc.update_motor_speeds([forward_speed, 0, 0, 0])
-
-            # TODO implement so motors run until we've moved x meters
-            time.sleep(5)
-
-        self.mc.zero_out_motors()
 
     def main_loop(self):
         global connected
@@ -223,7 +198,7 @@ class AUV_Receive(threading.Thread):
                                     y = y * -1
 
                                 log("Running motor command with (x, y): " + str(x) + "," + str(y))
-                                self.run_motors(x, y)
+                                self.motor_queue.put((x,y))
 
                             # misison command
                             else:
@@ -344,7 +319,7 @@ class AUV_Send(threading.Thread):
                 try:
                     # Always send a connection verification packet and attempt to read one.
                     # self.radio.write(AUV_PING)
-                    print("write")
+                    # print("write")
                     self.radio.write(0xFFFFFF, 3)
                     lock.acquire()
                     if connected is True:  # Send our AUV packet as well.
@@ -392,8 +367,8 @@ class AUV_Send(threading.Thread):
                             whole = int(for_depth[1])
                             whole = whole << 4
                             depth_encode = (DEPTH_ENCODE | whole | decimal)
-                            log("Pressure Read: " + str(self.pressure_sensor.pressure())
-                                + ", whole: " + str((whole >> 4)) + ", decimal: " + str(decimal))  # TODO Heading and temperature
+                            #log("Pressure Read: " + str(self.pressure_sensor.pressure())
+                            #    + ", whole: " + str((whole >> 4)) + ", decimal: " + str(decimal))  # TODO Heading and temperature
 
                             # conversion for bars
                             WATER_DEPTH_DATA = pressure * 10.2
@@ -408,8 +383,11 @@ class AUV_Send(threading.Thread):
 
 def main():
     """ Main function that is run upon execution of auv.py """
-    auv_r_thread = AUV_Receive()
+    queue = Queue()
+    auv_motor_thread = MotorQueue(queue)
+    auv_r_thread = AUV_Receive(queue)
     auv_s_thread = AUV_Send()
+    auv_motor_thread.start()
     auv_r_thread.start()
     auv_s_thread.start()
 

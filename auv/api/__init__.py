@@ -7,3 +7,4 @@ from .imu import IMU  # Inertial Measurement Unit
 from .radio import Radio
 from .hasher import Hasher
 from .crc32 import Crc32
+from .motor_queue import MotorQueue
