@@ -48,10 +48,11 @@ def decode_command(self_obj, header, line):
         print("y: " + str(int(y)))
     elif header == HEADING_DATA:
         data = remain & 0x1FFFF
-        x = data >> 7
-        y = data & 0x7F
-        print("x: " + str(int(x)))
-        print("y: " + str(int(y)))
+        whole = data >> 7
+        decimal = data & 0x7F
+        decimal  /= 100
+        heading = whole + decimal
+        self_obj.out_q.put("set_heading(" + str(heading) + ")")
     elif header == COMBINATION_DATA:
         data = remain & 0x7FFFF
         battery = data >> 12  # bits 13-19
@@ -64,7 +65,7 @@ def decode_command(self_obj, header, line):
         flooded = data & 0x1  # bit 1
         # TODO: Update gui
         print("Battery: " + str(int(battery)))
-        print("Temperature: " + str(int(temp)))
+        self_obj.out_q.put("set_temperature(" + str(temp) + ")")
         print("Movement status: " + str(int(mvmt)))
         print("Mission status: " + str(int(mission_stat)))
         print("Flooded: " + str(int(flooded)))
