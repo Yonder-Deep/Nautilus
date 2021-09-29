@@ -471,7 +471,7 @@ class BaseStation_Send_Ping(threading.Thread):
             else:
                 try:
                     # Always send a connection verification packet
-                    self.radio.write(PING, 3)
+                    self.radio.write(PING)
                     print("WE WROTE PING")
 
                 except Exception as e:
