@@ -479,7 +479,6 @@ class BaseStation_Send_Ping(threading.Thread):
                     radio_lock.acquire()
                     self.radio.write(PING)
                     radio_lock.release()
-                    print("WE WROTE PING")
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
