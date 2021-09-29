@@ -26,12 +26,12 @@ from gui import Main
 
 # Constants
 THREAD_SLEEP_DELAY = 0.1  # Since we are the slave to AUV, we must run faster.
-PING_SLEEP_DELAY = 5
+PING_SLEEP_DELAY = 3
 RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
 
 PING = 0xFFFFFF
 
-CONNECTION_TIMEOUT = 8
+CONNECTION_TIMEOUT = 6
 
 # AUV Constants (these are also in auv.py)
 MAX_AUV_SPEED = 100
@@ -472,6 +472,7 @@ class BaseStation_Send_Ping(threading.Thread):
                 try:
                     # Always send a connection verification packet
                     self.radio.write(PING, 3)
+                    print("WE WROTE PING")
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
