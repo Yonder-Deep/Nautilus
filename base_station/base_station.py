@@ -26,11 +26,12 @@ from gui import Main
 
 # Constants
 THREAD_SLEEP_DELAY = 0.1  # Since we are the slave to AUV, we must run faster.
+PING_SLEEP_DELAY = 5
 RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
 
 PING = 0xFFFFFF
 
-CONNECTION_TIMEOUT = 4
+CONNECTION_TIMEOUT = 8
 
 # AUV Constants (these are also in auv.py)
 MAX_AUV_SPEED = 100
@@ -367,7 +368,7 @@ class BaseStation_Send(threading.Thread):
         global lock
         # Begin our main loop for this thread.
         while True:
-            time.sleep(0.5)
+            time.sleep(THREAD_SLEEP_DELAY)
             self.check_tasks()
 
             # Check if we have an Xbox controller
@@ -403,9 +404,8 @@ class BaseStation_Send(threading.Thread):
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
-                # Try to read line from radio.
+                # Try to write line to radio.
                 try:
-                    self.radio.write(0xFFFFFF)
                     # This is where secured/synchronous code should go.
                     lock.acquire()
                     if connected and self.manual_mode:
@@ -434,6 +434,47 @@ class BaseStation_Send(threading.Thread):
     def close(self):
         """ Function that is executed upon the closure of the GUI (passed from input-queue). """
         os._exit(1)  # => Force-exit the process immediately.
+
+# Responsibilites:
+#   - send ping
+
+
+class BaseStation_Send_Ping(threading.Thread):
+    def run(self):
+        """ Constructor for the AUV """
+        self.radio = None
+
+        try:
+            self.radio = Radio(RADIO_PATH)
+            log("Radio device has been found.")
+        except:
+            log("Radio device is not connected to AUV on RADIO_PATH.")
+
+        self.main_loop()
+
+    def main_loop(self):
+        """ Main connection loop for the AUV. """
+        global connected
+
+        print("Starting main ping sending connection loop.")
+        while True:
+            time.sleep(PING_SLEEP_DELAY)
+
+            if self.radio is None or self.radio.is_open() is False:
+                print("TEST radio not connected")
+                try:  # Try to connect to our devices.
+                    self.radio = Radio(RADIO_PATH)
+                    print("Radio device has been found!")
+                except Exception as e:
+                    print("Failed to connect to radio: " + str(e))
+
+            else:
+                try:
+                    # Always send a connection verification packet
+                    self.radio.write(PING, 3)
+
+                except Exception as e:
+                    raise Exception("Error occured : " + str(e))
 
 
 class BaseStation(threading.Thread):
@@ -484,9 +525,11 @@ def main():
     try:
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
+        bs_ping_thread = BaseStation_Send_Ping()
 
         bs_r_thread.start()
         bs_s_thread.start()
+        bs_ping_thread.start()
     except Exception as e:
         print("Err: ", str(e))
         print("[MAIN] Base Station initialization failed. Closing...")
