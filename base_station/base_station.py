@@ -446,9 +446,9 @@ class BaseStation_Send_Ping(threading.Thread):
 
         try:
             self.radio = Radio(RADIO_PATH)
-            log("Radio device has been found.")
+            print("Radio device has been found.")
         except:
-            log("Radio device is not connected to AUV on RADIO_PATH.")
+            print("Radio device is not connected to AUV on RADIO_PATH.")
 
         self.main_loop()
 
