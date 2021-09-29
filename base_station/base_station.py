@@ -45,6 +45,7 @@ MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 # determines if connected to BS
 connected = False
 lock = threading.Lock()
+radio_lock = threading.Lock()
 
 
 class BaseStation_Receive(threading.Thread):
@@ -326,12 +327,14 @@ class BaseStation_Send(threading.Thread):
                      " motor(s) because there is no connection to the AUV.")
         else:
             lock.release()
+            radio_lock.acquire()
             if (motor == 'Forward'):
                 self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
             elif (motor == 'Left'):
                 self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
             elif (motor == 'Right'):
                 self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
+            radio_lock.release()
 
             self.log('Sending encoded task: test_motor("' + motor + '")')
 
@@ -359,7 +362,9 @@ class BaseStation_Send(threading.Thread):
                      " because there is no connection to the AUV.")
         else:
             lock.release()
+            radio_lock.acquire()
             self.radio.write(MISSION_ENCODE | mission)
+            radio_lock.release()
             self.log('Sending task: start_mission(' + str(mission) + ')')
 
     def run(self):
@@ -471,7 +476,9 @@ class BaseStation_Send_Ping(threading.Thread):
             else:
                 try:
                     # Always send a connection verification packet
+                    radio_lock.acquire()
                     self.radio.write(PING)
+                    radio_lock.release()
                     print("WE WROTE PING")
 
                 except Exception as e:
