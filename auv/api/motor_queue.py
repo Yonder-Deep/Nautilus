@@ -15,8 +15,11 @@ class MotorQueue(threading.Thread):
 
         while True:
             if not self.queue.empty():
-                x, y = self.queue.get()
-                self.run_motors(x,y)
+                x, y, z = self.queue.get()
+                if z == 0:
+                    self.run_motors(x,y)
+                if z == 1:
+                    self.xbox_commands(x,y)
 
     # for tests only
     def run_motors(self, x, y):

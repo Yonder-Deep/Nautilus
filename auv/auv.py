@@ -197,7 +197,7 @@ class AUV_Receive(threading.Thread):
                                     y = y * -1
 
                                 log("Running motor command with (x, y): " + str(x) + "," + str(y))
-                                self.motor_queue.put((x, y))
+                                self.motor_queue.put((x, y, 0))
 
                             # Xbox Navigation Command
                             # 0x[1110][0000] [XXXX][XXXX] [YYYY][YYYY]
@@ -213,7 +213,7 @@ class AUV_Receive(threading.Thread):
                                     y = -y
                                 print("Xbox Command:", x, y)
                                 
-                                self.motor_queue.xbox_commands(x, y)
+                                self.motor_queue.put((x, y, 1))
 
                             # misison command
                             else:
