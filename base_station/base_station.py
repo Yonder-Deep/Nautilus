@@ -352,7 +352,8 @@ class BaseStation_Send(threading.Thread):
         global connected
         global lock
 
-        bool xbox_input = False
+        xbox_input = False
+
         # Begin our main loop for this thread.
         while True:
             time.sleep(THREAD_SLEEP_DELAY)
@@ -362,7 +363,7 @@ class BaseStation_Send(threading.Thread):
             if self.joy is None:
                 try:
                     # print("Creating joystick. 5 seconds...")
-                    # self.joy = Joystick() TODO
+                    # self.joy = Joystick() TODO remove
                     self.nav_controller = NavController(self.joy)
                     # print("Done creating.")
                 except Exception as e:
@@ -403,14 +404,16 @@ class BaseStation_Send(threading.Thread):
                             try:
                                 # self.nav_controller.handle()
                                 #self.radio.write("x(" + str(self.nav_controller.get_data()) + ")")
-
+                                print("[XBOX]", self.joy.leftX())
+                                print("[XBOX]", self.joy.leftY())
                                 print("[XBOX] A\t")
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
 
-                        if not self.joy.A() and xbox_input:
+                        if xbox_input and not self.joy.A():
                             # send zeroed out xbox command
-                            xbox_input = false
+                            print("[XBOX] NO LONGER A\t")
+                            xbox_input = False
                     else:
                         lock.release()
                 except Exception as e:
