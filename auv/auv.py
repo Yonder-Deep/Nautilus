@@ -199,7 +199,8 @@ class AUV_Receive(threading.Thread):
                                 log("Running motor command with (x, y): " + str(x) + "," + str(y))
                                 self.motor_queue.put((x, y))
 
-                            # 0x[1110][000G] [XXXX][XXXX] [YYYY][YYYY]
+                            # Xbox Navigation Command
+                            # 0x[1110][0000] [XXXX][XXXX] [YYYY][YYYY]
                             elif (message & 0xE00000 == 0xE00000):
                                 # xbox command
                                 x = (message & 0x7F00) >> 8
@@ -210,6 +211,8 @@ class AUV_Receive(threading.Thread):
                                     x = -x
                                 if ysign == 1:
                                     y = -y
+                                print("Xbox Command:", x, y)
+                                
                                 self.motor_queue.xbox_commands(x, y)
 
                             # misison command
