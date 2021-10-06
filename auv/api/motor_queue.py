@@ -52,7 +52,7 @@ class MotorQueue(threading.Thread):
 
         self.mc.zero_out_motors()
 
-    def xbox_commands(x, y):
+    def xbox_commands(self, x, y):
         x = x/100 * 150
         y = y/100 * 150
         self.mc.update_motor_speeds([y, x, 0, 0])
