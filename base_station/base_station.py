@@ -40,6 +40,7 @@ MAX_TURN_SPEED = 50
 
 # Navigation Encoding
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
+XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 
 # determines if connected to BS
@@ -407,6 +408,19 @@ class BaseStation_Send(threading.Thread):
                                 print("[XBOX]", self.joy.leftX())
                                 print("[XBOX]", self.joy.leftY())
                                 print("[XBOX] A\t")
+                                x = round(self.joy.leftX()*100)
+                                xsign = 0
+                                ysign = 0
+                                if x < 0:
+                                    xsign = 1
+                                if y < 0:
+                                    ysign = 1
+                                y = round(self.joy.leftY()*100)
+                                xshift = x << 8
+                                xsign = xsign << 15
+                                ysign = ysign << 7
+                                navmsg = XBOX_ENCODE | xsign | x | ysign | y
+                                print(bin(navmsg))
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
 
