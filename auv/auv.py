@@ -203,6 +203,7 @@ class AUV_Receive(threading.Thread):
                             # 0x[1110][0000] [XXXX][XXXX] [YYYY][YYYY]
                             elif (message & 0xE00000 == 0xE00000):
                                 # xbox command
+                                print(bin(message))
                                 x = (message & 0x7F00) >> 8
                                 xsign = (message & 0x8000) >> 15
                                 y = message & 0x7F
