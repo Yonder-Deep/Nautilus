@@ -405,27 +405,36 @@ class BaseStation_Send(threading.Thread):
                             try:
                                 # self.nav_controller.handle()
                                 #self.radio.write("x(" + str(self.nav_controller.get_data()) + ")")
-                                print("[XBOX]", self.joy.leftX())
-                                print("[XBOX]", self.joy.leftY())
+                                print("[XBOX] X:", self.joy.leftX())
+                                print("[XBOX] Y:", self.joy.leftY())
                                 print("[XBOX] A\t")
+
                                 x = round(self.joy.leftX()*100)
+                                y = round(self.joy.leftY()*100)
+
                                 xsign = 0
                                 ysign = 0
+
                                 if x < 0:
                                     xsign = 1
+                                    x *= -1
                                 if y < 0:
                                     ysign = 1
-                                y = round(self.joy.leftY()*100)
+                                    y *= -1
+
                                 xshift = x << 8
                                 xsign = xsign << 15
                                 ysign = ysign << 7
-                                navmsg = XBOX_ENCODE | xsign | x | ysign | y
-                                print(bin(navmsg))
+                                navmsg = XBOX_ENCODE | xsign | xshift | ysign | y
+
+                                self.radio.write(navmsg)
+
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
 
+                        # once A is no longer held, send one last zeroed out xbox command
                         if xbox_input and not self.joy.A():
-                            # send zeroed out xbox command
+                            self.radio.write(XBOX_ENCODE)
                             print("[XBOX] NO LONGER A\t")
                             xbox_input = False
                     else:
