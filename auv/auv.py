@@ -164,6 +164,7 @@ class AUV_Receive(threading.Thread):
                             continue
                         intline = intline >> 32
                         if intline == 0xFFFFFF:  # We have a ping!
+                            log("PING")
                             self.time_since_last_ping = time.time()
                             # print("ping if statement")
                             # print(line)
@@ -183,7 +184,6 @@ class AUV_Receive(threading.Thread):
                             #message = line.decode('utf-8').replace("\n", "")
                             print("NON-PING LINE READ WAS", str(line))
                             message = intline
-                            log("Possible command found. Line read was: " + str(message))
                             # message = int(message)
                             # 0000001XSY or 0000000X
 
@@ -212,7 +212,7 @@ class AUV_Receive(threading.Thread):
                                 if ysign == 1:
                                     y = -y
                                 print("Xbox Command:", x, y)
-                                
+
                                 self.motor_queue.put((x, y, 1))
 
                             # misison command
@@ -339,10 +339,10 @@ class AUV_Send_Data(threading.Thread):
                         if self.imu is not None:
                             try:
                                 heading, _, _ = self.imu.read_euler()
-                                print('HEADING=', heading)
+                                #print('HEADING=', heading)
 
                                 temperature = self.imu.read_temp()
-                                print('TEMPERATURE=', temperature)
+                                #print('TEMPERATURE=', temperature)
 
                             except:
                                 # TODO print statement, something went wrong!
