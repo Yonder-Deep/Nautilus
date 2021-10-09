@@ -123,7 +123,7 @@ class AUV_Receive(threading.Thread):
         log("Starting main connection loop.")
         while True:
             time.sleep(RECEIVE_SLEEP_DELAY)
-            print("Loop")
+
             # Always try to update connection status.
             if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
                 lock.acquire()

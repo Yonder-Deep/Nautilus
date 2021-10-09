@@ -4,6 +4,9 @@ import time
 from queue import Queue
 from . import MotorController
 
+LOOP_SLEEP_DELAY = 0.005
+
+
 class MotorQueue(threading.Thread):
 
     def __init__(self, queue):
@@ -17,9 +20,11 @@ class MotorQueue(threading.Thread):
             if not self.queue.empty():
                 x, y, z = self.queue.get()
                 if z == 0:
-                    self.run_motors(x,y)
+                    self.run_motors(x, y)
                 if z == 1:
-                    self.xbox_commands(x,y)
+                    self.xbox_commands(x, y)
+
+            time.sleep(LOOP_SLEEP_DELAY)
 
     # for tests only
     def run_motors(self, x, y):
