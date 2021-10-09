@@ -126,6 +126,7 @@ class AUV_Receive(threading.Thread):
 
             # Always try to update connection status.
             if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
+                print("lock acquired 129")
                 lock.acquire()
                 # Line read was EMPTY, but 'before' connection status was successful? Connection verification failed.
                 if connected is True:
@@ -142,6 +143,7 @@ class AUV_Receive(threading.Thread):
                     connected = False
 
                 lock.release()
+                print("lock released 129")
 
             if self.radio is None or self.radio.is_open() is False:
                 try:  # Try to connect to our devices.
@@ -168,6 +170,8 @@ class AUV_Receive(threading.Thread):
                             self.time_since_last_ping = time.time()
                             # print("ping if statement")
                             # print(line)
+                            print("lock acquired 173")
+
                             lock.acquire()
                             if connected is False:
                                 log("Connection to BS verified.")
@@ -177,6 +181,9 @@ class AUV_Receive(threading.Thread):
                                 data = [1, 2, 3, 4]
                                 self.x(data)
                             lock.release()
+
+                            print("lock released 173")
+
                         else:
                             # Line was read, but it was not equal to a BS_PING
 
