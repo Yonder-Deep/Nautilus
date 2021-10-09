@@ -427,14 +427,18 @@ class BaseStation_Send(threading.Thread):
                                 ysign = ysign << 7
                                 navmsg = XBOX_ENCODE | xsign | xshift | ysign | y
 
+                                radio_lock.acquire()
                                 self.radio.write(navmsg)
+                                radio_lock.release()
 
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
 
                         # once A is no longer held, send one last zeroed out xbox command
                         if xbox_input and not self.joy.A():
+                            radio_lock.acquire()
                             self.radio.write(XBOX_ENCODE)
+                            radio_lock.release()
                             print("[XBOX] NO LONGER A\t")
                             xbox_input = False
                     else:
