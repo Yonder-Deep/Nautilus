@@ -170,7 +170,7 @@ class AUV_Receive(threading.Thread):
                             log("invalid line")
                             self.radio.flush()
                             self.mc.update_motor_speeds([0, 0, 0, 0])
-                            continue
+                            break
                         intline = intline >> 32
                         if intline == 0xFFFFFF:  # We have a ping!
                             log("PING")
