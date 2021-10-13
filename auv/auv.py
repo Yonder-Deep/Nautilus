@@ -166,7 +166,7 @@ class AUV_Receive(threading.Thread):
                         checksum = Crc32.confirm(intline)
                         if not checksum:
                             log("invalid line***********************")
-                            self.radio.flush()
+                            #self.radio.flush()
                             self.mc.update_motor_speeds([0, 0, 0, 0])
                             break
                         intline = intline >> 32
