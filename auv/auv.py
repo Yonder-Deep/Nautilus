@@ -119,9 +119,11 @@ class AUV_Receive(threading.Thread):
     def main_loop(self):
         global connected
         """ Main connection loop for the AUV. """
-
+        count = 0
         log("Starting main connection loop.")
         while True:
+            count += 1
+            print(count)
             time.sleep(RECEIVE_SLEEP_DELAY)
 
             # Always try to update connection status.
