@@ -165,7 +165,7 @@ class AUV_Receive(threading.Thread):
                         #print("Line:", intline)
                         checksum = Crc32.confirm(intline)
                         if not checksum:
-                            log("invalid line")
+                            log("invalid line***********************")
                             self.radio.flush()
                             self.mc.update_motor_speeds([0, 0, 0, 0])
                             break
@@ -175,7 +175,7 @@ class AUV_Receive(threading.Thread):
                             self.time_since_last_ping = time.time()
                             # print("ping if statement")
                             # print(line)
-                            print("lock acquired 173")
+                            #print("lock acquired 173")
 
                             lock.acquire()
                             if connected is False:
@@ -187,7 +187,7 @@ class AUV_Receive(threading.Thread):
                                 self.x(data)
                             lock.release()
 
-                            print("lock released 173")
+                            #print("lock released 173")
 
                         else:
                             # Line was read, but it was not equal to a BS_PING
@@ -223,7 +223,7 @@ class AUV_Receive(threading.Thread):
                                     x = -x
                                 if ysign == 1:
                                     y = -y
-                                print("Xbox Command:", x, y)
+                                #print("Xbox Command:", x, y)
 
                                 self.motor_queue.put((x, y, 1))
 
