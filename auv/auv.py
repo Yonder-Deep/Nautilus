@@ -24,7 +24,7 @@ RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Contr
 IMU_PATH = '/dev/serial0'
 PING = 0xFFFFFF
 SEND_SLEEP_DELAY = 1
-RECEIVE_SLEEP_DELAY = 0.2
+RECEIVE_SLEEP_DELAY = 0.1
 PING_SLEEP_DELAY = 3
 CONNECTION_TIMEOUT = 6
 
@@ -122,7 +122,6 @@ class AUV_Receive(threading.Thread):
         count = 0
         log("Starting main connection loop.")
         while True:
-            print("hi")
             time.sleep(RECEIVE_SLEEP_DELAY)
 
             # Always try to update connection status.
@@ -154,7 +153,6 @@ class AUV_Receive(threading.Thread):
                     pass
             else:
                 try:
-                    print("157")
                     # Read seven bytes (3 byte message, 4 byte checksum)
                     line = self.radio.read(7)
 
@@ -163,8 +161,8 @@ class AUV_Receive(threading.Thread):
                     while(line != b'' and len(line) == 7):
                         # print("Line read ", line)
                         intline = int.from_bytes(line, "big")
-                        print("read line")
-                        print("Line:", intline)
+                        #print("read line")
+                        #print("Line:", intline)
                         checksum = Crc32.confirm(intline)
                         if not checksum:
                             log("invalid line")
@@ -240,7 +238,6 @@ class AUV_Receive(threading.Thread):
 
                     # end while
                     self.radio.flush()
-                    print("End of loop")
 
                 except Exception as e:
                     log("Error: " + str(e))
