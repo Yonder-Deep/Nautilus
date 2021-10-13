@@ -126,15 +126,19 @@ class AUV_Receive(threading.Thread):
 
             # Always try to update connection status.
             if time.time() - self.time_since_last_ping > CONNECTION_TIMEOUT:
-                print("lock acquired 129")
                 lock.acquire()
                 # Line read was EMPTY, but 'before' connection status was successful? Connection verification failed.
                 if connected is True:
                     log("Lost connection to BS.")
 
                     # reset motor speed to 0 immediately and flush buffer
-                    self.mc.update_motor_speeds([0, 0, 0, 0])  # TODO: resurface
-                    log("DEBUG TODO speeds reset")
+                    self.mc.update_motor_speeds([0, 0, 0, 0])
+
+                    # resurface TODO
+                    # monitor depth at surface
+                    # turn upwards motors on until we've reached okay depth range OR
+                    # until radio is connected
+                    # while()
 
                     # enforce check in case radio is not found
                     if self.radio is not None:
@@ -143,7 +147,6 @@ class AUV_Receive(threading.Thread):
                     connected = False
 
                 lock.release()
-                print("lock released 129")
 
             if self.radio is None or self.radio.is_open() is False:
                 try:  # Try to connect to our devices.
