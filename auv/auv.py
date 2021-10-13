@@ -164,8 +164,10 @@ class AUV_Receive(threading.Thread):
                         # print("Line read ", line)
                         intline = int.from_bytes(line, "big")
                         print("read line")
+                        print("Line:", intline)
                         checksum = Crc32.confirm(intline)
                         if not checksum:
+                            log("invalid line")
                             continue
                         intline = intline >> 32
                         if intline == 0xFFFFFF:  # We have a ping!
