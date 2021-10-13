@@ -168,6 +168,8 @@ class AUV_Receive(threading.Thread):
                         checksum = Crc32.confirm(intline)
                         if not checksum:
                             log("invalid line")
+                            self.radio.flush()
+                            self.mc.update_motor_speeds([0, 0, 0, 0])
                             continue
                         intline = intline >> 32
                         if intline == 0xFFFFFF:  # We have a ping!
