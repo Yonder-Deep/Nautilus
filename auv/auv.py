@@ -138,14 +138,25 @@ class AUV_Receive(threading.Thread):
                     # monitor depth at surface
                     # turn upwards motors on until we've reached okay depth range OR
                     # until radio is connected
-                    # while()
+                    # have default be >0 to keep going up if pressure_sensor isn't there for some reason
+                    depth = 400  # number comes from depth of Isfjorden (not sure if this is actually where we'll be)
 
                     # enforce check in case radio is not found
                     if self.radio is not None:
                         self.radio.flush()
 
                     connected = False
-
+                
+                if self.pressure_sensor is not None:
+                    self.pressure_sensor.read()
+                    # defaults to mbars
+                    pressure = self.pressure_sensor.pressure()
+                    depth = (pressure-1013.25)/1000 * 10.2
+                # Turn upwards motors on until surface reached (if we haven't reconnected yet)
+                if depth > 0:  # TODO: Decide on acceptable depth range
+                    self.mc.update_motor_speeds([0, 0, 125, 125]) # TODO: Figure out which way is up
+                else:
+                    self.mc.update_motor_speeds([0, 0, 0, 0])
                 lock.release()
 
             if self.radio is None or self.radio.is_open() is False:
@@ -188,6 +199,8 @@ class AUV_Receive(threading.Thread):
                                 # TODO test case: set motor speeds
                                 data = [1, 2, 3, 4]
                                 self.x(data)
+                                # Halt disconnected resurfacing
+                                self.mc.update_motor_speeds([0, 0, 0, 0])
                             lock.release()
 
                             #print("lock released 173")
