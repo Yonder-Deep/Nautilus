@@ -41,8 +41,17 @@ def decode_command(self_obj, header, line):
     remain = line & 0x1FFFFF
     if header == POSITION_DATA:
         data = remain & 0x7FFFF
-        x = data >> 9
+        x = data >> 10
+        x_sign = (x & 0x200) >> 9
         y = data & 0x1FF
+        y_sign = (y & 0x200) >> 9
+
+        x &= 0x1FF
+        y &= 0x1FF
+
+        x = -x if x_sign else x
+        y = -y if y_sign else y
+
         # TODO: Update gui
         print("x: " + str(int(x)))
         print("y: " + str(int(y)))

@@ -38,6 +38,7 @@ DEPTH_DATA = 0b011
 DEPTH_ENCODE = DEPTH_DATA << 21
 HEADING_ENCODE = HEADING_DATA << 17
 MISC_ENCODE = MISC_DATA << 21
+POSITION_ENCODE = POSITION_DATA << 21
 
 MAX_TIME = 600
 MAX_ITERATION_COUNT = MAX_TIME / SEND_SLEEP_DELAY / 7
@@ -371,6 +372,20 @@ class AUV_Send_Data(threading.Thread):
                         self.radio.write(temperature_encode, 3)
                         radio_lock.release()
 
+                        # Positioning
+                        x,y = 0,0
+                        x_bits = abs(x) & 0x1F
+                        y_bits = abs(y) & 0x1F
+
+                        x_sign = 0 if x >= 0 else 1
+                        y_sign = 0 if y >= 0 else 1
+
+                        x_bits = x_bits | x_sign << 9
+                        y_bits = y_bits | y_sign << 9
+                        position_encode = (POSITION_ENCODE | x_bits << 10 | y_bits)
+                        radio_lock.acquire()
+                        self.radio.write(position_encode, 3)
+                        radio_lock.release()
 
                     else:
                         lock.release()
