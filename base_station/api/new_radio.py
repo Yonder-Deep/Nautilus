@@ -2,7 +2,6 @@
 The radio class enables communication over wireless serial radios.
 """
 import serial
-from .crc32 import Crc32
 TIMEOUT_DURATION = 0
 DEFAULT_BAUDRATE = 115200
 
@@ -22,48 +21,30 @@ class Radio():
                                  timeout=TIMEOUT_DURATION
                                  )
 
-    def write(self, message):
+    def write(self, hex_string):
         """
         Sends provided message over serial connection.
 
-        message: A string message that is sent over serial connection.
+        hex_string: A hexadecimal string that is sent over serial connection.
         """
-        # Process different types of messages
-        if isinstance(message, str):
-            encoded = str.encode(message + "\n")
-            self.ser.write(encoded)
 
-        elif isinstance(message, int):
+        if hex_string == 'PING':
+            hex_string = "F" # 1111 => ping command
 
-            # print("bytes written")
-            message = Crc32.generate(message)
-            byte_arr = message.to_bytes(7, 'big')
-            self.ser.write(byte_arr)
-
-    def readlines(self):
-        """
-        Returns an array of lines
-        """
-        lines = self.ser.readlines()
-        return [line.decode('utf-8').replace("\n", "") for line in lines]
+        byte_string = bytes.fromhex(hex_string)
+        self.ser.write(byte_string)
 
     def read_bytes(self):
         """
         Reads all bytes in buffer.
         """
-        return self.ser.read(self.ser.in_waiting)
+        return self.ser.read(size=self.ser.in_waiting)
 
     def read(self, n_bytes=1):
         """
         Returns array of bytes
         """
-        return self.ser.read(n_bytes)
-
-    def readline(self):
-        """
-        Returns a string from the serial connection.
-        """
-        return self.ser.readline().decode('utf-8').replace("\n", "")
+        return self.ser.read(size=n_bytes)
 
     def is_open(self):
         """

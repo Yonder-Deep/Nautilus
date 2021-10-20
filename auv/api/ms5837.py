@@ -88,6 +88,8 @@ class MS5837(object):
             print("No bus!")
             return False
 
+        print("init successful") #TODO
+
         self._bus.write_byte(self._MS5837_ADDR, self._MS5837_RESET)
 
         # Wait for reset to complete
