@@ -404,14 +404,10 @@ class AUV_Send_Data(threading.Thread):
                             radio_lock.acquire()
                             self.radio.write(depth_encode, 3)
                             radio_lock.release()
-<<<<<<< HEAD
                         # Temperature radio
                         whole_temperature = int(temperature)
                         sign = 0
                         if whole_temperature < 0:
-=======
-                        #Temperature radio 
->>>>>>> develop
                             sign = 1
                             whole_temperature *= -1
                         whole_temperature = whole_temperature << 5
