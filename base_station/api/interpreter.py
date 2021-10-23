@@ -50,7 +50,7 @@ def decode_command(self_obj, header, line):
         data = remain & 0x1FFFF
         whole = data >> 7
         decimal = data & 0x7F
-        decimal  /= 100
+        decimal /= 100
         heading = whole + decimal
         self_obj.out_q.put("set_heading(" + str(heading) + ")")
     elif header == COMBINATION_DATA:
@@ -69,6 +69,12 @@ def decode_command(self_obj, header, line):
         print("Movement status: " + str(int(mvmt)))
         print("Mission status: " + str(int(mission_stat)))
         print("Flooded: " + str(int(flooded)))
+
+        self_obj.out_q.put("set_battery_voltage(" + str(battery) + ")")
+        self_obj.out_q.put("set_flooded(" + str(flooded) + ")")
+        self_obj.out_q.put("set_movement(" + str(mvmt) + ")")
+        self_obj.out_q.put("set_mission_status(" + str(battery) + ")")
+
     elif header == DEPTH_DATA:
         data = remain & 0x7FF
         whole = data >> 4

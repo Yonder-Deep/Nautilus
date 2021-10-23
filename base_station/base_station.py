@@ -111,8 +111,24 @@ class BaseStation_Receive(threading.Thread):
 
         self.main.log("Controller is connected.")
 
-    def auv_data(self, heading, temperature, pressure, longitude=None, latitude=None):
+    def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
+
+        # Update movement status on BS and on GUI
+        self.auv_movement = movement
+        self.out_q.put("set_movement("+str(movement)+")")
+
+        # Update mission status on BS and on GUI
+        self.auv_mission = mission
+        self.out_q.put("set_mission_status("+str(mission)+")")
+
+        # Update flooded status on BS and on GUI
+        self.auv_flooded = flooded
+        self.out_q.put("set_flooded("+str(flooded)+")")
+
+        # Update control status on BS and on GUI
+        self.auv_control = control
+        self.out_q.put("set_control("+str(control)+")")
 
         # Update heading on BS and on GUI
         self.auv_heading = heading
