@@ -17,8 +17,6 @@ FRONT_GPIO_PIN = 18  # 4
 BACK_GPIO_PIN = 24  # 11
 
 
-
-
 # Define pin numbers for PI (Not the same as GPIO?)
 FORWARD_PI_PIN = 7          # Left pins
 TURN_PI_PIN = 23            # Right pins
@@ -194,7 +192,8 @@ class MotorController:
         io.setmode(io.BOARD)
         for pins in self.pi_pins:
             io.setup(pins, io.IN)
-            log("Pin:", pins, io.input(pins))
+            print("Pin: ", pins, io.input(pins))
+            #log("Pin:", pins, io.input(pins))
 
     def calculate_pid_new_speed(self, feedback):
         # Case 1: Going backward
@@ -207,6 +206,7 @@ class MotorController:
 
 def main():
     mc = MotorController()
+    mc.test_all()
 
 
 if __name__ == '__main__':
