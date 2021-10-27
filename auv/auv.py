@@ -450,14 +450,14 @@ class AUV_Send_Data(threading.Thread):
 
                         # Positioning
                         x,y = 0,0
-                        x_bits = abs(x) & 0x1F
-                        y_bits = abs(y) & 0x1F
+                        x_bits = abs(x) & 0x1FF
+                        y_bits = abs(y) & 0x1FF
 
                         x_sign = 0 if x >= 0 else 1
                         y_sign = 0 if y >= 0 else 1
 
-                        x_bits = x_bits | x_sign << 9
-                        y_bits = y_bits | y_sign << 9
+                        x_bits = x_bits | (x_sign << 9)
+                        y_bits = y_bits | (y_sign << 9)
                         position_encode = (POSITION_ENCODE | x_bits << 10 | y_bits)
                         radio_lock.acquire()
                         self.radio.write(position_encode, 3)
