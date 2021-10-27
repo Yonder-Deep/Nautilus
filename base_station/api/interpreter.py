@@ -52,7 +52,7 @@ def decode_command(self_obj, header, line):
         x = -x if x_sign else x
         y = -y if y_sign else y
 
-        # TODO: Update gui
+        # TODO:  Update gui
         print("x: " + str(int(x)))
         print("y: " + str(int(y)))
     elif header == HEADING_DATA:
