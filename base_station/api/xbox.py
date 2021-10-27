@@ -1,5 +1,31 @@
+""" Xbox 360 controller support for Python
+11/9/13 - Steven Jacobs
+
+This class module supports reading a connected Xbox controller under Python 2 and 3.
+
+You'll need to first install xboxdrv:
+
+    sudo apt-get install xboxdrv
+
+See http://pingus.seul.org/~grumbel/xboxdrv/ for details on xboxdrv
+
+Example usage:
+
+    import xbox
+    joy = xbox.Joystick()         #Initialize joystick
+    
+    if joy.A():                   #Test state of the A button (1=pressed, 0=not pressed)
+        print 'A button pressed'
+    x_axis   = joy.leftX()        #X-axis of the left stick (values -1.0 to 1.0)
+    (x,y)    = joy.leftStick()    #Returns tuple containing left X and Y axes (values -1.0 to 1.0)
+    trigger  = joy.rightTrigger() #Right trigger position (values 0 to 1.0)
+    
+    joy.close()                   #Cleanup before exit
+
+All controller buttons are supported.  See code for all functions.
+"""
+
 import subprocess
-import os
 import select
 import time
 
@@ -17,9 +43,8 @@ class Joystick:
     """
 
     def __init__(self, refreshRate=30):
-        self.proc = subprocess.Popen(['xboxdrv', '--no-uinput', '--detach-kernel-driver'], stdout=subprocess.PIPE)
+        self.proc = subprocess.Popen(['xboxdrv', '--no-uinput', '--detach-kernel-driver'], stdout=subprocess.PIPE, bufsize=0)
         self.pipe = self.proc.stdout
-
         #
         self.connectStatus = False  # will be set to True once controller is detected and stays on
         self.reading = '0' * 140  # initialize stick readings to all zeros
@@ -29,19 +54,16 @@ class Joystick:
         #
         # Read responses from 'xboxdrv' for upto 2 seconds, looking for controller/receiver to respond
         found = False
-        waitTime = time.time() + 10
+        waitTime = time.time() + 2
         while waitTime > time.time() and not found:
             readable, writeable, exception = select.select([self.pipe], [], [], 0)
             if readable:
                 response = self.pipe.readline()
-                if (len(response) > 0):
-                    print("Found Response: ", response)
-
                 # Hard fail if we see this, so force an error
-                if response[0:7] == 'No Xbox':
+                if response[0:7] == b'No Xbox':
                     raise IOError('No Xbox controller/receiver found')
                 # Success if we see the following
-                if response[0:12].lower() == 'press ctrl-c':
+                if response[0:12].lower() == b'press ctrl-c':
                     found = True
                 # If we see 140 char line, we are seeing valid input
                 if len(response) == 140:
@@ -230,4 +252,4 @@ class Joystick:
 
     # Cleanup by ending the xboxdrv subprocess
     def close(self):
-        os.system('pkill xboxdrv')
+        self.proc.kill()

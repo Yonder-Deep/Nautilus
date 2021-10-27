@@ -17,7 +17,7 @@ from queue import Queue
 from api import Crc32
 from api import Radio
 from api import Joystick
-from api import Xbox
+from api import xbox
 from api import NavController
 from api import GPS
 from api import decode_command
@@ -40,6 +40,7 @@ MAX_TURN_SPEED = 50
 
 # Navigation Encoding
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
+XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 
 # determines if connected to BS
@@ -56,7 +57,6 @@ class BaseStation_Receive(threading.Thread):
         # Call super-class constructor
         # Instance variables
         self.radio = None
-        self.joy = None
         self.nav_controller = None
         self.gps = None
         self.in_q = in_q
@@ -81,26 +81,6 @@ class BaseStation_Receive(threading.Thread):
                 "Warning: Cannot find radio device. Ensure RADIO_PATH is correct.")
 
         # Try to connect our Xbox 360 controller.
-
-# XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-        try:
-            print("case0")
-            self.joy = Xbox()
-            print("case1")
-
-            # self.joy = Joystick()
-            self.log("Successfuly found Xbox 360 controller.")
-            print("case2")
-
-            self.nav_controller = NavController(self.joy)
-            print("case3")
-
-            self.log("Successfully created a Navigation with Controller object.")
-            print("case4")
-
-        except Exception as e:  # TODO
-            self.log(str(e))
-            self.log("Warning: Cannot find Xbox 360 controller.")
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
@@ -302,23 +282,24 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
         try:
-            print("case0")
-            self.joy = Xbox()
+            print("case0-----------------")
+            self.joy = xbox.Joystick()
             print("case1")
 
-            # self.joy = Joystick()
             self.log("Successfuly found Xbox 360 controller.")
             print("case2")
+        except:
+            self.log("Warning: Cannot find xbox controller")
 
+        try:
             self.nav_controller = NavController(self.joy)
             print("case3")
 
             self.log("Successfully created a Navigation with Controller object.")
             print("case4")
+        except:
+            self.log("Warning: Cannot find nav controller")
 
-        except Exception as e:  # TODO
-            self.log(str(e))
-            self.log("Warning: Cannot find Xbox 360 controller.")
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
@@ -387,6 +368,9 @@ class BaseStation_Send(threading.Thread):
         """ Main sending threaded loop for the base station. """
         global connected
         global lock
+
+        xbox_input = False
+
         # Begin our main loop for this thread.
         while True:
             time.sleep(THREAD_SLEEP_DELAY)
@@ -396,7 +380,7 @@ class BaseStation_Send(threading.Thread):
             if self.joy is None:
                 try:
                     # print("Creating joystick. 5 seconds...")
-                    # self.joy = Joystick() TODO
+                    # self.joy = Joystick() TODO remove
                     self.nav_controller = NavController(self.joy)
                     # print("Done creating.")
                 except Exception as e:
@@ -431,13 +415,48 @@ class BaseStation_Send(threading.Thread):
                     lock.acquire()
                     if connected and self.manual_mode:
                         lock.release()
-                        if self.joy is not None:  # and self.joy.connected() and self.nav_controller is not None:
+                        if self.joy is not None and self.joy.A():  # and self.joy.connected() and self.nav_controller is not None:
+                            xbox_input = True
+
                             try:
-                                self.nav_controller.handle()
+                                # self.nav_controller.handle()
                                 #self.radio.write("x(" + str(self.nav_controller.get_data()) + ")")
-                                print("[XBOX]\t" + str(self.nav_controller.get_data()))
+                                print("[XBOX] X:", self.joy.leftX())
+                                print("[XBOX] Y:", self.joy.leftY())
+                                print("[XBOX] A\t")
+
+                                x = round(self.joy.leftX()*100)
+                                y = round(self.joy.leftY()*100)
+
+                                xsign = 0
+                                ysign = 0
+
+                                if x < 0:
+                                    xsign = 1
+                                    x *= -1
+                                if y < 0:
+                                    ysign = 1
+                                    y *= -1
+
+                                xshift = x << 8
+                                xsign = xsign << 15
+                                ysign = ysign << 7
+                                navmsg = XBOX_ENCODE | xsign | xshift | ysign | y
+
+                                radio_lock.acquire()
+                                self.radio.write(navmsg)
+                                radio_lock.release()
+
                             except Exception as e:
                                 self.log("Error with Xbox data: " + str(e))
+
+                        # once A is no longer held, send one last zeroed out xbox command
+                        if xbox_input and not self.joy.A():
+                            radio_lock.acquire()
+                            self.radio.write(XBOX_ENCODE)
+                            radio_lock.release()
+                            print("[XBOX] NO LONGER A\t")
+                            xbox_input = False
                     else:
                         lock.release()
                 except Exception as e:

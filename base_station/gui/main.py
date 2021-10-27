@@ -573,7 +573,6 @@ class Main():
                                            pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE+5), command=lambda: self.confirm_mission(int(prompt_input_depth.get()), int(prompt_input_time.get())))
         self.start_mission_button.pack(expand=YES)
         self.start_mission_button.place(relx=0.1, rely=0.65)
-
         self.abort_button = Button(self.mission_frame, text="ABORT MISSION", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT - 10,
                                    padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=self.abort_mission)
         self.abort_button.pack(expand=YES)
