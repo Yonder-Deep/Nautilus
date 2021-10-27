@@ -47,14 +47,23 @@ class Motor:
         """
 
         self.set_speed(MAX_SPEED / 6)
-        time.sleep(1)
+        time.sleep(0.1)
         self.set_speed(0)
 
 
 def main():
-    motor = Motor(4, pigpio.pi())
-    motor.test_motor()
+    pi = pigpio.pi()
+    while True:
+        for i in range(50):
+            try:
+                motor = Motor(i, pi)
+                motor.test_motor()
+                print("Motor: {}".format(str(i)))
+            except:
+                print("Skipped: {}".format(str(i)))
 
 
 if __name__ == '__main__':
+    #motor = Motor(23, pigpio.pi())
+    #time.sleep(3)
     main()

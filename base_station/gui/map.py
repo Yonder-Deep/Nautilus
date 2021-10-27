@@ -2,6 +2,7 @@
 # Begin imports for MatplotLib
 from tkinter import *
 from matplotlib.pyplot import scatter
+from matplotlib.pyplot import plot
 from matplotlib.lines import Line2D
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -14,7 +15,7 @@ matplotlib.use('TkAgg')
 
 # Object & Map Constants
 DEFAULT_FIGURE_SIZE = 30  # Window Size
-DEFAULT_GRID_SIZE = 1000  # Grid Size in Meters
+DEFAULT_GRID_SIZE = 550  # Grid Size in Meters
 
 # String Constants
 KILOMETERS = "Kilometers (km)"
@@ -40,7 +41,7 @@ ZOOM_SCALAR = 1.15
 CLOSE_ENOUGH = 0.25
 
 # Popup Window Contstants
-PROMPT_WINDOW_WIDTH = 600
+PROMPT_WINDOW_WIDTH = 620
 PROMPT_WINDOW_HEIGHT = 400
 
 # Font Constants
@@ -75,11 +76,10 @@ class Map:
         self.fig = self.init_fig()
         self.map = self.init_map()
         self.canvas = self.init_canvas()
-
         # Start listening for mouse-clicks
-        self.fig.canvas.mpl_connect('button_press_event',   self.on_press)
-        self.fig.canvas.mpl_connect('button_release_event', self.on_release)
-        self.fig.canvas.mpl_connect('motion_notify_event',  self.on_move)
+        #self.fig.canvas.mpl_connect('button_press_event',   self.on_press)
+        #self.fig.canvas.mpl_connect('button_release_event', self.on_release)
+        #self.fig.canvas.mpl_connect('motion_notify_event',  self.on_move)
 
         # Assign default values.
         self.set_range()  # Set to default range
@@ -93,19 +93,8 @@ class Map:
         PROMPT_WINDOW_HEIGHT = int(PROMPT_WINDOW_HEIGHT * self.main.multiplier_y)
         FONT_SIZE = int(FONT_SIZE * self.main.multiplier_x)
 
-        # Add random data to test line/path functionality.
-        # self.add_auv_data(100, 100)
-        # self.add_auv_data(110, 105)
-        # self.add_auv_data(130, 109)
-        # self.add_auv_data(200, 225)
-        # self.add_auv_data(240, 250)
-        # self.add_auv_data(350, 330)
-        # self.add_auv_data(360, 200)
-        # self.add_auv_data(370, 260)
-        # self.add_auv_data(360, 230)
-        # self.add_auv_data(350, 200)
-        # self.clear()
         self.draw_canvas()
+        self.add_waypoint(0, 0)
 
     def clear(self):
         """ Clears the map data """
@@ -124,24 +113,24 @@ class Map:
         self.auv_data[0].clear()  # clear all x values
         self.auv_data[1].clear()  # clear all y values
 
-    def undraw_waypoints(self):
-        """ Clears waypoints from the map """
-        for waypoint in self.waypoints:
-            # Remove waypoint from map.
-            if waypoint[3] != None and type(waypoint[3]) != tuple:
-                waypoint[3].pop(0).remove()
-                waypoint[3] = None
+    # def undraw_waypoints(self):
+    #     """ Clears waypoints from the map """
+    #     for waypoint in self.waypoints:
+    #         # Remove waypoint from map.
+    #         if waypoint[3] != None and type(waypoint[3]) != tuple:
+    #             waypoint[3].pop(0).remove()
+    #             waypoint[3] = None
 
-            if waypoint[4] != None:
-                waypoint[4].remove()
-                waypoint[4] = None
+    #         if waypoint[4] != None:
+    #             waypoint[4].remove()
+    #             waypoint[4] = None
 
-        self.draw_canvas()
+    #     self.draw_canvas()
 
-    def clear_waypoints(self):
-        """ Clears and removes waypoints """
-        self.undraw_waypoints()
-        del self.waypoints[:]
+    # def clear_waypoints(self):
+    #     """ Clears and removes waypoints """
+    #     self.undraw_waypoints()
+    #     del self.waypoints[:]
 
     def zero_map(self, x=0, y=0):
         """ Sets the origin of our coordinate system to (x,y) in UTM northing/eastings values"""
@@ -184,15 +173,15 @@ class Map:
 
             self.draw_canvas()
 
-    def redraw_waypoints(self):
-        """ Undraws waypoint and redraws a waypoint """
-        self.undraw_waypoints()
-        for waypoint in self.waypoints:
-            # Draw waypoint again.
-            waypoint[3] = self.map.plot(
-                waypoint[0], waypoint[1], marker='o', markersize=5, color="red"),
-            waypoint[4] = self.map.annotate(xy=(waypoint[0], waypoint[1]), s=waypoint[2] + ", UTM: (" +
-                                            str(round(waypoint[0]+self.zero_offset_x, 5))+","+str(round(waypoint[1]+self.zero_offset_y, 5))+")")
+    # def redraw_waypoints(self):
+    #     """ Undraws waypoint and redraws a waypoint """
+    #     self.undraw_waypoints()
+    #     for waypoint in self.waypoints:
+    #         # Draw waypoint again.
+    #         waypoint[3] = self.map.plot(
+    #             waypoint[0], waypoint[1], marker='o', markersize=5, color="red"),
+    #         waypoint[4] = self.map.annotate(xy=(waypoint[0], waypoint[1]), s=waypoint[2] + ", UTM: (" +
+    #                                         str(round(waypoint[0]+self.zero_offset_x, 5))+","+str(round(waypoint[1]+self.zero_offset_y, 5))+")")
 
         # Redraw canvas.
         self.draw_canvas()
@@ -310,6 +299,11 @@ class Map:
         self.auv_data[1].append(y)
         self.draw_auv_path()
 
+    def blinking_dot(self, i=0):
+        colors = (AUV_PATH_COLOR, "red")
+        self.canvas.itemconfigure(self.auv_path_obj, fill=colors[i])
+        self.canvas.after(250, self.auv_path_obj, 1-i)
+
     def draw_auv_path(self):
         print("[MAP] Drawing (really re-drawing) AUV path.")
 
@@ -323,6 +317,12 @@ class Map:
 
         # Re-draw the canvas.
         self.draw_canvas()
+
+    # need to see where to put this and what its parameters are
+    # def blinking_dot(i=0):
+    #     colors = (AUV_PATH_COLOR, "red")
+    #     self.canvas.itemconfigure(self.auv_path_obj, fill=colors[i])
+    #     self.canvas.after(250, self.auv_path_obj, 1-i)
 
     def draw_canvas(self):
         return self.canvas.draw()
@@ -377,7 +377,6 @@ class Map:
 
         return graph
 
-
     def nav_to_waypoint(self):
         print("[MAP] Opening nav-to-waypoint prompt.")
         prompt_window = Toplevel(self.window)
@@ -393,7 +392,6 @@ class Map:
         prompt_window.wm_attributes('-topmost')
         Label(prompt_window, text="Waypoint", font=(FONT, FONT_SIZE)).grid(row=1)
 
-
         buttonList = list()
 
         # creates combo box of waypoints
@@ -402,8 +400,8 @@ class Map:
 
         self.waypoint_list.grid(row=2, column=0, padx=5, pady=5)
 
-
         # saves the selected waypoint when save is pressed
+
         def set_waypoint():
             self.nav_x = self.waypoints[self.waypoint_list.current()][0]
             self.nav_y = self.waypoints[self.waypoint_list.current()][1]
@@ -419,19 +417,14 @@ class Map:
 
         prompt_submit.grid(row=3, column=0, padx=5, pady=5)
 
-
     def add_waypoint(self, x=0, y=0, label="My Waypoint"):
-        self.main.log("Added waypoint \"" + label + "\" at map-position (" + str(int(x)) + ", " + str(int(y)) + ") " +
-                      "with utm-coordinates (" + str(int(float(x)+self.zero_offset_x)) + ", " + str(int(float(y)+self.zero_offset_y)) + ").")
-
         # The code below should never fail (that would be a big problem).
         self.waypoints.append([
             x, y,
             label,
             self.map.plot(x, y, marker='o', markersize=5,
                           color=WAYPOINT_COLOR, label=label),
-            self.map.annotate(xy=(x, y), s=label + ", UTM: ("+str(round(float(
-                x)+self.zero_offset_x, 5))+","+str(round(float(y)+self.zero_offset_y, 5))+")")
+            self.map.annotate(xy=(x, y), s="AUV")
         ])
 
         self.draw_canvas()
