@@ -94,7 +94,7 @@ class Map:
         FONT_SIZE = int(FONT_SIZE * self.main.multiplier_x)
 
         self.draw_canvas()
-        self.add_waypoint(0,0)
+        self.add_waypoint(0, 0)
 
     def clear(self):
         """ Clears the map data """
@@ -424,8 +424,7 @@ class Map:
             label,
             self.map.plot(x, y, marker='o', markersize=5,
                           color=WAYPOINT_COLOR, label=label),
-            self.map.annotate(xy=(x, y), s=label + ", UTM: ("+str(round(float(
-                x)+self.zero_offset_x, 5))+","+str(round(float(y)+self.zero_offset_y, 5))+")")
+            self.map.annotate(xy=(x, y), s="AUV")
         ])
 
         self.draw_canvas()
