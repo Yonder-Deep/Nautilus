@@ -460,6 +460,7 @@ class AUV_Send_Data(threading.Thread):
                         y_bits = y_bits | (y_sign << 9)
                         position_encode = (POSITION_ENCODE | x_bits << 10 | y_bits)
                         radio_lock.acquire()
+                        print(bin(position_encode))
                         self.radio.write(position_encode, 3)
                         radio_lock.release()
 
