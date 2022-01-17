@@ -136,7 +136,7 @@ class AUV_Receive(threading.Thread):
 
         count = 0
         log("Starting main connection loop.")
-        while self._ev.wait(timeout=RECEIVE_SLEEP_DELAY):
+        while not self._ev.wait(timeout=RECEIVE_SLEEP_DELAY):
             #time.sleep(RECEIVE_SLEEP_DELAY)
 
             # Always try to update connection status.
