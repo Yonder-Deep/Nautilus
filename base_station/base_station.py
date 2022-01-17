@@ -593,7 +593,8 @@ class BaseStation(threading.Thread):
         self.log("Successfully started mission " + str(index))
 
 
-def main():
+
+if __name__ == '__main__':
     """ Main method responsible for developing the main objects used during runtime
     like the BaseStation and Main objects. """
 
@@ -602,10 +603,16 @@ def main():
     to_BS = Queue()
 
     # Create a BS (base station) and GUI object thread.
+    #ts = []
+
     try:
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
         bs_ping_thread = BaseStation_Send_Ping()
+
+        #ts.append(bs_r_thread)
+        #ts.append(bs_s_thread)
+        #ts.append(bs_ping_thread)
 
         bs_r_thread.start()
         bs_s_thread.start()
@@ -618,10 +625,7 @@ def main():
     # Create main GUI object
     try:
         gui = Main(to_GUI, to_BS)
+        gui.root.mainloop()
     except KeyboardInterrupt:
         print("CLOSING")
         quit()
-
-
-if __name__ == '__main__':
-    main()
