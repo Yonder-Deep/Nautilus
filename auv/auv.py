@@ -66,7 +66,7 @@ class AUV_Receive(threading.Thread):
         self.pressure_sensor = None
         self.imu = None
         self.mc = MotorController()
-        self.time_since_last_ping = 0.0
+        self.time_since_last_ping = time.time() + 4
         self.current_mission = None
         self.timer = 0
         self.motor_queue = queue
