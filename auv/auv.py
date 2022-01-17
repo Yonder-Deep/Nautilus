@@ -36,7 +36,7 @@ TEMP_DATA = 0b10011
 DEPTH_DATA = 0b011
 
 DEPTH_ENCODE = DEPTH_DATA << 21
-HEADING_ENCODE = HEADING_DATA << 17
+HEADING_ENCODE = HEADING_DATA << 21
 MISC_ENCODE = MISC_DATA << 21
 POSITION_ENCODE = POSITION_DATA << 21
 
@@ -169,7 +169,7 @@ class AUV_Receive(threading.Thread):
                     depth = (pressure-1013.25)/1000 * 10.2
                 # Turn upwards motors on until surface reached (if we haven't reconnected yet)
                 if depth > 0:  # TODO: Decide on acceptable depth range
-                    self.mc.update_motor_speeds([0, 0, 125, 125])  # TODO: Figure out which way is up
+                    self.mc.update_motor_speeds([0, 0, -25, -25])  # TODO: Figure out which way is up
                 else:
                     self.mc.update_motor_speeds([0, 0, 0, 0])
                 lock.release()
@@ -362,7 +362,7 @@ class AUV_Receive(threading.Thread):
         # Dive
         depth = self.get_depth()
         start_time = time.time()
-        self.mc.update_motor_speeds([0, 0, -DEF_DIVE_SPD, -DEF_DIVE_SPD])
+        self.mc.update_motor_speeds([0, 0, DEF_DIVE_SPD, DEF_DIVE_SPD])
         # Time out and stop diving if > 1 min
         while depth < to_depth and time.time() < start_time + 60:
             try:
@@ -442,9 +442,12 @@ class AUV_Send_Data(threading.Thread):
         except:
             log("Pressure sensor is not connected to the AUV.")
 
-        self.imu = IMU.BNO055(serial_port='/dev/serial0', rst=18)
+        self.imu = IMU.BNO055(serial_port=IMU_PATH, rst=18)
         log("IMU has been found.")
-
+        # TODO copied over from example code
+        #if not self.imu.begin():                                                             
+        #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+        
         try:
             self.radio = Radio(RADIO_PATH)
             log("Radio device has been found.")
@@ -484,22 +487,21 @@ class AUV_Send_Data(threading.Thread):
                         if self.imu is not None:
                             try:
                                 heading, _, _ = self.imu.read_euler()
-                                #print('HEADING=', heading)
+                                print('HEADING=', heading)
 
                                 temperature = self.imu.read_temp()
-                                #print('TEMPERATURE=', temperature)
+                                print('TEMPERATURE=', temperature)
 
                             except:
                                 # TODO print statement, something went wrong!
                                 heading = 0
                                 temperature = 0
-                                #self.radio.write(str.encode("log(\"[AUV]\tAn error occurred while trying to read heading and temperature.\")\n"))
+                                self.radio.write(str.encode("log(\"[AUV]\tAn error occurred while trying to read heading and temperature.\")\n"))
                             split_heading = math.modf(heading)
                             decimal_heading = int(round(split_heading[0], 2) * 100)
                             whole_heading = int(split_heading[1])
                             whole_heading = whole_heading << 7
                             heading_encode = (HEADING_ENCODE | whole_heading | decimal_heading)
-
                             radio_lock.acquire()
                             self.radio.write(heading_encode, 3)
                             radio_lock.release()
