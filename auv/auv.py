@@ -71,6 +71,10 @@ class AUV_Receive(threading.Thread):
         self.timer = 0
         self.motor_queue = queue
         self.halt = halt               # List for MotorQueue to check updated halt status
+        # Get all non-default callable methods in this class
+        self.methods = [m for m in dir(AUV_Receive) if not m.startswith('__')]
+
+        self._ev = threading.Event()
         threading.Thread.__init__(self)
 
     def run(self):
