@@ -42,6 +42,7 @@ MAX_TURN_SPEED = 50
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
+DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
 
 # Action Encodings
 HALT = 0b010
@@ -218,10 +219,13 @@ class BaseStation_Receive(threading.Thread):
                     while(line != b'' and len(line) == 7):
                         print('read line')
                         intline = int.from_bytes(line, "big")
-                        # intline = int(line,2)
+
                         checksum = Crc32.confirm(intline)
+
                         if not checksum:
-                            continue
+                            print('invalid line*************')
+                            break
+
                         intline = intline >> 32
                         header = intline >> 21     # get first 3 bits
                         # PING case
@@ -235,6 +239,7 @@ class BaseStation_Receive(threading.Thread):
                             lock.release()
                         # Data cases
                         else:
+                            print("HEADER_STR", header)
                             decode_command(self, header, intline)
 
                         line = self.radio.read(7)
@@ -385,6 +390,19 @@ class BaseStation_Send(threading.Thread):
 
     def send_download_data(self):
         self.start_mission(DL_DATA, 0, 0)
+
+    def send_dive(self, depth):
+        lock.acquire()
+        if connected is False:
+            lock.release()
+            self.log("Cannot dive because there is no connection to the AUV.")
+        else:
+            lock.release()
+            radio_lock.acquire()
+            self.radio.write(DIVE_ENCODE | depth)
+            print(bin(DIVE_ENCODE | depth))
+            radio_lock.release()
+            self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
 
     def run(self):
         """ Main sending threaded loop for the base station. """
@@ -577,7 +595,7 @@ class BaseStation(threading.Thread):
         self.log("Successfully started mission " + str(index))
 
 
-def main():
+if __name__ == '__main__':
     """ Main method responsible for developing the main objects used during runtime
     like the BaseStation and Main objects. """
 
@@ -586,10 +604,16 @@ def main():
     to_BS = Queue()
 
     # Create a BS (base station) and GUI object thread.
+    #ts = []
+
     try:
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
         bs_ping_thread = BaseStation_Send_Ping()
+
+        # ts.append(bs_r_thread)
+        # ts.append(bs_s_thread)
+        # ts.append(bs_ping_thread)
 
         bs_r_thread.start()
         bs_s_thread.start()
@@ -602,10 +626,8 @@ def main():
     # Create main GUI object
     try:
         gui = Main(to_GUI, to_BS)
+        gui.root.mainloop()
     except KeyboardInterrupt:
         print("CLOSING")
-        quit()
-
-
-if __name__ == '__main__':
-    main()
+        gui.root.destroy()
+        sys.exit()

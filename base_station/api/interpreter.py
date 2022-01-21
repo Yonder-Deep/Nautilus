@@ -6,6 +6,7 @@ DEPTH_DATA = 0b011
 
 
 def decode_command(self_obj, header_str, line):
+    print("HEADER_STR", header_str)
     if header_str == POSITION_DATA:
         # reads in remaining byte
         remain = self_obj.radio.read(2)
@@ -59,6 +60,7 @@ def decode_command(self_obj, header, line):
         decimal = data & 0x7F
         decimal /= 100
         heading = whole + decimal
+        print("HEADING", str(heading))
         self_obj.out_q.put("set_heading(" + str(heading) + ")")
     elif header == COMBINATION_DATA:
         data = remain & 0x7FFFF

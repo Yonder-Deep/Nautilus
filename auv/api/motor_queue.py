@@ -13,11 +13,14 @@ class MotorQueue(threading.Thread):
         self.queue = queue
         self.mc = MotorController()
         self.halt = halt
+
+        self._ev = threading.Event()
+
         threading.Thread.__init__(self)
 
     def run(self):
 
-        while True:
+        while not self._ev.wait(timeout=LOOP_SLEEP_DELAY):
             if not self.queue.empty():
                 x, y, z = self.queue.get()
                 if z == 0:
@@ -25,9 +28,13 @@ class MotorQueue(threading.Thread):
                 if z == 1:
                     self.xbox_commands(x, y)
 
-            time.sleep(LOOP_SLEEP_DELAY)
+            # time.sleep(LOOP_SLEEP_DELAY)
+
+    def stop(self):
+        self._ev.set()
 
     # Check current halt status
+
     def check_halt(self):
         return self.halt[0]
 
@@ -77,4 +84,4 @@ class MotorQueue(threading.Thread):
     def xbox_commands(self, x, y):
         x = round(x/100 * 150, 1)
         y = round(y/100 * 150, 1)
-        self.mc.update_motor_speeds([y, x, 0, 0])
+        self.mc.update_motor_speeds([y, -x, 0, 0])
