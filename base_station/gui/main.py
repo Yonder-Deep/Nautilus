@@ -167,7 +167,7 @@ class Main():
         self.current_heading = 0.0
 
         # Begin running GUI loop
-        #self.root.mainloop()
+        # self.root.mainloop()
 
     def check_tasks(self):
         """ Evaluates the commands/tasks given to us in the in-queue. These commands are
@@ -298,7 +298,7 @@ class Main():
         # Add commands to halt and send buttons
         self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
                                   width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                  pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE))
+                                  pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
         self.halt_button.pack(expand=YES)
         self.halt_button.place(relx=0.3, rely=0.85)
 
@@ -317,6 +317,9 @@ class Main():
         prompt_input_dive = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
         prompt_input_dive.pack()
         prompt_input_dive.place(relx=0.4, rely=0.000)
+
+    def send_halt(self):
+        self.out_q.put("send_halt()")
 
     def confirm_dive(self, depth):
         # TODO messages
