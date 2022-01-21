@@ -219,10 +219,13 @@ class BaseStation_Receive(threading.Thread):
                     while(line != b'' and len(line) == 7):
                         print('read line')
                         intline = int.from_bytes(line, "big")
-                        # intline = int(line,2)
+
                         checksum = Crc32.confirm(intline)
+
                         if not checksum:
-                            continue
+                            print('invalid line*************')
+                            break
+
                         intline = intline >> 32
                         header = intline >> 21     # get first 3 bits
                         # PING case
@@ -310,7 +313,6 @@ class BaseStation_Send(threading.Thread):
 
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-
 
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
@@ -593,7 +595,7 @@ class BaseStation(threading.Thread):
         self.log("Successfully started mission " + str(index))
 
 
-def main():
+if __name__ == '__main__':
     """ Main method responsible for developing the main objects used during runtime
     like the BaseStation and Main objects. """
 
@@ -602,10 +604,16 @@ def main():
     to_BS = Queue()
 
     # Create a BS (base station) and GUI object thread.
+    #ts = []
+
     try:
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
         bs_ping_thread = BaseStation_Send_Ping()
+
+        # ts.append(bs_r_thread)
+        # ts.append(bs_s_thread)
+        # ts.append(bs_ping_thread)
 
         bs_r_thread.start()
         bs_s_thread.start()
@@ -618,10 +626,8 @@ def main():
     # Create main GUI object
     try:
         gui = Main(to_GUI, to_BS)
+        gui.root.mainloop()
     except KeyboardInterrupt:
         print("CLOSING")
-        quit()
-
-
-if __name__ == '__main__':
-    main()
+        gui.root.destroy()
+        sys.exit()

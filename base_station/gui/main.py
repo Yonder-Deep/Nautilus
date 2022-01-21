@@ -167,7 +167,7 @@ class Main():
         self.current_heading = 0.0
 
         # Begin running GUI loop
-        self.root.mainloop()
+        #self.root.mainloop()
 
     def check_tasks(self):
         """ Evaluates the commands/tasks given to us in the in-queue. These commands are
