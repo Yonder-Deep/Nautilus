@@ -9,9 +9,10 @@ LOOP_SLEEP_DELAY = 0.005
 
 class MotorQueue(threading.Thread):
 
-    def __init__(self, queue):
+    def __init__(self, queue, halt):
         self.queue = queue
         self.mc = MotorController()
+        self.halt = halt
 
         self._ev = threading.Event()
 
@@ -27,12 +28,19 @@ class MotorQueue(threading.Thread):
                 if z == 1:
                     self.xbox_commands(x, y)
 
-            #time.sleep(LOOP_SLEEP_DELAY)
-
+            # time.sleep(LOOP_SLEEP_DELAY)
 
     def stop(self):
         self._ev.set()
 
+    # Check current halt status
+
+    def check_halt(self):
+        return self.halt[0]
+
+    # Set current halt status
+    def set_halt(self, status):
+        self.halt[0] = status
 
     # for tests only
     def run_motors(self, x, y):
@@ -53,7 +61,9 @@ class MotorQueue(threading.Thread):
         self.mc.update_motor_speeds([0, turn_speed, 0, 0])
 
         # TODO implement so motors run until we've turned y degrees
-
+        if self.check_halt():
+            self.set_halt(False)
+            return
         time.sleep(5)
 
         self.mc.zero_out_motors()
@@ -64,6 +74,9 @@ class MotorQueue(threading.Thread):
             self.mc.update_motor_speeds([forward_speed, 0, 0, 0])
 
             # TODO implement so motors run until we've moved x meters
+            if self.check_halt():
+                self.set_halt(False)
+                return
             time.sleep(5)
 
         self.mc.zero_out_motors()
