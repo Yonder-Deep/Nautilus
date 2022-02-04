@@ -9,7 +9,6 @@ from queue import Queue
 # Custom imports
 from api import Radio
 from api import xbox
-from api import NavController
 
 from static import constants
 from static import globalvars
@@ -35,7 +34,6 @@ class BaseStation_Send(threading.Thread):
         # Instance variables
         self.radio = None
         self.joy = None
-        self.nav_controller = None
         self.in_q = in_q
         self.out_q = out_q
         self.manual_mode = True
@@ -64,17 +62,9 @@ class BaseStation_Send(threading.Thread):
         except:
             self.log("Warning: Cannot find xbox controller")
 
-        try:
-            self.nav_controller = NavController(self.joy)
-            print("case3")
-
-            self.log("Successfully created a Navigation with Controller object.")
-            print("case4")
-        except:
-            self.log("Warning: Cannot find nav controller")
-
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
+
 
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
@@ -199,8 +189,8 @@ class BaseStation_Send(threading.Thread):
                 try:
                     # print("Creating joystick. 5 seconds...")
                     # self.joy = Joystick() TODO remove
-                    self.nav_controller = NavController(self.joy)
                     # print("Done creating.")
+                    pass
                 except Exception as e:
                     print("Xbox creation error: ", str(e))
                     pass
@@ -208,7 +198,6 @@ class BaseStation_Send(threading.Thread):
             # elif not self.joy.connected():
             #    self.log("Xbox controller has been disconnected.")
             #    self.joy = None
-            #    self.nav_controller = None
 
             # This executes if we never had a radio object, or it got disconnected.
             if self.radio is None or not os.path.exists(constants.RADIO_PATH):
@@ -233,12 +222,10 @@ class BaseStation_Send(threading.Thread):
                     constants.lock.acquire()
                     if globalvars.connected and self.manual_mode:
                         constants.lock.release()
-                        if self.joy is not None and self.joy.A():  # and self.joy.connected() and self.nav_controller is not None:
+                        if self.joy is not None and self.joy.A():
                             xbox_input = True
 
                             try:
-                                # self.nav_controller.handle()
-                                #self.radio.write("x(" + str(self.nav_controller.get_data()) + ")")
                                 print("[XBOX] X:", self.joy.leftX())
                                 print("[XBOX] Y:", self.joy.leftY())
                                 print("[XBOX] A\t")

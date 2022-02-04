@@ -10,7 +10,6 @@ from queue import Queue
 # Custom imports
 from api import Crc32
 from api import Radio
-from api import NavController
 from api import GPS
 from api import decode_command
 
@@ -26,7 +25,6 @@ class BaseStation_Receive(threading.Thread):
         # Call super-class constructor
         # Instance variables
         self.radio = None
-        self.nav_controller = None
         self.gps = None
         self.in_q = in_q
         self.out_q = out_q
@@ -57,7 +55,7 @@ class BaseStation_Receive(threading.Thread):
             self.log("Warning: Could not connect to a GPS socket service.")
 
     def calibrate_controller(self):
-        """ Instantiates a new Xbox Controller Instance and NavigationController """
+        """ Instantiates a new Xbox Controller Instance """
         # Construct joystick and check that the driver/controller are working.
         self.joy = None
         self.main.log("Attempting to connect xbox controller")
@@ -69,12 +67,6 @@ class BaseStation_Receive(threading.Thread):
             except Exception as e:
                 continue
         self.main.log("Xbox controller is connected.")
-
-        # Instantiate New NavController With Joystick
-        self.nav_controller = NavController(
-            self.joy, self.button_cb, self.debug)
-
-        self.main.log("Controller is connected.")
 
     def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
