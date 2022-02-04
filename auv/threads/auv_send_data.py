@@ -45,6 +45,9 @@ class AUV_Send_Data(threading.Thread):
 
         self.imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
         global_vars.log("IMU has been found.")
+        if not self.imu.begin():
+            print("Failed to initialize IMU!")
+
         # TODO copied over from example code
         # if not self.imu.begin():
         #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')

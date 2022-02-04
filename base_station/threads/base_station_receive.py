@@ -14,7 +14,7 @@ from api import GPS
 from api import decode_command
 
 from static import constants
-from static import globalvars
+from static import global_vars
 
 
 class BaseStation_Receive(threading.Thread):
@@ -127,9 +127,6 @@ class BaseStation_Receive(threading.Thread):
         """ Main threaded loop for the base station. """
         # Begin our main loop for this thread.
 
-        global connected
-        global lock
-
         while True:
             time.sleep(0.5)
 
@@ -137,10 +134,10 @@ class BaseStation_Receive(threading.Thread):
             if time.time() - self.time_since_last_ping > constants.CONNECTION_TIMEOUT:
                 # We are NOT connected to AUV, but we previously ('before') were. Status has changed to failed.
                 constants.lock.acquire()
-                if connected is True:
+                if global_vars.connected is True:
                     self.out_q.put("set_connection(False)")
                     self.log("Lost connection to AUV.")
-                    connected = False
+                    global_vars.connected = False
                 constants.lock.release()
 
             # This executes if we never had a radio object, or it got disconnected.
@@ -174,6 +171,7 @@ class BaseStation_Receive(threading.Thread):
 
                         if not checksum:
                             print('invalid line*************')
+                            # self.radio.flush()
                             break
 
                         intline = intline >> 32
@@ -182,10 +180,10 @@ class BaseStation_Receive(threading.Thread):
                         if intline == constants.PING:
                             self.time_since_last_ping = time.time()
                             constants.lock.acquire()
-                            if connected is False:
+                            if global_vars.connected is False:
                                 self.log("Connection to AUV verified.")
                                 self.out_q.put("set_connection(True)")
-                                connected = True
+                                global_vars.connected = True
                             constants.lock.release()
                         # Data cases
                         else:

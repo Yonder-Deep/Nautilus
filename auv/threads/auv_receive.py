@@ -142,7 +142,7 @@ class AUV_Receive(threading.Thread):
                         print("NON-PING LINE READ WAS", bin(message))
 
                         # case block
-                        header = message & 0xE00000                        
+                        header = message & 0xE00000
 
                         if header == constants.NAV_ENCODE:  # navigation
                             self.read_nav_command(message)
@@ -160,7 +160,7 @@ class AUV_Receive(threading.Thread):
 
                         elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
                             self.read_mission_command(message)
-                        
+
                         line = self.radio.read(7)
 
                     # end while
@@ -367,7 +367,12 @@ class AUV_Receive(threading.Thread):
 
     def get_depth(self):
         if self.pressure_sensor is not None:
-            self.pressure_sensor.read()
+            while(True):
+                try:
+                    self.pressure_sensor.read()
+                    break
+                except:
+                    continue
             pressure = self.pressure_sensor.pressure()
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
