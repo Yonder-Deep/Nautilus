@@ -5,39 +5,6 @@ COMBINATION_DATA = 0b010
 DEPTH_DATA = 0b011
 
 
-def decode_command(self_obj, header_str, line):
-    print("HEADER_STR", header_str)
-    if header_str == POSITION_DATA:
-        # reads in remaining byte
-        remain = self_obj.radio.read(2)
-        remain = int.from_bytes(remain, "big")
-
-        # contains x and y data
-        data = remain | ((line & 0b00000111) << 16)
-
-        x = (data >> 9)
-        y = (data & 0b111111111)
-
-        # TODO, call function and update positioning in gui
-    elif header_str == DEPTH_DATA:
-        print("Depth Case")
-
-        # reads in remaining bytes
-        remain = self_obj.radio.read(1)
-        remain = int.from_bytes(remain, "big")
-
-        # contains x and y data
-        data = remain | ((line & 0b00000111) << 8)
-        x = data >> 4            # first 7 bits
-        y = float(data & 0xF)    # last 5 bits
-        depth = x + y/10
-        print("Depth: ", depth)
-
-        self_obj.out_q.put("set_depth(" + str(depth) + ")")
-
-        #         self.in_q.put(message)
-
-
 def decode_command(self_obj, header, line):
     remain = line & 0x1FFFFF
     if header == POSITION_DATA:
