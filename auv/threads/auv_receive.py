@@ -84,6 +84,9 @@ class AUV_Receive(threading.Thread):
     def test_motor(self, motor):
         """ Method to test all 4 motors on the AUV """
 
+        # Update motion type for display on gui
+        self.mc.motion_type = 4
+
         if motor == "FORWARD":  # Used to be LEFT motor
             self.mc.test_forward()
         elif motor == "TURN":  # Used to be RIGHT MOTOR
@@ -144,13 +147,19 @@ class AUV_Receive(threading.Thread):
                         # case block
                         header = message & 0xE00000
 
-                        if header == constants.NAV_ENCODE:  # navigation
-                            self.read_nav_command(message)
-
-                        elif header == constants.XBOX_ENCODE:  # xbox navigation
+                        if header == constants.XBOX_ENCODE:  # xbox navigation
+                            # Update motion type for display on gui
+                            self.mc.motion_type = 1
                             self.read_xbox_command(message)
 
+                        elif header == constants.NAV_ENCODE:  # navigation
+                            # Update motion type for display on gui
+                            self.mc.motion_type = 2
+                            self.read_nav_command(message)
+
                         elif header == constants.DIVE_ENCODE:  # dive
+                            # Update motion type for display on gui
+                            self.mc.motion_type = 3
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
 

@@ -63,14 +63,14 @@ def decode_command(self_obj, header, line):
         print("HEADING", str(heading))
         self_obj.out_q.put("set_heading(" + str(heading) + ")")
     elif header == COMBINATION_DATA:
-        data = remain & 0x7FFFF
-        battery = data >> 12  # bits 13-19
-        temp_sign = (data & 0x800) >> 11  # bit 12
-        temp_mag = (data & 0x7E0) >> 5  # bits 6-11
+        data = remain & 0xFFFFF
+        battery = data >> 14  # bits 14-20
+        temp_sign = (data >> 13) & 0x1  # bit 13
+        temp_mag = (data >> 7) & 0x3F  # bits 7-12
         # Combine temp data
         temp = (temp_mag * -1) if (temp_sign == 1) else temp_mag
-        mvmt = (data & 0x18) >> 3  # bits 4-5
-        mission_stat = (data & 0x6) >> 1  # bits 2-3
+        mvmt = (data >> 3) & 0x7  # bits 4-6
+        mission_stat = (data >> 1) & 0x3  # bits 2-3
         flooded = data & 0x1  # bit 1
         # TODO: Update gui
         print("Battery: " + str(int(battery)))

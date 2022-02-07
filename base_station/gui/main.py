@@ -478,13 +478,18 @@ class Main():
         else:
             self.comms_status_string.set("Comms Status: Not connected.")
 
-    def set_movement(self, manual):
+    def set_movement(self, motion_type):
         """ Sets the movement status text in the status frame. """
-        if (not manual):
+        if (motion_type == 1):
             self.movement_status_string.set("Movement Status: Manual Control")
+        elif (motion_type == 2):
+            self.movement_status_string.set("Movement Status: Dive")
+        elif (motion_type == 3):
+            self.movement_status_string.set("Movement Status: Autonomous Navigation")
+        elif (motion_type == 4):
+            self.movement_status_string.set("Movement Status: Motor Test")
         else:
-            self.movement_status_string.set(
-                "Movement Status: Autonomous Control")
+            self.movement_status_string.set("Movement Status: Not Moving")
 
     def set_battery_voltage(self, voltage):
         self.battery_status_string.set("Battery Voltage: " + str(voltage))

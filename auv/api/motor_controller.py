@@ -66,7 +66,10 @@ class MotorController:
         self.turn_speed = 0
         self.front_speed = 0
         self.back_speed = 0
-#        self.check_gpio_pins()
+        # self.check_gpio_pins()
+        # Stores the type of motion being performed
+        # 1: Xbox, 2: Dive, 3: Navigation, 4: motor test
+        self.motion_type = 0
 
     def update_motor_speeds(self, data):
         """
