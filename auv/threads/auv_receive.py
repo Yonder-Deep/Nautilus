@@ -367,13 +367,13 @@ class AUV_Receive(threading.Thread):
 
     def get_depth(self):
         if self.pressure_sensor is not None:
-            while(True):
-                try:
-                    self.pressure_sensor.read()
-                    break
-                except:
-                    continue
-            pressure = self.pressure_sensor.pressure()
+            pressure = 0
+            try:
+                self.pressure_sensor.read()
+                pressure = self.pressure_sensor.pressure()
+            except:
+                print("Failed to read pressure sensor")
+            
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
             return depth
