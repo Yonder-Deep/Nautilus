@@ -128,6 +128,8 @@ class BaseStation_Receive(threading.Thread):
         # Begin our main loop for this thread.
 
         while True:
+            print(self.radio.is_open())
+
             time.sleep(0.5)
 
             # Always try to update connection status
