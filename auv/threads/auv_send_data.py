@@ -21,12 +21,12 @@ def get_heading_encode(data):
 class AUV_Send_Data(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self):
+    def __init__(self, radio, pressure_sensor, imu, mc):
         """ Constructor for the AUV """
-        self.radio = None
-        self.pressure_sensor = None
-        self.imu = None
-        self.mc = MotorController()
+        self.radio = radio
+        self.pressure_sensor = pressure_sensor
+        self.imu = imu
+        self.mc = mc
         self.time_since_last_ping = 0.0
         self.current_mission = None
         self.timer = 0
@@ -35,33 +35,8 @@ class AUV_Send_Data(threading.Thread):
 
         threading.Thread.__init__(self)
 
-    def _init_hardware(self):
-        try:
-            self.pressure_sensor = PressureSensor()
-            self.pressure_sensor.init()
-            global_vars.log("Pressure sensor has been found")
-        except:
-            global_vars.log("Pressure sensor is not connected to the AUV.")
-
-        self.imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
-        global_vars.log("IMU has been found.")
-        if not self.imu.begin():
-            print("Failed to initialize IMU!")
-
-        # TODO copied over from example code
-        # if not self.imu.begin():
-        #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
-
-        try:
-            self.radio = Radio(constants.RADIO_PATH)
-            global_vars.log("Radio device has been found.")
-        except:
-            global_vars.log("Radio device is not connected to AUV on RADIO_PATH.")
-
     def run(self):
         """ Main connection loop for the AUV. """
-
-        self._init_hardware()
 
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
