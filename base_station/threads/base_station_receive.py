@@ -171,7 +171,8 @@ class BaseStation_Receive(threading.Thread):
 
                         if not checksum:
                             print('invalid line*************')
-                            # self.radio.flush()
+                            print(bin(intline >> 32))
+                            self.radio.flush()
                             break
 
                         intline = intline >> 32
