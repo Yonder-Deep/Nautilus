@@ -45,8 +45,12 @@ class AUV_Send_Data(threading.Thread):
 
         self.imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
         global_vars.log("IMU has been found.")
-        if not self.imu.begin():
-            print("Failed to initialize IMU!")
+
+        try:
+            if not self.imu.begin():
+                print("Failed to initialize IMU!")
+        except e:
+            print("Exception thrown when initializing IMU:", e)
 
         # TODO copied over from example code
         # if not self.imu.begin():
