@@ -49,7 +49,7 @@ class AUV_Send_Data(threading.Thread):
         try:
             if not self.imu.begin():
                 print("Failed to initialize IMU!")
-        except e:
+        except Exception as e:
             print("Exception thrown when initializing IMU:", e)
 
         # TODO copied over from example code
