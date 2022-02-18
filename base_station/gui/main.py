@@ -5,7 +5,7 @@ user-interface using the built-in python Tkinter user-interface. """
 import sys
 import os
 import datetime
-
+import static.constants
 # Begin custom imports
 import tkinter
 from tkinter import Tk
@@ -16,6 +16,7 @@ from tkinter import Text
 from tkinter import Entry
 from tkinter import PhotoImage
 from tkinter import Scrollbar
+from tkinter import Scale
 from tkinter import Toplevel
 from tkinter import StringVar
 from tkinter import BOTH, TOP, BOTTOM, LEFT, RIGHT, YES, NO, SUNKEN, X, Y, W, E, N, S, DISABLED, NORMAL, END
@@ -274,6 +275,23 @@ class Main():
         #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(4/5), side=LEFT, fill=BOTH, expand=NO)
         self.motor_control_frame.grid(
             row=3, column=1, pady=CALIBRATE_PAD_Y)
+
+        self.header_label = Label(self.motor_control_frame, text="Motor Speeds", font=(FONT, HEADING_SIZE))
+        self.header_label.pack()
+        self.header_label.place(relx = 0.05, rely = 0.05)
+        self.distance_label_1 = Label(self.motor_control_frame, text="Forward/Backward Speed", font=(FONT, FONT_SIZE))
+        self.distance_label_1.pack()
+        self.distance_label_1.place(relx=0.05, rely=0.1)
+        self.forward_slider = Scale(self.root,from_= -static.constants.MAX_AUV_SPEED,to=static.constants.MAX_AUV_SPEED)
+        self.forward_slider.pack()
+        self.forward_slider.place(relx=0.05,rely=0.15)
+
+        self.distance_label_2 = Label(self.motor_control_frame, text="Left/Right Speed", font=(FONT, FONT_SIZE))
+        self.distance_label_2.pack()
+        self.distance_label_2.place(relx=0.05, rely=0.2)
+        self.left_slider = Scale(self.root,from_= -static.constants.MAX_AUV_SPEED,to=static.constants.MAX_AUV_SPEED)
+        self.left_slider.pack()
+        self.left_slider.place(relx=0.05,rely=0.25)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
         self.header_label.pack()
