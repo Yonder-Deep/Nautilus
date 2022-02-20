@@ -324,6 +324,50 @@ class AUV_Receive(threading.Thread):
         global_vars.log("Successfully aborted the current mission.")
         # self.radio.write(str.encode("mission_failed()\n"))
 
+    def timed_dive(self, time):
+
+        self.motor_queue.queue.clear()
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+        # wait until current motor commands finish running, will need global variable
+        # Dive
+        depth = self.get_depth()
+        start_time = time.time()
+        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
+        # Time out and stop diving if > 1 min
+        while time.time() < start_time + time:
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way down. Depth is", depth)
+            except:
+                print("Failed to read pressure going down")
+
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+        # Wait 10 sec
+        end_time = time.time() + 10  # 10 sec
+        while time.time() < end_time:
+            pass
+
+        # clear radio
+        self.radio.flush()
+        for i in range(0, 3):
+            self.radio.read(7)
+
+        # Resurface
+        self.mc.update_motor_speeds([0, 0, -constants.DEF_DIVE_SPD, -constants.DEF_DIVE_SPD])
+        intline = 0
+        while intline == 0:  # TODO: check what is a good surface condition
+            line = self.radio.read(7)
+            intline = int.from_bytes(line, "big") >> 32
+
+            print(intline)
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way up. Depth is", depth)
+            except:
+                print("Failed to read pressure going up")
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+
+
     def dive(self, to_depth):
         self.motor_queue.queue.clear()
         self.mc.update_motor_speeds([0, 0, 0, 0])
@@ -367,13 +411,13 @@ class AUV_Receive(threading.Thread):
 
     def get_depth(self):
         if self.pressure_sensor is not None:
-            while(True):
-                try:
-                    self.pressure_sensor.read()
-                    break
-                except:
-                    continue
-            pressure = self.pressure_sensor.pressure()
+            pressure = 0
+            try:
+                self.pressure_sensor.read()
+                pressure = self.pressure_sensor.pressure()
+            except:
+                print("Failed to read pressure sensor")
+
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
             return depth
