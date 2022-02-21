@@ -270,9 +270,8 @@ class AUV_Receive(threading.Thread):
         if (x == 3):
             print("CALIBRATE")
 
-            # calibrate
-            # TODO add global depth
-            depth = 0
+            depth = self.get_depth()
+            global_vars.depth_offset = global_vars.depth_offset + depth
         if (x == 4):
             print("ABORT")
             # abort()
