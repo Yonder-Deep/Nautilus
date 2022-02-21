@@ -11,25 +11,14 @@ sys.path.append('..')
 
 class AUV_Send_Ping(threading.Thread):
 
-    def __init__(self):
-        self.radio = None
+    def __init__(self, radio):
+        self.radio = radio
         self._ev = threading.Event()
 
         threading.Thread.__init__(self)
 
-    def _init_hardware(self):
-        """ Radio initializer for the AUV """
-
-        try:
-            self.radio = Radio(constants.RADIO_PATH)
-            global_vars.log("Radio device has been found.")
-        except:
-            global_vars.log("Radio device is not connected to AUV on RADIO_PATH.")
-
     def run(self):
         """ Main connection loop for the AUV. """
-
-        self._init_hardware()
 
         global_vars.log("Starting main ping sending connection loop.")
         while not self._ev.wait(timeout=constants.PING_SLEEP_DELAY):

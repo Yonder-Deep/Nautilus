@@ -25,6 +25,9 @@ from threads.auv_send_data import AUV_Send_Data
 from threads.auv_send_ping import AUV_Send_Ping
 from threads.auv_receive import AUV_Receive
 
+from static import constants
+from static import global_vars
+
 
 def threads_active(ts):
     for t in ts:
@@ -39,10 +42,36 @@ def stop_threads(ts):
 
 
 def start_threads(ts, queue, halt):
+    # Initialize hardware
+    try:
+        pressure_sensor = PressureSensor()
+        pressure_sensor.init()
+        global_vars.log("Pressure sensor has been found")
+    except:
+        global_vars.log("Pressure sensor is not connected to the AUV.")
+
+    try:
+        imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
+
+        global_vars.log("IMU has been found.")
+    except:
+        global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
+
+    try:
+        radio = Radio(constants.RADIO_PATH)
+        global_vars.log("Radio device has been found.")
+    except:
+        global_vars.log("Radio device is not connected to AUV on RADIO_PATH.")
+
+    mc = MotorController()
+
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt)
-    auv_s_thread = AUV_Send_Data()
-    auv_ping_thread = AUV_Send_Ping()
+    auv_r_thread = AUV_Receive(queue, halt, radio, pressure_sensor, imu, mc)
+
+    ts = []
+
+    auv_s_thread = AUV_Send_Data(radio, pressure_sensor, imu, mc)
+    auv_ping_thread = AUV_Send_Ping(radio)
 
     ts.append(auv_motor_thread)
     ts.append(auv_r_thread)
