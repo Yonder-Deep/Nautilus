@@ -20,8 +20,11 @@ from tkinter import Toplevel
 from tkinter import StringVar
 from tkinter import BOTH, TOP, BOTTOM, LEFT, RIGHT, YES, NO, SUNKEN, X, Y, W, E, N, S, DISABLED, NORMAL, END
 from tkinter import messagebox
+from tkinter import constants
 from tkinter.ttk import Combobox
 from tkinter import font
+
+from static import constants
 from .map import Map
 from screeninfo import get_monitors, Enumerator
 
@@ -70,7 +73,6 @@ ICON_PATH = "gui/images/yonder_logo.png"
 
 class Main():
     """ Main GUI object that handles all aspects of the User-Interface """
-
     def __init__(self, in_q=None, out_q=None):
         """ Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -121,6 +123,7 @@ class Main():
         CALIBRATE_FRAME_WIDTH = int(CALIBRATE_FRAME_WIDTH * self.multiplier_x)
         MISSION_FRAME_WIDTH = int(MISSION_FRAME_WIDTH * self.multiplier_x)
         LOG_FRAME_WIDTH = int(LOG_FRAME_WIDTH * self.multiplier_x)
+        self.heat_checker = 0
         ### End of high-resolution screen scaling code ###
 
         # Fix font scaling for all Combo-box elements
@@ -359,7 +362,7 @@ class Main():
             FONT, STATUS_SIZE), justify=LEFT)
         self.position_label.pack()
         self.position_label_string.set("Position \n \tX: N/A \t Y: N/A")
-        self.position_label.place(relx=0.05, rely=0.30, anchor='sw')
+        self.position_label.place(relx=0.05, rely=0.25, anchor='sw')
 
         self.heading_label_string = StringVar()
         self.heading_label = Label(self.status_frame, textvariable=self.heading_label_string, font=(
@@ -372,7 +375,7 @@ class Main():
         self.battery_voltage = Label(
             self.status_frame, textvariable=self.battery_status_string, font=(FONT, STATUS_SIZE))
         self.battery_voltage.pack()
-        self.battery_status_string.set("Battery Voltage: N/A")
+        self.battery_status_string.set("Battery Voltage: Not Implemented")
         self.battery_voltage.place(relx=0.05, rely=0.45, anchor='sw')
 
         self.temperature_string = StringVar()
@@ -386,21 +389,21 @@ class Main():
         self.movement_status = Label(
             self.status_frame, textvariable=self.movement_status_string, font=(FONT, STATUS_SIZE))
         self.movement_status.pack()
-        self.movement_status_string.set("Movement Status: ")
+        self.movement_status_string.set("Movement Status: TODO")
         self.movement_status.place(relx=0.05, rely=0.59, anchor='sw')
 
         self.mission_status_string = StringVar()
         self.mission_status = Label(
             self.status_frame, textvariable=self.mission_status_string, font=(FONT, STATUS_SIZE))
         self.mission_status.pack()
-        self.mission_status_string.set("Mission Status: ")
+        self.mission_status_string.set("Mission Status: Waiting")
         self.mission_status.place(relx=0.05, rely=0.66, anchor='sw')
 
         self.flooded_string = StringVar()
         self.flooded = Label(
             self.status_frame, textvariable=self.flooded_string, font=(FONT, STATUS_SIZE))
         self.flooded.pack()
-        self.flooded_string.set("Flooded: ")
+        self.flooded_string.set("Flooded: Not Implemented")
         self.flooded.place(relx=0.05, rely=0.73, anchor='sw')
 
         self.depth_string = StringVar()
@@ -422,7 +425,14 @@ class Main():
             self.status_frame, textvariable=self.comms_status_string, font=(FONT, STATUS_SIZE))
         self.comms_status.pack()
         self.comms_status_string.set("Comms: not connected")
-        self.comms_status.place(relx=0.05, rely=0.94, anchor='sw')
+        self.comms_status.place(relx=0.05, rely=0.93, anchor='sw')
+
+        self.xbox_label_string = StringVar()
+        self.xbox_label = Label(self.status_frame, textvariable=self.xbox_label_string, font=(
+            FONT, STATUS_SIZE), justify=LEFT)
+        self.xbox_label.pack()
+        self.xbox_label_string.set("Xbox Controller: Inactive")
+        self.xbox_label.place(relx=0.05, rely=0.98, anchor='sw')
 
         # self.calibrate_xbox_button           = Button(self.status_frame, text = "Calibrate Controller", takefocus = False, width = BUTTON_WIDTH + 10, height = BUTTON_HEIGHT,
         #                                      padx = BUTTON_PAD_X, pady = BUTTON_PAD_Y, font = (FONT, BUTTON_SIZE), command = self.base_station.calibrate_controller )
@@ -504,6 +514,17 @@ class Main():
         """ Sets internal temperature text """
         self.temperature_string.set(
             "Internal Temperature: " + str(temperature) + "C")
+        if temperature >= constants.HOT_TEMP:
+            if self.heat_checker < 2:
+                messagebox.showwarning("WARNING", "AUV has reached throttling rate! Recommend toggling kill all!")
+                self.heat_checker = 2
+        elif temperature >= constants.SAFE_TEMP:
+            if self.heat_checker < 1:
+                messagebox.showwarning("WARNING", "AUV temperature is reaching unsafe levels!")
+                self.heat_checker = 1
+        else:
+            self.heat_checker = 0
+
 
     # def set_pressure(self, pressure):
     #     """ Sets depth text """
@@ -514,6 +535,19 @@ class Main():
         """ Sets depth text """
         self.depth_string.set(
             "depth: " + str(depth) + "meter")
+
+    def set_xbox_status(self, isActive, isVertical):
+        """ Set xbox controller status text """
+        if not isActive:
+            self.xbox_label_string.set(
+                "Xbox Controller: Inactive")
+            return
+        if isVertical == 1:
+            self.xbox_label_string.set(
+                "Xbox Controller: Sending Vertical")
+        else:
+            self.xbox_label_string.set(
+                "Xbox Controller: Sending Horizontal")
 
     def set_dive(self, depth):
         """ Sets dive command """

@@ -45,6 +45,13 @@ class AUV_Send_Data(threading.Thread):
 
         self.imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
         global_vars.log("IMU has been found.")
+
+        try:
+            if not self.imu.begin():
+                print("Failed to initialize IMU!")
+        except Exception as e:
+            print("Exception thrown when initializing IMU:", e)
+
         # TODO copied over from example code
         # if not self.imu.begin():
         #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
@@ -101,7 +108,6 @@ class AUV_Send_Data(threading.Thread):
         except:
             # TODO print statement, something went wrong!
             heading = 0
-            self.radio.write(str.encode("log(\"[AUV]\tAn error occurred while trying to read heading.\")\n"))
 
         split_heading = math.modf(heading)
         decimal_heading = int(round(split_heading[0], 2) * 100)
@@ -120,7 +126,6 @@ class AUV_Send_Data(threading.Thread):
         except:
             # TODO print statement, something went wrong!
             temperature = 0
-            self.radio.write(str.encode("log(\"[AUV]\tAn error occurred while trying to read temperature.\")\n"))
         # Temperature radio
         whole_temperature = int(temperature)
         sign = 0

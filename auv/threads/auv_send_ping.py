@@ -1,15 +1,14 @@
+from static import global_vars
+from static import constants
+from api import Radio
+import threading
 import sys
 sys.path.append('..')
 
-import threading
-
-from api import Radio
-
-from static import constants
-from static import global_vars
 
 # Responsibilites:
 #   - send ping
+
 class AUV_Send_Ping(threading.Thread):
 
     def __init__(self):

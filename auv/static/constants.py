@@ -5,7 +5,7 @@ RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Contr
 IMU_PATH = '/dev/serial0'
 PING = 0xFFFFFF
 SEND_SLEEP_DELAY = 1
-RECEIVE_SLEEP_DELAY = 0.1
+RECEIVE_SLEEP_DELAY = 0.2
 PING_SLEEP_DELAY = 3
 CONNECTION_TIMEOUT = 6
 
@@ -31,9 +31,16 @@ NAV_ENCODE = 0b000000000000000000000000           # | with XSY (forward, angle s
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
+<< << << < HEAD
 
 
-LOCK = threading.Lock() # checks if connected to BS over radio
+LOCK = threading.Lock()  # checks if connected to BS over radio
+== == == =
+KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
+
+
+LOCK = threading.Lock()  # checks if connected to BS over radio
+>>>>>> > develop
 RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 
 

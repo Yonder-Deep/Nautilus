@@ -18,7 +18,6 @@ from api import Crc32
 from api import Radio
 from api import Joystick
 from api import xbox
-from api import NavController
 from api import GPS
 from api import decode_command
 #from api import checksum

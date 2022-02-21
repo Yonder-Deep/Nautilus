@@ -153,13 +153,22 @@ class AUV_Receive(threading.Thread):
                         elif header == constants.DIVE_ENCODE:  # dive
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
-                            
                             constants.LOCK.acquire()
                             self.dive(desired_depth)
                             constants.LOCK.release()
 
                         elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
                             self.read_mission_command(message)
+
+                        elif header == constants.KILL_ENCODE:  # Kill/restart AUV threads
+                            if (message & 1):
+                                # Restart AUV threads
+                                self.mc.zero_out_motors()
+                                global_vars.restart_threads = True
+                            else:
+                                # Kill AUV threads
+                                self.mc.zero_out_motors()
+                                global_vars.stop_all_threads = True
 
                         line = self.radio.read(7)
 
@@ -243,9 +252,10 @@ class AUV_Receive(threading.Thread):
         xsign = (message & 0x8000) >> 15
         y = message & 0x7F
         ysign = (message & 0x80) >> 7
-        if xsign == 1:
+        # Flip motors according to x and ysign
+        if xsign != 1:
             x = -x
-        if ysign == 1:
+        if ysign != 1:
             y = -y
         #print("Xbox Command:", x, y)
         if vertical:
@@ -284,9 +294,8 @@ class AUV_Receive(threading.Thread):
             print("CALIBRATE")
 
             # calibrate
-            # TODO test?
-            depth = self.get_depth()
-            global_vars.depth_offset = global_vars.depth_offset + depth
+            # TODO add global depth
+            depth = 0
         if (x == 4):
             print("ABORT")
             # abort()
@@ -324,6 +333,49 @@ class AUV_Receive(threading.Thread):
         aborted_mission.abort_loop()
         global_vars.log("Successfully aborted the current mission.")
         # self.radio.write(str.encode("mission_failed()\n"))
+
+    def timed_dive(self, time):
+
+        self.motor_queue.queue.clear()
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+        # wait until current motor commands finish running, will need global variable
+        # Dive
+        depth = self.get_depth()
+        start_time = time.time()
+        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
+        # Time out and stop diving if > 1 min
+        while time.time() < start_time + time:
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way down. Depth is", depth)
+            except:
+                print("Failed to read pressure going down")
+
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+        # Wait 10 sec
+        end_time = time.time() + 10  # 10 sec
+        while time.time() < end_time:
+            pass
+
+        # clear radio
+        self.radio.flush()
+        for i in range(0, 3):
+            self.radio.read(7)
+
+        # Resurface
+        self.mc.update_motor_speeds([0, 0, -constants.DEF_DIVE_SPD, -constants.DEF_DIVE_SPD])
+        intline = 0
+        while intline == 0:  # TODO: check what is a good surface condition
+            line = self.radio.read(7)
+            intline = int.from_bytes(line, "big") >> 32
+
+            print(intline)
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way up. Depth is", depth)
+            except:
+                print("Failed to read pressure going up")
+        self.mc.update_motor_speeds([0, 0, 0, 0])
 
     def dive(self, to_depth):
         self.motor_queue.queue.clear()
@@ -368,11 +420,16 @@ class AUV_Receive(threading.Thread):
 
     def get_depth(self):
         if self.pressure_sensor is not None:
-            self.pressure_sensor.read()
-            pressure = self.pressure_sensor.pressure()
+            pressure = 0
+            try:
+                self.pressure_sensor.read()
+                pressure = self.pressure_sensor.pressure()
+            except:
+                print("Failed to read pressure sensor")
+
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
-            return depth - global_vars.depth_offset
+            return depth
         else:
             global_vars.log("No pressure sensor found.")
             return None
