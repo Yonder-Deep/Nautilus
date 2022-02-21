@@ -6,7 +6,7 @@ import threading
 # Custom imports
 from api import Radio
 from static import constants
-from static import globalvars
+from static import global_vars
 
 
 class BaseStation_Send_Ping(threading.Thread):

@@ -10,12 +10,11 @@ from queue import Queue
 # Custom imports
 from api import Crc32
 from api import Radio
-from api import NavController
 from api import GPS
 from api import decode_command
 
 from static import constants
-from static import globalvars
+from static import global_vars
 
 
 class BaseStation_Receive(threading.Thread):
@@ -26,7 +25,6 @@ class BaseStation_Receive(threading.Thread):
         # Call super-class constructor
         # Instance variables
         self.radio = None
-        self.nav_controller = None
         self.gps = None
         self.in_q = in_q
         self.out_q = out_q
@@ -57,7 +55,7 @@ class BaseStation_Receive(threading.Thread):
             self.log("Warning: Could not connect to a GPS socket service.")
 
     def calibrate_controller(self):
-        """ Instantiates a new Xbox Controller Instance and NavigationController """
+        """ Instantiates a new Xbox Controller Instance """
         # Construct joystick and check that the driver/controller are working.
         self.joy = None
         self.main.log("Attempting to connect xbox controller")
@@ -69,12 +67,6 @@ class BaseStation_Receive(threading.Thread):
             except Exception as e:
                 continue
         self.main.log("Xbox controller is connected.")
-
-        # Instantiate New NavController With Joystick
-        self.nav_controller = NavController(
-            self.joy, self.button_cb, self.debug)
-
-        self.main.log("Controller is connected.")
 
     def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
@@ -135,20 +127,19 @@ class BaseStation_Receive(threading.Thread):
         """ Main threaded loop for the base station. """
         # Begin our main loop for this thread.
 
-        global connected
-        global lock
-
         while True:
+            print(self.radio.is_open())
+
             time.sleep(0.5)
 
             # Always try to update connection status
             if time.time() - self.time_since_last_ping > constants.CONNECTION_TIMEOUT:
                 # We are NOT connected to AUV, but we previously ('before') were. Status has changed to failed.
                 constants.lock.acquire()
-                if connected is True:
+                if global_vars.connected is True:
                     self.out_q.put("set_connection(False)")
                     self.log("Lost connection to AUV.")
-                    connected = False
+                    global_vars.connected = False
                 constants.lock.release()
 
             # This executes if we never had a radio object, or it got disconnected.
@@ -182,6 +173,8 @@ class BaseStation_Receive(threading.Thread):
 
                         if not checksum:
                             print('invalid line*************')
+                            print(bin(intline >> 32))
+                            self.radio.flush()
                             break
 
                         intline = intline >> 32
@@ -190,10 +183,10 @@ class BaseStation_Receive(threading.Thread):
                         if intline == constants.PING:
                             self.time_since_last_ping = time.time()
                             constants.lock.acquire()
-                            if connected is False:
+                            if global_vars.connected is False:
                                 self.log("Connection to AUV verified.")
                                 self.out_q.put("set_connection(True)")
-                                connected = True
+                                global_vars.connected = True
                             constants.lock.release()
                         # Data cases
                         else:
