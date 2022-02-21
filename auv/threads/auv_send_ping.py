@@ -29,7 +29,7 @@ class AUV_Send_Ping(threading.Thread):
     def run(self):
         """ Main connection loop for the AUV. """
 
-       self._init_hardware()
+        self._init_hardware()
 
         global_vars.log("Starting main ping sending connection loop.")
         while not self._ev.wait(timeout=constants.PING_SLEEP_DELAY):
