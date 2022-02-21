@@ -207,6 +207,8 @@ class MotorController:
 
     def is_stopped(self):
         """ Returns if any of the motors are not set to zero. """
+        for motor in self.motors:
+            print(motor.speed)
         return all([motor.speed == 0 for motor in self.motors])
 
 
