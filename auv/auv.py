@@ -67,11 +67,11 @@ if __name__ == '__main__':  # If we are executing this file as main
         while threads_active(ts):
             if global_vars.stop_all_threads:
                 global_vars.stop_all_threads = False
-                stop_threads()
+                stop_threads(ts)
 
             if global_vars.restart_threads:
                 global_vars.restart_threads = False
-                stop_threads()
+                stop_threads(ts)
 
                 # Reinitialize and restart all threads
                 queue = Queue()
