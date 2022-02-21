@@ -18,6 +18,7 @@ NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle s
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
+KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
 
 # Action Encodings
 HALT = 0b010
@@ -222,6 +223,22 @@ class BaseStation_Send(threading.Thread):
                     constants.lock.acquire()
                     if global_vars.connected and self.manual_mode:
                         constants.lock.release()
+                        if self.joy is not None and self.joy.leftBumper() and self.joy.rightBumper():
+                            # Read in potential kill-all/restart command
+                            if self.joy.Guide():
+                                # Send restart command
+                                constants.radio_lock.acquire()
+                                self.radio.write(KILL_ENCODE | 1)
+                                constants.radio_lock.release()
+                                print("Restarting AUV threads...")
+
+                            elif self.joy.Back() and self.joy.Start():
+                                # Send kill-all command
+                                constants.radio_lock.acquire()
+                                self.radio.write(KILL_ENCODE)
+                                constants.radio_lock.release()
+                                print("Killing AUV threads...")
+
                         if self.joy is not None and self.joy.A():
                             xbox_input = True
 
