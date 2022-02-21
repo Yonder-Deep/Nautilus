@@ -112,20 +112,10 @@ class AUV_Send_Data(threading.Thread):
         constants.RADIO_LOCK.release()
 
     def send_depth(self):
-        # TODO: default if read fails
-        pressure = 0
-        try:
-            self.pressure_sensor.read()
-        except Exception as e:
-            print("Failed to read in pressure. Error:", e)
-
-        # defaults to mbars
-        pressure = self.pressure_sensor.pressure()
-        print("Current pressure:", pressure)
-        mbar_to_depth = (pressure-1013.25)/1000 * 10.2
-        if mbar_to_depth < 0:
-            mbar_to_depth = 0
-        for_depth = math.modf(mbar_to_depth)
+        depth = self.get_depth()
+        if depth < 0:
+            depth = 0
+        for_depth = math.modf(depth)
         # standard depth of 10.2
         decimal = int(round(for_depth[0], 1) * 10)
         whole = int(for_depth[1])
@@ -155,3 +145,18 @@ class AUV_Send_Data(threading.Thread):
 
     def stop(self):
         self._ev.set()
+
+    def get_depth(self):
+        # TODO: default if read fails
+        if self.pressure_sensor is not None:
+            try:
+                self.pressure_sensor.read()
+            except Exception as e:
+                print("Failed to read in pressure. Error:", e)
+            pressure = self.pressure_sensor.pressure()
+            # TODO: Check if this is accurate, mbars to m
+            depth = (pressure-1013.25)/1000 * 10.2
+            return depth - global_vars.depth_offset
+        else:
+            global_vars.log("No pressure sensor found.")
+            return None

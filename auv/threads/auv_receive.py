@@ -270,9 +270,8 @@ class AUV_Receive(threading.Thread):
         if (x == 3):
             print("CALIBRATE")
 
-            # calibrate
-            # TODO add global depth
-            depth = 0
+            depth = self.get_depth()
+            global_vars.depth_offset = global_vars.depth_offset + depth
         if (x == 4):
             print("ABORT")
             # abort()
@@ -353,7 +352,6 @@ class AUV_Receive(threading.Thread):
             except:
                 print("Failed to read pressure going up")
         self.mc.update_motor_speeds([0, 0, 0, 0])
-
 
     def dive(self, to_depth):
         self.motor_queue.queue.clear()
