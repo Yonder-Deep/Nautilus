@@ -31,6 +31,9 @@ class AUV_Receive(threading.Thread):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
+
+        print("RECEIVE", self.mc)
+
         self.time_since_last_ping = time.time() + 4
         self.current_mission = None
         self.timer = 0
