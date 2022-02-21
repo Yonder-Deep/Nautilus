@@ -89,6 +89,8 @@ class MotorController:
         self.front_speed = data[FRONT_MOTOR_INDEX]
         self.back_speed = data[BACK_MOTOR_INDEX]
 
+        for element in data:
+            print("WHAT ARE YOU", element)
         if all([element == 0 for element in data]):
             self.motion_type = 0
 
@@ -210,9 +212,7 @@ class MotorController:
 
     def is_stopped(self):
         """ Returns if any of the motors are not set to zero. """
-        for motor in self.motors:
-            print(motor.speed)
-        print("FORWARD SPEED", self.forward_speed)
+        # do not use
         return all([motor.speed == 0 for motor in self.motors])
 
 

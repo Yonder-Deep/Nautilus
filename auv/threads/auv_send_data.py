@@ -110,7 +110,7 @@ class AUV_Send_Data(threading.Thread):
 
         # Movement status data
         movement = self.mc.motion_type
-        print("MOVEMENT", movement, self.mc.motion_type, self.mc.is_stopped())
+        print("MOVEMENT", movement, self.mc.motion_type)
         movement = movement << 3
 
         message_encode = (constants.MISC_ENCODE | sign | whole_temperature | movement)
