@@ -47,7 +47,8 @@ if __name__ == '__main__':  # If we are executing this file as main
         global_vars.log("Pressure sensor is not connected to the AUV.")
 
     try:
-        imu = IMU(constants.IMU_PATH)
+        imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
+
         global_vars.log("IMU has been found.")
     except:
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
