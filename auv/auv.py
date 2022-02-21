@@ -19,6 +19,8 @@ from api import MotorController
 from api import MotorQueue
 from missions import *
 
+from static import global_vars
+
 from threads.auv_send_data import AUV_Send_Data
 from threads.auv_send_ping import AUV_Send_Ping
 from threads.auv_receive import AUV_Receive
@@ -34,10 +36,12 @@ def threads_active(ts):
     return False
 
 
-if __name__ == '__main__':  # If we are executing this file as main
-    queue = Queue()
-    halt = [False]
+def stop_threads(ts):
+    for t in ts:
+        t.stop()
 
+
+def start_threads(ts, queue, halt):
     # Initialize hardware
     try:
         pressure_sensor = PressureSensor()
@@ -67,7 +71,7 @@ if __name__ == '__main__':  # If we are executing this file as main
     ts = []
 
     auv_s_thread = AUV_Send_Data(radio, pressure_sensor, imu, mc)
-    auv_ping_thread = AUV_Send_Ping()
+    auv_ping_thread = AUV_Send_Ping(radio)
 
     ts.append(auv_motor_thread)
     ts.append(auv_r_thread)
@@ -79,8 +83,32 @@ if __name__ == '__main__':  # If we are executing this file as main
     auv_s_thread.start()
     auv_ping_thread.start()
 
+
+if __name__ == '__main__':  # If we are executing this file as main
+    queue = Queue()
+    halt = [False]
+
+    ts = []
+
+    start_threads(ts, queue, halt)
+
     try:
         while threads_active(ts):
+            if global_vars.stop_all_threads:
+                global_vars.stop_all_threads = False
+                stop_threads(ts)
+
+            if global_vars.restart_threads:
+                global_vars.restart_threads = False
+                stop_threads(ts)
+
+                # Reinitialize and restart all threads
+                queue = Queue()
+                halt = [False]
+                ts = []
+
+                start_threads(ts, queue, halt)
+
             time.sleep(1)
     except KeyboardInterrupt:
         # kill threads

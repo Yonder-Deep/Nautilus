@@ -130,13 +130,22 @@ class AUV_Receive(threading.Thread):
                         elif header == constants.DIVE_ENCODE:  # dive
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
-
                             constants.LOCK.acquire()
                             self.dive(desired_depth)
                             constants.LOCK.release()
 
                         elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
                             self.read_mission_command(message)
+
+                        elif header == constants.KILL_ENCODE:  # Kill/restart AUV threads
+                            if (message & 1):
+                                # Restart AUV threads
+                                self.mc.zero_out_motors()
+                                global_vars.restart_threads = True
+                            else:
+                                # Kill AUV threads
+                                self.mc.zero_out_motors()
+                                global_vars.stop_all_threads = True
 
                         line = self.radio.read(7)
 
@@ -220,9 +229,10 @@ class AUV_Receive(threading.Thread):
         xsign = (message & 0x8000) >> 15
         y = message & 0x7F
         ysign = (message & 0x80) >> 7
-        if xsign == 1:
+        # Flip motors according to x and ysign
+        if xsign != 1:
             x = -x
-        if ysign == 1:
+        if ysign != 1:
             y = -y
         #print("Xbox Command:", x, y)
         if vertical:

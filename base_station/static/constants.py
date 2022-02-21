@@ -15,3 +15,7 @@ MAX_TURN_SPEED = 50
 
 lock = threading.Lock()  # lock for writing to out_q to GUI
 radio_lock = threading.Lock()   # lock for writing to radio
+
+# Heat Regulation in Pi
+SAFE_TEMP = 60
+HOT_TEMP = 80

@@ -97,7 +97,6 @@ class AUV_Send_Data(threading.Thread):
         except:
             # TODO print statement, something went wrong!
             temperature = 0
-
         # Temperature radio
         whole_temperature = int(temperature)
         sign = 0
