@@ -95,7 +95,7 @@ class MotorController:
             print("WE MADE IT")
             self.motion_type = 0
 
-        log("motors is: " + str(data))
+        log("motors is: " + str(data) + " with motion type " + self.motion_type)
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
