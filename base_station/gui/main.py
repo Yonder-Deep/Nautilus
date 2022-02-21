@@ -20,8 +20,11 @@ from tkinter import Toplevel
 from tkinter import StringVar
 from tkinter import BOTH, TOP, BOTTOM, LEFT, RIGHT, YES, NO, SUNKEN, X, Y, W, E, N, S, DISABLED, NORMAL, END
 from tkinter import messagebox
+from tkinter import constants
 from tkinter.ttk import Combobox
 from tkinter import font
+
+from static import constants
 from .map import Map
 from screeninfo import get_monitors, Enumerator
 
@@ -70,7 +73,6 @@ ICON_PATH = "gui/images/yonder_logo.png"
 
 class Main():
     """ Main GUI object that handles all aspects of the User-Interface """
-
     def __init__(self, in_q=None, out_q=None):
         """ Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -121,6 +123,7 @@ class Main():
         CALIBRATE_FRAME_WIDTH = int(CALIBRATE_FRAME_WIDTH * self.multiplier_x)
         MISSION_FRAME_WIDTH = int(MISSION_FRAME_WIDTH * self.multiplier_x)
         LOG_FRAME_WIDTH = int(LOG_FRAME_WIDTH * self.multiplier_x)
+        self.heat_checker = 0
         ### End of high-resolution screen scaling code ###
 
         # Fix font scaling for all Combo-box elements
@@ -511,6 +514,17 @@ class Main():
         """ Sets internal temperature text """
         self.temperature_string.set(
             "Internal Temperature: " + str(temperature) + "C")
+        if temperature >= constants.HOT_TEMP:
+            if self.heat_checker < 2:
+                messagebox.showwarning("WARNING", "AUV has reached throttling rate! Recommend toggling kill all!")
+                self.heat_checker = 2
+        elif temperature >= constants.SAFE_TEMP:
+            if self.heat_checker < 1:
+                messagebox.showwarning("WARNING", "AUV temperature is reaching unsafe levels!")
+                self.heat_checker = 1
+        else:
+            self.heat_checker = 0
+
 
     # def set_pressure(self, pressure):
     #     """ Sets depth text """
