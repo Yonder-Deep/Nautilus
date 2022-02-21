@@ -89,6 +89,9 @@ class MotorController:
         self.front_speed = data[FRONT_MOTOR_INDEX]
         self.back_speed = data[BACK_MOTOR_INDEX]
 
+        if all([element == 0 for element in data]):
+            self.motion_type = 0
+
         log("motors is: " + str(data))
 
         # Set motor speed
