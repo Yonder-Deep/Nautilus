@@ -7,7 +7,7 @@ class Mission1():
 
     def __init__(self, auv, motor_controller, pressure_sensor, IMU):
         """ Creates new audio collection mission object. Save parameters as local variables, and assign our state to starting state """
-
+        
         self.auv = auv
         self.motor_controller = motor_controller
         self.pressure_sensor = pressure_sensor
