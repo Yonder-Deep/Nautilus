@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-import sys
-sys.path.append('..')
-
-import threading
-
-from api import Radio
-
-from static import constants
-from static import global_vars
-
-# Responsibilites:
-#   - send ping
-=======
 from static import global_vars
 from static import constants
 from api import Radio
@@ -23,7 +9,6 @@ sys.path.append('..')
 # Responsibilites:
 #   - send ping
 
->>>>>>> develop
 class AUV_Send_Ping(threading.Thread):
 
     def __init__(self):
@@ -44,11 +29,7 @@ class AUV_Send_Ping(threading.Thread):
     def run(self):
         """ Main connection loop for the AUV. """
 
-<<<<<<< HEAD
-        self._init_hardware()
-=======
        self._init_hardware()
->>>>>>> develop
 
         global_vars.log("Starting main ping sending connection loop.")
         while not self._ev.wait(timeout=constants.PING_SLEEP_DELAY):

@@ -153,11 +153,6 @@ class AUV_Receive(threading.Thread):
                         elif header == constants.DIVE_ENCODE:  # dive
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
-<<<<<<< HEAD
-                            
-=======
-
->>>>>>> develop
                             constants.LOCK.acquire()
                             self.dive(desired_depth)
                             constants.LOCK.release()
@@ -288,14 +283,8 @@ class AUV_Receive(threading.Thread):
             print("CALIBRATE")
 
             # calibrate
-<<<<<<< HEAD
-            # TODO test?
-            depth = self.get_depth()
-            global_vars.depth_offset = global_vars.depth_offset + depth
-=======
             # TODO add global depth
             depth = 0
->>>>>>> develop
         if (x == 4):
             print("ABORT")
             # abort()
@@ -334,8 +323,6 @@ class AUV_Receive(threading.Thread):
         global_vars.log("Successfully aborted the current mission.")
         # self.radio.write(str.encode("mission_failed()\n"))
 
-<<<<<<< HEAD
-=======
     def timed_dive(self, time):
 
         self.motor_queue.queue.clear()
@@ -380,7 +367,6 @@ class AUV_Receive(threading.Thread):
         self.mc.update_motor_speeds([0, 0, 0, 0])
 
 
->>>>>>> develop
     def dive(self, to_depth):
         self.motor_queue.queue.clear()
         self.mc.update_motor_speeds([0, 0, 0, 0])
@@ -424,13 +410,6 @@ class AUV_Receive(threading.Thread):
 
     def get_depth(self):
         if self.pressure_sensor is not None:
-<<<<<<< HEAD
-            self.pressure_sensor.read()
-            pressure = self.pressure_sensor.pressure()
-            # TODO: Check if this is accurate, mbars to m
-            depth = (pressure-1013.25)/1000 * 10.2
-            return depth - global_vars.depth_offset
-=======
             pressure = 0
             try:
                 self.pressure_sensor.read()
@@ -441,7 +420,6 @@ class AUV_Receive(threading.Thread):
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
             return depth
->>>>>>> develop
         else:
             global_vars.log("No pressure sensor found.")
             return None
