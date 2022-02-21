@@ -90,8 +90,8 @@ class MotorController:
         self.back_speed = data[BACK_MOTOR_INDEX]
 
         for element in data:
-            print("WHAT ARE YOU", element)
-        if all([int(element) == 0 for element in data]):
+            print("WHAT ARE YOU", int(abs(element)))
+        if all([int(abs(element)) == 0 for element in data]):
             self.motion_type = 0
 
         log("motors is: " + str(data))
