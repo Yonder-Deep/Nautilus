@@ -175,6 +175,9 @@ class BaseStation_Receive(threading.Thread):
                             print('invalid line*************')
                             print(bin(intline >> 32))
                             self.radio.flush()
+                            self.radio.close()
+                            self.radio = Radio(constants.RADIO_PATH)
+
                             break
 
                         intline = intline >> 32
