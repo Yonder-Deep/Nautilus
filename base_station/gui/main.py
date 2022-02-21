@@ -24,7 +24,7 @@ from tkinter import constants
 from tkinter.ttk import Combobox
 from tkinter import font
 
-from base_station.static.constants import SAFE_TEMP
+from static import constants
 from .map import Map
 from screeninfo import get_monitors, Enumerator
 
