@@ -92,6 +92,7 @@ class MotorController:
         for element in data:
             print("WHAT ARE YOU", int(abs(element)))
         if all([int(abs(element)) == 0 for element in data]):
+            print("WE MADE IT")
             self.motion_type = 0
 
         log("motors is: " + str(data))
