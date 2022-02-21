@@ -79,7 +79,6 @@ class AUV_Send_Data(threading.Thread):
         except:
             # TODO print statement, something went wrong!
             heading = 0
-            self.radio.write(str.encode("log(\"[AUV]\tAn error occurred while trying to read heading.\")\n"))
 
         split_heading = math.modf(heading)
         decimal_heading = int(round(split_heading[0], 2) * 100)
@@ -98,7 +97,7 @@ class AUV_Send_Data(threading.Thread):
         except:
             # TODO print statement, something went wrong!
             temperature = 0
-            self.radio.write(str.encode("log(\"[AUV]\tAn error occurred while trying to read temperature.\")\n"))
+
         # Temperature radio
         whole_temperature = int(temperature)
         sign = 0

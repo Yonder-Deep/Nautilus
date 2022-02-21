@@ -128,6 +128,8 @@ class BaseStation_Receive(threading.Thread):
         # Begin our main loop for this thread.
 
         while True:
+            print(self.radio.is_open())
+
             time.sleep(0.5)
 
             # Always try to update connection status
@@ -171,7 +173,8 @@ class BaseStation_Receive(threading.Thread):
 
                         if not checksum:
                             print('invalid line*************')
-                            # self.radio.flush()
+                            print(bin(intline >> 32))
+                            self.radio.flush()
                             break
 
                         intline = intline >> 32

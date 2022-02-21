@@ -5,7 +5,7 @@ import serial
 import os
 from .crc32 import Crc32
 TIMEOUT_DURATION = 0
-DEFAULT_BAUDRATE = 115200
+DEFAULT_BAUDRATE = 57600 #115200
 
 
 class Radio:
@@ -39,6 +39,7 @@ class Radio:
         """
         # Process different types of messages
         if isinstance(message, str):
+            print("MSG BIG WRITE")
             encoded = str.encode(message + "\n")
             self.ser.write(encoded)
 
