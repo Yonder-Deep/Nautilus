@@ -75,7 +75,9 @@ class AUV_Send_Data(threading.Thread):
             print("PID needed data")
             # angular velocity, angular position
             gyro = self.imu.read_gyroscope()
-            print(gyro)
+            orient = self.imu.read_euler()
+            print("Gyro:", gyro)
+            print("Orientation:", orient)
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
                 try:  # Try to connect to our devices.
