@@ -137,7 +137,8 @@ class AUV_Receive(threading.Thread):
 
                         elif header == constants.DIVE_ENCODE:  # dive
                             # Update motion type for display on gui
-                            global_vars.movement_status = 3
+
+                            global_vars.movement_status = 2
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
                             constants.LOCK.acquire()
