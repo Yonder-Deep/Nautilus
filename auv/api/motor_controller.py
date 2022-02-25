@@ -69,7 +69,6 @@ class MotorController:
         # self.check_gpio_pins()
         # Stores the type of motion being performed
         # 1: Xbox, 2: Dive, 3: Navigation, 4: motor test
-        self.motion_type = 0
 
     def update_motor_speeds(self, data):
         """
@@ -88,14 +87,6 @@ class MotorController:
         self.turn_speed = data[TURN_MOTOR_INDEX]
         self.front_speed = data[FRONT_MOTOR_INDEX]
         self.back_speed = data[BACK_MOTOR_INDEX]
-
-        for element in data:
-            print("WHAT ARE YOU", int(abs(element)))
-        if all([int(abs(element)) == 0 for element in data]):
-            print("WE MADE IT")
-            self.motion_type = 0
-
-        log("motors is: " + str(data) + " with motion type " + str(self.motion_type))
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)

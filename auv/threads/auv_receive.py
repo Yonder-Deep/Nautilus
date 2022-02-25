@@ -127,17 +127,17 @@ class AUV_Receive(threading.Thread):
 
                         if header == constants.XBOX_ENCODE:  # xbox navigation
                             # Update motion type for display on gui
-                            self.mc.motion_type = 1
+                            global_vars.movement_status = 1
                             self.read_xbox_command(message)
 
                         elif header == constants.NAV_ENCODE:  # navigation
                             # Update motion type for display on gui
-                            self.mc.motion_type = 2
+                            global_vars.movement_status = 2
                             self.read_nav_command(message)
 
                         elif header == constants.DIVE_ENCODE:  # dive
                             # Update motion type for display on gui
-                            self.mc.motion_type = 3
+                            global_vars.movement_status = 3
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
                             constants.LOCK.acquire()

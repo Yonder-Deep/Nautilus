@@ -8,6 +8,8 @@ restart_threads = False
 
 depth_offset = 0
 
+movement_status = 0
+
 
 def log(val):
     print("[AUV]\t" + val)
