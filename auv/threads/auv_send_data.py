@@ -71,6 +71,11 @@ class AUV_Send_Data(threading.Thread):
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
 
+
+            print("PID needed data")
+            # angular velocity, angular position
+            gyro = self.imu.read_gyroscope()
+            print(gyro)
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
                 try:  # Try to connect to our devices.
