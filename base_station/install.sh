@@ -12,4 +12,6 @@ sudo apt-get install python3-pip -y
 echo 'Installing all pip modules in requirements.txt...'
 sudo python3 -m pip install -r requirements.txt
 
+sudo apt-get install python3-pil python3-pil.imagetk
+
 echo 'Installation complete!'

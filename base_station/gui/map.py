@@ -29,7 +29,7 @@ WAYPOINT_COLOR = 'red'
 MINOR_TICK_COLOR = 'black'
 
 # Conversion Multiplier Constants
-KM_TO_M = 1000.000000000
+M_TO_M = 1000.000000000
 MI_TO_M = 1609.340000000
 KM_TO_MI = 0000.621371000
 M_TO_MI = 0000.000621371
@@ -424,7 +424,7 @@ class Map:
             label,
             self.map.plot(x, y, marker='o', markersize=5,
                           color=WAYPOINT_COLOR, label=label),
-            self.map.annotate(xy=(x, y), s="AUV")
+            self.map.annotate(xy=(x, y), text="AUV") 
         ])
 
         self.draw_canvas()
