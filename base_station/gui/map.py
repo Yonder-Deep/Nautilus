@@ -419,13 +419,22 @@ class Map:
 
     def add_waypoint(self, x=0, y=0, label="My Waypoint"):
         # The code below should never fail (that would be a big problem).
-        self.waypoints.append([
-            x, y,
-            label,
-            self.map.plot(x, y, marker='o', markersize=5,
-                          color=WAYPOINT_COLOR, label=label),
-            self.map.annotate(xy=(x, y), text="AUV") 
-        ])
+        try:
+            self.waypoints.append([
+                x, y,
+                label,
+                self.map.plot(x, y, marker='o', markersize=5,
+                              color=WAYPOINT_COLOR, label=label),
+                self.map.annotate(xy=(x, y), text="AUV")
+            ])
+        except:
+            self.waypoints.append([
+                x, y,
+                label,
+                self.map.plot(x, y, marker='o', markersize=5,
+                              color=WAYPOINT_COLOR, label=label),
+                self.map.annotate(xy=(x, y), s="AUV")
+            ])
 
         self.draw_canvas()
         return [x, y]
