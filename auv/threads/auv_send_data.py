@@ -109,7 +109,7 @@ class AUV_Send_Data(threading.Thread):
         sign = sign << 13
 
         # Movement status data
-        movement = 0 if self.mc.is_stopped() else global_vars.movement_status
+        movement = global_vars.movement_status
         print("Movement:", movement)
         movement = movement << 3
 
