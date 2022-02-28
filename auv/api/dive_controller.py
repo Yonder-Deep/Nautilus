@@ -57,7 +57,7 @@ class DiveController:
             front_motor_value = depth_correction - pitch_correction
             back_motor_value = depth_correction + pitch_correction
             print("Front Motor Value: {}".format(front_motor_value))
-            print("Back Motor value: {}".format(back_motor_valueback_motor_value))
+            print("Back Motor value: {}".format(back_motor_value))
             self.mc.update_motor_speeds([0, 0, back_motor_value, front_motor_value])
             print("Succeeded on way down. Depth is", depth)
 
