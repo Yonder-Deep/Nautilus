@@ -27,14 +27,15 @@ class DiveController:
             global_vars.log("No pressure sensor found.")
             return None
 
-    def start_dive(self, depth):
+    def start_dive(self, to_depth):
         self.pid_depth.update_target(depth)
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
         # wait until current motor commands finish running, will need global variable
         # Dive
+
+        depth = self.get_depth()
         start_time = time.time()
-        
         # main PID loop? 
         # Time out and stop diving if > 1 min
         while depth < to_depth and time.time() < start_time + 60:
