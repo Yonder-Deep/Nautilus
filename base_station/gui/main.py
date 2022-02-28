@@ -73,6 +73,7 @@ ICON_PATH = "gui/images/yonder_logo.png"
 
 class Main():
     """ Main GUI object that handles all aspects of the User-Interface """
+
     def __init__(self, in_q=None, out_q=None):
         """ Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -524,7 +525,6 @@ class Main():
                 self.heat_checker = 1
         else:
             self.heat_checker = 0
-
 
     # def set_pressure(self, pressure):
     #     """ Sets depth text """
