@@ -38,7 +38,7 @@ class AUV_Receive(threading.Thread):
         self.motor_queue = queue
         self.halt = halt               # List for MotorQueue to check updated halt status
 
-        self.dive_controller = DiveController(mc, pressure_sensor, imu)
+        self.dive_controller = None
 
         self._ev = threading.Event()
         threading.Thread.__init__(self)
@@ -74,6 +74,7 @@ class AUV_Receive(threading.Thread):
         except:
             global_vars.log("Radio device is not connected to AUV on RADIO_PATH.")
 
+        self.dive_controller = DiveController(self.mc, self.pressure_sensor, self.imu)
     # TODO delete
 
     def x(self, data):
