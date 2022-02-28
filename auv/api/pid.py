@@ -23,7 +23,7 @@ class PID:
         self.last_time = time.time()
         self.within_tolerance = False
 
-    def pid(self, current_value):
+    def pid_heading(self, current_value):
         """PID Calculation"""
         # Calculate error
         #error = self.set_point - current_value
@@ -70,10 +70,10 @@ class PID:
                                       (self.set_point, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\t')
         return p_term + i_term + d_term  # pid
    
-    def pid_pitch(self, current_value):
+    def pid(self, current_value):
         """PID Calculation"""
         # Calculate error
-        error = current_value 
+        error = self.set_point - current_value
         # Figure out state
         
         if(self.within_tolerance and abs(error) > self.control_tolerance ):

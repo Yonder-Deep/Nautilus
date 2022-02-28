@@ -5,6 +5,7 @@ from api import PressureSensor
 from api import Crc32
 from api import IMU
 from api import Radio
+from api import DiveController
 from queue import Queue
 from static import global_vars
 from static import constants
@@ -36,17 +37,14 @@ class AUV_Receive(threading.Thread):
         self.timer = 0
         self.motor_queue = queue
         self.halt = halt               # List for MotorQueue to check updated halt status
-        # Get all non-default callable methods in this class
-        self.methods = [m for m in dir(AUV_Receive) if not m.startswith('__')]
+
+        self.dive_controller = DiveController(mc, pressure_sensor, imu)
 
         self._ev = threading.Event()
         threading.Thread.__init__(self)
 
     def run(self):
         """ Constructor for the AUV """
-
-        # Get all non-default callable methods in this class
-        self.methods = [m for m in dir(AUV_Receive) if not m.startswith('__')]
 
         self._ev = threading.Event()
 
@@ -369,21 +367,10 @@ class AUV_Receive(threading.Thread):
 
     def dive(self, to_depth):
         self.motor_queue.queue.clear()
-        self.mc.update_motor_speeds([0, 0, 0, 0])
-        # wait until current motor commands finish running, will need global variable
-        # Dive
-        depth = self.get_depth()
-        start_time = time.time()
-        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
-        # Time out and stop diving if > 1 min
-        while depth < to_depth and time.time() < start_time + 60:
-            try:
-                depth = self.get_depth()
-                print("Succeeded on way down. Depth is", depth)
-            except:
-                print("Failed to read pressure going down")
 
-        self.mc.update_motor_speeds([0, 0, 0, 0])
+        # begin dive
+        self.dive_controller.start_dive(to_depth)
+
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
         while time.time() < end_time:
