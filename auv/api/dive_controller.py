@@ -28,7 +28,7 @@ class DiveController:
             return None
 
     def start_dive(self, to_depth):
-        self.pid_depth.update_target(depth)
+        self.pid_depth.update_target(to_depth)
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
         # wait until current motor commands finish running, will need global variable
