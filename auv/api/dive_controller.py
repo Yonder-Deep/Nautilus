@@ -3,6 +3,7 @@ from api import PID
 
 class DiveController:
     def __init__(self, mc, pressure_sensor, imu):
+        self.mc = mc
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0)
