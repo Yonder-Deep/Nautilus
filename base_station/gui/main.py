@@ -74,6 +74,7 @@ ICON_PATH = "gui/images/yonder_logo.png"
 
 class Main():
     """ Main GUI object that handles all aspects of the User-Interface """
+
     def __init__(self, in_q=None, out_q=None):
         """ Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -273,7 +274,6 @@ class Main():
     def forward_slider_function(self):
         print(self.forward_slider.get())
         self.log("Forward Slider")
-        
 
     def left_slider_function(self):
         print(self.left_slider.get())
@@ -290,20 +290,22 @@ class Main():
 
         self.header_label = Label(self.motor_control_frame, text="Motor Speeds", font=(FONT, HEADING_SIZE))
         self.header_label.pack()
-        self.header_label.place(relx = 0.05, rely = 0.05)
+        self.header_label.place(relx=0.05, rely=0.05)
         self.distance_label_1 = Label(self.motor_control_frame, text="Forward/Backward Speed", font=(FONT, FONT_SIZE))
         self.distance_label_1.pack()
-        self.distance_label_1.place(relx=0.05, rely=0.1) 
-        self.forward_slider = Scale(self.root,from_= -static.constants.MAX_AUV_SPEED,to=static.constants.MAX_AUV_SPEED,length=50,tickinterval=10,command=self.forward_slider_function)
+        self.distance_label_1.place(relx=0.05, rely=0.1)
+        self.forward_slider = Scale(self.root, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                    length=250, tickinterval=10, command=self.forward_slider_function, orient='horizontal')
         self.forward_slider.pack()
-        self.forward_slider.place(relx=0.05,rely=0.15)
+        #self.forward_slider.place(relx=0.05, rely=0.15)
 
         self.distance_label_2 = Label(self.motor_control_frame, text="Left/Right Speed", font=(FONT, FONT_SIZE))
         self.distance_label_2.pack()
         self.distance_label_2.place(relx=0.05, rely=0.2)
-        self.left_slider = Scale(self.root,from_= -static.constants.MAX_AUV_SPEED,to=static.constants.MAX_AUV_SPEED,length=50,tickinterval=10,command=self.left_slider_function)
+        self.left_slider = Scale(self.root, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                 length=250, tickinterval=10, command=self.left_slider_function, orient='horizontal')
         self.left_slider.pack()
-        self.left_slider.place(relx=0.05,rely=0.25)
+        # self.left_slider.place(relx=0.015, rely=0.25)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
         self.header_label.pack()
@@ -556,7 +558,6 @@ class Main():
                 self.heat_checker = 1
         else:
             self.heat_checker = 0
-
 
     # def set_pressure(self, pressure):
     #     """ Sets depth text """
