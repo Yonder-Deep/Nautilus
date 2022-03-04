@@ -27,7 +27,8 @@ class DiveController:
             global_vars.log("No pressure sensor found.")
             return None
 
-    def start_dive(self, to_depth):
+    # note: default arguments are to resurface
+    def start_dive(self, to_depth=0, dive_length=0):
         self.pid_depth.update_target(to_depth)
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
@@ -36,20 +37,23 @@ class DiveController:
 
         depth = self.get_depth()
         start_time = time.time()
+
+        target_met = False
+        target_met_time = 0
         # main PID loop? 
         # Time out and stop diving if > 1 min
-        while depth < to_depth and time.time() < start_time + 60:
+        while time.time() < start_time + 60:
             try:
                 depth = self.get_depth()
                 
             except:
-                print("Failed to read pressure going down")
+                print("Dive controller: Failed to read pressure")
                 return
 
             try:
                 _, pitch,_ = self.imu.read_euler()
             except:
-                print("Failed to read IMU value going down")
+                print("Dive controller: Failed to read IMU value")
                 return
 
             depth_correction = self.pid_depth.pid(depth)
@@ -59,7 +63,18 @@ class DiveController:
             print("Front Motor Value: {}".format(front_motor_value))
             print("Back Motor value: {}".format(back_motor_value))
             self.mc.update_motor_speeds([0, 0, back_motor_value, front_motor_value])
-            print("Succeeded on way down. Depth is", depth)
+
+            if self.pid_depth.within_tolerance and not target_met:
+                # want to wait for dive_length seconds before stopping
+                target_met = True
+                target_met_time = time.time()
+
+            if target_met and time.time() < target_met_time + dive_length:
+                print("Maintained depth for {} seconds, ending dive".format(dive_length))
+                break
+
+            print("Currently diving. Current depth: {}, Target depth: {}".format(depth, to_depth))
+            time.sleep(0.5)
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
 

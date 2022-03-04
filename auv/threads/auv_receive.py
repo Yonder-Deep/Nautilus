@@ -370,8 +370,12 @@ class AUV_Receive(threading.Thread):
         self.motor_queue.queue.clear()
 
         # begin dive
-        self.dive_controller.start_dive(to_depth)
+        self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
 
+        # resurface
+        self.dive_controller.start_dive()
+
+        '''
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
         while time.time() < end_time:
@@ -381,8 +385,6 @@ class AUV_Receive(threading.Thread):
         for i in range(0, 3):
             self.radio.read(7)
 
-        # Resurface
-        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
         intline = 0
         while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
             line = self.radio.read(7)
@@ -394,7 +396,7 @@ class AUV_Receive(threading.Thread):
                 print("Succeeded on way up. Depth is", depth)
             except:
                 print("Failed to read pressure going up")
-        self.mc.update_motor_speeds([0, 0, 0, 0])
+        '''
 
     def get_depth(self):
         if self.pressure_sensor is not None:
