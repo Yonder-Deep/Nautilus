@@ -69,7 +69,7 @@ class DiveController:
                 target_met = True
                 target_met_time = time.time()
 
-            if target_met and time.time() < target_met_time + dive_length:
+            if target_met and time.time() > target_met_time + dive_length:
                 print("Maintained depth for {} seconds, ending dive".format(dive_length))
                 break
 
