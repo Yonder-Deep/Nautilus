@@ -295,7 +295,7 @@ class Main():
         self.distance_label_1.pack()
         self.distance_label_1.place(relx=0.05, rely=0.1)
         self.forward_slider = Scale(self.root, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                    length=250, tickinterval=10, command=self.forward_slider_function, orient='horizontal')
+                                    length=750, tickinterval=10, command=self.forward_slider_function, orient='horizontal')
         self.forward_slider.pack()
         #self.forward_slider.place(relx=0.05, rely=0.15)
 
@@ -303,7 +303,7 @@ class Main():
         self.distance_label_2.pack()
         self.distance_label_2.place(relx=0.05, rely=0.2)
         self.left_slider = Scale(self.root, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                 length=250, tickinterval=10, command=self.left_slider_function, orient='horizontal')
+                                 length=750, tickinterval=10, command=self.left_slider_function, orient='horizontal')
         self.left_slider.pack()
         # self.left_slider.place(relx=0.015, rely=0.25)
 
