@@ -38,7 +38,7 @@ class AUV_Receive(threading.Thread):
         self.motor_queue = queue
         self.halt = halt               # List for MotorQueue to check updated halt status
 
-        self.dive_controller = None
+        self.dive_controller = DiveController(self.mc, self.pressure_sensor, self.imu)
 
         self._ev = threading.Event()
         threading.Thread.__init__(self)
