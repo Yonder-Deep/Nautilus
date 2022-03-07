@@ -7,8 +7,8 @@ class DiveController:
         self.mc = mc
         self.pressure_sensor = pressure_sensor
         self.imu = imu
-        self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0)
-        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=5.0)
+        self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0, name="Pitch")
+        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=5.0, name="Depth")
 
     def get_depth(self):
         if self.pressure_sensor is not None:
@@ -61,8 +61,7 @@ class DiveController:
             pitch_correction = self.pid_pitch.pid(pitch)
             front_motor_value = depth_correction - pitch_correction
             back_motor_value = depth_correction + pitch_correction
-            print("Front Motor Value: {}".format(front_motor_value))
-            print("Back Motor value: {}".format(back_motor_value))
+            print("Front Motor Value: {} \nBack Motor Value: {}".format(front_motor_value, back_motor_value))
             self.mc.update_motor_speeds([0, 0, back_motor_value, front_motor_value])
 
             if self.pid_depth.within_tolerance and not target_met:
