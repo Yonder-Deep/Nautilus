@@ -41,7 +41,7 @@ class DiveController:
         target_met_time = 0
         # main PID loop?
         # Time out and stop diving if > 1 min
-        while time.time() < start_time + 60:
+        while time.time() < start_time + 300:
             try:
                 depth = self.get_depth()
 
