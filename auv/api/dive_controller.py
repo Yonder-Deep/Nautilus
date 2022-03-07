@@ -8,7 +8,7 @@ class DiveController:
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0)
-        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=5.0)
+        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=10.0)
 
 
     def get_depth(self):
@@ -54,7 +54,7 @@ class DiveController:
                 _, pitch,_ = self.imu.read_euler()
             except:
                 print("Dive controller: Failed to read IMU value")
-                return
+                
 
             depth_correction = self.pid_depth.pid(depth)
             pitch_correction = self.pid_pitch.pid(pitch)
