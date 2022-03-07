@@ -55,12 +55,8 @@ class DiveController:
                 _, pitch, _ = self.imu.read_euler()
             except:
                 print("Dive controller: Failed to read IMU value")
-<<<<<<< HEAD
-                
-=======
                 time.sleep(0.1)
                 continue
->>>>>>> 47af54d0b19fa0798dfd79e5a7cc34a170025887
 
             depth_correction = self.pid_depth.pid(depth)
             pitch_correction = self.pid_pitch.pid(pitch)
