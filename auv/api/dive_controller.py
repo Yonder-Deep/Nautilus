@@ -7,8 +7,8 @@ class DiveController:
         self.mc = mc
         self.pressure_sensor = pressure_sensor
         self.imu = imu
-        self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0, i=2)
-        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=10.0, i=2)
+        self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0, name="Pitch", i=10)
+        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=10.0, name="Depth", i=10)
 
 
     def get_depth(self):
