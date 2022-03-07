@@ -60,9 +60,18 @@ class DiveController:
 
             depth_correction = self.pid_depth.pid(depth)
             pitch_correction = self.pid_pitch.pid(pitch)
+            
+
+            if depth_correction - abs(pitch_correction) < -150:
+                depth_correction = -150 + abs(pitch_correction)
+            if depth_correction + abs(pitch_correction) > 150:
+                depth_correction = 150 - abs(pitch_correction)
+            
+
             front_motor_value = depth_correction - pitch_correction
             back_motor_value = depth_correction + pitch_correction
-            print("Front Motor Value: {} \nBack Motor Value: {}".format(front_motor_value, back_motor_value))
+ 
+            print("Depth_Correction: {}\tPitch_Correction: {}\n".format(depth_correction, pitch_correction))
             self.mc.update_motor_speeds([0, 0, back_motor_value, front_motor_value])
 
             if self.pid_depth.within_tolerance and not target_met:
