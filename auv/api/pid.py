@@ -88,7 +88,7 @@ class PID:
         if(self.within_tolerance):
             if(self.is_debug):
                 #print("PID inside tolerance")
-                print('[PID %s]In Target %7.2f Current %7.2f Error %7.2f' % (self.name, self.set_point, current_value, error), end='\r')
+                print('[PID %s] In Target %7.2f Current %7.2f Error %7.2f' % (self.name, self.set_point, current_value, error), end='\n')
 
             return 0
 
@@ -110,8 +110,8 @@ class PID:
         self.last_time = time.time()
         self.last_error = error
         if(self.is_debug):
-            print('[PID %s]SetPoint %7.2f Current %7.2f Error %7.2f P %7.2f I %7.2f D %7.2f Feedback %7.2f' %
-                  (self.name, 0, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\t')
+            print('[PID %s] SetPoint %7.2f Current %7.2f Error %7.2f P %7.2f I %7.2f D %7.2f Feedback %7.2f' %
+                  (self.name, 0, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\n')
         return p_term + i_term + d_term
 
     def set_p(self, p):
