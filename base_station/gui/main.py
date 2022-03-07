@@ -24,7 +24,7 @@ from tkinter import constants
 from tkinter.ttk import Combobox
 from tkinter import font
 
-from base_station.static.constants import SAFE_TEMP
+from static import constants
 from .map import Map
 from screeninfo import get_monitors, Enumerator
 
@@ -73,6 +73,7 @@ ICON_PATH = "gui/images/yonder_logo.png"
 
 class Main():
     """ Main GUI object that handles all aspects of the User-Interface """
+
     def __init__(self, in_q=None, out_q=None):
         """ Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -525,11 +526,10 @@ class Main():
         else:
             self.heat_checker = 0
 
-
-    # def set_pressure(self, pressure):
-    #     """ Sets depth text """
-    #     self.pressure_string.set(
-    #         "pressure: " + str(pressure) + "mBar")
+   # def set_pressure(self, pressure):
+   #     """ Sets depth text """
+   #     self.pressure_string.set(
+   #         "pressure: " + str(pressure) + "mBar")
 
     def set_depth(self, depth):
         """ Sets depth text """

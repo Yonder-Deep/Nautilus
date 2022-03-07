@@ -10,7 +10,6 @@ class DiveController:
         self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0)
         self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=5.0)
 
-
     def get_depth(self):
         if self.pressure_sensor is not None:
             while(True):
@@ -40,21 +39,23 @@ class DiveController:
 
         target_met = False
         target_met_time = 0
-        # main PID loop? 
+        # main PID loop?
         # Time out and stop diving if > 1 min
         while time.time() < start_time + 60:
             try:
                 depth = self.get_depth()
-                
+
             except:
                 print("Dive controller: Failed to read pressure")
-                return
+                time.sleep(0.1)
+                continue
 
             try:
-                _, pitch,_ = self.imu.read_euler()
+                _, pitch, _ = self.imu.read_euler()
             except:
                 print("Dive controller: Failed to read IMU value")
-                return
+                time.sleep(0.1)
+                continue
 
             depth_correction = self.pid_depth.pid(depth)
             pitch_correction = self.pid_pitch.pid(pitch)
@@ -74,7 +75,6 @@ class DiveController:
                 break
 
             print("Currently diving. Current depth: {}, Target depth: {}".format(depth, to_depth))
-            time.sleep(0.5)
+            time.sleep(0.1)
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
-

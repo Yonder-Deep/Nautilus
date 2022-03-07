@@ -21,12 +21,12 @@ def get_heading_encode(data):
 class AUV_Send_Data(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self):
+    def __init__(self, radio, pressure_sensor, imu, mc):
         """ Constructor for the AUV """
-        self.radio = None
-        self.pressure_sensor = None
-        self.imu = None
-        self.mc = MotorController()
+        self.radio = radio
+        self.pressure_sensor = pressure_sensor
+        self.imu = imu
+        self.mc = mc
         self.time_since_last_ping = 0.0
         self.current_mission = None
         self.timer = 0
@@ -35,37 +35,8 @@ class AUV_Send_Data(threading.Thread):
 
         threading.Thread.__init__(self)
 
-    def _init_hardware(self):
-        try:
-            self.pressure_sensor = PressureSensor()
-            self.pressure_sensor.init()
-            global_vars.log("Pressure sensor has been found")
-        except:
-            global_vars.log("Pressure sensor is not connected to the AUV.")
-
-        self.imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
-        global_vars.log("IMU has been found.")
-
-        try:
-            if not self.imu.begin():
-                print("Failed to initialize IMU!")
-        except Exception as e:
-            print("Exception thrown when initializing IMU:", e)
-
-        # TODO copied over from example code
-        # if not self.imu.begin():
-        #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
-
-        try:
-            self.radio = Radio(constants.RADIO_PATH)
-            global_vars.log("Radio device has been found.")
-        except:
-            global_vars.log("Radio device is not connected to AUV on RADIO_PATH.")
-
     def run(self):
         """ Main connection loop for the AUV. """
-
-        self._init_hardware()
 
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
@@ -141,20 +112,10 @@ class AUV_Send_Data(threading.Thread):
         constants.RADIO_LOCK.release()
 
     def send_depth(self):
-        # TODO: default if read fails
-        pressure = 0
-        try:
-            self.pressure_sensor.read()
-        except Exception as e:
-            print("Failed to read in pressure. Error:", e)
-
-        # defaults to mbars
-        pressure = self.pressure_sensor.pressure()
-        print("Current pressure:", pressure)
-        mbar_to_depth = (pressure-1013.25)/1000 * 10.2
-        if mbar_to_depth < 0:
-            mbar_to_depth = 0
-        for_depth = math.modf(mbar_to_depth)
+        depth = self.get_depth()
+        if depth < 0:
+            depth = 0
+        for_depth = math.modf(depth)
         # standard depth of 10.2
         decimal = int(round(for_depth[0], 1) * 10)
         whole = int(for_depth[1])
@@ -184,3 +145,18 @@ class AUV_Send_Data(threading.Thread):
 
     def stop(self):
         self._ev.set()
+
+    def get_depth(self):
+        # TODO: default if read fails
+        if self.pressure_sensor is not None:
+            try:
+                self.pressure_sensor.read()
+            except Exception as e:
+                print("Failed to read in pressure. Error:", e)
+            pressure = self.pressure_sensor.pressure()
+            # TODO: Check if this is accurate, mbars to m
+            depth = (pressure-1013.25)/1000 * 10.2
+            return depth - global_vars.depth_offset
+        else:
+            global_vars.log("No pressure sensor found.")
+            return None

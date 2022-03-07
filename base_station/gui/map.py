@@ -29,7 +29,7 @@ WAYPOINT_COLOR = 'red'
 MINOR_TICK_COLOR = 'black'
 
 # Conversion Multiplier Constants
-KM_TO_M = 1000.000000000
+M_TO_M = 1000.000000000
 MI_TO_M = 1609.340000000
 KM_TO_MI = 0000.621371000
 M_TO_MI = 0000.000621371
@@ -419,13 +419,22 @@ class Map:
 
     def add_waypoint(self, x=0, y=0, label="My Waypoint"):
         # The code below should never fail (that would be a big problem).
-        self.waypoints.append([
-            x, y,
-            label,
-            self.map.plot(x, y, marker='o', markersize=5,
-                          color=WAYPOINT_COLOR, label=label),
-            self.map.annotate(xy=(x, y), s="AUV")
-        ])
+        try:
+            self.waypoints.append([
+                x, y,
+                label,
+                self.map.plot(x, y, marker='o', markersize=5,
+                              color=WAYPOINT_COLOR, label=label),
+                self.map.annotate(xy=(x, y), text="AUV")
+            ])
+        except:
+            self.waypoints.append([
+                x, y,
+                label,
+                self.map.plot(x, y, marker='o', markersize=5,
+                              color=WAYPOINT_COLOR, label=label),
+                self.map.annotate(xy=(x, y), s="AUV")
+            ])
 
         self.draw_canvas()
         return [x, y]
