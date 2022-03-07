@@ -282,73 +282,87 @@ class Main():
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
         self.motor_control_frame = Frame(
-            self.stack_frame, height=TOP_FRAME_HEIGHT*(3/7), width=FUNC_FRAME_WIDTH, bd=0.4, relief=SUNKEN)
-        # self.motor_control_frame.pack(
+            self.stack_frame, width=FUNC_FRAME_WIDTH, bd=0.4, relief=SUNKEN)
+        # self.motor_control_frame = Frame(
+        #     self.stack_frame, height=TOP_FRAME_HEIGHT*(3/7), width=FUNC_FRAME_WIDTH, bd=0.4, relief=SUNKEN)
+        # self.motor_control_frame.pacfk(
         #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(4/5), side=LEFT, fill=BOTH, expand=NO)
         self.motor_control_frame.grid(
             row=3, column=1, pady=CALIBRATE_PAD_Y)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Speeds", font=(FONT, HEADING_SIZE))
-        self.header_label.pack()
-        self.header_label.place(relx=0.05, rely=0.05)
+        self.header_label.grid(row=0, columnspan=2)
+        # self.header_label.pack()
+        #self.header_label.place(relx=0.05, rely=0.05)
         self.distance_label_1 = Label(self.motor_control_frame, text="Forward/Backward Speed", font=(FONT, FONT_SIZE))
-        self.distance_label_1.pack()
-        self.distance_label_1.place(relx=0.05, rely=0.1)
-        self.forward_slider = Scale(self.root, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                    length=750, tickinterval=10, command=self.forward_slider_function, orient='horizontal')
-        self.forward_slider.pack()
+        self.distance_label_1.grid(row=1, columnspan=2)
+        # self.distance_label_1.pack()
+        #self.distance_label_1.place(relx=0.05, rely=0.1)
+        self.forward_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                    length=250, tickinterval=25, command=self.forward_slider_function, orient='horizontal')
+        self.forward_slider.grid(row=2, columnspan=2)
+        #  self.forward_slider.pack()
         #self.forward_slider.place(relx=0.05, rely=0.15)
 
         self.distance_label_2 = Label(self.motor_control_frame, text="Left/Right Speed", font=(FONT, FONT_SIZE))
-        self.distance_label_2.pack()
-        self.distance_label_2.place(relx=0.05, rely=0.2)
-        self.left_slider = Scale(self.root, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                 length=750, tickinterval=10, command=self.left_slider_function, orient='horizontal')
-        self.left_slider.pack()
+        self.distance_label_2.grid(row=3, columnspan=2)
+        # self.distance_label_2.pack()
+        #self.distance_label_2.place(relx=0.05, rely=0.2)
+        self.left_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                 length=250, tickinterval=25, command=self.left_slider_function, orient='horizontal')
+        self.left_slider.grid(row=4, columnspan=2)
+        # self.left_slider.pack()
         # self.left_slider.place(relx=0.015, rely=0.25)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
-        self.header_label.pack()
-        self.header_label.place(relx=0.05, rely=0.3)
+        self.header_label.grid(row=5, columnspan=2)
+        # self.header_label.pack()
+        #self.header_label.place(relx=0.05, rely=0.3)
 
         self.distance_label = Label(self.motor_control_frame, text="Distance\n(0-100m)", font=(FONT, FONT_SIZE))
-        self.distance_label.pack()
-        self.distance_label.place(relx=0.05, rely=0.45)
+        self.distance_label_1.grid(row=6, column=0)
+        # self.distance_label.pack()
+        #self.distance_label.place(relx=0.05, rely=0.45)
 
         self.angle_label = Label(self.motor_control_frame, text="Angle\n(-180-180\N{DEGREE SIGN})", font=(FONT, FONT_SIZE))
-        self.angle_label.pack()
-        self.angle_label.place(relx=0.05, rely=0.65)
+        self.angle_label.grid(row=7, column=0)
+        # self.angle_label.pack()
+        #self.angle_label.place(relx=0.05, rely=0.65)
 
-        prompt_input_distance = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
-        prompt_input_distance.pack()
-        prompt_input_distance.place(relx=0.4, rely=0.475)
+        self.prompt_input_distance = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        self.prompt_input_distance.grid(row=6, column=1)
+        # prompt_input_distance.pack()
+        #prompt_input_distance.place(relx=0.4, rely=0.475)
 
-        prompt_input_angle = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
-        prompt_input_angle.pack()
-        prompt_input_angle.place(relx=0.4, rely=0.675)
+        self.prompt_input_angle = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        self.prompt_input_angle.grid(row=7, column=1)
+        # prompt_input_angle.pack()
+        #prompt_input_angle.place(relx=0.4, rely=0.675)
 
-        # Add commands to halt and send buttons
-        self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
-                                  width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                  pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
-        self.halt_button.pack(expand=YES)
-        self.halt_button.place(relx=0.3, rely=0.85)
+        # # Add commands to halt and send buttons
+        # self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
+        #                           width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+        #                           pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
+        # self.halt_button.grid(row=0, column=0)
+        # #self.halt_button.pack(expand=YES, side=LEFT)
+        # #self.halt_button.place(relx=0.3, rely=0.85)
 
-        self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
-                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE))
-        self.send_button.pack(expand=YES)
-        self.send_button.place(relx=0.6, rely=0.85)
+        # self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
+        #                           padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE))
+        # self.send_button.grid(row=1, column=0)
+        # #self.send_button.pack(expand=YES, side=LEFT)
+        # #self.send_button.place(relx=0.6, rely=0.85)
 
-        self.dive_button = Button(self.motor_control_frame, text="Dive", takefocus=False,
-                                  width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                  pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
+        # self.dive_button = Button(self.motor_control_frame, text="Dive", takefocus=False,
+        #                           width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+        #                           pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
+        # self.dive_button.grid(row=2, column=0)
+        # #self.dive_button.pack(expand=YES, side=LEFT)
+        # #self.dive_button.place(relx=0.05, rely=0.00)
 
-        self.dive_button.pack(expand=YES)
-        self.dive_button.place(relx=0.05, rely=0.00)
-
-        prompt_input_dive = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
-        prompt_input_dive.pack()
-        prompt_input_dive.place(relx=0.4, rely=0.000)
+        # prompt_input_dive = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        # prompt_input_dive.pack()
+        # #prompt_input_dive.place(relx=0.4, rely=0.000)
 
     def send_halt(self):
         self.out_q.put("send_halt()")
