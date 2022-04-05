@@ -295,7 +295,7 @@ class Main():
         # self.header_label.pack()
         #self.header_label.place(relx=0.05, rely=0.05)
         self.distance_label_1 = Label(self.motor_control_frame, text="Forward/Backward Speed", font=(FONT, FONT_SIZE))
-        self.distance_label_1.grid(row=1, columnspan=2)
+        self.distance_label_1.grid(row=1, columnspan=1)
         # self.distance_label_1.pack()
         #self.distance_label_1.place(relx=0.05, rely=0.1)
         self.forward_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
@@ -339,24 +339,24 @@ class Main():
         # prompt_input_angle.pack()
         #prompt_input_angle.place(relx=0.4, rely=0.675)
 
-        # # Add commands to halt and send buttons
-        # self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
-        #                           width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-        #                           pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
-        # self.halt_button.grid(row=0, column=0)
+        # Add commands to halt and send buttons
+        self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
+                                  width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+                                  pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
+        self.halt_button.grid(row=8, column=0)
         # #self.halt_button.pack(expand=YES, side=LEFT)
         # #self.halt_button.place(relx=0.3, rely=0.85)
 
-        # self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
-        #                           padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE))
-        # self.send_button.grid(row=1, column=0)
+        self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
+                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE))
+        self.send_button.grid(row=8, column=1)
         # #self.send_button.pack(expand=YES, side=LEFT)
         # #self.send_button.place(relx=0.6, rely=0.85)
 
-        # self.dive_button = Button(self.motor_control_frame, text="Dive", takefocus=False,
-        #                           width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-        #                           pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
-        # self.dive_button.grid(row=2, column=0)
+        self.dive_button = Button(self.motor_control_frame, text="Dive", takefocus=False,
+                                  width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+                                  pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
+        self.dive_button.grid(row=9, columnspan=2)
         # #self.dive_button.pack(expand=YES, side=LEFT)
         # #self.dive_button.place(relx=0.05, rely=0.00)
 
