@@ -225,13 +225,26 @@ class Main():
         self.stack_frame.pack_propagate(0)
 
     def init_camera_frame(self):
-        """ Creates the frame for camera window. """
+        """ Creates the frame for camera window. 
+            Currently using this space as a prompt to update PID values."""
         self.camera_frame = Frame(
             self.stack_frame, height=TOP_FRAME_HEIGHT*(3/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
         # self.camera_frame.pack(
         #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(2/5), side=LEFT, fill=BOTH, expand=NO)
         self.camera_frame.grid(
             row=1, column=1, pady=CALIBRATE_PAD_Y)
+        prompt_input_pid_constant = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_constant.pack()
+        prompt_input_pid_constant.place(relx=0.4, rely=0.000)
+        prompt_input_pid_value = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_value.pack()
+        prompt_input_pid_value.place(relx=0.4, rely=0.000)
+        self.update_pid_button = Button(self.motor_control_frame, text="Update PID", takefocus=False,
+                                        width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+                                        pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_pid(int(prompt_input_pid_constant.get()), int(prompt_input_pid_value.get())))
+
+        self.update_pid_button.pack(expand=YES)
+        self.update_pid_button.place(relx=0.05, rely=0.00)
 
     def init_buttons_frame(self):
         """ Creates the frame for buttons. """
@@ -336,6 +349,19 @@ class Main():
         ans = messagebox.askquestion("Dive", prompt)
         if ans == 'yes':
             self.out_q.put("send_dive(" + str(depth) + ")")
+
+    def confirm_pid(self, constant, value):
+        if constant < 0 or constant > 5:
+            messagebox.showerror("ERROR", "Select a valid PID constant (0-2): pitch pid, (3-5): depth pid")
+            return
+        if value < 0 or value > 0x3FFFF:
+            messagebox.showerror("ERROR", "Select a constant value between 0 and 262143 inclusive")
+            return
+        # Prompt mission start
+        prompt = "Update PID value?"
+        ans = messagebox.askquestion("PID", prompt)
+        if ans == 'yes':
+            self.out_q.put("send_pid_update(" + str(constant) + "," + str(value) + ")")
 
     def init_map_frame(self):
         """ Create the frame for the x, y map """

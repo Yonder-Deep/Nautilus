@@ -1,5 +1,7 @@
 from api import PID
 import time
+from static import global_vars
+from static import constants
 
 
 class DiveController:
@@ -7,9 +9,8 @@ class DiveController:
         self.mc = mc
         self.pressure_sensor = pressure_sensor
         self.imu = imu
-        self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, p=5.0, name="Pitch", i=2)
-        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, p=10.0, name="Depth", i=2)
-
+        self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, name="Pitch", p=constants.P_PITCH, i=constants.I_PITCH, d=constants.D_PITCH)
+        self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, name="Depth", p=constants.P_DEPTH, i=constants.I_DEPTH, d=constants.D_DEPTH)
 
     def get_depth(self):
         if self.pressure_sensor is not None:
@@ -60,17 +61,15 @@ class DiveController:
 
             depth_correction = self.pid_depth.pid(depth)
             pitch_correction = self.pid_pitch.pid(pitch)
-            
 
             if depth_correction - abs(pitch_correction) < -150:
                 depth_correction = -150 + abs(pitch_correction)
             if depth_correction + abs(pitch_correction) > 150:
                 depth_correction = 150 - abs(pitch_correction)
-            
 
             front_motor_value = depth_correction - pitch_correction
             back_motor_value = depth_correction + pitch_correction
- 
+
             print("Depth_Correction: {}\tPitch_Correction: {}\n".format(depth_correction, pitch_correction))
             self.mc.update_motor_speeds([0, 0, back_motor_value, front_motor_value])
 
@@ -87,3 +86,9 @@ class DiveController:
             time.sleep(0.1)
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
+
+    def update_pitch_pid(self):
+        self.pid_pitch = PID(self.mc, 0, 5, 0.1, debug=True, name="Pitch", p=constants.P_PITCH, i=constants.I_PITCH, d=constants.D_PITCH)
+
+    def update_depth_pid(self):
+        self.pid_depth = PID(self.mc, 0, 0.2, 0.1, debug=True, name="Depth", p=constants.P_DEPTH, i=constants.I_DEPTH, d=constants.D_DEPTH)

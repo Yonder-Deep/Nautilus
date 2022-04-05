@@ -144,6 +144,30 @@ class AUV_Receive(threading.Thread):
                                 # Kill AUV threads
                                 self.mc.zero_out_motors()
                                 global_vars.stop_all_threads = True
+                        elif header == constants.PID_ENCODE:
+                            # Update a PID value in the dive controller
+                            constant_select = message & (0b111 << 18)
+                            # Extract last 18 bits from message
+                            # Map to smaller, more precise numbers later
+                            value = message & (0x3FFFF)
+                            if (constant_select == 0b000):
+                                constants.P_PITCH = value
+                                self.dive_controller.update_pitch_pid()
+                            elif (constant_select == 0b001):
+                                constants.I_PITCH = value
+                                self.dive_controller.update_pitch_pid()
+                            elif (constant_select == 0b010):
+                                constants.D_PITCH = value
+                                self.dive_controller.update_pitch_pid()
+                            elif (constant_select == 0b011):
+                                constants.P_DEPTH = value
+                                self.dive_controller.update_depth_pid()
+                            elif (constant_select == 0b100):
+                                constants.I_DEPTH = value
+                                self.dive_controller.update_depth_pid()
+                            elif (constant_select == 0b101):
+                                constants.D_DEPTH = value
+                                self.dive_controller.update_depth_pid()
 
                         line = self.radio.read(7)
 
