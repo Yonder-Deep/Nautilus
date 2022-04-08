@@ -2,6 +2,7 @@ import threading
 
 # Constants for the AUV
 RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
+RADIO_PATH_2 = '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AFD0I-if00-port0'
 IMU_PATH = '/dev/serial0'
 PING = 0xFFFFFF
 SEND_SLEEP_DELAY = 1
