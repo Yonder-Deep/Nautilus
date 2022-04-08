@@ -47,8 +47,12 @@ class BaseStation_Send(threading.Thread):
             self.radio = Radio(constants.RADIO_PATH)
             self.log("Successfully found radio device on RADIO_PATH.")
         except:
-            self.log(
-                "Warning: Cannot find radio device. Ensure RADIO_PATH is correct.")
+            self.log("Warning: Cannot find radio device on RADIO_PATH. Trying RADIO_PATH_2...")
+            try:
+                self.radio = Radio(constants.RADIO_PATH_2)
+                self.log("Successfully found radio device on RADIO_PATH_2.")
+            except:
+                self.log("Warning: Cannot find radio device on RADIO_PATH_2. Check that radio paths are properly configured.")
 
         # Try to connect our Xbox 360 controller.
 
