@@ -128,8 +128,6 @@ class BaseStation_Receive(threading.Thread):
         # Begin our main loop for this thread.
 
         while True:
-            print(self.radio.is_open())
-
             time.sleep(0.5)
 
             # Always try to update connection status
@@ -176,7 +174,12 @@ class BaseStation_Receive(threading.Thread):
                             print(bin(intline >> 32))
                             self.radio.flush()
                             self.radio.close()
-                            self.radio = Radio(constants.RADIO_PATH)
+                            for rp in constants.RADIO_PATHS:
+                                try:
+                                    self.radio = Radio(rp['path'])
+                                    print(f"Successfully found radio device on {rp['radioNum']}.")
+                                except:
+                                    print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
 
                             break
 
