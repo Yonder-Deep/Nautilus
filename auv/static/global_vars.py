@@ -9,6 +9,8 @@ restart_threads = False
 
 depth_offset = 0
 
+radio = None
+
 
 def path_existance(radioPaths):
     for rp in radioPaths:
