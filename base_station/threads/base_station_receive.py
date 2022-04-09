@@ -36,18 +36,14 @@ class BaseStation_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
         # Try to assign our radio object
-        try:
-            self.radio = Radio(constants.RADIO_PATH)
-            self.log("Successfully found radio device on RADIO_PATH.")
-        except:
-            self.log("Warning: Cannot find radio device on RADIO_PATH. Trying RADIO_PATH_2...")
+        for rp in constants.RADIO_PATHS:
             try:
-                self.radio = Radio(constants.RADIO_PATH_2)
-                self.log("Successfully found radio device on RADIO_PATH_2.")
+                self.radio = Radio(rp['path'])
+                self.log(f"Successfully found radio device on {rp['radioNum']}.")
             except:
-                self.log("Warning: Cannot find radio device on RADIO_PATH_2. Check that radio paths are properly configured.")
+                self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
 
-        # Try to connect our Xbox 360 controller.
+                # Try to connect our Xbox 360 controller.
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
@@ -147,25 +143,19 @@ class BaseStation_Receive(threading.Thread):
                 constants.lock.release()
 
             # This executes if we never had a radio object, or it got disconnected.
-            if self.radio is None or not (os.path.exists(constants.RADIO_PATH) or os.path.exists(constants.RADIO_PATH_2)):
+            if self.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
                 # This executes if we HAD a radio object, but it got disconnected.
-                if self.radio is not None and not os.path.exists(constants.RADIO_PATH) and not os.path.exists(constants.RADIO_PATH_2):
+                if self.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
                     self.log("Radio device has been disconnected.")
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                try:
-                    self.radio = Radio(constants.RADIO_PATH)
-                    self.log(
-                        "Radio device has been found on RADIO_PATH.")
-                except Exception as e:
+                for rp in constants.RADIO_PATHS:
                     try:
-                        self.radio = Radio(constants.RADIO_PATH_2)
-                        self.log(
-                            "Radio device has been found on RADIO_PATH_2"
-                        )
-                    except Exception as er:
-                        print("Radio error: ", str(e), "and", str(er))
+                        self.radio = Radio(rp['path'])
+                        self.log(f"Successfully found radio device on {rp['radioNum']}.")
+                    except:
+                        self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
