@@ -57,16 +57,12 @@ def start_threads(ts, queue, halt):
     except:
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
 
-    try:
-        global_vars.radio = Radio(constants.RADIO_PATH)
-        global_vars.log("Successfully found radio device on RADIO_PATH.")
-    except:
-        global_vars.log("Warning: Cannot find radio device on RADIO_PATH. Trying RADIO_PATH_2...")
+    for rp in constants.RADIO_PATHS:
         try:
-            global_vars.radio = Radio(constants.RADIO_PATH_2)
-            global_vars.log("Successfully found radio device on RADIO_PATH_2.")
+            global_vars.radio = Radio(rp['path'])
+            global_vars.log(f"Successfully found radio device on {rp['radioNum']}.")
         except:
-            global_vars.log("Warning: Cannot find radio device on RADIO_PATH_2. Check that radio paths are properly configured.")
+            global_vars.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
 
     mc = MotorController()
 

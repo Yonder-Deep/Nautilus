@@ -1,4 +1,5 @@
 import threading
+import os
 # determines if connected to BS
 connected = False
 
@@ -7,6 +8,13 @@ stop_all_threads = False
 restart_threads = False
 
 depth_offset = 0
+
+
+def path_existance(radioPaths):
+    for rp in radioPaths:
+        if os.path.exists(rp['path']):
+            return True
+    return False
 
 
 def log(val):
