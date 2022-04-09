@@ -68,16 +68,15 @@ def start_threads(ts, queue, halt):
         except:
             global_vars.log("Warning: Cannot find radio device on RADIO_PATH_2. Check that radio paths are properly configured.")
 
-
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, radio, pressure_sensor, imu, mc)
+    auv_r_thread = AUV_Receive(queue, halt, global_vars.radio, pressure_sensor, imu, mc)
 
     ts = []
 
-    auv_s_thread = AUV_Send_Data(radio, pressure_sensor, imu, mc)
-    auv_ping_thread = AUV_Send_Ping(radio)
+    auv_s_thread = AUV_Send_Data(global_vars.radio, pressure_sensor, imu, mc)
+    auv_ping_thread = AUV_Send_Ping(global_vars.radio)
 
     ts.append(auv_motor_thread)
     ts.append(auv_r_thread)
