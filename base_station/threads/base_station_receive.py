@@ -159,7 +159,13 @@ class BaseStation_Receive(threading.Thread):
                     self.log(
                         "Radio device has been found on RADIO_PATH.")
                 except Exception as e:
-                    print("Radio error: ", str(e))
+                    try:
+                        self.radio = Radio(constants.RADIO_PATH_2)
+                        self.log(
+                            "Radio device has been found on RADIO_PATH_2"
+                        )
+                    except Exception as er:
+                        print("Radio error: ", str(e), "and", str(er))
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:

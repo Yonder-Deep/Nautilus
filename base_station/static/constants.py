@@ -4,7 +4,7 @@ import threading
 THREAD_SLEEP_DELAY = 0.2  # Since we are the slave to AUV, we must run faster.
 PING_SLEEP_DELAY = 3
 RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
-RADIO_PATH_2 = '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AFD0I-if00-port0'
+RADIO_PATH_2 = '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AEU3V-if00-port0'
 PING = 0xFFFFFF
 
 CONNECTION_TIMEOUT = 6  # Seconds before BS is determined to have lost radio connection to AUV
