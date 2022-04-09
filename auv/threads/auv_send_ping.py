@@ -28,10 +28,10 @@ class AUV_Send_Ping(threading.Thread):
                 print("TEST radio not connected")
                 for rp in constants.RADIO_PATHS:
                     try:
-                        self.radio = Radio(rp['path'])
-                        global_vars.log(f"Successfully found radio device on {rp['radioNum']}.")
+                        global_vars.radio = Radio(rp['path'])
+                        print("Successfully found radio device on ", rp['radioNum'])
                     except:
-                        global_vars.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+                        print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
 
             else:
                 try:
