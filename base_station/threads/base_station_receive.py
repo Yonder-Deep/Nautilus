@@ -147,9 +147,9 @@ class BaseStation_Receive(threading.Thread):
                 constants.lock.release()
 
             # This executes if we never had a radio object, or it got disconnected.
-            if self.radio is None or not os.path.exists(constants.RADIO_PATH):
+            if self.radio is None or not (os.path.exists(constants.RADIO_PATH) or os.path.exists(constants.RADIO_PATH_2)):
                 # This executes if we HAD a radio object, but it got disconnected.
-                if self.radio is not None and not os.path.exists(constants.RADIO_PATH):
+                if self.radio is not None and not os.path.exists(constants.RADIO_PATH) and not os.path.exists(constants.RADIO_PATH_2):
                     self.log("Radio device has been disconnected.")
                     self.radio.close()
 
