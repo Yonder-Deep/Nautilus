@@ -233,16 +233,69 @@ class Main():
         #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(2/5), side=LEFT, fill=BOTH, expand=NO)
         self.camera_frame.grid(
             row=1, column=1, pady=CALIBRATE_PAD_Y)
+        '''
         prompt_input_pid_constant = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
         prompt_input_pid_constant.pack()
         prompt_input_pid_constant.place(relx=0.4, rely=0.000)
         prompt_input_pid_value = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
         prompt_input_pid_value.pack()
         prompt_input_pid_value.place(relx=0.4, rely=0.000)
+        '''
+        # TODO: set positions of all labels + values
+        prompt_input_pid_depth_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_depth_p_value.pack()
+        prompt_input_pid_depth_p_value.place(relx=0.4, rely=0.025)
+
+        self.pid_depth_p_label =  Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
+        self.pid_depth_p_label.pack()
+        self.pid_depth_p_label.place(relx=0.05, rely=0.000)
+
+        prompt_input_pid_depth_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_depth_i_value.pack()
+        prompt_input_pid_depth_i_value.place(relx=0.4, rely=0.225)
+
+        self.pid_depth_i_label =  Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
+        self.pid_depth_i_label.pack()
+        self.pid_depth_i_label.place(relx=0.05, rely=0.2)
+
+        prompt_input_pid_depth_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_depth_d_value.pack()
+        prompt_input_pid_depth_d_value.place(relx=0.4, rely=0.425)
+
+        self.pid_depth_d_label =  Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
+        self.pid_depth_d_label.pack()
+        self.pid_depth_d_label.place(relx=0.05, rely=0.425)
+ 
+        prompt_input_pid_pitch_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_pitch_p_value.pack()
+        prompt_input_pid_pitch_p_value.place(relx=0.9, rely=0.025)
+
+        self.pid_pitch_p_label =  Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
+        self.pid_pitch_p_label.pack()
+        self.pid_pitch_p_label.place(relx=0.55, rely=0.000)
+
+        prompt_input_pid_pitch_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_pitch_i_value.pack()
+        prompt_input_pid_pitch_i_value.place(relx=0.9, rely=0.225)
+
+        self.pid_pitch_i_label =  Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
+        self.pid_pitch_i_label.pack()
+        self.pid_pitch_i_label.place(relx=0.55, rely=0.2)
+
+        prompt_input_pid_pitch_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_pitch_d_value.pack()
+        prompt_input_pid_pitch_d_value.place(relx=0.9, rely=0.425)
+
+        self.pid_pitch_d_label =  Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
+        self.pid_pitch_d_label.pack()
+        self.pid_pitch_d_label.place(relx=0.55, rely=0.4)
+
+        def build_pid_value_arrays():
+            return [int(prompt_input_pid_pitch_p_value.get()), int(prompt_input_pid_pitch_i_value.get()), int(prompt_input_pid_pitch_d_value.get()), int(prompt_input_pid_depth_p_value.get()), int(prompt_input_pid_depth_i_value.get()), int(prompt_input_pid_depth_d_value.get())]
+
         self.update_pid_button = Button(self.motor_control_frame, text="Update PID", takefocus=False,
                                         width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                        pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_pid(int(prompt_input_pid_constant.get()), int(prompt_input_pid_value.get())))
-
+                                        pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_pid(build_pid_value_arrays()))
         self.update_pid_button.pack(expand=YES)
         self.update_pid_button.place(relx=0.05, rely=0.00)
 
@@ -350,18 +403,17 @@ class Main():
         if ans == 'yes':
             self.out_q.put("send_dive(" + str(depth) + ")")
 
-    def confirm_pid(self, constant, value):
-        if constant < 0 or constant > 5:
-            messagebox.showerror("ERROR", "Select a valid PID constant (0-2): pitch pid, (3-5): depth pid")
-            return
-        if value < 0 or value > 0x3FFFF:
-            messagebox.showerror("ERROR", "Select a constant value between 0 and 262143 inclusive")
-            return
+    def confirm_pid(self, values):
+        for val in values:
+            if value < 0 or value > 0x3FFFF:
+                messagebox.showerror("ERROR", "Select a constant value between 0 and 262143 inclusive")
+                return
         # Prompt mission start
         prompt = "Update PID value?"
         ans = messagebox.askquestion("PID", prompt)
         if ans == 'yes':
-            self.out_q.put("send_pid_update(" + str(constant) + "," + str(value) + ")")
+            for i in range(6):
+                self.out_q.put("send_pid_update({},{})".format(i, values[i]))
 
     def init_map_frame(self):
         """ Create the frame for the x, y map """
