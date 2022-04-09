@@ -60,9 +60,9 @@ def start_threads(ts, queue, halt):
     for rp in constants.RADIO_PATHS:
         try:
             global_vars.radio = Radio(rp['path'])
-            print(rp['radioNum'])
+            print("Successfully found radio device on ", rp['radioNum'])
         except:
-            print(rp['radioNum'])
+            print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
 
     mc = MotorController()
 
