@@ -242,49 +242,49 @@ class Main():
         prompt_input_pid_value.place(relx=0.4, rely=0.000)
         '''
         # TODO: set positions of all labels + values
-        prompt_input_pid_depth_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_depth_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=2)
         prompt_input_pid_depth_p_value.pack()
-        prompt_input_pid_depth_p_value.place(relx=0.4, rely=0.025)
+        prompt_input_pid_depth_p_value.place(relx=0.3, rely=0.025)
 
         self.pid_depth_p_label =  Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
         self.pid_depth_p_label.pack()
         self.pid_depth_p_label.place(relx=0.05, rely=0.000)
 
-        prompt_input_pid_depth_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_depth_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=2)
         prompt_input_pid_depth_i_value.pack()
-        prompt_input_pid_depth_i_value.place(relx=0.4, rely=0.225)
+        prompt_input_pid_depth_i_value.place(relx=0.3, rely=0.225)
 
         self.pid_depth_i_label =  Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
         self.pid_depth_i_label.pack()
         self.pid_depth_i_label.place(relx=0.05, rely=0.2)
 
-        prompt_input_pid_depth_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_depth_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=2)
         prompt_input_pid_depth_d_value.pack()
-        prompt_input_pid_depth_d_value.place(relx=0.4, rely=0.425)
+        prompt_input_pid_depth_d_value.place(relx=0.3, rely=0.425)
 
         self.pid_depth_d_label =  Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
         self.pid_depth_d_label.pack()
         self.pid_depth_d_label.place(relx=0.05, rely=0.425)
  
-        prompt_input_pid_pitch_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_pitch_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=2)
         prompt_input_pid_pitch_p_value.pack()
-        prompt_input_pid_pitch_p_value.place(relx=0.9, rely=0.025)
+        prompt_input_pid_pitch_p_value.place(relx=0.8, rely=0.025)
 
         self.pid_pitch_p_label =  Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
         self.pid_pitch_p_label.pack()
         self.pid_pitch_p_label.place(relx=0.55, rely=0.000)
 
-        prompt_input_pid_pitch_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_pitch_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=2)
         prompt_input_pid_pitch_i_value.pack()
-        prompt_input_pid_pitch_i_value.place(relx=0.9, rely=0.225)
+        prompt_input_pid_pitch_i_value.place(relx=0.8, rely=0.225)
 
         self.pid_pitch_i_label =  Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
         self.pid_pitch_i_label.pack()
         self.pid_pitch_i_label.place(relx=0.55, rely=0.2)
 
-        prompt_input_pid_pitch_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        prompt_input_pid_pitch_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=2)
         prompt_input_pid_pitch_d_value.pack()
-        prompt_input_pid_pitch_d_value.place(relx=0.9, rely=0.425)
+        prompt_input_pid_pitch_d_value.place(relx=0.8, rely=0.425)
 
         self.pid_pitch_d_label =  Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
         self.pid_pitch_d_label.pack()
@@ -297,7 +297,7 @@ class Main():
                                         width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
                                         pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_pid(build_pid_value_arrays()))
         self.update_pid_button.pack(expand=YES)
-        self.update_pid_button.place(relx=0.05, rely=0.00)
+        self.update_pid_button.place(relx=0.05, rely=0.6)
 
     def init_buttons_frame(self):
         """ Creates the frame for buttons. """
