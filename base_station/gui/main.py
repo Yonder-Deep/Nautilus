@@ -291,8 +291,7 @@ class Main():
         self.pid_pitch_d_label.place(relx=0.55, rely=0.4)
 
         def build_pid_value_arrays():
-            print("Got PID P Depth Value: {}".format(prompt_input_pid_depth_p_value.get()))
-            return [int(prompt_input_pid_pitch_p_value.get()), int(prompt_input_pid_pitch_i_value.get()), int(prompt_input_pid_pitch_d_value.get()), int(prompt_input_pid_depth_p_value.get()), int(prompt_input_pid_depth_i_value.get()), int(prompt_input_pid_depth_d_value.get())]
+            return [prompt_input_pid_pitch_p_value.get(),prompt_input_pid_pitch_i_value.get(), prompt_input_pid_pitch_d_value.get(), prompt_input_pid_depth_p_value.get(), prompt_input_pid_depth_i_value.get(), prompt_input_pid_depth_d_value.get()]
 
         self.update_pid_button = Button(self.camera_frame, text="Update PID", takefocus=False,
                                         width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
@@ -405,16 +404,23 @@ class Main():
             self.out_q.put("send_dive(" + str(depth) + ")")
 
     def confirm_pid(self, values):
-        for val in values:
-            if value < 0 or value > 0x3FFFF:
+        try:
+            values_int = [int(val) for val in values]
+        except:
+            messagebox.showerror("ERROR", "Must be an integer value")
+            return
+
+        for val in values_int:
+            if val < 0 or val > 0x3FFFF:
                 messagebox.showerror("ERROR", "Select a constant value between 0 and 262143 inclusive")
                 return
+
         # Prompt mission start
         prompt = "Update PID value?"
         ans = messagebox.askquestion("PID", prompt)
         if ans == 'yes':
             for i in range(6):
-                self.out_q.put("send_pid_update({},{})".format(i, values[i]))
+                self.out_q.put("send_pid_update({},{})".format(i, values_int[i]))
 
     def init_map_frame(self):
         """ Create the frame for the x, y map """
