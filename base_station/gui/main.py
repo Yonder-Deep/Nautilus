@@ -273,12 +273,12 @@ class Main():
         # self.dive_command_button.pack(expand=YES, side=LEFT)
         # self.dive_command_button.place(relx=0.67, rely=0)
 
-    def forward_slider_function(self):
-        print(self.forward_slider.get())
+    def front_motor_slider_function(self):
+        print(self.front_motor_slider.get())
         self.log("Forward Slider")
 
-    def left_slider_function(self):
-        print(self.left_slider.get())
+    def rear_motor_slider_function(self):
+        print(self.rear_motor_slider.get())
         self.log("Left Slider")
 
     def init_motor_control_frame(self):
@@ -296,25 +296,25 @@ class Main():
         self.header_label.grid(row=0, columnspan=2)
         # self.header_label.pack()
         #self.header_label.place(relx=0.05, rely=0.05)
-        self.distance_label_1 = Label(self.motor_control_frame, text="Forward/Backward Speed", font=(FONT, FONT_SIZE))
-        self.distance_label_1.grid(row=1, columnspan=1)
+        self.front_motor_slider_label = Label(self.motor_control_frame, text="Front Motor Speed", font=(FONT, FONT_SIZE))
+        self.front_motor_slider_label.grid(row=2, columnspan=2)
         # self.distance_label_1.pack()
         #self.distance_label_1.place(relx=0.05, rely=0.1)
-        self.forward_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                    length=250, tickinterval=25, command=self.forward_slider_function, orient='horizontal')
-        self.forward_slider.grid(row=2, columnspan=2)
-        #  self.forward_slider.pack()
-        #self.forward_slider.place(relx=0.05, rely=0.15)
+        self.front_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                        length=250, tickinterval=25, command=self.front_motor_slider_function, orient='horizontal')
+        self.front_motor_slider.grid(row=1, columnspan=2)
+        #  self.front_motor_slider.pack()
+        #self.front_motor_slider.place(relx=0.05, rely=0.15)
 
-        self.distance_label_2 = Label(self.motor_control_frame, text="Left/Right Speed", font=(FONT, FONT_SIZE))
-        self.distance_label_2.grid(row=3, columnspan=2)
+        self.rear_motor_slider_label = Label(self.motor_control_frame, text="Rear Motor Speed", font=(FONT, FONT_SIZE))
+        self.rear_motor_slider_label.grid(row=4, columnspan=2)
         # self.distance_label_2.pack()
         #self.distance_label_2.place(relx=0.05, rely=0.2)
-        self.left_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                 length=250, tickinterval=25, command=self.left_slider_function, orient='horizontal')
-        self.left_slider.grid(row=4, columnspan=2)
-        # self.left_slider.pack()
-        # self.left_slider.place(relx=0.015, rely=0.25)
+        self.rear_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                       length=250, tickinterval=25, command=self.rear_motor_slider_function, orient='horizontal')
+        self.rear_motor_slider.grid(row=3, columnspan=2)
+        # self.rear_motor_slider.pack()
+        # self.rear_motor_slider.place(relx=0.015, rely=0.25)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
         self.header_label.grid(row=5, columnspan=2)
@@ -322,7 +322,7 @@ class Main():
         #self.header_label.place(relx=0.05, rely=0.3)
 
         self.distance_label = Label(self.motor_control_frame, text="Distance\n(0-100m)", font=(FONT, FONT_SIZE))
-        self.distance_label_1.grid(row=6, column=0)
+        self.distance_label.grid(row=6, column=0)
         # self.distance_label.pack()
         #self.distance_label.place(relx=0.05, rely=0.45)
 
