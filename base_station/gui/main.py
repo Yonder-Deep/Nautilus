@@ -291,6 +291,7 @@ class Main():
         self.pid_pitch_d_label.place(relx=0.55, rely=0.4)
 
         def build_pid_value_arrays():
+            print("Got PID P Depth Value: {}".format(prompt_input_pid_depth_p_value.get()))
             return [int(prompt_input_pid_pitch_p_value.get()), int(prompt_input_pid_pitch_i_value.get()), int(prompt_input_pid_pitch_d_value.get()), int(prompt_input_pid_depth_p_value.get()), int(prompt_input_pid_depth_i_value.get()), int(prompt_input_pid_depth_d_value.get())]
 
         self.update_pid_button = Button(self.camera_frame, text="Update PID", takefocus=False,
