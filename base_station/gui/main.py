@@ -245,6 +245,7 @@ class Main():
         prompt_input_pid_depth_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_p_value.pack()
         prompt_input_pid_depth_p_value.place(relx=0.3, rely=0.025)
+        prompt_input_pid_depth_p_value.set('0')
 
         self.pid_depth_p_label =  Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
         self.pid_depth_p_label.pack()
@@ -253,6 +254,7 @@ class Main():
         prompt_input_pid_depth_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_i_value.pack()
         prompt_input_pid_depth_i_value.place(relx=0.3, rely=0.225)
+        prompt_input_pid_depth_i_value.set('0')
 
         self.pid_depth_i_label =  Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
         self.pid_depth_i_label.pack()
@@ -261,14 +263,17 @@ class Main():
         prompt_input_pid_depth_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_d_value.pack()
         prompt_input_pid_depth_d_value.place(relx=0.3, rely=0.425)
+        prompt_input_pid_depth_d_value.set('0')
 
         self.pid_depth_d_label =  Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
         self.pid_depth_d_label.pack()
         self.pid_depth_d_label.place(relx=0.05, rely=0.425)
- 
+
         prompt_input_pid_pitch_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_p_value.pack()
         prompt_input_pid_pitch_p_value.place(relx=0.8, rely=0.025)
+        prompt_input_pid_pitch_p_value.set('0')
+
 
         self.pid_pitch_p_label =  Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
         self.pid_pitch_p_label.pack()
@@ -277,6 +282,7 @@ class Main():
         prompt_input_pid_pitch_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_i_value.pack()
         prompt_input_pid_pitch_i_value.place(relx=0.8, rely=0.225)
+        prompt_input_pid_pitch_i_value.set('0')
 
         self.pid_pitch_i_label =  Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
         self.pid_pitch_i_label.pack()
@@ -285,6 +291,7 @@ class Main():
         prompt_input_pid_pitch_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_d_value.pack()
         prompt_input_pid_pitch_d_value.place(relx=0.8, rely=0.425)
+        prompt_input_pid_pitch_d_value.set('0')
 
         self.pid_pitch_d_label =  Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
         self.pid_pitch_d_label.pack()
