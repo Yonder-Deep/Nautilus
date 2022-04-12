@@ -293,7 +293,7 @@ class Main():
         def build_pid_value_arrays():
             return [int(prompt_input_pid_pitch_p_value.get()), int(prompt_input_pid_pitch_i_value.get()), int(prompt_input_pid_pitch_d_value.get()), int(prompt_input_pid_depth_p_value.get()), int(prompt_input_pid_depth_i_value.get()), int(prompt_input_pid_depth_d_value.get())]
 
-        self.update_pid_button = Button(self.motor_control_frame, text="Update PID", takefocus=False,
+        self.update_pid_button = Button(self.camera_frame, text="Update PID", takefocus=False,
                                         width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
                                         pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_pid(build_pid_value_arrays()))
         self.update_pid_button.pack(expand=YES)
