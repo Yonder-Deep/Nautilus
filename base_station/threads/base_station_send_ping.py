@@ -14,11 +14,13 @@ class BaseStation_Send_Ping(threading.Thread):
         """ Constructor for the AUV """
         self.radio = None
 
-        try:
-            self.radio = Radio(constants.RADIO_PATH)
-            print("Radio device has been found.")
-        except:
-            print("Radio device is not connected to AUV on RADIO_PATH.")
+        # Try to assign us a new Radio object
+        for rp in constants.RADIO_PATHS:
+            try:
+                self.radio = Radio(rp['path'])
+                print(f"Successfully found radio device on {rp['radioNum']}.")
+            except:
+                print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
 
         self.main_loop()
 
@@ -30,11 +32,12 @@ class BaseStation_Send_Ping(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                try:  # Try to connect to our devices.
-                    self.radio = Radio(constants.RADIO_PATH)
-                    print("Radio device has been found!")
-                except Exception as e:
-                    print("Failed to connect to radio: " + str(e))
+                for rp in constants.RADIO_PATHS:
+                    try:
+                        self.radio = Radio(rp['path'])
+                        print(f"Successfully found radio device on {rp['radioNum']}.")
+                    except:
+                        print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
 
             else:
                 try:
