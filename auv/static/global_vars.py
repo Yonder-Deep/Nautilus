@@ -26,8 +26,12 @@ def connect_to_radio():
         try:
             radio = Radio(rp['path'])
             print("Successfully found radio device on ", rp['radioNum'])
+            break
         except:
-            print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
+            if radio["radioNum"] == 1:
+                print("Warning: Cannot find radio device on ", rp['radioNum'])
+            else:
+                print(", ", rp['radioNum'], end="")
 
 
 def log(val):
