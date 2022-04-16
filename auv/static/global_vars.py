@@ -32,7 +32,7 @@ def connect_to_radio():
             break
         except:
             if rp["radioNum"] == 1:
-                warning_msg += "Warning: Cannot find radio device on paths" + str(rp['radioNum'])
+                warning_msg += "Warning: Cannot find radio device on paths " + str(rp['radioNum'])
             else:
                 warning_msg += ", " + str(rp['radioNum'])
 
