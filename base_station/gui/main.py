@@ -367,7 +367,7 @@ class Main():
         self.dive_button = Button(self.motor_control_frame, text="Dive", takefocus=False,
                                   width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
                                   pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
-        self.dive_button.grid(row=6, columnspan=2)
+        self.dive_button.grid(row=7, columnspan=2)
         # #self.dive_button.pack(expand=YES, side=LEFT)
         # #self.dive_button.place(relx=0.05, rely=0.00)
 
