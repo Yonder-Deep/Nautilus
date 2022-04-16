@@ -147,10 +147,11 @@ class AUV_Receive(threading.Thread):
                                 global_vars.stop_all_threads = True
                         elif header == constants.PID_ENCODE:
                             # Update a PID value in the dive controller
-                            constant_select = message & (0b111 << 18)
+                            constant_select = (message >> 18) & 0b111
                             # Extract last 18 bits from message
                             # Map to smaller, more precise numbers later
                             value = message & (0x3FFFF)
+                            print("Received PID Constant Select: {}".format(constant_select))
                             if (constant_select == 0b000):
                                 constants.P_PITCH = value
                                 self.dive_controller.update_pitch_pid()
