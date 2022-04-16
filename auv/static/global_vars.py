@@ -27,7 +27,7 @@ def connect_to_radio():
     for rp in constants.RADIO_PATHS:
         try:
             radio = Radio(rp['path'])
-            output_msg += "\\nSuccessfully found radio device on " + str(rp['radioNum'])
+            output_msg += "\nSuccessfully found radio device on " + str(rp['radioNum'])
             break
         except:
             if rp["radioNum"] == 1:
