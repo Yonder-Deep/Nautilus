@@ -22,13 +22,14 @@ def path_existance(radioPaths):
 
 
 def connect_to_radio():
+    global radio
     for rp in constants.RADIO_PATHS:
         try:
             radio = Radio(rp['path'])
             print("Successfully found radio device on ", rp['radioNum'])
             break
         except:
-            if radio["radioNum"] == 1:
+            if rp["radioNum"] == 1:
                 print("Warning: Cannot find radio device on ", rp['radioNum'])
             else:
                 print(", ", rp['radioNum'], end="")
