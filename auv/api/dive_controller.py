@@ -89,6 +89,8 @@ class DiveController:
 
     def update_pitch_pid(self):
         self.pid_pitch = PID(self.mc, 0, 5, 0.1, debug=True, name="Pitch", p=constants.P_PITCH, i=constants.I_PITCH, d=constants.D_PITCH)
+        print("Updating pitch PID constants: {} {} {}".format(constants.P_PITCH, constants.I_PITCH, constants.D_PITCH))
 
     def update_depth_pid(self):
         self.pid_depth = PID(self.mc, 0, 0.2, 0.1, debug=True, name="Depth", p=constants.P_DEPTH, i=constants.I_DEPTH, d=constants.D_DEPTH)
+        print("Updating depth PID constants: {} {} {}".format(constants.P_DEPTH, constants.I_DEPTH, constants.D_DEPTH))
