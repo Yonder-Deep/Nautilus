@@ -1,7 +1,7 @@
 import threading
 import os
 from api import Radio
-import constants
+from static import constants
 # determines if connected to BS
 connected = False
 
