@@ -42,12 +42,7 @@ class BaseStation_Send(threading.Thread):
         # Call super-class constructor
         threading.Thread.__init__(self)
 
-        for rp in constants.RADIO_PATHS:
-            try:
-                self.radio = Radio(rp['path'])
-                self.log(f"Successfully found radio device on {rp['radioNum']}.")
-            except:
-                self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+        global_vars.connect_to_radio(self, self.radio)
 
         # Try to connect our Xbox 360 controller.
 
@@ -207,12 +202,7 @@ class BaseStation_Send(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        self.radio = Radio(rp['path'])
-                        self.log(f"Successfully found radio device on {rp['radioNum']}.")
-                    except:
-                        self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+                global_vars.connect_to_radio(self, self.radio)
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:

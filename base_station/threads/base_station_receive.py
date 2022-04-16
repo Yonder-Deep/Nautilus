@@ -36,14 +36,9 @@ class BaseStation_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
         # Try to assign our radio object
-        for rp in constants.RADIO_PATHS:
-            try:
-                self.radio = Radio(rp['path'])
-                self.log(f"Successfully found radio device on {rp['radioNum']}.")
-            except:
-                self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+        global_vars.connect_to_radio(self, self.radio)
 
-                # Try to connect our Xbox 360 controller.
+        # Try to connect our Xbox 360 controller.
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
@@ -148,12 +143,7 @@ class BaseStation_Receive(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        self.radio = Radio(rp['path'])
-                        self.log(f"Successfully found radio device on {rp['radioNum']}.")
-                    except:
-                        self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+                global_vars.connect_to_radio(self, self.radio)
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -174,13 +164,7 @@ class BaseStation_Receive(threading.Thread):
                             print(bin(intline >> 32))
                             self.radio.flush()
                             self.radio.close()
-                            for rp in constants.RADIO_PATHS:
-                                try:
-                                    self.radio = Radio(rp['path'])
-                                    print(f"Successfully found radio device on {rp['radioNum']}.")
-                                except:
-                                    print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
-
+                            global_vars.connect_to_radio(self, self.radio)
                             break
 
                         intline = intline >> 32
