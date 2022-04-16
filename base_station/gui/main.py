@@ -426,6 +426,8 @@ class Main():
         prompt = "Update PID value?"
         ans = messagebox.askquestion("PID", prompt)
         if ans == 'yes':
+            print("Sending Pitch PID values: {} {} {}".format(values_int[0], values_int[1], values_int[2]))
+            print("Sending Depth PID values: {} {} {}".format(values_int[3], values_int[4], values_int[5]))
             for i in range(6):
                 self.out_q.put("send_pid_update({},{})".format(i, values_int[i]))
 
