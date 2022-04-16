@@ -36,7 +36,8 @@ class BaseStation_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
         # Try to assign our radio object
-        global_vars.connect_to_radio(self, self.radio)
+        self.radio, output_msg = global_vars.connect_to_radio()
+        self.log(output_msg)
 
         # Try to connect our Xbox 360 controller.
 
@@ -143,7 +144,8 @@ class BaseStation_Receive(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                global_vars.connect_to_radio(self, self.radio)
+                self.radio, output_msg = global_vars.connect_to_radio()
+                self.log(output_msg)
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -164,7 +166,8 @@ class BaseStation_Receive(threading.Thread):
                             print(bin(intline >> 32))
                             self.radio.flush()
                             self.radio.close()
-                            global_vars.connect_to_radio(self, self.radio)
+                            self.radio, output_msg = global_vars.connect_to_radio()
+                            self.log(output_msg)
                             break
 
                         intline = intline >> 32

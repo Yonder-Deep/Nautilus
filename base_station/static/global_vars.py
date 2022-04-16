@@ -13,8 +13,9 @@ def path_existance(radioPaths):
     return False
 
 
-def connect_to_radio(self, radio):
+def connect_to_radio():
     output_msg = ""
+    radio = None
     for rp in constants.RADIO_PATHS:
         try:
             radio = Radio(rp['path'])
@@ -24,4 +25,4 @@ def connect_to_radio(self, radio):
                 output_msg += f"Warning: Cannot find radio device on {rp['radioNum']}."
             else:
                 output_msg += f", {rp['radioNum']}"
-    self.log(output_msg)
+    return radio, output_msg

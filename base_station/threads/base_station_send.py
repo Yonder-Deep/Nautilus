@@ -42,7 +42,8 @@ class BaseStation_Send(threading.Thread):
         # Call super-class constructor
         threading.Thread.__init__(self)
 
-        global_vars.connect_to_radio(self, self.radio)
+        self.radio, output_msg = global_vars.connect_to_radio()
+        self.log(output_msg)
 
         # Try to connect our Xbox 360 controller.
 
@@ -202,7 +203,8 @@ class BaseStation_Send(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                global_vars.connect_to_radio(self, self.radio)
+                self.radio, output_msg = global_vars.connect_to_radio()
+                self.log(output_msg)
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:

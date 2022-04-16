@@ -15,7 +15,8 @@ class BaseStation_Send_Ping(threading.Thread):
         self.radio = None
 
         # Try to assign us a new Radio object
-        global_vars.connect_to_radio(self, self.radio)
+        self.radio, output_msg = global_vars.connect_to_radio()
+        self.log(output_msg)
 
         self.main_loop()
 
@@ -27,8 +28,8 @@ class BaseStation_Send_Ping(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                global_vars.connect_to_radio(self, self.radio)
-
+                self.radio, output_msg = global_vars.connect_to_radio()
+                self.log(output_msg)
             else:
                 try:
                     # Always send a connection verification packet
