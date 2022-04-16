@@ -35,9 +35,11 @@ def connect_to_radio():
                 warning_msg += "Warning: Cannot find radio device on " + str(rp['radioNum'])
             else:
                 warning_msg += ", " + str(rp['radioNum'])
-    warning_msg += "."
-    log(warning_msg)
-    log(success_msg)
+
+    if len(success_msg) == 0:
+        log(warning_msg)
+    else:
+        log(success_msg)
 
 
 def log(val):
