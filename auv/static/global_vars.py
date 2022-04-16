@@ -34,7 +34,7 @@ def connect_to_radio():
                 output_msg += "Warning: Cannot find radio device on " + str(rp['radioNum'])
             else:
                 output_msg += ", " + str(rp['radioNum'])
-    print(output_msg)
+    log(output_msg)
 
 
 def log(val):
