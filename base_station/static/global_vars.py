@@ -1,5 +1,5 @@
 import os
-import constants
+from static import constants
 from api import Radio
 # Global variables used by the BaseStation threads
 
@@ -14,12 +14,14 @@ def path_existance(radioPaths):
 
 
 def connect_to_radio(self, radio):
+    output_msg = ""
     for rp in constants.RADIO_PATHS:
         try:
             radio = Radio(rp['path'])
-            self.log(f"Successfully found radio device on {rp['radioNum']}.")
+            output_msg += f"\nSuccessfully found radio device on {rp['radioNum']}."
         except:
             if rp['radioNum'] == 1:
-                self.log(f"Warning: Cannot find radio device on {rp['radioNum']}.")
+                output_msg += f"Warning: Cannot find radio device on {rp['radioNum']}."
             else:
-                self.log(f", {rp['radioNum']}", end="")
+                output_msg += f", {rp['radioNum']}"
+    self.log(output_msg)
