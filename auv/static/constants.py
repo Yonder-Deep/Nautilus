@@ -1,7 +1,5 @@
 import threading
 
-from cv2 import IMREAD_ANYDEPTH
-
 # Constants for the AUV
 RADIO_PATH = {'radioNum': 1, 'path': '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'}
 RADIO_PATH_2 = {'radioNum': 2, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AEU3V-if00-port0'}
