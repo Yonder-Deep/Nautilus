@@ -26,12 +26,7 @@ class AUV_Send_Ping(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        global_vars.radio = Radio(rp['path'])
-                        print("Successfully found radio device on ", rp['radioNum'])
-                    except:
-                        print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
+                global_vars.connect_to_radio()
 
             else:
                 try:
