@@ -21,6 +21,9 @@ D_PITCH = 0.0
 P_DEPTH = 10.0
 I_DEPTH = 2.0
 D_DEPTH = 0.0
+P_HEADING = 5.0
+I_HEADING = 2.0
+D_HEADING = 0.0
 
 # Encoding headers
 POSITION_DATA = 0b000

@@ -11,6 +11,7 @@ class DiveController:
         self.imu = imu
         self.pid_pitch = PID(mc, 0, 5, 0.1, debug=True, name="Pitch", p=constants.P_PITCH, i=constants.I_PITCH, d=constants.D_PITCH)
         self.pid_depth = PID(mc, 0, 0.2, 0.1, debug=True, name="Depth", p=constants.P_DEPTH, i=constants.I_DEPTH, d=constants.D_DEPTH)
+        self.pid_heading = PID(mc, 0, 5, 0.1, debug=True, name="Heading", p=constants.P_HEADING, i=constants.I_HEADING, d=constants.D_HEADING)
 
     def get_depth(self):
         if self.pressure_sensor is not None:
@@ -37,10 +38,22 @@ class DiveController:
         # Dive
 
         depth = self.get_depth()
+        start_heading, _, _ =  self.imu.read_euler()
         start_time = time.time()
 
         target_met = False
         target_met_time = 0
+
+
+        # modulo: a mod function that retains negatives (ex. -1 % 360 = -1)
+        def modulo(x, y): return x % y if x > 0 else -1 * (abs(x) % y)
+
+        # turn_error: Calculates distance between target and heading angles
+        # modulo(target - heading, 360) -> absolute distance between both angles
+        # needed because imu only contains 0-360 degrees, need to account for
+        # negative angles and angles > 360
+        def turn_error(target, heading): return modulo(target - heading, 360)
+
         # main PID loop?
         # Time out and stop diving if > 1 min
         while time.time() < start_time + 300:
@@ -53,7 +66,7 @@ class DiveController:
                 continue
 
             try:
-                _, pitch, _ = self.imu.read_euler()
+                heading, pitch, _ = self.imu.read_euler()
             except:
                 print("Dive controller: Failed to read IMU value")
                 time.sleep(0.1)
@@ -61,6 +74,7 @@ class DiveController:
 
             depth_correction = self.pid_depth.pid(depth)
             pitch_correction = self.pid_pitch.pid(pitch)
+            heading_correction = self.pid_heading.pid(turn_error(start_heading, heading))
 
             if depth_correction - abs(pitch_correction) < -150:
                 depth_correction = -150 + abs(pitch_correction)
@@ -69,9 +83,12 @@ class DiveController:
 
             front_motor_value = depth_correction - pitch_correction
             back_motor_value = depth_correction + pitch_correction
+            side_motor_value = heading_correction
 
-            print("Depth_Correction: {}\tPitch_Correction: {}\n".format(depth_correction, pitch_correction))
-            self.mc.update_motor_speeds([0, 0, back_motor_value, front_motor_value])
+            print("Depth_Correction: {}\tPitch_Correction: {}\tHeading_Correction: {}\n".format(depth_correction, pitch_correction, heading_correction))
+
+            # NOTE: check side_motor_value to see if the sign is correct
+            self.mc.update_motor_speeds([side_motor_value, -side_motor_value, back_motor_value, front_motor_value])
 
             if self.pid_depth.within_tolerance and not target_met:
                 # want to wait for dive_length seconds before stopping
@@ -94,3 +111,7 @@ class DiveController:
     def update_depth_pid(self):
         self.pid_depth = PID(self.mc, 0, 0.2, 0.1, debug=True, name="Depth", p=constants.P_DEPTH, i=constants.I_DEPTH, d=constants.D_DEPTH)
         print("Updating depth PID constants: {} {} {}".format(constants.P_DEPTH, constants.I_DEPTH, constants.D_DEPTH))
+
+    def update_heading_pid(self):
+        self.pid_heading = PID(self.mc, 0, 5, 0.1, debug=True, name="Heading", p=constants.P_HEADING, i=constants.I_HEADING, d=constants.D_HEADING)
+        print("Updating heading PID constants: {} {} {}".format(constants.P_HEADING, constants.I_HEADING, constants.D_HEADING))
