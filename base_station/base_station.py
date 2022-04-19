@@ -41,7 +41,7 @@ if __name__ == '__main__':
     try:
         bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
         bs_s_thread = BaseStation_Send(to_BS, to_GUI)
-        bs_ping_thread = BaseStation_Send_Ping()
+        bs_ping_thread = BaseStation_Send_Ping(to_GUI)
 
         # ts.append(bs_r_thread)
         # ts.append(bs_s_thread)

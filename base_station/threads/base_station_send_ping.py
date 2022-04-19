@@ -10,17 +10,16 @@ from static import global_vars
 
 
 class BaseStation_Send_Ping(threading.Thread):
+    def __init__(self, out_q=None):
+        self.out_q = out_q
+        threading.Thread.__init__(self)
+
     def run(self):
         """ Constructor for the AUV """
         self.radio = None
-
         # Try to assign us a new Radio object
-        for rp in constants.RADIO_PATHS:
-            try:
-                self.radio = Radio(rp['path'])
-                print(f"Successfully found radio device on {rp['radioNum']}.")
-            except:
-                print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+        self.radio, output_msg = global_vars.connect_to_radio()
+        self.log(output_msg)
 
         self.main_loop()
 
@@ -32,13 +31,8 @@ class BaseStation_Send_Ping(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        self.radio = Radio(rp['path'])
-                        print(f"Successfully found radio device on {rp['radioNum']}.")
-                    except:
-                        print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
-
+                self.radio, output_msg = global_vars.connect_to_radio()
+                self.log(output_msg)
             else:
                 try:
                     # Always send a connection verification packet
@@ -48,3 +42,7 @@ class BaseStation_Send_Ping(threading.Thread):
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
+
+    def log(self, message):
+        """ Logs the message to the GUI console by putting the function into the output-queue. """
+        self.out_q.put("log('" + message + "')")

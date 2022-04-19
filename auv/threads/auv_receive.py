@@ -87,12 +87,7 @@ class AUV_Receive(threading.Thread):
                 self.timeout()
 
             if self.radio is None or self.radio.is_open() is False:
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        global_vars.radio = Radio(rp['path'])
-                        print("Successfully found radio device on ", rp['radioNum'])
-                    except:
-                        print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
+                global_vars.connect_to_radio()
             else:
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
