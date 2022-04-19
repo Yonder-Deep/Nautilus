@@ -4,11 +4,13 @@ import time
 PITCH_CONTROL_TOLERANCE = 4.0
 PITCH_TARGET_TOLERANCE = 2.0
 
+
 class PID:
     """PID Controller"""
-    
-    def __init__(self, motor_controller, target, control_tolerance, target_tolerance, debug, p=0.2, i=0.0, d=0.0, i_windup=20.0):
+
+    def __init__(self, motor_controller, target, control_tolerance, target_tolerance, debug, name="", p=0.2, i=0.0, d=0.0, i_windup=20.0):
         # Initialize parameters
+        self.name = name
         self.mc = motor_controller
         self.set_point = target
         self.control_tolerance = control_tolerance
@@ -23,7 +25,7 @@ class PID:
         self.last_time = time.time()
         self.within_tolerance = False
 
-    def pid(self, current_value):
+    def pid_heading(self, current_value):
         """PID Calculation"""
         # Calculate error
         #error = self.set_point - current_value
@@ -39,13 +41,12 @@ class PID:
         elif(not self.within_tolerance and abs(error) < self.target_tolerance):
             self.within_tolerance = True
 
-
         # PID
         if(self.within_tolerance):
             if(self.is_debug):
                 #print("PID inside tolerance")
                 print('[PID]In Target %7.2f Current %7.2f Error %7.2f' % (self.set_point, current_value, error), end='\r')
-                        
+
             return 0
 
         dt = time.time() - self.last_time
@@ -67,29 +68,28 @@ class PID:
         self.last_error = error
         if(self.is_debug):
             print('[PID]SetPoint %7.2f Current %7.2f Error %7.2f P %7.2f I %7.2f D %7.2f Feedback %7.2f' %
-                                      (self.set_point, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\t')
+                  (self.set_point, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\t')
         return p_term + i_term + d_term  # pid
-   
-    def pid_pitch(self, current_value):
+
+    def pid(self, current_value):
         """PID Calculation"""
         # Calculate error
-        error = current_value 
+        error = self.set_point - current_value
         # Figure out state
-        
-        if(self.within_tolerance and abs(error) > self.control_tolerance ):
+
+        if(self.within_tolerance and abs(error) > self.control_tolerance):
             print("Not within tolerance")
             self.within_tolerance = False
         elif(not self.within_tolerance and abs(error) < self.target_tolerance):
             print("Within tolerance")
             self.within_tolerance = True
 
-
         # PID
         if(self.within_tolerance):
             if(self.is_debug):
                 #print("PID inside tolerance")
-                print('[PID]In Target %7.2f Current %7.2f Error %7.2f' % (self.set_point, current_value, error), end='\r')
-                        
+                print('[PID %s] In Target %7.2f Current %7.2f Error %7.2f' % (self.name, self.set_point, current_value, error), end='\n')
+
             return 0
 
         dt = time.time() - self.last_time
@@ -110,10 +110,10 @@ class PID:
         self.last_time = time.time()
         self.last_error = error
         if(self.is_debug):
-            print('[PID]SetPoint %7.2f Current %7.2f Error %7.2f P %7.2f I %7.2f D %7.2f Feedback %7.2f' %
-                                      (0, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\t')
+            print('[PID %s] SetPoint %7.2f Current %7.2f Error %7.2f P %7.2f I %7.2f D %7.2f Feedback %7.2f' %
+                  (self.name, self.set_point, current_value, error, p_term, i_term, d_term, p_term+i_term+d_term), end='\n')
         return p_term + i_term + d_term
-           
+
     def set_p(self, p):
         self.p = p
 

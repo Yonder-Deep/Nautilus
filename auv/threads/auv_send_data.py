@@ -41,7 +41,7 @@ class AUV_Send_Data(threading.Thread):
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
-
+    
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
                 global_vars.connect_to_radio()

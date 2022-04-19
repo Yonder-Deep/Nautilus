@@ -17,8 +17,9 @@ from static import global_vars
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
-DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
+DIVE_ENCODE = 0b110000000000000000000000          # | with D   (depth)
 KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
+PID_ENCODE = 0b010000000000000000000000           # | with CX (which constant to update, value)
 
 # Action Encodings
 HALT = 0b010
@@ -151,6 +152,22 @@ class BaseStation_Send(threading.Thread):
             print(bin(DIVE_ENCODE | depth))
             constants.radio_lock.release()
             self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
+
+    def send_pid_update(self, constant_select, value):
+        # Update PID constants for the dive controller
+        # constant_select: int storing which constant to update (0-2): pitch pid, (3-5): dive pid
+        # value: what to update the constant to
+        constants.lock.acquire()
+        if global_vars.connected is False:
+            constants.lock.release()
+            self.log("Cannot update pid because there is no connection to the AUV.")
+        else:
+            constants.lock.release()
+            constant_select = constant_select << 18
+            constants.radio_lock.acquire()
+            self.radio.write(PID_ENCODE | constant_select | value)
+            print(bin(PID_ENCODE | constant_select | value))
+            constants.radio_lock.release()
 
     def encode_xbox(self, x, y, right_trigger):
         """ Encodes a navigation command given xbox input. """
