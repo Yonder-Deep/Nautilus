@@ -281,6 +281,11 @@ class Main():
         print(rear_slider_value)
         self.log("Left Slider")
 
+    def manual_dive(self, front_motor_speed, rear_motor_speed,seconds):
+        print(front_motor_speed,rear_motor_speed,seconds)
+        self.log("Manual Dive")
+        
+
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
         self.motor_control_frame = Frame(
@@ -312,7 +317,7 @@ class Main():
         #self.header_label.place(relx=0.05, rely=0.05)
 
         self.front_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                        length=250, tickinterval=25, command=self.front_motor_slider_function, orient='horizontal')
+                                        length=250, tickinterval=25, orient='horizontal')
         self.front_motor_slider.grid(row=3, columnspan=2)
 
         self.front_motor_slider_label = Label(self.motor_control_frame, text="Front Motor Speed", font=(FONT, FONT_SIZE))
@@ -324,7 +329,7 @@ class Main():
         #self.front_motor_slider.place(relx=0.05, rely=0.15)
 
         self.rear_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
-                                       length=250, tickinterval=25, command=self.rear_motor_slider_function, orient='horizontal')
+                                       length=250, tickinterval=25, orient='horizontal')
         self.rear_motor_slider.grid(row=5, columnspan=2)
 
         self.rear_motor_slider_label = Label(self.motor_control_frame, text="Rear Motor Speed", font=(FONT, FONT_SIZE))
@@ -343,7 +348,7 @@ class Main():
 
         self.dive_button_2 = Button(self.motor_control_frame, text="Dive", takefocus=False,
                                     width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
+                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.manual_dive(int(self.front_motor_slider.get()),int(self.rear_motor_slider.get()),int(self.seconds_dive_depth.get())))
         self.dive_button_2.grid(row=8, columnspan=2)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
@@ -380,7 +385,7 @@ class Main():
         # #self.halt_button.place(relx=0.3, rely=0.85)
 
         self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
-                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE))
+                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
         self.send_button.grid(row=12, column=1)
         # #self.send_button.pack(expand=YES, side=LEFT)
         # #self.send_button.place(relx=0.6, rely=0.85)

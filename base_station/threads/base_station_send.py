@@ -19,6 +19,7 @@ XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
 KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
+MANUAL_DIVE_ENCODE = 0b011000000000000000000000    # | with D (manual dive)
 
 # Action Encodings
 HALT = 0b010
@@ -130,6 +131,21 @@ class BaseStation_Send(threading.Thread):
 
             constants.radio_lock.release()
             self.log('Sending task: start_mission(' + str(mission) + ')')
+
+    def send_manual_dive(self,front_speed,back_speed,seconds):
+        constants.lock.acquire()
+        if global_vars.connected is False:
+            constants.lock.release()
+            self.log("Cannot dive because there is no connection to the AUV.")
+        else:
+            constants.lock.release()
+            constants.radio_lock.acquire()
+            self.radio.write(MANUAL_DIVE_ENCODE | depth)
+            print(bin(MANUAL_DIVE_ENCODE | depth))
+            constants.radio_lock.release()
+            self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
+
+
 
     def send_halt(self):
         self.start_mission(HALT, 0, 0)
