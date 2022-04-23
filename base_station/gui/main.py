@@ -281,10 +281,20 @@ class Main():
         print(rear_slider_value)
         self.log("Left Slider")
 
-    def manual_dive(self, front_motor_speed, rear_motor_speed,seconds):
-        print(front_motor_speed,rear_motor_speed,seconds)
+    def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
+        print(front_motor_speed, rear_motor_speed, seconds)
         self.log("Manual Dive")
-        
+
+        # TODO messages
+        if seconds < 1 or seconds > 32:
+            messagebox.showerror("ERROR", "Select a number of seconds between 1 and 32 meters inclusive. ")
+            return
+
+        # Prompt mission start
+        prompt = "Dive for: " + str(seconds) + " seconds?"
+        ans = messagebox.askquestion("Dive", prompt)
+        if ans == 'yes':
+            self.out_q.put("send_dive(" + str(front_motor_speed) + ', ' + str(rear_motor_speed) + ', ' + str(seconds) + ")")
 
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
@@ -314,7 +324,7 @@ class Main():
         self.header_label = Label(self.motor_control_frame, text="Motor Speeds", font=(FONT, HEADING_SIZE))
         self.header_label.grid(row=2, columnspan=2)
         # self.header_label.pack()
-        #self.header_label.place(relx=0.05, rely=0.05)
+        # self.header_label.place(relx=0.05, rely=0.05)
 
         self.front_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
                                         length=250, tickinterval=25, orient='horizontal')
@@ -323,10 +333,10 @@ class Main():
         self.front_motor_slider_label = Label(self.motor_control_frame, text="Front Motor Speed", font=(FONT, FONT_SIZE))
         self.front_motor_slider_label.grid(row=4, columnspan=2)
         # self.distance_label_1.pack()
-        #self.distance_label_1.place(relx=0.05, rely=0.1)
+        # self.distance_label_1.place(relx=0.05, rely=0.1)
 
         #  self.front_motor_slider.pack()
-        #self.front_motor_slider.place(relx=0.05, rely=0.15)
+        # self.front_motor_slider.place(relx=0.05, rely=0.15)
 
         self.rear_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
                                        length=250, tickinterval=25, orient='horizontal')
@@ -335,7 +345,7 @@ class Main():
         self.rear_motor_slider_label = Label(self.motor_control_frame, text="Rear Motor Speed", font=(FONT, FONT_SIZE))
         self.rear_motor_slider_label.grid(row=6, columnspan=2)
         # self.distance_label_2.pack()
-        #self.distance_label_2.place(relx=0.05, rely=0.2)
+        # self.distance_label_2.place(relx=0.05, rely=0.2)
 
         # self.rear_motor_slider.pack()
         # self.rear_motor_slider.place(relx=0.015, rely=0.25)
@@ -348,33 +358,33 @@ class Main():
 
         self.dive_button_2 = Button(self.motor_control_frame, text="Dive", takefocus=False,
                                     width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.manual_dive(int(self.front_motor_slider.get()),int(self.rear_motor_slider.get()),int(self.seconds_dive_depth.get())))
+                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.manual_dive(int(self.front_motor_slider.get()), int(self.rear_motor_slider.get()), int(self.seconds_dive_depth.get())))
         self.dive_button_2.grid(row=8, columnspan=2)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
         self.header_label.grid(row=9, columnspan=2)
         # self.header_label.pack()
-        #self.header_label.place(relx=0.05, rely=0.3)
+        # self.header_label.place(relx=0.05, rely=0.3)
 
         self.distance_label = Label(self.motor_control_frame, text="Distance\n(0-100m)", font=(FONT, FONT_SIZE))
         self.distance_label.grid(row=10, column=0)
         # self.distance_label.pack()
-        #self.distance_label.place(relx=0.05, rely=0.45)
+        # self.distance_label.place(relx=0.05, rely=0.45)
 
         self.angle_label = Label(self.motor_control_frame, text="Angle\n(-180-180\N{DEGREE SIGN})", font=(FONT, FONT_SIZE))
         self.angle_label.grid(row=11, column=0)
         # self.angle_label.pack()
-        #self.angle_label.place(relx=0.05, rely=0.65)
+        # self.angle_label.place(relx=0.05, rely=0.65)
 
         self.prompt_input_distance = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
         self.prompt_input_distance.grid(row=10, column=1)
         # prompt_input_distance.pack()
-        #prompt_input_distance.place(relx=0.4, rely=0.475)
+        # prompt_input_distance.place(relx=0.4, rely=0.475)
 
         self.prompt_input_angle = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
         self.prompt_input_angle.grid(row=11, column=1)
         # prompt_input_angle.pack()
-        #prompt_input_angle.place(relx=0.4, rely=0.675)
+        # prompt_input_angle.place(relx=0.4, rely=0.675)
 
         # Add commands to halt and send buttons
         self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
@@ -399,6 +409,9 @@ class Main():
 
     def send_halt(self):
         self.out_q.put("send_halt()")
+
+    def send_controls(self, distance, angle):
+        self.out_q.put("send_controls(" + distance + ", " + angle + ")")
 
     def confirm_dive(self, depth):
         # TODO messages

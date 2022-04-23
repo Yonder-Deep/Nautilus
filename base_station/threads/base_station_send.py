@@ -1,4 +1,5 @@
 import os
+from platform import release
 
 # System imports
 import serial
@@ -66,7 +67,6 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
-
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -132,21 +132,6 @@ class BaseStation_Send(threading.Thread):
             constants.radio_lock.release()
             self.log('Sending task: start_mission(' + str(mission) + ')')
 
-    def send_manual_dive(self,front_speed,back_speed,seconds):
-        constants.lock.acquire()
-        if global_vars.connected is False:
-            constants.lock.release()
-            self.log("Cannot dive because there is no connection to the AUV.")
-        else:
-            constants.lock.release()
-            constants.radio_lock.acquire()
-            self.radio.write(MANUAL_DIVE_ENCODE | depth)
-            print(bin(MANUAL_DIVE_ENCODE | depth))
-            constants.radio_lock.release()
-            self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
-
-
-
     def send_halt(self):
         self.start_mission(HALT, 0, 0)
 
@@ -171,6 +156,21 @@ class BaseStation_Send(threading.Thread):
             print(bin(DIVE_ENCODE | depth))
             constants.radio_lock.release()
             self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
+
+    def send_dive_manual(self, front_motor_speed, rear_motor_speed, seconds):
+        constants.lock.acquire()
+        if global_vars.connected is False:
+            constants.lock.release()
+            self.log("Cannot dive because there is no connection to the AUV.")
+        else:
+            constants.lock.release()
+            constants.radio_lock.acquire()
+            # TODO work on the encoding for send dive manual
+            # self.radio.write(DIVE_ENCODE | depth)    # adjust with appropriate params and encoding
+            # print(bin(DIVE_ENCODE | depth))           # adjust with appropriate params and encoding
+            constants.radio_lock.release()
+            self.log('Sending task: dive(' + str(front_motor_speed) + ', ' + str(rear_motor_speed) +
+                     ', ' + str(seconds) + ')')  # TODO: change to whatever the actual command is called
 
     def encode_xbox(self, x, y, right_trigger):
         """ Encodes a navigation command given xbox input. """
