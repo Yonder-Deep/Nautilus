@@ -28,12 +28,11 @@ DL_DATA = 0b101
 
 
 class BaseStation_Send(threading.Thread):
-    def __init__(self, in_q=None, out_q=None):
+    def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
         # Instance variables
-        self.radio = None
         self.joy = None
         self.in_q = in_q
         self.out_q = out_q
@@ -42,8 +41,7 @@ class BaseStation_Send(threading.Thread):
         # Call super-class constructor
         threading.Thread.__init__(self)
 
-        self.radio, output_msg = global_vars.connect_to_radio()
-        self.log(output_msg)
+        self.radio = radio
 
         # Try to connect our Xbox 360 controller.
 
@@ -203,8 +201,8 @@ class BaseStation_Send(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                self.radio, output_msg = global_vars.connect_to_radio()
-                self.log(output_msg)
+                global_vars.connect_to_radio()
+                self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:

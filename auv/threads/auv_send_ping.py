@@ -28,6 +28,7 @@ class AUV_Send_Ping(threading.Thread):
                 print("TEST radio not connected")
                 print("in send ping")
                 global_vars.connect_to_radio()
+                self.radio = global_vars.radio
 
             else:
                 try:

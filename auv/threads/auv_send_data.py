@@ -46,6 +46,7 @@ class AUV_Send_Data(threading.Thread):
                 print("TEST radio not connected")
                 print("in send data")
                 global_vars.connect_to_radio()
+                self.radio = global_vars.radio
 
             else:
                 try:

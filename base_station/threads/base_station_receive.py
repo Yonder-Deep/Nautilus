@@ -18,13 +18,12 @@ from static import global_vars
 
 
 class BaseStation_Receive(threading.Thread):
-    def __init__(self, in_q=None, out_q=None):
+    def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
         # Call super-class constructor
         # Instance variables
-        self.radio = None
         self.gps = None
         self.in_q = in_q
         self.out_q = out_q
@@ -36,8 +35,7 @@ class BaseStation_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
         # Try to assign our radio object
-        self.radio, output_msg = global_vars.connect_to_radio()
-        self.log(output_msg)
+        self.radio = radio
 
         # Try to connect our Xbox 360 controller.
 
@@ -144,8 +142,8 @@ class BaseStation_Receive(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                self.radio, output_msg = global_vars.connect_to_radio()
-                self.log(output_msg)
+                global_vars.connect_to_radio()
+                self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -166,8 +164,8 @@ class BaseStation_Receive(threading.Thread):
                             print(bin(intline >> 32))
                             self.radio.flush()
                             self.radio.close()
-                            self.radio, output_msg = global_vars.connect_to_radio()
-                            self.log(output_msg)
+                            global_vars.connect_to_radio()
+                            self.radio = global_vars.radio
                             break
 
                         intline = intline >> 32
