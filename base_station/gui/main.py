@@ -273,12 +273,12 @@ class Main():
         # self.dive_command_button.pack(expand=YES, side=LEFT)
         # self.dive_command_button.place(relx=0.67, rely=0)
 
-    def front_motor_slider_function(self):
-        print(self.front_motor_slider.get())
+    def front_motor_slider_function(self, front_slider_value):
+        print(front_slider_value)
         self.log("Forward Slider")
 
-    def rear_motor_slider_function(self):
-        print(self.rear_motor_slider.get())
+    def rear_motor_slider_function(self, rear_slider_value):
+        print(rear_slider_value)
         self.log("Left Slider")
 
     def init_motor_control_frame(self):
@@ -303,7 +303,7 @@ class Main():
 
         self.dive_button_1 = Button(self.motor_control_frame, text="Dive", takefocus=False,
                                     width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
+                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(self.prompt_dive_depth.get())))
         self.dive_button_1.grid(row=1, column=2)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Speeds", font=(FONT, HEADING_SIZE))
