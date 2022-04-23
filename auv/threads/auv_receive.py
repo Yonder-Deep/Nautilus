@@ -11,6 +11,7 @@ from static import global_vars
 from static import constants
 import math
 import time
+import os
 import threading
 import sys
 sys.path.append('..')
@@ -33,6 +34,7 @@ class AUV_Receive(threading.Thread):
         self.imu = imu
         self.mc = mc
         self.time_since_last_ping = time.time() + 4
+        self.diving = False
         self.current_mission = None
         self.timer = 0
         self.motor_queue = queue
@@ -330,6 +332,11 @@ class AUV_Receive(threading.Thread):
         # self.radio.write(str.encode("mission_failed()\n"))
 
     def timed_dive(self, time):
+        self.diving = True
+        # Check if this path is actually right
+        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
+        log_file = open(file_path, "a")
+        self.dive_log(log_file)
 
         self.motor_queue.queue.clear()
         self.mc.update_motor_speeds([0, 0, 0, 0])
@@ -371,8 +378,16 @@ class AUV_Receive(threading.Thread):
             except:
                 print("Failed to read pressure going up")
         self.mc.update_motor_speeds([0, 0, 0, 0])
+        self.diving = False
+        log_file.close()
 
     def dive(self, to_depth):
+        self.diving = True
+        # Check if this path is actually right
+        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
+        log_file = open(file_path, "a")
+        self.dive_log(log_file)
+
         self.motor_queue.queue.clear()
 
         # begin dive
@@ -403,7 +418,21 @@ class AUV_Receive(threading.Thread):
             except:
                 print("Failed to read pressure going up")
         '''
+        self.diving = False
+        log_file.close()
 
+    # Logs with depth calibration offset (heading may need to be merged in first)
+    def dive_log(self, file):
+        if self.diving:
+            log_timer = threading.Timer(0.5, self.dive_log).start()
+            file.write(time.time()) # might want to change to a more readable time format
+            depth = self.get_depth() - global_vars.depth_offset
+            file.write("Depth=" + str(depth))
+            heading, roll, pitch = self.get_euler()
+            file.write("Heading=" + str(heading))
+            file.write("Pitch=" + str(pitch))
+
+    # Does not include calibration offset
     def get_depth(self):
         if self.pressure_sensor is not None:
             pressure = 0
@@ -419,3 +448,13 @@ class AUV_Receive(threading.Thread):
         else:
             global_vars.log("No pressure sensor found.")
             return None
+
+    # Does not include calibration offset
+    def get_euler(self):
+        try:
+            heading, roll, pitch = self.imu.read_euler()
+            # print('HEADING=', heading)
+        except:
+            # TODO print statement, something went wrong!
+            heading, roll, pitch = None, None, None
+        return heading, roll, pitch
