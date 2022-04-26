@@ -43,12 +43,10 @@ def stop_threads(ts):
 
 def start_threads(ts, queue, halt):
     # Initialize hardware
-    try:
-        pressure_sensor = PressureSensor()
-        pressure_sensor.init()
-        global_vars.log("Pressure sensor has been found")
-    except:
-        global_vars.log("Pressure sensor is not connected to the AUV.")
+    pressure_sensor = PressureSensor()
+    pressure_sensor.init()
+    global_vars.log("Pressure sensor has been found")
+    global_vars.log("Pressure sensor is not connected to the AUV.")
 
     try:
         imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
