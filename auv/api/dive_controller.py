@@ -24,7 +24,7 @@ class DiveController:
             pressure = self.pressure_sensor.pressure()
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
-            return depth
+            return depth - global_vars.depth_offset
         else:
             global_vars.log("No pressure sensor found.")
             return None
