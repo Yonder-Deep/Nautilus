@@ -51,7 +51,7 @@ class MS5837(object):
         self._model = model
 
         
-        self._bus = smbus(bus)
+        self._bus = SMBus(bus)
         print("Bus %d is not available.", bus)
         print("Available busses are listed as /dev/i2c*")
         self._bus = None
