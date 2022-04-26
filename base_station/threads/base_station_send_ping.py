@@ -39,7 +39,3 @@ class BaseStation_Send_Ping(threading.Thread):
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
-
-    def log(self, message):
-        """ Logs the message to the GUI console by putting the function into the output-queue. """
-        self.out_q.put("log('" + message + "')")
