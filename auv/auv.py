@@ -48,12 +48,9 @@ def start_threads(ts, queue, halt):
     global_vars.log("Pressure sensor has been found")
     global_vars.log("Pressure sensor is not connected to the AUV.")
 
-    try:
-        imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
-
-        global_vars.log("IMU has been found.")
-    except:
-        global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
+    imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
+    global_vars.log("IMU has been found.")
+    global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
 
     global_vars.connect_to_radio()
 
