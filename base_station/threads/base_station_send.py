@@ -158,18 +158,26 @@ class BaseStation_Send(threading.Thread):
             self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
 
     def send_dive_manual(self, front_motor_speed, rear_motor_speed, seconds):
+
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
             self.log("Cannot dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
+            rear_motor_speed = (abs(rear_motor_speed) << 5) & 0xFE0
+            front_motor_speed_sign = 1 if front_motor_speed >= 0 else 0
+            rear_motor_speed_sign = 1 if rear_motor_speed >= 0 else 0
+            rear_motor_speed_sign = (rear_motor_speed_sign << 12) & 0x1000
+            front_motor_speed = (abs(front_motor_speed) << 13) & 0xFE000
+            front_motor_speed_sign = (front_motor_speed_sign << 20) & 0x100000
             constants.radio_lock.acquire()
-            # TODO work on the encoding for send dive manual
-            # self.radio.write(DIVE_ENCODE | depth)    # adjust with appropriate params and encoding
-            # print(bin(DIVE_ENCODE | depth))           # adjust with appropriate params and encoding
+
+            self.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
+            print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
+
             constants.radio_lock.release()
-            self.log('Sending task: dive(' + str(front_motor_speed) + ', ' + str(rear_motor_speed) +
+            self.log('Sending task: manual_dive(' + str(front_motor_speed) + ', ' + str(rear_motor_speed) +
                      ', ' + str(seconds) + ')')  # TODO: change to whatever the actual command is called
 
     def encode_xbox(self, x, y, right_trigger):

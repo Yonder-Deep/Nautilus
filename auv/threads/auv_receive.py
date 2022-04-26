@@ -321,6 +321,23 @@ class AUV_Receive(threading.Thread):
         global_vars.log("Successfully aborted the current mission.")
         # self.radio.write(str.encode("mission_failed()\n"))
 
+    def manual_dive(self, front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive):
+
+        front_speed = (-1) * front_speed if front_speed_sign == 0 else front_speed
+        back_speed = (-1) * back_speed if back_speed_sign == 0 else back_speed
+
+        time_begin = time.time()
+
+        while time.time() - time_begin < time_dive:
+            self.mc.update_motor_speeds([0, 0, front_speed, back_speed])
+
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+
+        self.radio.flush()
+
+        for i in range(0, 3):
+            self.radio.read(7)
+
     def timed_dive(self, time):
 
         self.motor_queue.queue.clear()
