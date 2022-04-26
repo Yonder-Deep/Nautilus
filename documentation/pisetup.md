@@ -4,6 +4,9 @@
    ~~~
    sudo pigpiod
    ~~~
+
+   More details here: https://www.codetd.com/en/article/12959579
+   
 4. Run
    ~~~
    sudo raspi-config
