@@ -86,6 +86,7 @@ class DiveController:
             side_motor_value = heading_correction
 
             print("Depth_Correction: {}\tPitch_Correction: {}\tHeading_Correction: {}\n".format(depth_correction, pitch_correction, heading_correction))
+            print("Current time elapsed: {}".format(time.time() - start_time))
 
             # NOTE: check side_motor_value to see if the sign is correct
             self.mc.update_motor_speeds([side_motor_value, -side_motor_value, back_motor_value, front_motor_value])
