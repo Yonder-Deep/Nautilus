@@ -235,7 +235,7 @@ class MS5837(object):
 
 
 class MS5837_30BA(MS5837):
-    def __init__(self, bus=1): # XXX
+    def __init__(self, bus=2): # XXX
         MS5837.__init__(self, MODEL_30BA, bus)
 
 
