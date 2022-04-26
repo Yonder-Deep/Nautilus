@@ -66,7 +66,6 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
-
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -132,7 +131,7 @@ class BaseStation_Send(threading.Thread):
             constants.radio_lock.release()
             self.log('Sending task: start_mission(' + str(mission) + ')')
 
-    def send_manual_dive(self,front_speed,back_speed,seconds):
+    def send_manual_dive(self, front_speed, back_speed, seconds):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
@@ -144,8 +143,6 @@ class BaseStation_Send(threading.Thread):
             print(bin(MANUAL_DIVE_ENCODE | depth))
             constants.radio_lock.release()
             self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
-
-
 
     def send_halt(self):
         self.start_mission(HALT, 0, 0)
