@@ -50,12 +50,11 @@ class MS5837(object):
     def __init__(self, model=MODEL_30BA, bus=0): #XXX
         self._model = model
 
-        try:
-            self._bus = smbus.SMBus(bus)
-        except:
-            print("Bus %d is not available.", bus)
-            print("Available busses are listed as /dev/i2c*")
-            self._bus = None
+        
+        self._bus = smbus.SMBus(bus)
+        print("Bus %d is not available.", bus)
+        print("Available busses are listed as /dev/i2c*")
+        self._bus = None
 
         self._fluidDensity = DENSITY_SALTWATER
         self._pressure = 0
