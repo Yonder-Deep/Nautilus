@@ -10,17 +10,14 @@ from static import global_vars
 
 
 class BaseStation_Send_Ping(threading.Thread):
-    def __init__(self, out_q=None):
+    def __init__(self, radio, out_q=None):
+        self.radio = radio
         self.out_q = out_q
         threading.Thread.__init__(self)
 
     def run(self):
         """ Constructor for the AUV """
-        self.radio = None
         # Try to assign us a new Radio object
-        self.radio, output_msg = global_vars.connect_to_radio()
-        self.log(output_msg)
-
         self.main_loop()
 
     def main_loop(self):
@@ -31,8 +28,8 @@ class BaseStation_Send_Ping(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                self.radio, output_msg = global_vars.connect_to_radio()
-                self.log(output_msg)
+                global_vars.connect_to_radio(self.out_q)
+                self.radio = global_vars.radio
             else:
                 try:
                     # Always send a connection verification packet
@@ -42,7 +39,3 @@ class BaseStation_Send_Ping(threading.Thread):
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
-
-    def log(self, message):
-        """ Logs the message to the GUI console by putting the function into the output-queue. """
-        self.out_q.put("log('" + message + "')")
