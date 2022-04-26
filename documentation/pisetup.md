@@ -22,6 +22,6 @@
    sudo python setup.py install
    ~~~
 
-   More details here: https://github.com/adafruit/Adafruit_Python_GPI
+   More details here: https://github.com/adafruit/Adafruit_Python_GPIO
 
 Note: These instructions don't work on a raspberry pi 4.
