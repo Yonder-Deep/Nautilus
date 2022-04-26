@@ -142,7 +142,7 @@ class BaseStation_Receive(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                global_vars.connect_to_radio()
+                global_vars.connect_to_radio(self.out_q)
                 self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
@@ -164,7 +164,7 @@ class BaseStation_Receive(threading.Thread):
                             print(bin(intline >> 32))
                             self.radio.flush()
                             self.radio.close()
-                            global_vars.connect_to_radio()
+                            global_vars.connect_to_radio(self.out_q)
                             self.radio = global_vars.radio
                             break
 

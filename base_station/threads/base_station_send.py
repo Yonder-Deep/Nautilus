@@ -201,7 +201,7 @@ class BaseStation_Send(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                global_vars.connect_to_radio()
+                global_vars.connect_to_radio(self.out_q)
                 self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
