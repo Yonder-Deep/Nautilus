@@ -49,7 +49,7 @@ class AUV_Send_Data(threading.Thread):
             else:
                 try:
                     constants.LOCK.acquire()
-                    if global_vars.connected is True:  # Send our AUV packet as well.
+                    if global_vars.connected is False:  # Send our AUV packet as well.
                         constants.LOCK.release()
                         # IMU
                         if self.imu is not None:
