@@ -24,7 +24,7 @@ class DiveController:
             pressure = self.pressure_sensor.pressure()
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure-1013.25)/1000 * 10.2
-            return depth
+            return depth - global_vars.depth_offset
         else:
             global_vars.log("No pressure sensor found.")
             return None
@@ -56,7 +56,7 @@ class DiveController:
 
         # main PID loop?
         # Time out and stop diving if > 1 min
-        while time.time() < start_time + 300:
+        while time.time() < start_time + 60:
             try:
                 depth = self.get_depth()
 
@@ -86,6 +86,7 @@ class DiveController:
             side_motor_value = heading_correction
 
             print("Depth_Correction: {}\tPitch_Correction: {}\tHeading_Correction: {}\n".format(depth_correction, pitch_correction, heading_correction))
+            print("Current time elapsed: {}".format(time.time() - start_time))
 
             # NOTE: check side_motor_value to see if the sign is correct
             self.mc.update_motor_speeds([side_motor_value, -side_motor_value, back_motor_value, front_motor_value])

@@ -29,12 +29,11 @@ DL_DATA = 0b101
 
 
 class BaseStation_Send(threading.Thread):
-    def __init__(self, in_q=None, out_q=None):
+    def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
         # Instance variables
-        self.radio = None
         self.joy = None
         self.in_q = in_q
         self.out_q = out_q
@@ -43,8 +42,7 @@ class BaseStation_Send(threading.Thread):
         # Call super-class constructor
         threading.Thread.__init__(self)
 
-        self.radio, output_msg = global_vars.connect_to_radio()
-        self.log(output_msg)
+        self.radio = radio
 
         # Try to connect our Xbox 360 controller.
 
@@ -54,10 +52,10 @@ class BaseStation_Send(threading.Thread):
             self.joy = xbox.Joystick()
             print("case1")
 
-            self.log("Successfuly found Xbox 360 controller.")
+            global_vars.log(self.out_q,"Successfuly found Xbox 360 controller.")
             print("case2")
         except:
-            self.log("Warning: Cannot find xbox controller")
+            global_vars.log(self.out_q,"Warning: Cannot find xbox controller")
 
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
@@ -80,7 +78,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if not global_vars.connected:
             constants.lock.release()
-            self.log("Cannot test " + motor +
+            global_vars.log(self.out_q,"Cannot test " + motor +
                      " motor(s) because there is no connection to the AUV.")
         else:
             constants.lock.release()
@@ -93,7 +91,7 @@ class BaseStation_Send(threading.Thread):
                 self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
             constants.radio_lock.release()
 
-            self.log('Sending encoded task: test_motor("' + motor + '")')
+            global_vars.log(self.out_q,'Sending encoded task: test_motor("' + motor + '")')
 
             # self.radio.write('test_motor("' + motor + '")')
 
@@ -102,12 +100,12 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if not global_vars.connected:
             constants.lock.release()
-            self.log(
+            global_vars.log(self.out_q,
                 "Cannot abort mission because there is no connection to the AUV.")
         else:
             constants.lock.release()
             # self.radio.write("abort_mission()")
-            self.log("Sending task: abort_mission()")
+            global_vars.log(self.out_q,"Sending task: abort_mission()")
             self.manual_mode = True
 
     def start_mission(self, mission, depth, t):
@@ -115,7 +113,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot start mission " + str(mission) +
+            global_vars.log(self.out_q,"Cannot start mission " + str(mission) +
                      " because there is no connection to the AUV.")
         else:
             constants.lock.release()
@@ -126,7 +124,7 @@ class BaseStation_Send(threading.Thread):
             print(bin(MISSION_ENCODE | depth | t | mission))
 
             constants.radio_lock.release()
-            self.log('Sending task: start_mission(' + str(mission) + ')')
+            global_vars.log(self.out_q,'Sending task: start_mission(' + str(mission) + ')')
 
     def send_halt(self):
         self.start_mission(HALT, 0, 0)
@@ -144,14 +142,14 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot dive because there is no connection to the AUV.")
+            global_vars.log(self.out_q,"Cannot dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
             constants.radio_lock.acquire()
             self.radio.write(DIVE_ENCODE | depth)
             print(bin(DIVE_ENCODE | depth))
             constants.radio_lock.release()
-            self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
+            global_vars.log(self.out_q,'Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
 
     def send_pid_update(self, constant_select, value):
         # Update PID constants for the dive controller
@@ -209,19 +207,19 @@ class BaseStation_Send(threading.Thread):
                     pass
 
             # elif not self.joy.connected():
-            #    self.log("Xbox controller has been disconnected.")
+            #    global_vars.log(self.out_q,"Xbox controller has been disconnected.")
             #    self.joy = None
 
             # This executes if we never had a radio object, or it got disconnected.
             if self.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
                 # This executes if we HAD a radio object, but it got disconnected.
                 if self.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
-                    self.log("Radio device has been disconnected.")
+                    global_vars.log(self.out_q,"Radio device has been disconnected.")
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                self.radio, output_msg = global_vars.connect_to_radio()
-                self.log(output_msg)
+                global_vars.connect_to_radio(self.out_q)
+                self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -269,7 +267,7 @@ class BaseStation_Send(threading.Thread):
                                 constants.radio_lock.release()
 
                             except Exception as e:
-                                self.log("Error with Xbox data: " + str(e))
+                                global_vars.log(self.out_q,"Error with Xbox data: " + str(e))
 
                         # once A is no longer held, send one last zeroed out xbox command
                         if xbox_input and not self.joy.A():
@@ -285,13 +283,9 @@ class BaseStation_Send(threading.Thread):
                     print(str(e))
                     self.radio.close()
                     self.radio = None
-                    self.log("Radio device has been disconnected.")
+                    global_vars.log(out_q, "Radio device has been disconnected.")
                     continue
             time.sleep(constants.THREAD_SLEEP_DELAY)
-
-    def log(self, message):
-        """ Logs the message to the GUI console by putting the function into the output-queue. """
-        self.out_q.put("log('" + message + "')")
 
     def close(self):
         """ Function that is executed upon the closure of the GUI (passed from input-queue). """
@@ -305,9 +299,9 @@ class BaseStation_Send(threading.Thread):
         if index == 0:  # Echo location mission.
             self.manual_mode = False
             self.out_q.put("set_vehicle(False)")
-            self.log("Switched to autonomous mode.")
+            global_vars.log(self.out_q,"Switched to autonomous mode.")
 
-        self.log("Successfully started mission " + str(index))
+        global_vars.log(self.out_q,"Successfully started mission " + str(index))
 
 # Responsibilites:
 #   - send ping
