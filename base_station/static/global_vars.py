@@ -37,4 +37,4 @@ def connect_to_radio(queue):
 
 
 def log(queue, msg):
-    queue.push("log('" + msg + "')")
+    queue.put("log('" + msg + "')")
