@@ -111,6 +111,7 @@ class AUV_Send_Data(threading.Thread):
 
     def send_depth(self):
         depth = self.get_depth()
+        print("Depth=", depth)
         if depth < 0:
             depth = 0
         for_depth = math.modf(depth)
