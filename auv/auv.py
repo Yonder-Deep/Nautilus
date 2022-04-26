@@ -59,10 +59,13 @@ def start_threads(ts, queue, halt):
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
 
     for i in range(3):
-        if not imu.begin():
-            print('Failed to initialize BNO055! Attempt:', i)
-        else:
-            break
+        try:
+            if not imu.begin():
+                print('Failed to initialize BNO055! Attempt:', i)
+            else:
+                break
+        except:
+            print('Exception thrown during BNO055 initialization')
 
     global_vars.connect_to_radio()
 
