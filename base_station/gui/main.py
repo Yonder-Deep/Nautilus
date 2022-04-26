@@ -251,25 +251,23 @@ class Main():
 
         self.calibrate_depth_button.grid(row=0, column=1)
 
-
-    def front_motor_slider_function(self):
-        print(self.front_motor_slider.get())
+    def front_motor_slider_function(self, front_slider_value):
+        print(front_slider_value)
         self.log("Forward Slider")
 
-    def rear_motor_slider_function(self):
-        print(self.rear_motor_slider.get())
+    def rear_motor_slider_function(self, rear_slider_value):
+        print(rear_slider_value)
         self.log("Left Slider")
 
-    def manual_dive(self, front_motor_speed, rear_motor_speed,seconds):
-        print(front_motor_speed,rear_motor_speed,seconds)
+    def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
+        print(front_motor_speed, rear_motor_speed, seconds)
         self.log("Manual Dive")
-
 
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
         self.motor_control_frame = Frame(
             self.stack_frame, width=FUNC_FRAME_WIDTH, bd=0.4, relief=SUNKEN)
-  
+
         self.motor_control_frame.grid(
             row=3, column=1, pady=CALIBRATE_PAD_Y)
 
@@ -312,7 +310,7 @@ class Main():
 
         self.dive_button_2 = Button(self.motor_control_frame, text="Dive", takefocus=False,
                                     width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.manual_dive(int(self.front_motor_slider.get()),int(self.rear_motor_slider.get()),int(self.seconds_dive_depth.get())))
+                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.manual_dive(int(self.front_motor_slider.get()), int(self.rear_motor_slider.get()), int(self.seconds_dive_depth.get())))
         self.dive_button_2.grid(row=8, columnspan=2)
 
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
@@ -342,6 +340,9 @@ class Main():
 
     def send_halt(self):
         self.out_q.put("send_halt()")
+
+    def send_controls(self, distance, angle):
+        self.out_q.put("send_controls(" + distance + ", " + angle + ")")
 
     def confirm_dive(self, depth):
         # TODO messages
@@ -374,8 +375,6 @@ class Main():
         self.status_label = Label(
             self.status_frame, text="AUV Data", font=(FONT, HEADING_SIZE))
         self.status_label.grid(row=0, column=0)
-        # self.status_label.pack()
-        # self.status_label.place(relx=0.22, rely=0.075)
 
         self.position_label_string = StringVar()
         self.position_label = Label(self.status_frame, textvariable=self.position_label_string, font=(
