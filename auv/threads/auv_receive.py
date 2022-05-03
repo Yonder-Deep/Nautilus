@@ -145,6 +145,19 @@ class AUV_Receive(threading.Thread):
                             self.dive(desired_depth)
                             constants.LOCK.release()
 
+                        elif header == constants.MANUAL_DIVE_ENCODE:
+                            global_vars.movement_status = 2
+                            seconds = message & 0b11111
+                            back_speed = message & 0b111111100000
+                            back_speed_sign = message & 0b1000000000000
+                            front_speed = message & 0b11111110000000000000
+                            front_speed_sign = message & 0b100000000000000000000
+
+                            print("We're calling the manual dive command:", str(seconds), str(front_speed), str(back_speed))
+                            constants.LOCK.acquire()
+                            self.manual_dive(front_speed_sign, front_speed, back_speed_sign, back_speed, seconds)
+                            constants.LOCK.release()
+
                         elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
                             self.read_mission_command(message)
 
@@ -329,7 +342,7 @@ class AUV_Receive(threading.Thread):
         time_begin = time.time()
 
         while time.time() - time_begin < time_dive:
-            self.mc.update_motor_speeds([0, 0, front_speed, back_speed])
+            self.mc.update_motor_speeds([0, 0, 1.5*front_speed, 1.5*back_speed])
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
 
