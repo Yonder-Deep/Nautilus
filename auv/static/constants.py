@@ -1,4 +1,3 @@
-from base_station.threads.base_station_send import MANUAL_DIVE_ENCODE
 import threading
 
 # Constants for the AUV
