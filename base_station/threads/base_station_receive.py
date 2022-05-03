@@ -122,6 +122,7 @@ class BaseStation_Receive(threading.Thread):
     def run(self):
         """ Main threaded loop for the base station. """
         # Begin our main loop for this thread.
+        downloading = False
 
         while True:
             time.sleep(0.5)
@@ -155,38 +156,56 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
-                    while(line != b'' and len(line) == 7):
-                        print('read line')
-                        intline = int.from_bytes(line, "big")
+                    while(line != b''):
+                        if not downloading and len(line) == 7:
+                            print('read line')
+                            intline = int.from_bytes(line, "big")
 
-                        checksum = Crc32.confirm(intline)
+                            checksum = Crc32.confirm(intline)
 
-                        if not checksum:
-                            print('invalid line*************')
-                            print(bin(intline >> 32))
-                            self.radio.flush()
-                            self.radio.close()
-                            self.radio, output_msg = global_vars.connect_to_radio()
-                            self.log(output_msg)
-                            break
+                            if not checksum:
+                                print('invalid line*************')
+                                print(bin(intline >> 32))
+                                self.radio.flush()
+                                self.radio.close()
+                                self.radio, output_msg = global_vars.connect_to_radio()
+                                self.log(output_msg)
+                                break
 
-                        intline = intline >> 32
-                        header = intline >> 21     # get first 3 bits
-                        # PING case
-                        if intline == constants.PING:
-                            self.time_since_last_ping = time.time()
-                            constants.lock.acquire()
-                            if global_vars.connected is False:
-                                self.log("Connection to AUV verified.")
-                                self.out_q.put("set_connection(True)")
-                                global_vars.connected = True
-                            constants.lock.release()
-                        # Data cases
-                        else:
-                            print("HEADER_STR", header)
-                            decode_command(self, header, intline)
+                            intline = intline >> 32
+                            header = intline >> 21     # get first 3 bits
+                            # PING case
+                            if intline == constants.PING:
+                                self.time_since_last_ping = time.time()
+                                constants.lock.acquire()
+                                if global_vars.connected is False:
+                                    self.log("Connection to AUV verified.")
+                                    self.out_q.put("set_connection(True)")
+                                    global_vars.connected = True
+                                constants.lock.release()
+                            # Data cases
+                            else:
+                                print("HEADER_STR", header)
+                                decode_command(self, header, intline)
 
-                        line = self.radio.read(7)
+                            if header == constants.FILE_DATA:
+                                downloading = True
+                                line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+                                continue   
+                            line = self.radio.read(7)
+                        elif downloading and len(line) == constants.FILE_DL_PACKET_SIZE:
+                            intline = int.from_bytes(line, "big")
+                            header = intline >> (constants.FILE_DL_PACKET_SIZE - 1)
+                            # Use 1 bit to say when we're done?
+                            if header == 0b1:
+                                downloading = False
+                                line = self.radio.read(7)
+                                continue
+                                # TODO
+                            file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
+                            self.write_file(file_path)
+                            
+
 
                     self.radio.flush()
 
@@ -202,3 +221,7 @@ class BaseStation_Receive(threading.Thread):
     def log(self, message):
         """ Logs the message to the GUI console by putting the function into the output-queue. """
         self.out_q.put("log('" + message + "')")
+    
+    # TODO
+    def write_file(filepath):
+        pass
