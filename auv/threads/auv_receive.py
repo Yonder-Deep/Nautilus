@@ -299,7 +299,7 @@ class AUV_Receive(threading.Thread):
             pass
         if (x == 5):
             print("DOWNLOAD DATA")
-            # downloadData()
+            global_vars.sending_dive_log = True
             pass
 
     def start_mission(self, mission):
@@ -384,7 +384,7 @@ class AUV_Receive(threading.Thread):
     def dive(self, to_depth):
         self.diving = True
         # Check if this path is actually right
-        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
+        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
         log_file = open(file_path, "a")
         self.dive_log(log_file)
 
@@ -458,3 +458,4 @@ class AUV_Receive(threading.Thread):
             # TODO print statement, something went wrong!
             heading, roll, pitch = None, None, None
         return heading, roll, pitch
+

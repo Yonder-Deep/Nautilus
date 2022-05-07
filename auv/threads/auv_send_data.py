@@ -1,3 +1,4 @@
+from auv.static.constants import FILE_SEND_PACKET_SIZE
 from static import global_vars
 from static import constants
 from missions import *
@@ -138,6 +139,17 @@ class AUV_Send_Data(threading.Thread):
         print(bin(position_encode))
         self.radio.write(position_encode, 3)
         constants.RADIO_LOCK.release()
+
+    def send_dive_log(self):
+        dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb")
+        file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
+        confirmed = False
+        while file_bytes:
+            constants.RADIO_LOCK.acquire()
+            print(file_bytes)
+            self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            constants.RADIO_LOCK.release()
+        global_vars.sending_dive_log = False
 
     def stop(self):
         self._ev.set()

@@ -122,7 +122,6 @@ class BaseStation_Receive(threading.Thread):
     def run(self):
         """ Main threaded loop for the base station. """
         # Begin our main loop for this thread.
-        downloading = False
 
         while True:
             time.sleep(0.5)
@@ -157,7 +156,7 @@ class BaseStation_Receive(threading.Thread):
                     line = self.radio.read(7)
 
                     while(line != b''):
-                        if not downloading and len(line) == 7:
+                        if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
 
@@ -189,21 +188,23 @@ class BaseStation_Receive(threading.Thread):
                                 decode_command(self, header, intline)
 
                             if header == constants.FILE_DATA:
-                                downloading = True
-                                line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+                                global_vars.downloading_file = True
                                 continue   
                             line = self.radio.read(7)
-                        elif downloading and len(line) == constants.FILE_DL_PACKET_SIZE:
+                        elif global_vars.downloading_file:
+                            line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
+                            global_vars.file_packets_received += 1
                             header = intline >> (constants.FILE_DL_PACKET_SIZE - 1)
                             # Use 1 bit to say when we're done?
                             if header == 0b1:
-                                downloading = False
+                                global_vars.downloading_file = False
                                 line = self.radio.read(7)
                                 continue
                                 # TODO
                             file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
                             self.write_file(file_path)
+
                             
 
 

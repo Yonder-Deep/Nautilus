@@ -36,9 +36,10 @@ class BaseStation_Send_Ping(threading.Thread):
             else:
                 try:
                     # Always send a connection verification packet
-                    constants.radio_lock.acquire()
-                    self.radio.write(constants.PING)
-                    constants.radio_lock.release()
+                    if not global_vars.downloading_file:
+                        constants.radio_lock.acquire()
+                        self.radio.write(constants.PING)
+                        constants.radio_lock.release()
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))

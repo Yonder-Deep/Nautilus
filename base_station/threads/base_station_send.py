@@ -153,6 +153,12 @@ class BaseStation_Send(threading.Thread):
             constants.radio_lock.release()
             self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
 
+    def send_packet_num(self):
+        constants.radio_lock.acquire()
+        self.radio.write(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
+        print(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
+        constants.radio_lock.release()
+    
     def send_pid_update(self, constant_select, value):
         # Update PID constants for the dive controller
         # constant_select: int storing which constant to update (0-2): pitch pid, (3-5): dive pid
@@ -229,7 +235,7 @@ class BaseStation_Send(threading.Thread):
                 try:
                     # This is where secured/synchronous code should go.
                     constants.lock.acquire()
-                    if global_vars.connected and self.manual_mode:
+                    if global_vars.connected and self.manual_mode and not global_vars.downloading_file:
                         constants.lock.release()
                         if self.joy is not None and self.joy.leftBumper() and self.joy.rightBumper():
                             # Read in potential kill-all/restart command
@@ -279,6 +285,10 @@ class BaseStation_Send(threading.Thread):
                             print("[XBOX] NO LONGER A\t")
                             self.out_q.put("set_xbox_status(0,0)")
                             xbox_input = False
+                    elif global_vars.connected and global_vars.downloading_file:
+                        constants.radio_lock.acquire()
+                        self.send_packet_num()
+                        constants.radio_lock.release()
                     else:
                         constants.lock.release()
                 except Exception as e:
