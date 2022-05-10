@@ -6,7 +6,9 @@ from api import Radio
 connected = False    # boolean that determines if BS has radio connection with AUV
 
 downloading_file = False
+file_size = 0
 file_packets_received = 0
+packet_received = False
 
 def path_existance(radioPaths):
     for rp in radioPaths:

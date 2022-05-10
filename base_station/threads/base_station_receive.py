@@ -1,3 +1,4 @@
+from glob import glob
 import sys
 import os
 
@@ -189,21 +190,30 @@ class BaseStation_Receive(threading.Thread):
 
                             if header == constants.FILE_DATA:
                                 global_vars.downloading_file = True
+                                file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
                                 continue   
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
-                            global_vars.file_packets_received += 1
-                            header = intline >> (constants.FILE_DL_PACKET_SIZE - 1)
-                            # Use 1 bit to say when we're done?
-                            if header == 0b1:
-                                global_vars.downloading_file = False
-                                line = self.radio.read(7)
+                            # Get first packet containing final file size
+                            if global_vars.file_size == 0:
+                                global_vars.file_size = intline
                                 continue
-                                # TODO
-                            file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
-                            self.write_file(file_path)
+                            global_vars.file_packets_received += 1
+                            global_vars.packet_received = True
+                            # Write to file
+                            file.write(line)
+                            # Get current file size
+                            file.seek(0, os.SEEK_END)
+                            curr_file_size = file.tell()
+                            # Return to normal operations when correct file size reached
+                            if curr_file_size >= global_vars.file_size:
+                                global_vars.downloading_file = False
+                                global_vars.file_size = 0
+                                global_vars.packet_received = False
+                                global_vars.file_packets_received = 0
+                                line = self.radio.read(7)
 
                             
 
@@ -223,6 +233,3 @@ class BaseStation_Receive(threading.Thread):
         """ Logs the message to the GUI console by putting the function into the output-queue. """
         self.out_q.put("log('" + message + "')")
     
-    # TODO
-    def write_file(filepath):
-        pass

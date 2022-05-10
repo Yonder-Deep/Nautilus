@@ -287,7 +287,9 @@ class BaseStation_Send(threading.Thread):
                             xbox_input = False
                     elif global_vars.connected and global_vars.downloading_file:
                         constants.radio_lock.acquire()
-                        self.send_packet_num()
+                        if global_vars.packet_received:
+                            self.send_packet_num()
+                            global_vars.packet_received = False
                         constants.radio_lock.release()
                     else:
                         constants.lock.release()

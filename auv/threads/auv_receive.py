@@ -96,79 +96,83 @@ class AUV_Receive(threading.Thread):
                     line = self.radio.read(7)
                     # self.radio.flush()
 
-                    while(line != b'' and len(line) == 7):
-                        intline = int.from_bytes(line, "big")
-                        checksum = Crc32.confirm(intline)
-                        if not checksum:
-                            global_vars.log("invalid line***********************")
-                            # self.radio.flush()
-                            self.mc.update_motor_speeds([0, 0, 0, 0])
-                            break
+                    while(line != b''):
+                        if not global_vars.sending_dive_log and len(line) == 7:
+                            intline = int.from_bytes(line, "big")
+                            checksum = Crc32.confirm(intline)
+                            if not checksum:
+                                global_vars.log("invalid line***********************")
+                                # self.radio.flush()
+                                self.mc.update_motor_speeds([0, 0, 0, 0])
+                                break
 
-                        # message contains packet data without checksum
-                        message = intline >> 32
-                        if message == constants.PING:  # We have a ping!
-                            self.ping_connected()
+                            # message contains packet data without checksum
+                            message = intline >> 32
+                            if message == constants.PING:  # We have a ping!
+                                self.ping_connected()
+                                line = self.radio.read(7)
+                                continue
+
+                            print("NON-PING LINE READ WAS", bin(message))
+
+                            # case block
+                            header = message & 0xE00000
+
+                            if header == constants.NAV_ENCODE:  # navigation
+                                self.read_nav_command(message)
+
+                            elif header == constants.XBOX_ENCODE:  # xbox navigation
+                                self.read_xbox_command(message)
+
+                            elif header == constants.DIVE_ENCODE:  # dive
+                                desired_depth = message & 0b111111
+                                print("We're calling dive command:", str(desired_depth))
+                                constants.LOCK.acquire()
+                                self.dive(desired_depth)
+                                constants.LOCK.release()
+
+                            elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
+                                self.read_mission_command(message)
+
+                            elif header == constants.KILL_ENCODE:  # Kill/restart AUV threads
+                                if (message & 1):
+                                    # Restart AUV threads
+                                    self.mc.zero_out_motors()
+                                    global_vars.restart_threads = True
+                                else:
+                                    # Kill AUV threads
+                                    self.mc.zero_out_motors()
+                                    global_vars.stop_all_threads = True
+                            elif header == constants.PID_ENCODE:
+                                # Update a PID value in the dive controller
+                                constant_select = (message >> 18) & 0b111
+                                # Extract last 18 bits from message
+                                # Map to smaller, more precise numbers later
+                                value = message & (0x3FFFF)
+                                print("Received PID Constant Select: {}".format(constant_select))
+                                if (constant_select == 0b000):
+                                    constants.P_PITCH = value
+                                    self.dive_controller.update_pitch_pid()
+                                elif (constant_select == 0b001):
+                                    constants.I_PITCH = value
+                                    self.dive_controller.update_pitch_pid()
+                                elif (constant_select == 0b010):
+                                    constants.D_PITCH = value
+                                    self.dive_controller.update_pitch_pid()
+                                elif (constant_select == 0b011):
+                                    constants.P_DEPTH = value
+                                    self.dive_controller.update_depth_pid()
+                                elif (constant_select == 0b100):
+                                    constants.I_DEPTH = value
+                                    self.dive_controller.update_depth_pid()
+                                elif (constant_select == 0b101):
+                                    constants.D_DEPTH = value
+                                    self.dive_controller.update_depth_pid()
                             line = self.radio.read(7)
-                            continue
-
-                        print("NON-PING LINE READ WAS", bin(message))
-
-                        # case block
-                        header = message & 0xE00000
-
-                        if header == constants.NAV_ENCODE:  # navigation
-                            self.read_nav_command(message)
-
-                        elif header == constants.XBOX_ENCODE:  # xbox navigation
-                            self.read_xbox_command(message)
-
-                        elif header == constants.DIVE_ENCODE:  # dive
-                            desired_depth = message & 0b111111
-                            print("We're calling dive command:", str(desired_depth))
-                            constants.LOCK.acquire()
-                            self.dive(desired_depth)
-                            constants.LOCK.release()
-
-                        elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
-                            self.read_mission_command(message)
-
-                        elif header == constants.KILL_ENCODE:  # Kill/restart AUV threads
-                            if (message & 1):
-                                # Restart AUV threads
-                                self.mc.zero_out_motors()
-                                global_vars.restart_threads = True
-                            else:
-                                # Kill AUV threads
-                                self.mc.zero_out_motors()
-                                global_vars.stop_all_threads = True
-                        elif header == constants.PID_ENCODE:
-                            # Update a PID value in the dive controller
-                            constant_select = (message >> 18) & 0b111
-                            # Extract last 18 bits from message
-                            # Map to smaller, more precise numbers later
-                            value = message & (0x3FFFF)
-                            print("Received PID Constant Select: {}".format(constant_select))
-                            if (constant_select == 0b000):
-                                constants.P_PITCH = value
-                                self.dive_controller.update_pitch_pid()
-                            elif (constant_select == 0b001):
-                                constants.I_PITCH = value
-                                self.dive_controller.update_pitch_pid()
-                            elif (constant_select == 0b010):
-                                constants.D_PITCH = value
-                                self.dive_controller.update_pitch_pid()
-                            elif (constant_select == 0b011):
-                                constants.P_DEPTH = value
-                                self.dive_controller.update_depth_pid()
-                            elif (constant_select == 0b100):
-                                constants.I_DEPTH = value
-                                self.dive_controller.update_depth_pid()
-                            elif (constant_select == 0b101):
-                                constants.D_DEPTH = value
-                                self.dive_controller.update_depth_pid()
-
-                        line = self.radio.read(7)
+                        elif global_vars.sending_dive_log:
+                            line = self.radio.read(constants.FILE_SEND_PACKET_SIZE)
+                            global_vars.file_packets_received = int.from_bytes(line)
+                            global_vars.bs_response_sent = True
 
                     # end while
                     self.radio.flush()
