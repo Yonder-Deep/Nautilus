@@ -37,6 +37,7 @@ class AUV_Send_Ping(threading.Thread):
                     constants.RADIO_LOCK.release()
 
                 except Exception as e:
+                    self.radio.close()
                     self.radio = None
                     raise Exception("Error occured : " + str(e))
 

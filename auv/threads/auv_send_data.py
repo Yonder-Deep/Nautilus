@@ -67,6 +67,7 @@ class AUV_Send_Data(threading.Thread):
                         constants.LOCK.release()
 
                 except Exception as e:
+                    self.radio.close()
                     self.radio = None
                     raise Exception("Error occured : " + str(e))
 
