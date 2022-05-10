@@ -67,6 +67,7 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
+
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -162,7 +163,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot dive because there is no connection to the AUV.")
+            self.log("Cannot manual dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
             rear_motor_speed = (abs(rear_motor_speed) << 5) & 0xFE0
@@ -177,8 +178,8 @@ class BaseStation_Send(threading.Thread):
             print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
-            self.log('Sending task: manual_dive(' + str(front_motor_speed) + ', ' + str(rear_motor_speed) +
-                     ', ' + str(seconds) + ')')  # TODO: change to whatever the actual command is called
+            self.log('Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
+                     ', ' + str(seconds) + ')')
 
     def encode_xbox(self, x, y, right_trigger):
         """ Encodes a navigation command given xbox input. """

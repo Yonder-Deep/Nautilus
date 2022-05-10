@@ -260,8 +260,16 @@ class Main():
         self.log("Left Slider")
 
     def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
-        print(front_motor_speed, rear_motor_speed, seconds)
         self.log("Manual Dive")
+        if seconds < 1 or seconds > 32:
+            messagebox.showerror("ERROR", "Select a time between 1 and 32 seconds inclusive. ")
+            return
+
+        # Prompt mission start
+        prompt = "Dive for: " + str(seconds) + " seconds?"
+        ans = messagebox.askquestion("Dive", prompt)
+        if ans == 'yes':
+            self.out_q.put("send_dive_manual(" + str(front_motor_speed) + ',' + str(rear_motor_speed) + ',' + str(seconds) + ")")
 
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
