@@ -7,6 +7,7 @@ from api import PressureSensor
 from api import IMU
 from api import Radio
 import math
+import os
 import threading
 import sys
 sys.path.append('..')
