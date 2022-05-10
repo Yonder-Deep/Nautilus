@@ -336,6 +336,8 @@ class AUV_Receive(threading.Thread):
 
     def manual_dive(self, front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive):
 
+        print(front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive)
+
         front_speed = (-1) * front_speed if front_speed_sign == 0 else front_speed
         back_speed = (-1) * back_speed if back_speed_sign == 0 else back_speed
 
