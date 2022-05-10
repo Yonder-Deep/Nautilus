@@ -44,6 +44,8 @@ class AUV_Send_Data(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("in send data")
+                print(self.radio.is_open())
+
                 self.radio = global_vars.connect_to_radio()
 
             else:
