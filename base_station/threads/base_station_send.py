@@ -159,7 +159,7 @@ class BaseStation_Send(threading.Thread):
             self.log('Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
 
     def send_dive_manual(self, front_motor_speed, rear_motor_speed, seconds):
-
+        print(front_motor_speed, rear_motor_speed, seconds)
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
@@ -172,6 +172,8 @@ class BaseStation_Send(threading.Thread):
             rear_motor_speed_sign = (rear_motor_speed_sign << 12) & 0x1000
             front_motor_speed = (abs(front_motor_speed) << 13) & 0xFE000
             front_motor_speed_sign = (front_motor_speed_sign << 20) & 0x100000
+            seconds = (seconds) & 0xFE00000
+            print(front_motor_speed_sign, front_motor_speed, rear_motor_speed_sign, rear_motor_speed, seconds)
             constants.radio_lock.acquire()
 
             self.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
