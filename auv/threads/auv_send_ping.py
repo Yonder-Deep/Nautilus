@@ -39,6 +39,7 @@ class AUV_Send_Ping(threading.Thread):
                 except Exception as e:
                     self.radio.close()
                     self.radio = None
+                    print("send ping exception")
                     raise Exception("Error occured : " + str(e))
 
     def stop(self):

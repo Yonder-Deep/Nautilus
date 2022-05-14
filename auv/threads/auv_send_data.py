@@ -69,6 +69,7 @@ class AUV_Send_Data(threading.Thread):
                 except Exception as e:
                     self.radio.close()
                     self.radio = None
+                    print("send data exception")
                     raise Exception("Error occured : " + str(e))
 
     def send_heading(self):
