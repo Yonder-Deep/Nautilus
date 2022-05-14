@@ -191,7 +191,7 @@ class BaseStation_Receive(threading.Thread):
                             if header == constants.FILE_DATA:
                                 global_vars.downloading_file = True
                                 file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
-                                continue   
+                                continue
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
@@ -209,14 +209,12 @@ class BaseStation_Receive(threading.Thread):
                             curr_file_size = file.tell()
                             # Return to normal operations when correct file size reached
                             if curr_file_size >= global_vars.file_size:
+                                file.close()
                                 global_vars.downloading_file = False
                                 global_vars.file_size = 0
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
                                 line = self.radio.read(7)
-
-                            
-
 
                     self.radio.flush()
 
@@ -232,4 +230,3 @@ class BaseStation_Receive(threading.Thread):
     def log(self, message):
         """ Logs the message to the GUI console by putting the function into the output-queue. """
         self.out_q.put("log('" + message + "')")
-    

@@ -155,10 +155,12 @@ class BaseStation_Send(threading.Thread):
 
     def send_packet_num(self):
         constants.radio_lock.acquire()
+        # Currently using FILE_DL_PACKET_SIZE sized packets for sending num packets, though this is not really necessary
+        # as the size is much larger than needed to send ints on this scale
         self.radio.write(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         print(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         constants.radio_lock.release()
-    
+
     def send_pid_update(self, constant_select, value):
         # Update PID constants for the dive controller
         # constant_select: int storing which constant to update (0-2): pitch pid, (3-5): dive pid

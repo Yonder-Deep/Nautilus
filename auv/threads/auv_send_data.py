@@ -43,7 +43,7 @@ class AUV_Send_Data(threading.Thread):
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
-    
+
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
                 global_vars.connect_to_radio()
@@ -161,11 +161,13 @@ class AUV_Send_Data(threading.Thread):
                     constants.RADIO_LOCK.acquire()
                     self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
                     constants.RADIO_LOCK.release()
-                
+            file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
+
         global_vars.sending_dive_log = False
         global_vars.file_packets_sent = 0
         global_vars.file_packets_received = 0
         global_vars.bs_response_sent = False
+        dive_log.close()
 
     def stop(self):
         self._ev.set()
