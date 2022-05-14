@@ -1,4 +1,3 @@
-from auv.static.constants import FILE_SEND_PACKET_SIZE
 from static import global_vars
 from static import constants
 from missions import *
