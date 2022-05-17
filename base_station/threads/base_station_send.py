@@ -166,13 +166,14 @@ class BaseStation_Send(threading.Thread):
             self.log("Cannot manual dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
-            rear_motor_speed = (abs(rear_motor_speed) << 5) & 0xFE0
+
             front_motor_speed_sign = 1 if front_motor_speed >= 0 else 0
             rear_motor_speed_sign = 1 if rear_motor_speed >= 0 else 0
-            rear_motor_speed_sign = (rear_motor_speed_sign << 12) & 0x1000
-            front_motor_speed = (abs(front_motor_speed) << 13) & 0xFE000
             front_motor_speed_sign = (front_motor_speed_sign << 20) & 0x100000
-            seconds = (seconds) & 0xFE00000
+            rear_motor_speed_sign = (rear_motor_speed_sign << 12) & 0x1000
+            rear_motor_speed = (abs(rear_motor_speed) << 5) & 0xFE0
+            front_motor_speed = (abs(front_motor_speed) << 13) & 0xFE000
+            seconds = (seconds) & 0b11111
             print(front_motor_speed_sign, front_motor_speed, rear_motor_speed_sign, rear_motor_speed, seconds)
             constants.radio_lock.acquire()
 
