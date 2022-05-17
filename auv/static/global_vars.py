@@ -22,6 +22,7 @@ def path_existance(radioPaths):
 
 
 def connect_to_radio():
+    global radio
     radio = None
     success_msg = ""
     warning_msg = ""
@@ -41,7 +42,6 @@ def connect_to_radio():
     else:
         log(success_msg)
 
-    print(radio)
     return radio
 
 
