@@ -50,7 +50,7 @@ class AUV_Send_Data(threading.Thread):
             else:
                 try:
                     constants.LOCK.acquire()
-                    if global_vars.connected is True:  # Send our AUV packet as well.
+                    if global_vars.connected is True and not global_vars.sending_dive_log:  # Send our AUV packet as well.
                         constants.LOCK.release()
                         # IMU
                         if self.imu is not None:
@@ -143,7 +143,7 @@ class AUV_Send_Data(threading.Thread):
     def send_dive_log(self):
         constants.RADIO_LOCK.acquire()
         filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG
-        self.radio.write(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
+        self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
         constants.RADIO_LOCK.release()
         dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb")
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
@@ -151,14 +151,14 @@ class AUV_Send_Data(threading.Thread):
             constants.RADIO_LOCK.acquire()
             print(file_bytes)
             global_vars.bs_response_sent = False
-            self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
             constants.RADIO_LOCK.release()
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
                     constants.RADIO_LOCK.acquire()
-                    self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
                     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 

@@ -172,6 +172,7 @@ class AUV_Receive(threading.Thread):
                         elif global_vars.sending_dive_log:
                             line = self.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
+                            self.data_connected()
                             global_vars.bs_response_sent = True
 
                     # end while
@@ -217,6 +218,18 @@ class AUV_Receive(threading.Thread):
         if depth > 0:  # TODO: Decide on acceptable depth range
             self.mc.update_motor_speeds([0, 0, -25, -25])
         else:
+            self.mc.update_motor_speeds([0, 0, 0, 0])
+        constants.LOCK.release()
+
+    def data_connected(self):
+        global_vars.log("DATA PACKET")
+        self.time_since_last_ping = time.time()
+
+        constants.LOCK.acquire()
+        if global_vars.connected is False:
+            global_vars.log("Connection to BS verified.")
+            global_vars.connected = True
+            # Halt disconnected resurfacing
             self.mc.update_motor_speeds([0, 0, 0, 0])
         constants.LOCK.release()
 
@@ -429,7 +442,7 @@ class AUV_Receive(threading.Thread):
     def dive_log(self, file):
         if self.diving:
             log_timer = threading.Timer(0.5, self.dive_log).start()
-            file.write(time.time()) # might want to change to a more readable time format
+            file.write(time.time())  # might want to change to a more readable time format
             depth = self.get_depth() - global_vars.depth_offset
             file.write("Depth=" + str(depth))
             heading, roll, pitch = self.get_euler()
@@ -462,4 +475,3 @@ class AUV_Receive(threading.Thread):
             # TODO print statement, something went wrong!
             heading, roll, pitch = None, None, None
         return heading, roll, pitch
-

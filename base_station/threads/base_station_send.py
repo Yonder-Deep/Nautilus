@@ -157,7 +157,7 @@ class BaseStation_Send(threading.Thread):
         constants.radio_lock.acquire()
         # Currently using FILE_DL_PACKET_SIZE sized packets for sending num packets, though this is not really necessary
         # as the size is much larger than needed to send ints on this scale
-        self.radio.write(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
+        self.radio.write_data(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         print(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         constants.radio_lock.release()
 
