@@ -40,7 +40,8 @@ def connect_to_radio():
         log(warning_msg)
     else:
         log(success_msg)
-        
+
+    print(radio)
     return radio
 
 
