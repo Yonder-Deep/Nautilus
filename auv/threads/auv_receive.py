@@ -89,9 +89,8 @@ class AUV_Receive(threading.Thread):
                 self.timeout()
 
             if self.radio is None or self.radio.is_open() is False:
-                print("in auv receive")
-                print(self.radio)
-                self.radio = global_vars.connect_to_radio()
+                global_vars.connect_to_radio()
+                self.radio = global_vars.radio
             else:
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)

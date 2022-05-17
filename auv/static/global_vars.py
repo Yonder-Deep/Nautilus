@@ -42,8 +42,6 @@ def connect_to_radio():
     else:
         log(success_msg)
 
-    return radio
-
 
 def log(val):
     print("[AUV]\t" + val)
