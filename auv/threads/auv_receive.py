@@ -232,8 +232,8 @@ class AUV_Receive(threading.Thread):
                 self.radio.flush()
             global_vars.connected = False
         depth = self.get_depth()
-        # Turn upwards motors on until surface reached (if we haven't reconnected yet)
-        if depth > 0:  # TODO: Decide on acceptable depth range
+        # Turn upwards motors on until surface reached (if we haven't reconnected yet)            
+        if depth is None or depth > 0:  # TODO: Decide on acceptable depth range
             self.mc.update_motor_speeds([0, 0, -25, -25])
         else:
             self.mc.update_motor_speeds([0, 0, 0, 0])
