@@ -5,7 +5,7 @@ user-interface using the built-in python Tkinter user-interface. """
 import sys
 import os
 import datetime
-
+import static.constants
 # Begin custom imports
 import tkinter
 from tkinter import Tk
@@ -16,6 +16,7 @@ from tkinter import Text
 from tkinter import Entry
 from tkinter import PhotoImage
 from tkinter import Scrollbar
+from tkinter import Scale
 from tkinter import Toplevel
 from tkinter import StringVar
 from tkinter import BOTH, TOP, BOTTOM, LEFT, RIGHT, YES, NO, SUNKEN, X, Y, W, E, N, S, DISABLED, NORMAL, END
@@ -229,8 +230,7 @@ class Main():
             Currently using this space as a prompt to update PID values."""
         self.camera_frame = Frame(
             self.stack_frame, height=TOP_FRAME_HEIGHT*(3/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
-        # self.camera_frame.pack(
-        #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(2/5), side=LEFT, fill=BOTH, expand=NO)
+
         self.camera_frame.grid(
             row=1, column=1, pady=CALIBRATE_PAD_Y)
         '''
@@ -311,19 +311,8 @@ class Main():
         self.buttons_frame = Frame(
             self.stack_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
 
-        # self.buttons_frame.pack(
-        #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(3/5), side=LEFT, fill=BOTH, expand=NO)
         self.buttons_frame.grid(
             row=2, column=1, pady=CALIBRATE_PAD_Y)
-
-        # self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False, width=1, height=BUTTON_HEIGHT,
-        #                                    padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(4, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
-        # Add calibrate depth button command to the below button
-        # self.calibrate_depth_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nDepth", takefocus=False, width=1, height=BUTTON_HEIGHT,
-        #                                      padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(4, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
-
-        # self.dive_command_button = Button(self.buttons_frame, anchor=tkinter.W, text="Dive\nCommand", takefocus=False, width=1, height=BUTTON_HEIGHT,
-        #                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(4, BUTTON_SIZE), command=lambda: self.out_q.put("send_dive())"))
 
         self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
                                            padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
@@ -331,72 +320,110 @@ class Main():
         self.calibrate_depth_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nDepth", takefocus=False,
                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
 
-        # self.dive_command_button = Button(self.buttons_frame, anchor=tkinter.W, text="Dive\nCommand", takefocus=False,
-        #                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(4, BUTTON_SIZE), command=lambda: self.out_q.put("send_dive())"))
+        self.download_data_button.grid(row=0, column=0)
 
-        self.download_data_button.pack(expand=YES, side=LEFT)
-        self.download_data_button.place(relx=0, rely=0)
+        self.calibrate_depth_button.grid(row=0, column=1)
 
-        self.calibrate_depth_button.pack(expand=YES, side=LEFT)
-        self.calibrate_depth_button.place(relx=0.5, rely=0)
+    def front_motor_slider_function(self, front_slider_value):
+        print(front_slider_value)
+        self.log("Forward Slider")
 
-        # self.dive_command_button.pack(expand=YES, side=LEFT)
-        # self.dive_command_button.place(relx=0.67, rely=0)
+    def rear_motor_slider_function(self, rear_slider_value):
+        print(rear_slider_value)
+        self.log("Left Slider")
+
+    def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
+        self.log("Manual Dive")
+        if seconds < 1 or seconds > 32:
+            messagebox.showerror("ERROR", "Select a time between 1 and 32 seconds inclusive. ")
+            return
+
+        # Prompt mission start
+        prompt = "Dive for: " + str(seconds) + " seconds?"
+        ans = messagebox.askquestion("Dive", prompt)
+        if ans == 'yes':
+            self.out_q.put("send_dive_manual(" + str(front_motor_speed) + ',' + str(rear_motor_speed) + ',' + str(seconds) + ")")
 
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
         self.motor_control_frame = Frame(
-            self.stack_frame, height=TOP_FRAME_HEIGHT*(3/7), width=FUNC_FRAME_WIDTH, bd=0.4, relief=SUNKEN)
-        # self.motor_control_frame.pack(
-        #    padx=MAIN_PAD_X, pady=MAIN_PAD_Y*(4/5), side=LEFT, fill=BOTH, expand=NO)
+            self.stack_frame, width=FUNC_FRAME_WIDTH, bd=0.4, relief=SUNKEN)
+
         self.motor_control_frame.grid(
             row=3, column=1, pady=CALIBRATE_PAD_Y)
 
+        self.automated_dive_label = Label(self.motor_control_frame, text="Automated Dive", font=(FONT, HEADING_SIZE))
+        self.automated_dive_label.grid(row=0, columnspan=2)
+
+        self.depth_input_label = Label(self.motor_control_frame, text="Depth\n(m)", font=(FONT, FONT_SIZE))
+        self.depth_input_label.grid(row=1, column=0)
+
+        self.prompt_dive_depth = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        self.prompt_dive_depth.grid(row=1, column=1)
+
+        self.dive_button_1 = Button(self.motor_control_frame, text="Dive", takefocus=False,
+                                    width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(self.prompt_dive_depth.get())))
+        self.dive_button_1.grid(row=1, column=2)
+
+        self.header_label = Label(self.motor_control_frame, text="Motor Speeds", font=(FONT, HEADING_SIZE))
+        self.header_label.grid(row=2, columnspan=2)
+
+        self.front_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                        length=250, tickinterval=25, orient='horizontal')
+        self.front_motor_slider.grid(row=3, columnspan=2)
+
+        self.front_motor_slider_label = Label(self.motor_control_frame, text="Front Motor Speed", font=(FONT, FONT_SIZE))
+        self.front_motor_slider_label.grid(row=4, columnspan=2)
+
+        self.rear_motor_slider = Scale(self.motor_control_frame, from_=-static.constants.MAX_AUV_SPEED, to=static.constants.MAX_AUV_SPEED,
+                                       length=250, tickinterval=25, orient='horizontal')
+        self.rear_motor_slider.grid(row=5, columnspan=2)
+
+        self.rear_motor_slider_label = Label(self.motor_control_frame, text="Rear Motor Speed", font=(FONT, FONT_SIZE))
+        self.rear_motor_slider_label.grid(row=6, columnspan=2)
+
+        self.seconds_input_label = Label(self.motor_control_frame, text="Number of Seconds\n", font=(FONT, FONT_SIZE))
+        self.seconds_input_label.grid(row=7, column=0)
+
+        self.seconds_dive_depth = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        self.seconds_dive_depth.grid(row=7, column=1)
+
+        self.dive_button_2 = Button(self.motor_control_frame, text="Dive", takefocus=False,
+                                    width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
+                                    pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.manual_dive(int(self.front_motor_slider.get()), int(self.rear_motor_slider.get()), int(self.seconds_dive_depth.get())))
+        self.dive_button_2.grid(row=8, columnspan=2)
+
         self.header_label = Label(self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE))
-        self.header_label.pack()
-        self.header_label.place(relx=0.05, rely=0.3)
+        self.header_label.grid(row=9, columnspan=2)
 
         self.distance_label = Label(self.motor_control_frame, text="Distance\n(0-100m)", font=(FONT, FONT_SIZE))
-        self.distance_label.pack()
-        self.distance_label.place(relx=0.05, rely=0.45)
+        self.distance_label.grid(row=10, column=0)
 
         self.angle_label = Label(self.motor_control_frame, text="Angle\n(-180-180\N{DEGREE SIGN})", font=(FONT, FONT_SIZE))
-        self.angle_label.pack()
-        self.angle_label.place(relx=0.05, rely=0.65)
+        self.angle_label.grid(row=11, column=0)
 
-        prompt_input_distance = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
-        prompt_input_distance.pack()
-        prompt_input_distance.place(relx=0.4, rely=0.475)
+        self.prompt_input_distance = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        self.prompt_input_distance.grid(row=10, column=1)
 
-        prompt_input_angle = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
-        prompt_input_angle.pack()
-        prompt_input_angle.place(relx=0.4, rely=0.675)
+        self.prompt_input_angle = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
+        self.prompt_input_angle.grid(row=11, column=1)
 
         # Add commands to halt and send buttons
         self.halt_button = Button(self.motor_control_frame, text="Halt", takefocus=False,
                                   width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
                                   pady=BUTTON_PAD_Y, bg='dark red', activebackground="red", overrelief="sunken", font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
-        self.halt_button.pack(expand=YES)
-        self.halt_button.place(relx=0.3, rely=0.85)
+        self.halt_button.grid(row=12, column=0)
 
         self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
-                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE))
-        self.send_button.pack(expand=YES)
-        self.send_button.place(relx=0.6, rely=0.85)
-
-        self.dive_button = Button(self.motor_control_frame, text="Dive", takefocus=False,
-                                  width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
-                                  pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.confirm_dive(int(prompt_input_dive.get())))
-
-        self.dive_button.pack(expand=YES)
-        self.dive_button.place(relx=0.05, rely=0.00)
-
-        prompt_input_dive = Entry(self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE-3))
-        prompt_input_dive.pack()
-        prompt_input_dive.place(relx=0.4, rely=0.000)
+                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
+        self.send_button.grid(row=12, column=1)
 
     def send_halt(self):
         self.out_q.put("send_halt()")
+
+    def send_controls(self, distance, angle):
+        self.out_q.put("send_controls(" + distance + ", " + angle + ")")
 
     def confirm_dive(self, depth):
         # TODO messages
@@ -443,91 +470,101 @@ class Main():
     def init_status_frame(self):
         """ Initializes the status frame (top right frame). """
         self.status_frame = Frame(
-            self.top_frame, height=TOP_FRAME_HEIGHT, width=STATUS_FRAME_WIDTH, bd=1, relief=SUNKEN)
+            self.top_frame, height=TOP_FRAME_HEIGHT, width=2*STATUS_FRAME_WIDTH, bd=1, relief=SUNKEN)
         self.status_frame.pack(padx=MAIN_PAD_X,
                                pady=MAIN_PAD_Y, side=LEFT, expand=NO)
         self.status_frame.pack_propagate(0)
         self.status_label = Label(
             self.status_frame, text="AUV Data", font=(FONT, HEADING_SIZE))
-        self.status_label.pack()
-        self.status_label.place(relx=0.22, rely=0.075)
+        self.status_label.grid(row=0, column=0)
 
         self.position_label_string = StringVar()
         self.position_label = Label(self.status_frame, textvariable=self.position_label_string, font=(
             FONT, STATUS_SIZE), justify=LEFT)
-        self.position_label.pack()
+        # self.position_label.pack()
         self.position_label_string.set("Position \n \tX: N/A \t Y: N/A")
-        self.position_label.place(relx=0.05, rely=0.25, anchor='sw')
+        # self.position_label.place(relx=0.05, rely=0.25, anchor='sw')
+        self.position_label.grid(row=1, column=0)
 
         self.heading_label_string = StringVar()
         self.heading_label = Label(self.status_frame, textvariable=self.heading_label_string, font=(
-            FONT, STATUS_SIZE), justify=LEFT)
-        self.heading_label.pack()
+            FONT, STATUS_SIZE), justify=LEFT, anchor="w")  # )
+        # self.heading_label.pack()
         self.heading_label_string.set("Heading: N/A")
-        self.heading_label.place(relx=0.05, rely=0.37, anchor='sw')
+        # self.heading_label.place(relx=0.05, rely=0.37, anchor='sw')
+        self.heading_label.grid(row=2, column=0)
 
         self.battery_status_string = StringVar()
         self.battery_voltage = Label(
             self.status_frame, textvariable=self.battery_status_string, font=(FONT, STATUS_SIZE))
-        self.battery_voltage.pack()
+        # self.battery_voltage.pack()
         self.battery_status_string.set("Battery Voltage: Not Implemented")
-        self.battery_voltage.place(relx=0.05, rely=0.45, anchor='sw')
+        # self.battery_voltage.place(relx=0.05, rely=0.45, anchor='sw')
+        self.battery_voltage.grid(row=3, column=0)
 
         self.temperature_string = StringVar()
         self.temperature = Label(
             self.status_frame, textvariable=self.temperature_string, font=(FONT, STATUS_SIZE))
-        self.temperature.pack()
+        # self.temperature.pack()
         self.temperature_string.set("Internal Temperature: N/A")
-        self.temperature.place(relx=0.05, rely=0.52, anchor='sw')
+        # self.temperature.place(relx=0.05, rely=0.52, anchor='sw')
+        self.temperature.grid(row=4, column=0)
 
         self.movement_status_string = StringVar()
         self.movement_status = Label(
             self.status_frame, textvariable=self.movement_status_string, font=(FONT, STATUS_SIZE))
-        self.movement_status.pack()
+        # self.movement_status.pack()
         self.movement_status_string.set("Movement Status: TODO")
-        self.movement_status.place(relx=0.05, rely=0.59, anchor='sw')
+        # self.movement_status.place(relx=0.05, rely=0.59, anchor='sw')
+        self.movement_status.grid(row=5, column=0)
 
         self.mission_status_string = StringVar()
         self.mission_status = Label(
             self.status_frame, textvariable=self.mission_status_string, font=(FONT, STATUS_SIZE))
-        self.mission_status.pack()
+        # self.mission_status.pack()
         self.mission_status_string.set("Mission Status: Waiting")
-        self.mission_status.place(relx=0.05, rely=0.66, anchor='sw')
+        # self.mission_status.place(relx=0.05, rely=0.66, anchor='sw')
+        self.mission_status.grid(row=6, column=0)
 
         self.flooded_string = StringVar()
         self.flooded = Label(
             self.status_frame, textvariable=self.flooded_string, font=(FONT, STATUS_SIZE))
-        self.flooded.pack()
+        # self.flooded.pack()
         self.flooded_string.set("Flooded: Not Implemented")
-        self.flooded.place(relx=0.05, rely=0.73, anchor='sw')
+        # self.flooded.place(relx=0.05, rely=0.73, anchor='sw')
+        self.flooded.grid(row=7, column=0)
 
         self.depth_string = StringVar()
         self.depth = Label(
             self.status_frame, textvariable=self.depth_string, font=(FONT, STATUS_SIZE))
-        self.depth.pack()
+        # self.depth.pack()
         self.depth_string.set("Depth: 0meters")
-        self.depth.place(relx=0.05, rely=0.80, anchor='sw')
+        # self.depth.place(relx=0.05, rely=0.80, anchor='sw')
+        self.depth.grid(row=8, column=0)
 
         self.control_string = StringVar()
         self.control = Label(
             self.status_frame, textvariable=self.control_string, font=(FONT, STATUS_SIZE))
-        self.control.pack()
-        self.control_string.set("Control: (distance/angle or xbox) (calculated locally)")
-        self.control.place(relx=0.05, rely=0.87, anchor='sw')
+        # self.control.pack()
+        self.control_string.set("Control: (distance/angle or xbox)\n (calculated locally)")
+        # self.control.place(relx=0.05, rely=0.87, anchor='sw')
+        self.control.grid(row=9, column=0)
 
         self.comms_status_string = StringVar()
         self.comms_status = Label(
             self.status_frame, textvariable=self.comms_status_string, font=(FONT, STATUS_SIZE))
-        self.comms_status.pack()
+        # self.comms_status.pack()
         self.comms_status_string.set("Comms: not connected")
-        self.comms_status.place(relx=0.05, rely=0.93, anchor='sw')
+        # self.comms_status.place(relx=0.05, rely=0.93, anchor='sw')
+        self.comms_status.grid(row=10, column=0)
 
         self.xbox_label_string = StringVar()
         self.xbox_label = Label(self.status_frame, textvariable=self.xbox_label_string, font=(
             FONT, STATUS_SIZE), justify=LEFT)
-        self.xbox_label.pack()
+        # self.xbox_label.pack()
         self.xbox_label_string.set("Xbox Controller: Inactive")
-        self.xbox_label.place(relx=0.05, rely=0.98, anchor='sw')
+        # self.xbox_label.place(relx=0.05, rely=0.98, anchor='sw')
+        self.xbox_label.grid(row=11, column=0)
 
         # self.calibrate_xbox_button           = Button(self.status_frame, text = "Calibrate Controller", takefocus = False, width = BUTTON_WIDTH + 10, height = BUTTON_HEIGHT,
         #                                      padx = BUTTON_PAD_X, pady = BUTTON_PAD_Y, font = (FONT, BUTTON_SIZE), command = self.base_station.calibrate_controller )
@@ -576,13 +613,18 @@ class Main():
         else:
             self.comms_status_string.set("Comms Status: Not connected.")
 
-    def set_movement(self, manual):
+    def set_movement(self, motion_type):
         """ Sets the movement status text in the status frame. """
-        if (not manual):
+        if (motion_type == 1):
             self.movement_status_string.set("Movement Status: Manual Control")
+        elif (motion_type == 2):
+            self.movement_status_string.set("Movement Status: Dive")
+        elif (motion_type == 3):
+            self.movement_status_string.set("Movement Status: Autonomous Navigation")
+        elif (motion_type == 4):
+            self.movement_status_string.set("Movement Status: Motor Test")
         else:
-            self.movement_status_string.set(
-                "Movement Status: Autonomous Control")
+            self.movement_status_string.set("Movement Status: Not Moving")
 
     def set_battery_voltage(self, voltage):
         self.battery_status_string.set("Battery Voltage: " + str(voltage))

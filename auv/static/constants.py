@@ -50,7 +50,7 @@ XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
 KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
-
+MANUAL_DIVE_ENCODE = 0b011000000000000000000000
 
 LOCK = threading.Lock()  # checks if connected to BS over radio
 RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time

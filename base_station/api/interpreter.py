@@ -5,39 +5,6 @@ COMBINATION_DATA = 0b010
 DEPTH_DATA = 0b011
 
 
-def decode_command(self_obj, header_str, line):
-    print("HEADER_STR", header_str)
-    if header_str == POSITION_DATA:
-        # reads in remaining byte
-        remain = self_obj.radio.read(2)
-        remain = int.from_bytes(remain, "big")
-
-        # contains x and y data
-        data = remain | ((line & 0b00000111) << 16)
-
-        x = (data >> 9)
-        y = (data & 0b111111111)
-
-        # TODO, call function and update positioning in gui
-    elif header_str == DEPTH_DATA:
-        print("Depth Case")
-
-        # reads in remaining bytes
-        remain = self_obj.radio.read(1)
-        remain = int.from_bytes(remain, "big")
-
-        # contains x and y data
-        data = remain | ((line & 0b00000111) << 8)
-        x = data >> 4            # first 7 bits
-        y = float(data & 0xF)    # last 5 bits
-        depth = x + y/10
-        print("Depth: ", depth)
-
-        self_obj.out_q.put("set_depth(" + str(depth) + ")")
-
-        #         self.in_q.put(message)
-
-
 def decode_command(self_obj, header, line):
     remain = line & 0x1FFFFF
     if header == POSITION_DATA:
@@ -63,14 +30,14 @@ def decode_command(self_obj, header, line):
         print("HEADING", str(heading))
         self_obj.out_q.put("set_heading(" + str(heading) + ")")
     elif header == COMBINATION_DATA:
-        data = remain & 0x7FFFF
-        battery = data >> 12  # bits 13-19
-        temp_sign = (data & 0x800) >> 11  # bit 12
-        temp_mag = (data & 0x7E0) >> 5  # bits 6-11
+        data = remain & 0xFFFFF
+        battery = data >> 14  # bits 14-20
+        temp_sign = (data >> 13) & 0x1  # bit 13
+        temp_mag = (data >> 7) & 0x3F  # bits 7-12
         # Combine temp data
         temp = (temp_mag * -1) if (temp_sign == 1) else temp_mag
-        mvmt = (data & 0x18) >> 3  # bits 4-5
-        mission_stat = (data & 0x6) >> 1  # bits 2-3
+        mvmt = (data >> 3) & 0x7  # bits 4-6
+        mission_stat = (data >> 1) & 0x3  # bits 2-3
         flooded = data & 0x1  # bit 1
         # TODO: Update gui
         print("Battery: " + str(int(battery)))

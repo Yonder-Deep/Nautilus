@@ -61,6 +61,9 @@ class AUV_Receive(threading.Thread):
     def test_motor(self, motor):
         """ Method to test all 4 motors on the AUV """
 
+        # Update motion type for display on gui
+        self.mc.motion_type = 4
+
         if motor == "FORWARD":  # Used to be LEFT motor
             self.mc.test_forward()
         elif motor == "TURN":  # Used to be RIGHT MOTOR
@@ -117,17 +120,37 @@ class AUV_Receive(threading.Thread):
                         # case block
                         header = message & 0xE00000
 
-                        if header == constants.NAV_ENCODE:  # navigation
-                            self.read_nav_command(message)
-
-                        elif header == constants.XBOX_ENCODE:  # xbox navigation
+                        if header == constants.XBOX_ENCODE:  # xbox navigation
+                            # Update motion type for display on gui
+                            global_vars.movement_status = 1
                             self.read_xbox_command(message)
 
+                        elif header == constants.NAV_ENCODE:  # navigation
+                            # Update motion type for display on gui
+                            global_vars.movement_status = 2
+                            self.read_nav_command(message)
+
                         elif header == constants.DIVE_ENCODE:  # dive
+                            # Update motion type for display on gui
+
+                            global_vars.movement_status = 2
                             desired_depth = message & 0b111111
                             print("We're calling dive command:", str(desired_depth))
                             constants.LOCK.acquire()
                             self.dive(desired_depth)
+                            constants.LOCK.release()
+
+                        elif header == constants.MANUAL_DIVE_ENCODE:
+                            global_vars.movement_status = 2
+                            seconds = message & 0b11111
+                            back_speed = message & 0b111111100000
+                            back_speed_sign = message & 0b1000000000000
+                            front_speed = message & 0b11111110000000000000
+                            front_speed_sign = message & 0b100000000000000000000
+
+                            print("We're calling the manual dive command:", str(seconds), str(front_speed), str(back_speed))
+                            constants.LOCK.acquire()
+                            self.manual_dive(front_speed_sign, front_speed, back_speed_sign, back_speed, seconds)
                             constants.LOCK.release()
 
                         elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
@@ -330,6 +353,30 @@ class AUV_Receive(threading.Thread):
         aborted_mission.abort_loop()
         global_vars.log("Successfully aborted the current mission.")
         # self.radio.write(str.encode("mission_failed()\n"))
+
+    def manual_dive(self, front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive):
+
+        print(front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive)
+
+        front_speed = (-1) * front_speed if front_speed_sign == 0 else front_speed
+        back_speed = (-1) * back_speed if back_speed_sign == 0 else back_speed
+
+        time_begin = time.time()
+
+        while time.time() - time_begin < time_dive:
+            self.mc.update_motor_speeds([0, 0, 1.5*front_speed, 1.5*back_speed])
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way down. Depth is", depth)
+            except:
+                print("Failed to read pressure going down")
+
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+
+        self.radio.flush()
+
+        for i in range(0, 3):
+            self.radio.read(7)
 
     def timed_dive(self, time):
 
