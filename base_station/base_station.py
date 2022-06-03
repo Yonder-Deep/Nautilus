@@ -27,6 +27,8 @@ from threads.base_station_receive import BaseStation_Receive
 from threads.base_station_send import BaseStation_Send
 from threads.base_station_send_ping import BaseStation_Send_Ping
 
+from static import global_vars
+
 if __name__ == '__main__':
     """ Main method responsible for developing the main objects used during runtime
     like the BaseStation and Main objects. """
@@ -38,10 +40,12 @@ if __name__ == '__main__':
     # Create a BS (base station) and GUI object thread.
     #ts = []
 
+    global_vars.connect_to_radio(to_GUI)
+
     try:
-        bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
-        bs_s_thread = BaseStation_Send(to_BS, to_GUI)
-        bs_ping_thread = BaseStation_Send_Ping()
+        bs_r_thread = BaseStation_Receive(global_vars.radio, to_BS, to_GUI)
+        bs_s_thread = BaseStation_Send(global_vars.radio, to_BS, to_GUI)
+        bs_ping_thread = BaseStation_Send_Ping(global_vars.radio, to_GUI)
 
         # ts.append(bs_r_thread)
         # ts.append(bs_s_thread)
@@ -63,3 +67,5 @@ if __name__ == '__main__':
         print("CLOSING")
         gui.root.destroy()
         sys.exit()
+
+    

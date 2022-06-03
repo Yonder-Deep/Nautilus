@@ -10,18 +10,14 @@ from static import global_vars
 
 
 class BaseStation_Send_Ping(threading.Thread):
+    def __init__(self, radio, out_q=None):
+        self.radio = radio
+        self.out_q = out_q
+        threading.Thread.__init__(self)
+
     def run(self):
         """ Constructor for the AUV """
-        self.radio = None
-
         # Try to assign us a new Radio object
-        for rp in constants.RADIO_PATHS:
-            try:
-                self.radio = Radio(rp['path'])
-                print(f"Successfully found radio device on {rp['radioNum']}.")
-            except:
-                print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
-
         self.main_loop()
 
     def main_loop(self):
@@ -32,13 +28,8 @@ class BaseStation_Send_Ping(threading.Thread):
 
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        self.radio = Radio(rp['path'])
-                        print(f"Successfully found radio device on {rp['radioNum']}.")
-                    except:
-                        print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
-
+                global_vars.connect_to_radio(self.out_q)
+                self.radio = global_vars.radio
             else:
                 try:
                     # Always send a connection verification packet

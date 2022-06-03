@@ -18,13 +18,12 @@ from static import global_vars
 
 
 class BaseStation_Receive(threading.Thread):
-    def __init__(self, in_q=None, out_q=None):
+    def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
         # Call super-class constructor
         # Instance variables
-        self.radio = None
         self.gps = None
         self.in_q = in_q
         self.out_q = out_q
@@ -36,23 +35,18 @@ class BaseStation_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
         # Try to assign our radio object
-        for rp in constants.RADIO_PATHS:
-            try:
-                self.radio = Radio(rp['path'])
-                self.log(f"Successfully found radio device on {rp['radioNum']}.")
-            except:
-                self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+        self.radio = radio
 
-                # Try to connect our Xbox 360 controller.
+        # Try to connect our Xbox 360 controller.
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
         # Try to assign our GPS object connection to GPSD
         try:
             self.gps = GPS(self.gps_q)
-            self.log("Successfully connected to GPS socket service.")
+            global_vars.log(self.out_q,"Successfully connected to GPS socket service.")
         except:
-            self.log("Warning: Could not connect to a GPS socket service.")
+            global_vars.log(self.out_q,"Warning: Could not connect to a GPS socket service.")
 
     def calibrate_controller(self):
         """ Instantiates a new Xbox Controller Instance """
@@ -111,17 +105,17 @@ class BaseStation_Receive(threading.Thread):
                 self.auv_utm_coordinates = utm.from_latlon(longitude, latitude)
                 self.out_q.put("add_auv_coordinates(" + self.auv_utm_coordinates[0] + ", " + self.auv_utm_coordinates[1] + ")")
             except:
-                self.log("Failed to convert the AUV's gps coordinates to UTM.")
+                global_vars.log(self.out_q,"Failed to convert the AUV's gps coordinates to UTM.")
         # else:
-        #    self.log("The AUV did not report its latitude and longitude.")
+        #    global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
 
     def mission_failed(self):
         """ Mission return failure from AUV. """
         self.manual_mode = True
         self.out_q.put("set_vehicle(True)")
-        self.log("Enforced switch to manual mode.")
+        global_vars.log(self.out_q,"Enforced switch to manual mode.")
 
-        self.log("The current mission has failed.")
+        global_vars.log(self.out_q,"The current mission has failed.")
 
     def run(self):
         """ Main threaded loop for the base station. """
@@ -136,7 +130,7 @@ class BaseStation_Receive(threading.Thread):
                 constants.lock.acquire()
                 if global_vars.connected is True:
                     self.out_q.put("set_connection(False)")
-                    self.log("Lost connection to AUV.")
+                    global_vars.log(self.out_q,"Lost connection to AUV.")
                     global_vars.connected = False
                 constants.lock.release()
 
@@ -144,16 +138,12 @@ class BaseStation_Receive(threading.Thread):
             if self.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
                 # This executes if we HAD a radio object, but it got disconnected.
                 if self.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
-                    self.log("Radio device has been disconnected.")
+                    global_vars.log(self.out_q,"Radio device has been disconnected.")
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        self.radio = Radio(rp['path'])
-                        self.log(f"Successfully found radio device on {rp['radioNum']}.")
-                    except:
-                        self.log(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
+                global_vars.connect_to_radio(self.out_q)
+                self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -174,13 +164,8 @@ class BaseStation_Receive(threading.Thread):
                             print(bin(intline >> 32))
                             self.radio.flush()
                             self.radio.close()
-                            for rp in constants.RADIO_PATHS:
-                                try:
-                                    self.radio = Radio(rp['path'])
-                                    print(f"Successfully found radio device on {rp['radioNum']}.")
-                                except:
-                                    print(f"Warning: Cannot find radio device on {rp['radioNum']}. Trying next radiopath...")
-
+                            global_vars.connect_to_radio(self.out_q)
+                            self.radio = global_vars.radio
                             break
 
                         intline = intline >> 32
@@ -190,7 +175,7 @@ class BaseStation_Receive(threading.Thread):
                             self.time_since_last_ping = time.time()
                             constants.lock.acquire()
                             if global_vars.connected is False:
-                                self.log("Connection to AUV verified.")
+                                global_vars.log(self.out_q,"Connection to AUV verified.")
                                 self.out_q.put("set_connection(True)")
                                 global_vars.connected = True
                             constants.lock.release()
@@ -207,11 +192,7 @@ class BaseStation_Receive(threading.Thread):
                     print(str(e))
                     self.radio.close()
                     self.radio = None
-                    self.log("Radio device has been disconnected.")
+                    global_vars.log(self.out_q,"Radio device has been disconnected.")
                     continue
 
             time.sleep(constants.THREAD_SLEEP_DELAY)
-
-    def log(self, message):
-        """ Logs the message to the GUI console by putting the function into the output-queue. """
-        self.out_q.put("log('" + message + "')")

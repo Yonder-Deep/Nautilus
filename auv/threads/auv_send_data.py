@@ -41,15 +41,12 @@ class AUV_Send_Data(threading.Thread):
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
-
+    
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        global_vars.radio = Radio(rp['path'])
-                        print("Successfully found radio device on ", rp['radioNum'])
-                    except:
-                        print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
+                print("in send data")
+                global_vars.connect_to_radio()
+                self.radio = global_vars.radio
 
             else:
                 try:
@@ -121,6 +118,7 @@ class AUV_Send_Data(threading.Thread):
 
     def send_depth(self):
         depth = self.get_depth()
+        print("Depth=", depth)
         if depth < 0:
             depth = 0
         for_depth = math.modf(depth)

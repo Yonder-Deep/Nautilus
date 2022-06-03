@@ -5,6 +5,7 @@ from api import PressureSensor
 from api import Crc32
 from api import IMU
 from api import Radio
+from api import DiveController
 from queue import Queue
 from static import global_vars
 from static import constants
@@ -36,17 +37,14 @@ class AUV_Receive(threading.Thread):
         self.timer = 0
         self.motor_queue = queue
         self.halt = halt               # List for MotorQueue to check updated halt status
-        # Get all non-default callable methods in this class
-        self.methods = [m for m in dir(AUV_Receive) if not m.startswith('__')]
+
+        self.dive_controller = DiveController(self.mc, self.pressure_sensor, self.imu)
 
         self._ev = threading.Event()
         threading.Thread.__init__(self)
 
     def run(self):
         """ Constructor for the AUV """
-
-        # Get all non-default callable methods in this class
-        self.methods = [m for m in dir(AUV_Receive) if not m.startswith('__')]
 
         self._ev = threading.Event()
 
@@ -92,12 +90,9 @@ class AUV_Receive(threading.Thread):
                 self.timeout()
 
             if self.radio is None or self.radio.is_open() is False:
-                for rp in constants.RADIO_PATHS:
-                    try:
-                        global_vars.radio = Radio(rp['path'])
-                        print("Successfully found radio device on ", rp['radioNum'])
-                    except:
-                        print("Warning: Cannot find radio device on ", rp['radioNum'], "Trying next radiopath...")
+                print("in auv receive")
+                global_vars.connect_to_radio()
+                self.radio = global_vars.radio
             else:
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
@@ -170,6 +165,31 @@ class AUV_Receive(threading.Thread):
                                 # Kill AUV threads
                                 self.mc.zero_out_motors()
                                 global_vars.stop_all_threads = True
+                        elif header == constants.PID_ENCODE:
+                            # Update a PID value in the dive controller
+                            constant_select = (message >> 18) & 0b111
+                            # Extract last 18 bits from message
+                            # Map to smaller, more precise numbers later
+                            value = message & (0x3FFFF)
+                            print("Received PID Constant Select: {}".format(constant_select))
+                            if (constant_select == 0b000):
+                                constants.P_PITCH = value
+                                self.dive_controller.update_pitch_pid()
+                            elif (constant_select == 0b001):
+                                constants.I_PITCH = value
+                                self.dive_controller.update_pitch_pid()
+                            elif (constant_select == 0b010):
+                                constants.D_PITCH = value
+                                self.dive_controller.update_pitch_pid()
+                            elif (constant_select == 0b011):
+                                constants.P_DEPTH = value
+                                self.dive_controller.update_depth_pid()
+                            elif (constant_select == 0b100):
+                                constants.I_DEPTH = value
+                                self.dive_controller.update_depth_pid()
+                            elif (constant_select == 0b101):
+                                constants.D_DEPTH = value
+                                self.dive_controller.update_depth_pid()
 
                         line = self.radio.read(7)
 
@@ -403,21 +423,14 @@ class AUV_Receive(threading.Thread):
 
     def dive(self, to_depth):
         self.motor_queue.queue.clear()
-        self.mc.update_motor_speeds([0, 0, 0, 0])
-        # wait until current motor commands finish running, will need global variable
-        # Dive
-        depth = self.get_depth()
-        start_time = time.time()
-        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
-        # Time out and stop diving if > 1 min
-        while depth < to_depth and time.time() < start_time + 60:
-            try:
-                depth = self.get_depth()
-                print("Succeeded on way down. Depth is", depth)
-            except:
-                print("Failed to read pressure going down")
 
-        self.mc.update_motor_speeds([0, 0, 0, 0])
+        # begin dive
+        self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+
+        # resurface
+        self.dive_controller.start_dive()
+
+        '''
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
         while time.time() < end_time:
@@ -427,8 +440,6 @@ class AUV_Receive(threading.Thread):
         for i in range(0, 3):
             self.radio.read(7)
 
-        # Resurface
-        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
         intline = 0
         while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
             line = self.radio.read(7)
@@ -440,7 +451,7 @@ class AUV_Receive(threading.Thread):
                 print("Succeeded on way up. Depth is", depth)
             except:
                 print("Failed to read pressure going up")
-        self.mc.update_motor_speeds([0, 0, 0, 0])
+        '''
 
     def get_depth(self):
         if self.pressure_sensor is not None:
