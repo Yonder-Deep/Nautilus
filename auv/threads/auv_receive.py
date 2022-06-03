@@ -345,6 +345,11 @@ class AUV_Receive(threading.Thread):
 
         while time.time() - time_begin < time_dive:
             self.mc.update_motor_speeds([0, 0, 1.5*front_speed, 1.5*back_speed])
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way down. Depth is", depth)
+            except:
+                print("Failed to read pressure going down")
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
 
