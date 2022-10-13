@@ -1,1 +1,1 @@
-from Adafruit_BNO055 import BNO055
+from .Adafruit_BNO055 import BNO055

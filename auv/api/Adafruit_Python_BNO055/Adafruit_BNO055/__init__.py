@@ -1,1 +1,1 @@
-from .BNO055 import BNO055
+from BNO055 import BNO055
