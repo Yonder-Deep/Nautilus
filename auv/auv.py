@@ -10,7 +10,7 @@ import time
 import math
 
 # TODO - #35 GPS
-import gps
+# TEMP import gps
 
 # Custom imports
 from queue import Queue
@@ -330,7 +330,7 @@ class AUV_Send_Data(threading.Thread):
                         heading = 0
                         temperature = 0
                         pressure = 0
-                        #IMU
+                        # IMU
                         if self.imu is not None:
                             try:
                                 heading, _, _ = self.imu.read_euler()
@@ -349,11 +349,11 @@ class AUV_Send_Data(threading.Thread):
                             whole_heading = int(split_heading[1])
                             whole_heading = whole_heading << 7
                             heading_encode = (HEADING_ENCODE | whole_heading | decimal_heading)
-                            
+
                             radio_lock.acquire()
                             self.radio.write(heading_encode, 3)
                             radio_lock.release()
-                        #Pressure
+                        # Pressure
                         if self.pressure_sensor is not None:
                             self.pressure_sensor.read()
                             # defaults to mbars
@@ -367,11 +367,11 @@ class AUV_Send_Data(threading.Thread):
                             whole = int(for_depth[1])
                             whole = whole << 4
                             depth_encode = (DEPTH_ENCODE | whole | decimal)
-                            
+
                             radio_lock.acquire()
                             self.radio.write(depth_encode, 3)
                             radio_lock.release()
-                        #Temperature radio 
+                        # Temperature radio
                         whole_temperature = int(temperature)
                         sign = 0
                         if whole_temperature < 0:
@@ -380,11 +380,10 @@ class AUV_Send_Data(threading.Thread):
                         whole_temperature = whole_temperature << 5
                         sign = sign << 11
                         temperature_encode = (MISC_ENCODE | sign | whole_temperature)
-                        
+
                         radio_lock.acquire()
                         self.radio.write(temperature_encode, 3)
                         radio_lock.release()
-
 
                     else:
                         lock.release()
@@ -435,7 +434,6 @@ class AUV_Send_Ping(threading.Thread):
                     raise Exception("Error occured : " + str(e))
 
 
-
 # TODO - #35 GPS
 class GPS_Runner(threading.Thread):
     def __init__(self, _some_queue):
@@ -445,22 +443,21 @@ class GPS_Runner(threading.Thread):
 
     # starter/example code provided
     def run(self):
-        while True:                                                                     
-            try:                                                                        
-                report = self.session.next()                                                 
-                #print(report)                                                                                                                           
-                if report['class'] == 'TPV':                                            
-                    if hasattr(report, 'lat') and hasattr(report, 'lon'):               
-                        print("lon=", report.lon)                                       
-                        print("lat=", report.lat)                                       
-            except KeyError:                                                            
-                pass                                                                    
-            except KeyboardInterrupt:                                                   
-                quit()                                                                  
-            except StopIteration:                                                       
-                self.session = None                                                          
-                print("GPSD has terminated") 
-
+        while True:
+            try:
+                report = self.session.next()
+                # print(report)
+                if report['class'] == 'TPV':
+                    if hasattr(report, 'lat') and hasattr(report, 'lon'):
+                        print("lon=", report.lon)
+                        print("lat=", report.lat)
+            except KeyError:
+                pass
+            except KeyboardInterrupt:
+                quit()
+            except StopIteration:
+                self.session = None
+                print("GPSD has terminated")
 
 
 def main():
