@@ -1,3 +1,4 @@
+from glob import glob
 import sys
 import os
 
@@ -153,6 +154,7 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
+<<<<<<< HEAD
                     while(line != b'' and len(line) == 7):
                         print('read line')
                         intline = int.from_bytes(line, "big")
@@ -185,6 +187,67 @@ class BaseStation_Receive(threading.Thread):
                             decode_command(self, header, intline)
 
                         line = self.radio.read(7)
+=======
+                    while(line != b''):
+                        if not global_vars.downloading_file and len(line) == 7:
+                            print('read line')
+                            intline = int.from_bytes(line, "big")
+
+                            checksum = Crc32.confirm(intline)
+
+                            if not checksum:
+                                print('invalid line*************')
+                                print(bin(intline >> 32))
+                                self.radio.flush()
+                                self.radio.close()
+                                self.radio, output_msg = global_vars.connect_to_radio()
+                                self.log(output_msg)
+                                break
+
+                            intline = intline >> 32
+                            header = intline >> 21     # get first 3 bits
+                            # PING case
+                            if intline == constants.PING:
+                                self.time_since_last_ping = time.time()
+                                constants.lock.acquire()
+                                if global_vars.connected is False:
+                                    self.log("Connection to AUV verified.")
+                                    self.out_q.put("set_connection(True)")
+                                    global_vars.connected = True
+                                constants.lock.release()
+                            # Data cases
+                            else:
+                                print("HEADER_STR", header)
+                                decode_command(self, header, intline)
+
+                            if header == constants.FILE_DATA:
+                                global_vars.downloading_file = True
+                                file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
+                                continue
+                            line = self.radio.read(7)
+                        elif global_vars.downloading_file:
+                            line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+                            intline = int.from_bytes(line, "big")
+                            # Get first packet containing final file size
+                            if global_vars.file_size == 0:
+                                global_vars.file_size = intline
+                                continue
+                            global_vars.file_packets_received += 1
+                            global_vars.packet_received = True
+                            # Write to file
+                            file.write(line)
+                            # Get current file size
+                            file.seek(0, os.SEEK_END)
+                            curr_file_size = file.tell()
+                            # Return to normal operations when correct file size reached
+                            if curr_file_size >= global_vars.file_size:
+                                file.close()
+                                global_vars.downloading_file = False
+                                global_vars.file_size = 0
+                                global_vars.packet_received = False
+                                global_vars.file_packets_received = 0
+                                line = self.radio.read(7)
+>>>>>>> 90/dive-log-file
 
                     self.radio.flush()
 

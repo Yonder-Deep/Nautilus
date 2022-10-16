@@ -6,6 +6,7 @@ from api import PressureSensor
 from api import IMU
 from api import Radio
 import math
+import os
 import threading
 import sys
 sys.path.append('..')
@@ -41,7 +42,7 @@ class AUV_Send_Data(threading.Thread):
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
-    
+
             if self.radio is None or self.radio.is_open() is False:
                 print("TEST radio not connected")
                 print("in send data")
@@ -148,6 +149,34 @@ class AUV_Send_Data(threading.Thread):
         print(bin(position_encode))
         self.radio.write(position_encode, 3)
         constants.RADIO_LOCK.release()
+
+    def send_dive_log(self):
+        constants.RADIO_LOCK.acquire()
+        filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG
+        self.radio.write(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
+        constants.RADIO_LOCK.release()
+        dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb")
+        file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
+        while file_bytes:
+            constants.RADIO_LOCK.acquire()
+            print(file_bytes)
+            global_vars.bs_response_sent = False
+            self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            global_vars.file_packets_sent += 1
+            constants.RADIO_LOCK.release()
+            while global_vars.file_packets_sent != global_vars.file_packets_received:
+                if global_vars.bs_response_sent == True:
+                    global_vars.bs_response_sent = False
+                    constants.RADIO_LOCK.acquire()
+                    self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    constants.RADIO_LOCK.release()
+            file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
+
+        global_vars.sending_dive_log = False
+        global_vars.file_packets_sent = 0
+        global_vars.file_packets_received = 0
+        global_vars.bs_response_sent = False
+        dive_log.close()
 
     def stop(self):
         self._ev.set()

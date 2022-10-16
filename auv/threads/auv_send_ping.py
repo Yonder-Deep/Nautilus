@@ -31,14 +31,14 @@ class AUV_Send_Ping(threading.Thread):
                 self.radio = global_vars.radio
 
             else:
-                try:
-                    # Always send a connection verification packet
-                    constants.RADIO_LOCK.acquire()
-                    self.radio.write(constants.PING, 3)
-                    constants.RADIO_LOCK.release()
-
-                except Exception as e:
-                    raise Exception("Error occured : " + str(e))
+                if not global_vars.sending_dive_log:
+                    try:
+                        # Always send a connection verification packet
+                        constants.RADIO_LOCK.acquire()
+                        self.radio.write(constants.PING, 3)
+                        constants.RADIO_LOCK.release()
+                    except Exception as e:
+                        raise Exception("Error occured : " + str(e))
 
     def stop(self):
         self._ev.set()

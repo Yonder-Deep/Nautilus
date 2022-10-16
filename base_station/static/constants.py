@@ -18,6 +18,13 @@ CONNECTION_TIMEOUT = 6  # Seconds before BS is determined to have lost radio con
 MAX_AUV_SPEED = 100
 MAX_TURN_SPEED = 50
 
+# Encoding headers
+FILE_DATA = 0b101
+
+FILE_ENCODE = FILE_DATA << 21
+
+FILE_DL_PACKET_SIZE = 7  # Number to be determined (bytes)
+
 lock = threading.Lock()  # lock for writing to out_q to GUI
 radio_lock = threading.Lock()   # lock for writing to radio
 
