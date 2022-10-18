@@ -8,3 +8,4 @@ from .radio import Radio
 from .crc32 import Crc32
 from .motor_queue import MotorQueue
 from .dive_controller import DiveController
+from .hydrophone import Hydrophone
