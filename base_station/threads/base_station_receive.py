@@ -45,9 +45,9 @@ class BaseStation_Receive(threading.Thread):
         # Try to assign our GPS object connection to GPSD
         try:
             self.gps = GPS(self.gps_q)
-            global_vars.log(self.out_q,"Successfully connected to GPS socket service.")
+            global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
         except:
-            global_vars.log(self.out_q,"Warning: Could not connect to a GPS socket service.")
+            global_vars.log(self.out_q, "Warning: Could not connect to a GPS socket service.")
 
     def calibrate_controller(self):
         """ Instantiates a new Xbox Controller Instance """
@@ -106,7 +106,7 @@ class BaseStation_Receive(threading.Thread):
                 self.auv_utm_coordinates = utm.from_latlon(longitude, latitude)
                 self.out_q.put("add_auv_coordinates(" + self.auv_utm_coordinates[0] + ", " + self.auv_utm_coordinates[1] + ")")
             except:
-                global_vars.log(self.out_q,"Failed to convert the AUV's gps coordinates to UTM.")
+                global_vars.log(self.out_q, "Failed to convert the AUV's gps coordinates to UTM.")
         # else:
         #    global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
 
@@ -114,9 +114,9 @@ class BaseStation_Receive(threading.Thread):
         """ Mission return failure from AUV. """
         self.manual_mode = True
         self.out_q.put("set_vehicle(True)")
-        global_vars.log(self.out_q,"Enforced switch to manual mode.")
+        global_vars.log(self.out_q, "Enforced switch to manual mode.")
 
-        global_vars.log(self.out_q,"The current mission has failed.")
+        global_vars.log(self.out_q, "The current mission has failed.")
 
     def run(self):
         """ Main threaded loop for the base station. """
@@ -131,7 +131,7 @@ class BaseStation_Receive(threading.Thread):
                 constants.lock.acquire()
                 if global_vars.connected is True:
                     self.out_q.put("set_connection(False)")
-                    global_vars.log(self.out_q,"Lost connection to AUV.")
+                    global_vars.log(self.out_q, "Lost connection to AUV.")
                     global_vars.connected = False
                 constants.lock.release()
 
@@ -139,7 +139,7 @@ class BaseStation_Receive(threading.Thread):
             if self.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
                 # This executes if we HAD a radio object, but it got disconnected.
                 if self.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
-                    global_vars.log(self.out_q,"Radio device has been disconnected.")
+                    global_vars.log(self.out_q, "Radio device has been disconnected.")
                     self.radio.close()
 
                 # Try to assign us a new Radio object
@@ -154,40 +154,6 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
-<<<<<<< HEAD
-                    while(line != b'' and len(line) == 7):
-                        print('read line')
-                        intline = int.from_bytes(line, "big")
-
-                        checksum = Crc32.confirm(intline)
-
-                        if not checksum:
-                            print('invalid line*************')
-                            print(bin(intline >> 32))
-                            self.radio.flush()
-                            self.radio.close()
-                            global_vars.connect_to_radio(self.out_q)
-                            self.radio = global_vars.radio
-                            break
-
-                        intline = intline >> 32
-                        header = intline >> 21     # get first 3 bits
-                        # PING case
-                        if intline == constants.PING:
-                            self.time_since_last_ping = time.time()
-                            constants.lock.acquire()
-                            if global_vars.connected is False:
-                                global_vars.log(self.out_q,"Connection to AUV verified.")
-                                self.out_q.put("set_connection(True)")
-                                global_vars.connected = True
-                            constants.lock.release()
-                        # Data cases
-                        else:
-                            print("HEADER_STR", header)
-                            decode_command(self, header, intline)
-
-                        line = self.radio.read(7)
-=======
                     while(line != b''):
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
@@ -247,7 +213,6 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
                                 line = self.radio.read(7)
->>>>>>> 90/dive-log-file
 
                     self.radio.flush()
 
@@ -255,7 +220,7 @@ class BaseStation_Receive(threading.Thread):
                     print(str(e))
                     self.radio.close()
                     self.radio = None
-                    global_vars.log(self.out_q,"Radio device has been disconnected.")
+                    global_vars.log(self.out_q, "Radio device has been disconnected.")
                     continue
 
             time.sleep(constants.THREAD_SLEEP_DELAY)
