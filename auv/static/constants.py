@@ -1,4 +1,5 @@
 import threading
+import os
 
 # Constants for the AUV
 RADIO_PATH = {'radioNum': 1, 'path': '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'}
@@ -54,7 +55,7 @@ RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 
 FILE_SEND_PACKET_SIZE = 7  # bytes
 DIVE_LOG = "dive_log.txt"
-
+AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "audio/"
 
 def log(val):
     print("[AUV]\t" + val)

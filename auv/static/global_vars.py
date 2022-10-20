@@ -13,7 +13,7 @@ depth_offset = 0
 
 radio = None
 
-sending_dive_log = False
+sending_data = False
 file_packets_sent = 0
 file_packets_received = 0
 bs_response_sent = False

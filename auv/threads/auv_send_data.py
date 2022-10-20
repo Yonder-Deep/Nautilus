@@ -50,7 +50,7 @@ class AUV_Send_Data(threading.Thread):
             else:
                 try:
                     constants.LOCK.acquire()
-                    if global_vars.connected is True and not global_vars.sending_dive_log:  # Send our AUV packet as well.
+                    if global_vars.connected is True and not global_vars.sending_data:  # Send our AUV packet as well.
                         constants.LOCK.release()
                         # IMU
                         if self.imu is not None:
@@ -142,10 +142,10 @@ class AUV_Send_Data(threading.Thread):
 
     def send_dive_log(self):
         constants.RADIO_LOCK.acquire()
-        filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG
+        filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
         self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
         constants.RADIO_LOCK.release()
-        dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb")
+        dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG, "rb")
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             constants.RADIO_LOCK.acquire()
@@ -162,11 +162,36 @@ class AUV_Send_Data(threading.Thread):
                     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
-        global_vars.sending_dive_log = False
+        global_vars.sending_data = False
         global_vars.file_packets_sent = 0
         global_vars.file_packets_received = 0
         global_vars.bs_response_sent = False
         dive_log.close()
+
+    #Send Hydrophone Recording to Base Station
+    def send_audio_file(self):
+        constants.RADIO_LOCK.acquire()
+        filepath = constants.AUDIO_FOLDER_PATH + "/" + os.listdir(constants.AUDIO_FOLDER_PATH)[0] 
+        self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)        
+        audio_file = open(filepath, "rb")
+        file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
+        while file_bytes:
+            print(file_bytes)
+            global_vars.bs_response_sent = False
+            self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            global_vars.file_packets_sent += 1
+            while global_vars.file_packets_sent != global_vars.file_packets_received:
+                if global_vars.bs_response_sent == True:
+                    global_vars.bs_response_sent = False
+                    self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
+
+        constants.RADIO_LOCK.release()
+        global_vars.sending_data = False
+        global_vars.file_packets_sent = 0
+        global_vars.file_packets_received = 0
+        global_vars.bs_response_sent = False
+        audio_file.close()
 
     def stop(self):
         self._ev.set()

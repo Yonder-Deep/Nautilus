@@ -97,7 +97,7 @@ class AUV_Receive(threading.Thread):
                     # self.radio.flush()
 
                     while(line != b''):
-                        if not global_vars.sending_dive_log and len(line) == 7:
+                        if not global_vars.sending_data and len(line) == 7:
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
                             if not checksum:
@@ -169,7 +169,7 @@ class AUV_Receive(threading.Thread):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
                             line = self.radio.read(7)
-                        elif global_vars.sending_dive_log:
+                        elif global_vars.sending_data:
                             line = self.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             self.data_connected()
@@ -316,7 +316,7 @@ class AUV_Receive(threading.Thread):
             pass
         if (x == 5):
             print("DOWNLOAD DATA")
-            global_vars.sending_dive_log = True
+            global_vars.sending_data = True
             pass
 
     def start_mission(self, mission):

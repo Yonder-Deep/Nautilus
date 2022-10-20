@@ -189,8 +189,13 @@ class BaseStation_Receive(threading.Thread):
                                 decode_command(self, header, intline)
 
                             if header == constants.FILE_DATA:
+                                intline = int.from_bytes(line, "big")
+                                isAudio = True if 0b1 & intline == 0b1 else False
                                 global_vars.downloading_file = True
-                                file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
+                                if isAudio:
+                                    file = open(os.path.dirname(os.path.dirname(__file__)) + "audio/dive_log.txt", "wb")
+                                else:
+                                    file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
                                 continue
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:

@@ -29,7 +29,7 @@ class AUV_Send_Ping(threading.Thread):
                 global_vars.connect_to_radio()
 
             else:
-                if not global_vars.sending_dive_log:
+                if not global_vars.sending_data:
                     try:
                         # Always send a connection verification packet
                         constants.RADIO_LOCK.acquire()
