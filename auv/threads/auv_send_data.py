@@ -44,16 +44,13 @@ class AUV_Send_Data(threading.Thread):
             # time.sleep(SEND_SLEEP_DELAY)
 
             if self.radio is None or self.radio.is_open() is False:
-<<<<<<< HEAD
                 print("TEST radio not connected")
                 print("in send data")
                 global_vars.connect_to_radio()
                 self.radio = global_vars.radio
 
-=======
                 global_vars.connect_to_radio()
                 self.radio = global_vars.radio
->>>>>>> 90/radio-connection-statements
             else:
                 try:
                     constants.LOCK.acquire()
