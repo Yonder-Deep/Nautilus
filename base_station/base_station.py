@@ -83,10 +83,11 @@ class BaseStation_Receive(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
-        # Try to assign our GPS object connection to GPSD
+        
         try:
             self.gps = GPS(self.gps_q)
             self.log("Successfully connected to GPS socket service.")
+
         except:
             self.log("Warning: Could not connect to a GPS socket service.")
 
@@ -462,6 +463,21 @@ class BaseStation_Send_Ping(threading.Thread):
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
+
+
+            if self.gps is None:
+                print("GPS not connected")
+                try:
+                    self.gps = GPS(self.gps_q)
+                    print("GPS has been found")
+                except Exception as e:
+                    print("Failed to connect to GPS: " + str(e))
+            else:
+                try:
+                    self.gps.run()
+                except Exception as e:
+                    raise Exception("Error occurred: " + str(e))
+
 
 
 class BaseStation(threading.Thread):
