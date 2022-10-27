@@ -56,7 +56,7 @@ assert numpy  # avoid "imported but unused" message (W0611)
 class Hydrophone:
     def __init__(self):
 
-        self.f = "/tmp/rec_threading.wav"
+        self.f = "rec_threading.wav"
 
         self.subtype = 'PCM_16'
         self.dtype = 'int16' 
@@ -75,8 +75,8 @@ class Hydrophone:
     def save(self, indata, frames, time, status):
         self.q.put(indata.copy())
 
-    def start(self):
-        
+    def start(self, name):
+        self.f = name
         self.recorder = threading.Thread(target=self.rec)
         self.recorder.record = True
         self.recorder.start()
