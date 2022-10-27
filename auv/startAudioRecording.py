@@ -18,7 +18,7 @@ import soundfile as sf
 import numpy  # Make sure NumPy is loaded before it is used in the callback
 assert numpy  # avoid "imported but unused" message (W0611)
 
-f = "/tmp/rec_threading.wav"
+f = "rec_threading.wav"
 
 subtype = 'PCM_16'
 dtype = 'int16' 
@@ -27,7 +27,7 @@ q = queue.Queue()
 recorder = False
 
 def rec():
-    with sf.SoundFile(f, mode='w', samplerate=44100, 
+    with sf.SoundFile("rec_threading.wav", mode='w', samplerate=44100, 
                       subtype=subtype, channels=1) as file:
         with sd.InputStream(samplerate=44100.0, dtype=dtype, 
                             channels=1, callback=save):
