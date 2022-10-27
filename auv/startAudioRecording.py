@@ -18,7 +18,7 @@ import soundfile as sf
 import numpy  # Make sure NumPy is loaded before it is used in the callback
 assert numpy  # avoid "imported but unused" message (W0611)
 
-f = "/tmp/rec_threading.wav"
+f = "rec_threading.wav"
 
 subtype = 'PCM_16'
 dtype = 'int16' 
