@@ -28,6 +28,7 @@ from gui import Main
 THREAD_SLEEP_DELAY = 0.1  # Since we are the slave to AUV, we must run faster.
 PING_SLEEP_DELAY = 3
 RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
+GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 
 PING = 0xFFFFFF
 
@@ -83,7 +84,6 @@ class BaseStation_Receive(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
-        
         try:
             self.gps = GPS(self.gps_q)
             self.log("Successfully connected to GPS socket service.")
@@ -287,6 +287,7 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
+
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -429,12 +430,20 @@ class BaseStation_Send_Ping(threading.Thread):
     def run(self):
         """ Constructor for the AUV """
         self.radio = None
+        self.gps = None
+        self.gps_q = Queue()
 
         try:
             self.radio = Radio(RADIO_PATH)
             print("Radio device has been found.")
         except:
             print("Radio device is not connected to AUV on RADIO_PATH.")
+
+        try:
+            self.gps = GPS(self.gps_q)
+            print("GPS has been found")
+        except Exception as e:
+            print("Failed to connect to GPS: " + str(e))
 
         self.main_loop()
 
@@ -464,7 +473,6 @@ class BaseStation_Send_Ping(threading.Thread):
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
 
-
             if self.gps is None:
                 print("GPS not connected")
                 try:
@@ -477,7 +485,6 @@ class BaseStation_Send_Ping(threading.Thread):
                     self.gps.run()
                 except Exception as e:
                     raise Exception("Error occurred: " + str(e))
-
 
 
 class BaseStation(threading.Thread):

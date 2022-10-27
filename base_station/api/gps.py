@@ -8,8 +8,6 @@ import serial
 import adafruit_gps
 
 
-
-
 class GPS(threading.Thread):
     """ Class for basic GPS functionality """
 
@@ -35,20 +33,20 @@ class GPS(threading.Thread):
     def run(self):
 
         last_print = time.monotonic()
-        
-            # Make sure to call gps.update() every loop iteration and at least twice
-            # as fast as data comes from the GPS unit (usually every second).
-            # This returns a bool that's true if it parsed new data (you can ignore it
-            # though if you don't care and instead look at the has_fix property).
+
+        # Make sure to call gps.update() every loop iteration and at least twice
+        # as fast as data comes from the GPS unit (usually every second).
+        # This returns a bool that's true if it parsed new data (you can ignore it
+        # though if you don't care and instead look at the has_fix property).
         self.gps.update()
-            # Every second print out current location details if there's a fix.
+        # Every second print out current location details if there's a fix.
         current = time.monotonic()
         if current - last_print >= 4.0:
-                last_print = current
+            last_print = current
         if not self.gps.has_fix:
-                # Try again if we don't have a fix yet.
+            # Try again if we don't have a fix yet.
             print("Waiting for fix...")
-            
+
             # We have a fix! (gps.has_fix is true)
             # Print out details about the fix like location, date, etc.
             # print("=" * 40)  # Print a separator line.
@@ -80,12 +78,12 @@ class GPS(threading.Thread):
             # if self.height_geoid is not None:
             #     print("Height geoid: {} meters".format(self.gps.height_geoid))
 
-        self.out_q.push({
-                            speed: self.gps.speed_knots,
-                            latitude: self.gps.latitude,
-                            longitude: self.gps.longitude,
-                            altitude: self.gps.altitude_m
-                        })
+        self.out_q.put({
+            'speed': self.gps.speed_knots,
+            'latitude': self.gps.latitude,
+            'longitude': self.gps.longitude,
+            'altitude': self.gps.altitude_m
+        })
 
         # while (True):
         #     if (self.gps_socket is not None):
