@@ -6,6 +6,7 @@ from api import Crc32
 from api import IMU
 from api import Radio
 from api import DiveController
+from api import Hydrophone
 from queue import Queue
 from static import global_vars
 from static import constants
@@ -33,6 +34,7 @@ class AUV_Receive(threading.Thread):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
+        self.hydrophone = Hydrophone()
         self.time_since_last_ping = time.time() + 4
         self.diving = False
         self.current_mission = None
@@ -409,6 +411,8 @@ class AUV_Receive(threading.Thread):
 
         # begin dive
         self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+
+        self.hydrophone.start_record()
 
         # resurface
         self.dive_controller.start_dive()
