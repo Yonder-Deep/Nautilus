@@ -320,6 +320,7 @@ class AUV_Receive(threading.Thread):
         if (x == 5):
             print("DOWNLOAD DATA")
             global_vars.sending_data = True
+            
             pass
 
     def start_mission(self, mission):
