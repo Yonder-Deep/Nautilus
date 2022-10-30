@@ -10,6 +10,7 @@ from api import Hydrophone
 from queue import Queue
 from static import global_vars
 from static import constants
+from datetime import datetime
 import math
 import time
 import os
@@ -353,7 +354,7 @@ class AUV_Receive(threading.Thread):
     def timed_dive(self, time):
         self.diving = True
         # Check if this path is actually right
-        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
+        file_path = self.get_log_filename()
         log_file = open(file_path, "a")
         self.dive_log(log_file)
 
@@ -403,7 +404,7 @@ class AUV_Receive(threading.Thread):
     def dive(self, to_depth):
         self.diving = True
         # Check if this path is actually right
-        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
+        file_path = self.get_log_filename()
         log_file = open(file_path, "a")
         self.dive_log(log_file)
 
@@ -412,10 +413,12 @@ class AUV_Receive(threading.Thread):
         # begin dive
         self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
 
-        self.hydrophone.start_record()
+        self.hydrophone.start_recording()
 
         # resurface
         self.dive_controller.start_dive()
+
+        self.hydrophone.stop_recording()
 
         '''
         # Wait 10 sec
@@ -479,3 +482,8 @@ class AUV_Receive(threading.Thread):
             # TODO print statement, something went wrong!
             heading, roll, pitch = None, None, None
         return heading, roll, pitch
+
+    def get_log_filename(self):
+        time_stamp = datetime.now().strftime('%Y-%m-%dT%H.%M.%S')
+        filename = constants.LOG_FOLDER_PATH + time_stamp + ".txt"
+        self.filename = filename

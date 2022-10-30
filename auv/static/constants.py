@@ -54,8 +54,9 @@ LOCK = threading.Lock()  # checks if connected to BS over radio
 RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 
 FILE_SEND_PACKET_SIZE = 7  # bytes
-DIVE_LOG = "dive_log.txt"
-AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "audio/"
+LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "logs/"
+AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "hydrophone_audio/"
+
 
 def log(val):
     print("[AUV]\t" + val)

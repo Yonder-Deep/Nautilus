@@ -142,10 +142,13 @@ class AUV_Send_Data(threading.Thread):
 
     def send_dive_log(self):
         constants.RADIO_LOCK.acquire()
-        filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
-        self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
+        filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.isfile(os.join(constants.LOG_FOLDER_PATH, f))][0]
+        filepath = constants.LOG_FOLDER_PATH + filename
+        self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
+        self.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
         constants.RADIO_LOCK.release()
-        dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG, "rb")
+        # Start sending contents of file
+        dive_log = open(filepath, "rb")
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             constants.RADIO_LOCK.acquire()
@@ -154,6 +157,7 @@ class AUV_Send_Data(threading.Thread):
             self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
             constants.RADIO_LOCK.release()
+            # Ensure that base station is receiving every packet sent
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
@@ -168,11 +172,14 @@ class AUV_Send_Data(threading.Thread):
         global_vars.bs_response_sent = False
         dive_log.close()
 
-    #Send Hydrophone Recording to Base Station
+    # Send Hydrophone Recording to Base Station
     def send_audio_file(self):
         constants.RADIO_LOCK.acquire()
-        filepath = constants.AUDIO_FOLDER_PATH + "/" + os.listdir(constants.AUDIO_FOLDER_PATH)[0] 
-        self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)        
+        filename = [f for f in os.listdir(constants.AUDIO_FOLDER_PATH) if os.isfile(os.join(constants.AUDIO_FOLDER_PATH, f))][0]
+        filepath = constants.AUDIO_FOLDER_PATH + filename
+        self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of audio file
+        self.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of audio file
+        # Start sending contents of file
         audio_file = open(filepath, "rb")
         file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
@@ -180,6 +187,7 @@ class AUV_Send_Data(threading.Thread):
             global_vars.bs_response_sent = False
             self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
+            # Ensure that base station is receiving every packet sent
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False

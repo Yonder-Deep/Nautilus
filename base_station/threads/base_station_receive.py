@@ -187,24 +187,27 @@ class BaseStation_Receive(threading.Thread):
                             else:
                                 print("HEADER_STR", header)
                                 decode_command(self, header, intline)
-
+                            # Check if an entire file is being sent from AUV
                             if header == constants.FILE_DATA:
                                 intline = int.from_bytes(line, "big")
                                 isAudio = True if 0b1 & intline == 0b1 else False
+                                file = None
                                 global_vars.downloading_file = True
-                                if isAudio:
-                                    file = open(os.path.dirname(os.path.dirname(__file__)) + "audio/dive_log.txt", "wb")
-                                else:
-                                    file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
                                 continue
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
+                            # Handles receiving an entire file from the AUV
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
                             # Get first packet containing final file size
                             if global_vars.file_size == 0:
                                 global_vars.file_size = intline
                                 continue
+                            # Get second packet containing file name (includes file format)
+                            if file is None:
+                                file = open(constants.LOG_FOLDER_PATH + line.decode("utf-8"), "wb")
+                                continue
+                            # Get packets of file contents, keep track of number of packets received
                             global_vars.file_packets_received += 1
                             global_vars.packet_received = True
                             # Write to file
