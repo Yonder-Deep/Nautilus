@@ -40,5 +40,3 @@ class BaseStation_Send_Ping(threading.Thread):
 
                 except Exception as e:
                     raise Exception("Error occured : " + str(e))
-                # except:
-                    # print("error")

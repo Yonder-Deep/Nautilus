@@ -14,30 +14,17 @@ RECEIVE_SLEEP_DELAY = 0.2
 PING_SLEEP_DELAY = 3
 CONNECTION_TIMEOUT = 6
 
-# Dive PID constants
-P_PITCH = 5.0
-I_PITCH = 2.0
-D_PITCH = 0.0
-P_DEPTH = 10.0
-I_DEPTH = 2.0
-D_DEPTH = 0.0
-P_HEADING = 5.0
-I_HEADING = 2.0
-D_HEADING = 0.0
-
 # Encoding headers
 POSITION_DATA = 0b000
 HEADING_DATA = 0b001
 MISC_DATA = 0b010
 TEMP_DATA = 0b10011
 DEPTH_DATA = 0b011
-PID_DATA = 0b010
 
 DEPTH_ENCODE = DEPTH_DATA << 21
 HEADING_ENCODE = HEADING_DATA << 21
 MISC_ENCODE = MISC_DATA << 21
 POSITION_ENCODE = POSITION_DATA << 21
-PID_ENCODE = PID_DATA << 21
 
 DEF_DIVE_SPD = 100
 
@@ -50,13 +37,10 @@ XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
 KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
-MANUAL_DIVE_ENCODE = 0b011000000000000000000000
+
 
 LOCK = threading.Lock()  # checks if connected to BS over radio
 RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
-
-FILE_SEND_PACKET_SIZE = 7  # bytes
-DIVE_LOG = "dive_log.txt"
 
 
 def log(val):
