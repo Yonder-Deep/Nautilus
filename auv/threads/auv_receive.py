@@ -320,7 +320,7 @@ class AUV_Receive(threading.Thread):
         if (x == 5):
             print("DOWNLOAD DATA")
             global_vars.sending_data = True
-            
+
             pass
 
     def start_mission(self, mission):
@@ -403,50 +403,56 @@ class AUV_Receive(threading.Thread):
         log_file.close()
 
     def dive(self, to_depth):
-        self.diving = True
-        # Check if this path is actually right
-        file_path = self.get_log_filename()
-        log_file = open(file_path, "a")
-        self.dive_log(log_file)
 
-        self.motor_queue.queue.clear()
+        # self.diving = True
+        # # Check if this path is actually right
+        # file_path = self.get_log_filename()
+        # log_file = open(file_path, "a")
+        # self.dive_log(log_file)
 
-        # begin dive
-        self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+        # self.motor_queue.queue.clear()
 
+        # # begin dive
+        # self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+
+        # self.hydrophone.start_recording()
+
+        # # resurface
+        # # self.dive_controller.start_dive()
+
+        # self.hydrophone.stop_recording()
+
+        # '''
+        # # Wait 10 sec
+        # end_time = time.time() + 10  # 10 sec
+        # while time.time() < end_time:
+        #     pass
+
+        # self.radio.flush()
+        # for i in range(0, 3):
+        #     self.radio.read(7)
+
+        # intline = 0
+        # while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
+        #     line = self.radio.read(7)
+        #     intline = int.from_bytes(line, "big") >> 32
+
+        #     print(intline)
+        #     try:
+        #         depth = self.get_depth()
+        #         print("Succeeded on way up. Depth is", depth)
+        #     except:
+        #         print("Failed to read pressure going up")
+        # '''
+        # self.diving = False
+        # log_file.close()
         self.hydrophone.start_recording()
-
-        # resurface
-        self.dive_controller.start_dive()
-
+        time.time.sleep(5)
         self.hydrophone.stop_recording()
-
-        '''
-        # Wait 10 sec
-        end_time = time.time() + 10  # 10 sec
-        while time.time() < end_time:
-            pass
-
-        self.radio.flush()
-        for i in range(0, 3):
-            self.radio.read(7)
-
-        intline = 0
-        while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
-            line = self.radio.read(7)
-            intline = int.from_bytes(line, "big") >> 32
-
-            print(intline)
-            try:
-                depth = self.get_depth()
-                print("Succeeded on way up. Depth is", depth)
-            except:
-                print("Failed to read pressure going up")
-        '''
-        self.diving = False
-        log_file.close()
+        global_vars.sending_data = True
 
     # Logs with depth calibration offset (heading may need to be merged in first)
+
     def dive_log(self, file):
         if self.diving:
             log_timer = threading.Timer(0.5, self.dive_log).start()
