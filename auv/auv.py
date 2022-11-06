@@ -9,6 +9,9 @@ import threading
 import time
 import math
 
+# TODO - #35 GPS
+# TEMP import gps
+
 # Custom imports
 from queue import Queue
 from api import Radio
@@ -88,6 +91,10 @@ def start_threads(ts, queue, halt):
     auv_r_thread.start()
     auv_s_thread.start()
     auv_ping_thread.start()
+
+    # TODO - #35 GPS
+    #gps_thread = GPS_Runner(None)
+    #gps_thread.start()
 
 
 if __name__ == '__main__':  # If we are executing this file as main

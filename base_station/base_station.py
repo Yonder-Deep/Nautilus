@@ -18,6 +18,7 @@ from api import Crc32
 from api import Radio
 from api import Joystick
 from api import xbox
+from api import NavController
 from api import GPS
 from api import decode_command
 #from api import checksum
@@ -26,6 +27,11 @@ from gui import Main
 from threads.base_station_receive import BaseStation_Receive
 from threads.base_station_send import BaseStation_Send
 from threads.base_station_send_ping import BaseStation_Send_Ping
+# Constants
+THREAD_SLEEP_DELAY = 0.1  # Since we are the slave to AUV, we must run faster.
+PING_SLEEP_DELAY = 3
+RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
+GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 
 from static import global_vars
 
