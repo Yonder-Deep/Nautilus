@@ -2,6 +2,10 @@ import threading
 import os
 from api import Radio
 from static import constants
+import sys
+
+sys.path.append("//")
+
 # determines if connected to BS
 connected = False
 
