@@ -84,7 +84,11 @@ class Main():
 
         # Begin initializing the main Tkinter (GUI) framework/root window
         self.root = Tk()
-        self.root.resizable(False, False)
+        self.root.resizable(0, 1)
+
+        self.rootScrollbar = Scrollbar(self.root)
+        self.rootScrollbar.pack(side=RIGHT, fill=Y)
+
         try:
             self.root.iconphoto(True, PhotoImage(file=ICON_PATH))
         except:
@@ -245,60 +249,59 @@ class Main():
         prompt_input_pid_depth_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_p_value.pack()
         prompt_input_pid_depth_p_value.place(relx=0.3, rely=0.025)
-        prompt_input_pid_depth_p_value.insert(0,'0')
+        prompt_input_pid_depth_p_value.insert(0, '0')
 
-        self.pid_depth_p_label =  Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
+        self.pid_depth_p_label = Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
         self.pid_depth_p_label.pack()
         self.pid_depth_p_label.place(relx=0.05, rely=0.000)
 
         prompt_input_pid_depth_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_i_value.pack()
         prompt_input_pid_depth_i_value.place(relx=0.3, rely=0.225)
-        prompt_input_pid_depth_i_value.insert(0,'0')
+        prompt_input_pid_depth_i_value.insert(0, '0')
 
-        self.pid_depth_i_label =  Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
+        self.pid_depth_i_label = Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
         self.pid_depth_i_label.pack()
         self.pid_depth_i_label.place(relx=0.05, rely=0.2)
 
         prompt_input_pid_depth_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_d_value.pack()
         prompt_input_pid_depth_d_value.place(relx=0.3, rely=0.425)
-        prompt_input_pid_depth_d_value.insert(0,'0')
+        prompt_input_pid_depth_d_value.insert(0, '0')
 
-        self.pid_depth_d_label =  Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
+        self.pid_depth_d_label = Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
         self.pid_depth_d_label.pack()
         self.pid_depth_d_label.place(relx=0.05, rely=0.425)
 
         prompt_input_pid_pitch_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_p_value.pack()
         prompt_input_pid_pitch_p_value.place(relx=0.8, rely=0.025)
-        prompt_input_pid_pitch_p_value.insert(0,'0')
+        prompt_input_pid_pitch_p_value.insert(0, '0')
 
-
-        self.pid_pitch_p_label =  Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
+        self.pid_pitch_p_label = Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
         self.pid_pitch_p_label.pack()
         self.pid_pitch_p_label.place(relx=0.55, rely=0.000)
 
         prompt_input_pid_pitch_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_i_value.pack()
         prompt_input_pid_pitch_i_value.place(relx=0.8, rely=0.225)
-        prompt_input_pid_pitch_i_value.insert(0,'0')
+        prompt_input_pid_pitch_i_value.insert(0, '0')
 
-        self.pid_pitch_i_label =  Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
+        self.pid_pitch_i_label = Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
         self.pid_pitch_i_label.pack()
         self.pid_pitch_i_label.place(relx=0.55, rely=0.2)
 
         prompt_input_pid_pitch_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_d_value.pack()
         prompt_input_pid_pitch_d_value.place(relx=0.8, rely=0.425)
-        prompt_input_pid_pitch_d_value.insert(0,'0')
+        prompt_input_pid_pitch_d_value.insert(0, '0')
 
-        self.pid_pitch_d_label =  Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
+        self.pid_pitch_d_label = Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
         self.pid_pitch_d_label.pack()
         self.pid_pitch_d_label.place(relx=0.55, rely=0.4)
 
         def build_pid_value_arrays():
-            return [prompt_input_pid_pitch_p_value.get(),prompt_input_pid_pitch_i_value.get(), prompt_input_pid_pitch_d_value.get(), prompt_input_pid_depth_p_value.get(), prompt_input_pid_depth_i_value.get(), prompt_input_pid_depth_d_value.get()]
+            return [prompt_input_pid_pitch_p_value.get(), prompt_input_pid_pitch_i_value.get(), prompt_input_pid_pitch_d_value.get(), prompt_input_pid_depth_p_value.get(), prompt_input_pid_depth_i_value.get(), prompt_input_pid_depth_d_value.get()]
 
         self.update_pid_button = Button(self.camera_frame, text="Update PID", takefocus=False,
                                         width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
