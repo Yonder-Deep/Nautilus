@@ -324,16 +324,16 @@ class Main():
                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
 
         self.calibrate_origin_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nOrigin", takefocus=False,
-                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.calibrate_origin_on_map)
+                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.calibrate_origin_on_map)
 
         self.clear_button = Button(self.buttons_frame, anchor=tkinter.W, text="Clear\nMap", takefocus=False,
-                                   padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.clear)
+                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.map.clear)
 
         self.add_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Add\nWaypoint", takefocus=False,
-                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
+                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.map.new_waypoint_prompt)
 
         self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
-                                             padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.nav_to_waypoint)
+                                             padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.map.nav_to_waypoint)
 
         self.download_data_button.grid(row=0, column=0)
         self.calibrate_depth_button.grid(row=0, column=1)
