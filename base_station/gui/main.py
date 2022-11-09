@@ -213,7 +213,7 @@ class Main():
         self.download_data_button = Button(self.functions_frame, text="Download Data", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
                                            padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.out_q.put("download_data()"))
         self.clear_button = Button(self.functions_frame, text="Clear Map", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                   padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.clear)
+                                   padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.clear())
 
         self.heading_button.pack(expand=YES)
         self.origin_button.pack(expand=YES)
@@ -315,7 +315,7 @@ class Main():
             self.stack_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
 
         self.buttons_frame.grid(
-            row=2, column=1, pady=CALIBRATE_PAD_Y)
+            row=2, column=3, pady=CALIBRATE_PAD_Y)
 
         self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
                                            padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
@@ -323,9 +323,24 @@ class Main():
         self.calibrate_depth_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nDepth", takefocus=False,
                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
 
-        self.download_data_button.grid(row=0, column=0)
+        self.calibrate_origin_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nOrigin", takefocus=False,
+                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.calibrate_origin_on_map)
 
+        self.clear_button = Button(self.buttons_frame, anchor=tkinter.W, text="Clear\nMap", takefocus=False,
+                                   padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.clear)
+
+        self.add_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Add\nWaypoint", takefocus=False,
+                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
+
+        self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
+                                             padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.nav_to_waypoint)
+
+        self.download_data_button.grid(row=0, column=0)
         self.calibrate_depth_button.grid(row=0, column=1)
+        self.calibrate_origin_button.grid(row=1, column=0)
+        self.clear_button.grid(row=1, column=1)
+        self.add_waypoint_button.grid(row=2, column=0)
+        self.nav_to_waypoint_button.grid(row=2, column=1)
 
     def front_motor_slider_function(self, front_slider_value):
         print(front_slider_value)
