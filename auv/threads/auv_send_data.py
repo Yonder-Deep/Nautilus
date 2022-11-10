@@ -22,9 +22,8 @@ def get_heading_encode(data):
 class AUV_Send_Data(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self, radio, pressure_sensor, imu, mc):
+    def __init__(self, pressure_sensor, imu, mc):
         """ Constructor for the AUV """
-        self.radio = radio
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -43,13 +42,12 @@ class AUV_Send_Data(threading.Thread):
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
 
-            if not self.radio.is_open():
+            if not global_vars.radio.is_open():
                 print("send_data radio not connected")
             
-            if self.radio is None or self.radio.is_open() is False:
+            if global_vars.radio is None or global_vars.radio.is_open() is False:
                 print("in send data")
                 global_vars.connect_to_radio()
-                self.radio = global_vars.radio
             else:
                 try:
                     constants.LOCK.acquire()
@@ -70,8 +68,7 @@ class AUV_Send_Data(threading.Thread):
                         constants.LOCK.release()
 
                 except Exception as e:
-                    self.radio.close()
-                    self.radio = None
+                    global_vars.radio.close()
                     print("send data exception")
                     raise Exception("Error occured : " + str(e))
 
@@ -90,7 +87,7 @@ class AUV_Send_Data(threading.Thread):
         heading_encode = (constants.HEADING_ENCODE | whole_heading | decimal_heading)
 
         constants.RADIO_LOCK.acquire()
-        self.radio.write(heading_encode, 3)
+        global_vars.radio.write(heading_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_misc_data(self):
@@ -118,7 +115,7 @@ class AUV_Send_Data(threading.Thread):
 
         message_encode = (constants.MISC_ENCODE | sign | whole_temperature | movement)
         constants.RADIO_LOCK.acquire()
-        self.radio.write(message_encode, 3)
+        global_vars.radio.write(message_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_depth(self):
@@ -134,7 +131,7 @@ class AUV_Send_Data(threading.Thread):
         depth_encode = (constants.DEPTH_ENCODE | whole | decimal)
 
         constants.RADIO_LOCK.acquire()
-        self.radio.write(depth_encode, 3)
+        global_vars.radio.write(depth_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_positioning(self):
@@ -151,13 +148,13 @@ class AUV_Send_Data(threading.Thread):
         position_encode = (constants.POSITION_ENCODE | x_bits << 10 | y_bits)
         constants.RADIO_LOCK.acquire()
         print(bin(position_encode))
-        self.radio.write(position_encode, 3)
+        global_vars.radio.write(position_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_dive_log(self):
         constants.RADIO_LOCK.acquire()
         filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG
-        self.radio.write(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
+        global_vars.radio.write(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)
         constants.RADIO_LOCK.release()
         dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb")
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
@@ -165,14 +162,14 @@ class AUV_Send_Data(threading.Thread):
             constants.RADIO_LOCK.acquire()
             print(file_bytes)
             global_vars.bs_response_sent = False
-            self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
             constants.RADIO_LOCK.release()
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
                     constants.RADIO_LOCK.acquire()
-                    self.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
                     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 

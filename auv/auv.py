@@ -73,16 +73,16 @@ def start_threads(ts, queue, halt):
     global_vars.connect_to_radio()
 
     print(global_vars.radio.is_open() + "in auv.py")
-    
+
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, global_vars.radio, pressure_sensor, imu, mc)
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc)
 
     ts = []
 
-    auv_s_thread = AUV_Send_Data(global_vars.radio, pressure_sensor, imu, mc)
-    auv_ping_thread = AUV_Send_Ping(global_vars.radio)
+    auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc)
+    auv_ping_thread = AUV_Send_Ping()
 
     ts.append(auv_motor_thread)
     ts.append(auv_r_thread)

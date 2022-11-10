@@ -28,8 +28,7 @@ sys.path.append('..')
 class AUV_Receive(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self, queue, halt, radio, pressure_sensor, imu, mc):
-        self.radio = radio
+    def __init__(self, queue, halt, pressure_sensor, imu, mc):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -91,18 +90,17 @@ class AUV_Receive(threading.Thread):
             if time.time() - self.time_since_last_ping > constants.CONNECTION_TIMEOUT:
                 self.timeout()
 
-            if not self.radio.is_open():
+            if not global_vars.radio.is_open():
                 print("auv_receive radio not connected")
             
-            if self.radio is None or self.radio.is_open() is False:
+            if global_vars.radio is None or global_vars.radio.is_open() is False:
                 print("in auv receive")
                 global_vars.connect_to_radio()
-                self.radio = global_vars.radio
             else:
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
-                    line = self.radio.read(7)
-                    # self.radio.flush()
+                    line = global_vars.radio.read(7)
+                    # global_vars.radio.flush()
 
                     while(line != b''):
                         if not global_vars.sending_dive_log and len(line) == 7:
@@ -110,7 +108,7 @@ class AUV_Receive(threading.Thread):
                             checksum = Crc32.confirm(intline)
                             if not checksum:
                                 global_vars.log("invalid line***********************")
-                                # self.radio.flush()
+                                # global_vars.radio.flush()
                                 self.mc.update_motor_speeds([0, 0, 0, 0])
                                 break
 
@@ -118,7 +116,7 @@ class AUV_Receive(threading.Thread):
                             message = intline >> 32
                             if message == constants.PING:  # We have a ping!
                                 self.ping_connected()
-                                line = self.radio.read(7)
+                                line = global_vars.radio.read(7)
                                 continue
 
                             print("NON-PING LINE READ WAS", bin(message))
@@ -176,7 +174,7 @@ class AUV_Receive(threading.Thread):
                                 elif (constant_select == 0b101):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = self.radio.read(7)
+                            line = global_vars.radio.read(7)
                             continue
 
                         print("NON-PING LINE READ WAS", bin(message))
@@ -256,17 +254,16 @@ class AUV_Receive(threading.Thread):
                                 self.dive_controller.update_depth_pid()
 
                         elif global_vars.sending_dive_log:
-                            line = self.radio.read(constants.FILE_SEND_PACKET_SIZE)
+                            line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             global_vars.bs_response_sent = True
 
                     # end while
-                    self.radio.flush()
+                    global_vars.radio.flush()
 
                 except Exception as e:
                     global_vars.log("Error: " + str(e))
-                    self.radio.close()
-                    self.radio = None
+                    global_vars.radio.close()
                     global_vars.log("Radio is disconnected from pi!")
                     continue
 
@@ -295,8 +292,8 @@ class AUV_Receive(threading.Thread):
             depth = 400  # number comes from depth of Isfjorden (not sure if this is actually where we'll be)
 
             # enforce check in case radio is not found
-            if self.radio is not None:
-                self.radio.flush()
+            if global_vars.radio is not None:
+                global_vars.radio.flush()
             global_vars.connected = False
         depth = self.get_depth()
         # Turn upwards motors on until surface reached (if we haven't reconnected yet)
@@ -400,7 +397,7 @@ class AUV_Receive(threading.Thread):
                     self, self.mc, self.pressure_sensor, self.imu)
                 self.timer = 0
                 global_vars.log("Successfully started mission " + str(mission) + ".")
-                # self.radio.write(str.encode("mission_started("+str(mission)+")\n"))
+                # global_vars.radio.write(str.encode("mission_started("+str(mission)+")\n"))
             except Exception as e:
                 raise Exception("Mission " + str(mission) +
                                 " failed to start. Error: " + str(e))
@@ -419,7 +416,7 @@ class AUV_Receive(threading.Thread):
         self.current_mission = None
         aborted_mission.abort_loop()
         global_vars.log("Successfully aborted the current mission.")
-        # self.radio.write(str.encode("mission_failed()\n"))
+        # global_vars.radio.write(str.encode("mission_failed()\n"))
 
     def manual_dive(self, front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive):
 
@@ -440,10 +437,10 @@ class AUV_Receive(threading.Thread):
 
         self.mc.update_motor_speeds([0, 0, 0, 0])
 
-        self.radio.flush()
+        global_vars.radio.flush()
 
         for i in range(0, 3):
-            self.radio.read(7)
+            global_vars.radio.read(7)
 
     def timed_dive(self, time):
         self.diving = True
@@ -474,15 +471,15 @@ class AUV_Receive(threading.Thread):
             pass
 
         # clear radio
-        self.radio.flush()
+        global_vars.radio.flush()
         for i in range(0, 3):
-            self.radio.read(7)
+            global_vars.radio.read(7)
 
         # Resurface
         self.mc.update_motor_speeds([0, 0, -constants.DEF_DIVE_SPD, -constants.DEF_DIVE_SPD])
         intline = 0
         while intline == 0:  # TODO: check what is a good surface condition
-            line = self.radio.read(7)
+            line = global_vars.radio.read(7)
             intline = int.from_bytes(line, "big") >> 32
 
             print(intline)
@@ -516,13 +513,13 @@ class AUV_Receive(threading.Thread):
         while time.time() < end_time:
             pass
 
-        self.radio.flush()
+        global_vars.radio.flush()
         for i in range(0, 3):
-            self.radio.read(7)
+            global_vars.radio.read(7)
 
         intline = 0
         while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
-            line = self.radio.read(7)
+            line = global_vars.radio.read(7)
             intline = int.from_bytes(line, "big") >> 32
 
             print(intline)

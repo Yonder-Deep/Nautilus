@@ -11,8 +11,7 @@ sys.path.append('..')
 
 class AUV_Send_Ping(threading.Thread):
 
-    def __init__(self, radio):
-        self.radio = radio
+    def __init__(self):
         self._ev = threading.Event()
 
         threading.Thread.__init__(self)
@@ -24,23 +23,22 @@ class AUV_Send_Ping(threading.Thread):
         while not self._ev.wait(timeout=constants.PING_SLEEP_DELAY):
             # time.sleep(PING_SLEEP_DELAY)
 
-            if not self.radio.is_open():
+            if not global_vars.radio.is_open():
                 print("auv_send_ping radio not connected")
             
-            if self.radio is None or self.radio.is_open() is False:
+            if global_vars.radio is None or global_vars.radio.is_open() is False:
                 global_vars.connect_to_radio()
-                self.radio = global_vars.radio
             else:
                 try:
                     # Always send a connection verification packet
                     constants.RADIO_LOCK.acquire()
-                    self.radio.write(constants.PING, 3)
-                    # self.radio.write("test")
+                    global_vars.radio.write(constants.PING, 3)
+                    # global_vars.radio.write("test")
                     constants.RADIO_LOCK.release()
 
                 except Exception as e:
-                    self.radio.close()
-                    self.radio = None
+                    global_vars.radio.close()
+                    global_vars.radio = None
                     print("send ping exception")
                     raise Exception("Error occured : " + str(e))
                     # Alw+ str(e))
