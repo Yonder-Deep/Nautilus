@@ -2,6 +2,7 @@
 AUV and Base Station along with sending controller
 commands. """
 
+from static import global_vars
 import sys
 import os
 
@@ -18,8 +19,8 @@ from api import Crc32
 from api import Radio
 from api import Joystick
 from api import xbox
-from api import NavController
-from api import GPS
+#from api import NavController
+#from api import GPS
 from api import decode_command
 #from api import checksum
 from gui import Main
@@ -33,7 +34,6 @@ PING_SLEEP_DELAY = 3
 RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
 GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 
-from static import global_vars
 
 if __name__ == '__main__':
     """ Main method responsible for developing the main objects used during runtime
@@ -73,5 +73,3 @@ if __name__ == '__main__':
         print("CLOSING")
         gui.root.destroy()
         sys.exit()
-
-    
