@@ -72,8 +72,6 @@ def start_threads(ts, queue, halt):
 
     global_vars.connect_to_radio()
 
-    print(global_vars.radio.is_open() + "in auv.py")
-
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
