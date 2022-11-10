@@ -93,6 +93,8 @@ class AUV_Receive(threading.Thread):
             if global_vars.radio is None or global_vars.radio.is_open() is False:
                 print("in auv receive")
                 global_vars.connect_to_radio()
+                print(global_vars.radio)
+
             else:
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
