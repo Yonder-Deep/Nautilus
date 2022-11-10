@@ -24,10 +24,7 @@ class AUV_Send_Ping(threading.Thread):
             # time.sleep(PING_SLEEP_DELAY)
 
             if global_vars.radio is None or global_vars.radio.is_open() is False:
-                print("in send ping")
                 global_vars.connect_to_radio()
-                print(global_vars.radio)
-
             else:
                 try:
                     # Always send a connection verification packet
