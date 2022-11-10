@@ -23,9 +23,6 @@ class AUV_Send_Ping(threading.Thread):
         while not self._ev.wait(timeout=constants.PING_SLEEP_DELAY):
             # time.sleep(PING_SLEEP_DELAY)
 
-            if not global_vars.radio.is_open():
-                print("auv_send_ping radio not connected")
-            
             if global_vars.radio is None or global_vars.radio.is_open() is False:
                 global_vars.connect_to_radio()
             else:

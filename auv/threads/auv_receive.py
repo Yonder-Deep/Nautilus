@@ -90,9 +90,6 @@ class AUV_Receive(threading.Thread):
             if time.time() - self.time_since_last_ping > constants.CONNECTION_TIMEOUT:
                 self.timeout()
 
-            if not global_vars.radio.is_open():
-                print("auv_receive radio not connected")
-            
             if global_vars.radio is None or global_vars.radio.is_open() is False:
                 print("in auv receive")
                 global_vars.connect_to_radio()
