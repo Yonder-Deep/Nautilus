@@ -40,7 +40,6 @@ def connect_to_radio():
             success_msg += "Successfully found radio device on path " + str(rp['radioNum']) + "."
             break
         except Exception as e:
-            print(e)
             if rp["radioNum"] == 1:
                 warning_msg += "Warning: Cannot find radio device on paths " + str(rp['radioNum'])
             else:
