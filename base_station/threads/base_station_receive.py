@@ -11,7 +11,7 @@ from queue import Queue
 # Custom imports
 from api import Crc32
 from api import Radio
-from api import GPS
+#from api import GPS
 from api import decode_command
 
 from static import constants
