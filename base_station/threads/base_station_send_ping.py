@@ -38,4 +38,4 @@ class BaseStation_Send_Ping(threading.Thread):
                         constants.radio_lock.release()
 
                 except Exception as e:
-                    raise Exception("Error occured : " + str(e))
+                    print("[BS] Exception thrown in bs send ping")
