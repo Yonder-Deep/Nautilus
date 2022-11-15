@@ -9,6 +9,9 @@ import threading
 import time
 import math
 
+# TODO - #35 GPS
+# TEMP import gps
+
 # Custom imports
 from queue import Queue
 from api import Radio
@@ -48,26 +51,36 @@ def start_threads(ts, queue, halt):
         pressure_sensor.init()
         global_vars.log("Pressure sensor has been found")
     except:
+        pressure_sensor = None
         global_vars.log("Pressure sensor is not connected to the AUV.")
 
     try:
-        imu = IMU.BNO055(serial_port=constants.IMU_PATH, rst=18)
-
+        imu = IMU(serial_port=constants.IMU_PATH, rst=18)
         global_vars.log("IMU has been found.")
     except:
+        imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
+
+    for i in range(3):
+        try:
+            if not imu.begin():
+                print('Failed to initialize BNO055! Attempt:', i)
+            else:
+                break
+        except:
+            print('Exception thrown during BNO055 initialization')
 
     global_vars.connect_to_radio()
 
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, global_vars.radio, pressure_sensor, imu, mc)
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc)
 
     ts = []
 
-    auv_s_thread = AUV_Send_Data(global_vars.radio, pressure_sensor, imu, mc)
-    auv_ping_thread = AUV_Send_Ping(global_vars.radio)
+    auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc)
+    auv_ping_thread = AUV_Send_Ping()
 
     ts.append(auv_motor_thread)
     ts.append(auv_r_thread)
@@ -78,6 +91,10 @@ def start_threads(ts, queue, halt):
     auv_r_thread.start()
     auv_s_thread.start()
     auv_ping_thread.start()
+
+    # TODO - #35 GPS
+    #gps_thread = GPS_Runner(None)
+    #gps_thread.start()
 
 
 if __name__ == '__main__':  # If we are executing this file as main

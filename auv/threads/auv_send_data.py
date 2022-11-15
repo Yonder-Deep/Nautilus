@@ -22,9 +22,8 @@ def get_heading_encode(data):
 class AUV_Send_Data(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self, radio, pressure_sensor, imu, mc):
+    def __init__(self, pressure_sensor, imu, mc):
         """ Constructor for the AUV """
-        self.radio = radio
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -43,10 +42,8 @@ class AUV_Send_Data(threading.Thread):
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
             # time.sleep(SEND_SLEEP_DELAY)
 
-            if self.radio is None or self.radio.is_open() is False:
-                print("TEST radio not connected")
+            if global_vars.radio is None or global_vars.radio.is_open() is False:
                 global_vars.connect_to_radio()
-
             else:
                 try:
                     constants.LOCK.acquire()
@@ -55,7 +52,7 @@ class AUV_Send_Data(threading.Thread):
                         # IMU
                         if self.imu is not None:
                             self.send_heading()
-                            self.send_temperature()
+                            self.send_misc_data()
                         # Pressure
                         if self.pressure_sensor is not None:
                             self.send_depth()
@@ -69,6 +66,8 @@ class AUV_Send_Data(threading.Thread):
                         constants.LOCK.release()
 
                 except Exception as e:
+                    global_vars.radio.close()
+                    print("send data exception")
                     raise Exception("Error occured : " + str(e))
 
     def send_heading(self):
@@ -86,10 +85,12 @@ class AUV_Send_Data(threading.Thread):
         heading_encode = (constants.HEADING_ENCODE | whole_heading | decimal_heading)
 
         constants.RADIO_LOCK.acquire()
-        self.radio.write(heading_encode, 3)
+        global_vars.radio.write(heading_encode, 3)
         constants.RADIO_LOCK.release()
 
-    def send_temperature(self):
+    def send_misc_data(self):
+        """ Encodes and sends miscellaneous data to the base station. Currently sends
+            temperature and movement status data to the base station. """
         try:
             temperature = self.imu.read_temp()
             print('TEMPERATURE=', temperature)
@@ -102,16 +103,22 @@ class AUV_Send_Data(threading.Thread):
         if whole_temperature < 0:
             sign = 1
             whole_temperature *= -1
-        whole_temperature = whole_temperature << 5
-        sign = sign << 11
-        temperature_encode = (constants.MISC_ENCODE | sign | whole_temperature)
+        whole_temperature = whole_temperature << 7
+        sign = sign << 13
 
+        # Movement status data
+        movement = global_vars.movement_status
+        print("Movement:", movement)
+        movement = movement << 3
+
+        message_encode = (constants.MISC_ENCODE | sign | whole_temperature | movement)
         constants.RADIO_LOCK.acquire()
-        self.radio.write(temperature_encode, 3)
+        global_vars.radio.write(message_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_depth(self):
         depth = self.get_depth()
+        print("Depth=", depth)
         if depth < 0:
             depth = 0
         for_depth = math.modf(depth)
@@ -122,7 +129,7 @@ class AUV_Send_Data(threading.Thread):
         depth_encode = (constants.DEPTH_ENCODE | whole | decimal)
 
         constants.RADIO_LOCK.acquire()
-        self.radio.write(depth_encode, 3)
+        global_vars.radio.write(depth_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_positioning(self):
@@ -139,7 +146,7 @@ class AUV_Send_Data(threading.Thread):
         position_encode = (constants.POSITION_ENCODE | x_bits << 10 | y_bits)
         constants.RADIO_LOCK.acquire()
         print(bin(position_encode))
-        self.radio.write(position_encode, 3)
+        global_vars.radio.write(position_encode, 3)
         constants.RADIO_LOCK.release()
 
     def send_dive_log(self):
@@ -156,7 +163,7 @@ class AUV_Send_Data(threading.Thread):
             constants.RADIO_LOCK.acquire()
             print(file_bytes)
             global_vars.bs_response_sent = False
-            self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
             constants.RADIO_LOCK.release()
             # Ensure that base station is receiving every packet sent
@@ -164,7 +171,7 @@ class AUV_Send_Data(threading.Thread):
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
                     constants.RADIO_LOCK.acquire()
-                    self.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
                     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 

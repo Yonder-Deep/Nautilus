@@ -9,6 +9,7 @@ import time
 import pigpio
 import RPi.GPIO as io
 from api import Motor
+from static import global_vars
 
 # GPIO Pin numbers for Motors
 FORWARD_GPIO_PIN = 4  # 18
@@ -66,7 +67,9 @@ class MotorController:
         self.turn_speed = 0
         self.front_speed = 0
         self.back_speed = 0
-#        self.check_gpio_pins()
+        # self.check_gpio_pins()
+        # Stores the type of motion being performed
+        # 1: Xbox, 2: Dive, 3: Navigation, 4: motor test
 
     def update_motor_speeds(self, data):
         """
@@ -86,7 +89,8 @@ class MotorController:
         self.front_speed = data[FRONT_MOTOR_INDEX]
         self.back_speed = data[BACK_MOTOR_INDEX]
 
-        log("motors is: " + str(data))
+        if all([speed == 0 for speed in data]):
+            global_vars.movement_status = 0
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
@@ -161,7 +165,6 @@ class MotorController:
 
         log("motors set to [0, 0, 0, 0]")
 
-
     def test_all(self):
         """
         Calibrates each individual motor.
@@ -202,6 +205,11 @@ class MotorController:
         # Case 2: Going forward
         else:
             return min(feedback, MAX_CORRECTION_MOTOR_SPEED)
+
+    def is_stopped(self):
+        """ Returns if any of the motors are not set to zero. """
+        # do not use
+        return all([motor.speed == 0 for motor in self.motors])
 
 
 def main():
