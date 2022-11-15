@@ -11,9 +11,9 @@ from queue import Queue
 # Custom imports
 from api import Crc32
 from api import Radio
-#from api import GPS
+from api import GPS
 from api import decode_command
-
+from api import xbox
 from static import constants
 from static import global_vars
 
@@ -38,11 +38,6 @@ class BaseStation_Receive(threading.Thread):
         # Try to assign our radio object
         self.radio = radio
 
-        # Try to connect our Xbox 360 controller.
-
-# XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-
-        # Try to assign our GPS object connection to GPSD
         try:
             self.gps = GPS(self.gps_q)
             global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
