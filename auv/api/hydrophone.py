@@ -27,7 +27,7 @@ class Hydrophone:
         print(sd.query_devices(None))
         with sf.SoundFile(self.filename, mode='w', samplerate=44100,
                           subtype=self.subtype, channels=1) as file:
-            with sd.InputStream(samplerate=44100.0, dtype=self.dtype,
+            with sd.InputStream(device=None, samplerate=44100.0, dtype=self.dtype,
                                 channels=1, callback=self.save_recording):
                 while getattr(self.recorder, "record", True):
                     file.write(self.q.get())
