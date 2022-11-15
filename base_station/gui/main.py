@@ -327,7 +327,7 @@ class Main():
             self.stack_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
 
         self.buttons_frame.grid(
-            row=2, column=3, pady=CALIBRATE_PAD_Y)
+            row=3, column=2, pady=CALIBRATE_PAD_Y)
 
         self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
                                            padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
