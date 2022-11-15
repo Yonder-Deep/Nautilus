@@ -145,7 +145,7 @@ class AUV_Send_Data(threading.Thread):
         y_bits = y_bits | (y_sign << 9)
         position_encode = (constants.POSITION_ENCODE | x_bits << 10 | y_bits)
         constants.RADIO_LOCK.acquire()
-        print(bin(position_encode))
+        # print(bin(position_encode))
         global_vars.radio.write(position_encode, 3)
         constants.RADIO_LOCK.release()
 
