@@ -24,7 +24,7 @@ class Hydrophone:
         self.filename = filename
 
     def rec(self):
-        print(sd.query_devices())
+        print(sd.query_devices(None))
         with sf.SoundFile(self.filename, mode='w', samplerate=44100,
                           subtype=self.subtype, channels=1) as file:
             with sd.InputStream(samplerate=44100.0, dtype=self.dtype,
