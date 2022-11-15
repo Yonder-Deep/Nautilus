@@ -84,10 +84,7 @@ class Main():
 
         # Begin initializing the main Tkinter (GUI) framework/root window
         self.root = Tk()
-        self.root.resizable(0, 1)
-
-        self.rootScrollbar = Scrollbar(self.root)
-        self.rootScrollbar.pack(side=RIGHT, fill=Y)
+        self.root.resizable(1, 1)
 
         try:
             self.root.iconphoto(True, PhotoImage(file=ICON_PATH))
@@ -122,6 +119,7 @@ class Main():
         global WIDTH, HEIGHT, TOP_FRAME_HEIGHT, BOT_FRAME_HEIGHT, FUNC_FRAME_WIDTH, STATUS_FRAME_WIDTH, CALIBRATE_FRAME_WIDTH, MISSION_FRAME_WIDTH, LOG_FRAME_WIDTH, BUTTON_HEIGHT, BUTTON_WIDTH
         WIDTH = int(WIDTH * self.multiplier_x)
         HEIGHT = int(HEIGHT * self.multiplier_y)
+       # META_FRAME_WIDTH = int(META_FRAME_WIDTH * self.mutliplier_x)
         TOP_FRAME_HEIGHT = int(TOP_FRAME_HEIGHT * self.multiplier_y)
         BOT_FRAME_HEIGHT = int(BOT_FRAME_HEIGHT * self.multiplier_y)
         FUNC_FRAME_WIDTH = int(FUNC_FRAME_WIDTH * self.multiplier_x)
@@ -140,11 +138,25 @@ class Main():
         self.in_q = in_q  # Messages sent here from base_station.py thread
         self.out_q = out_q  # Messages sent to base_station.py thread
 
-        self.top_frame = Frame(self.root, bd=1)
+        # Initializing our main frame
+        self.meta_frame = Frame(self.root, bd=1)
+        self.meta_frame.pack(fill=BOTH, padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
+
+        self.mainConsole = Text(self.meta_frame, state=DISABLED, width=WIDTH)
+
+        self.mainScrollbar = Scrollbar(self.meta_frame)
+        self.mainScrollbar.config(command=self.mainConsole.yview)
+        self.mainConsole.configure(yscrollcommand=self.mainScrollbar.set)
+        self.mainScrollbar.pack(side=RIGHT, fill=Y)
+        self.mainConsole.pack()
+
+        # Initializing our top frame
+        self.top_frame = Frame(self.meta_frame, bd=1)
         self.top_frame.pack(fill=BOTH, side=TOP,
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
-        self.bot_frame = Frame(self.root, bd=1)
+        # Initializing our bottom frame
+        self.bot_frame = Frame(self.meta_frame, bd=1)
         self.bot_frame.pack(fill=BOTH, side=BOTTOM,
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
