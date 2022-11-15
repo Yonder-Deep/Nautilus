@@ -1,5 +1,5 @@
 from static import constants
-import datetime
+from datetime import datetime
 import queue
 import threading
 import sys
