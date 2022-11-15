@@ -24,8 +24,16 @@ class BaseStation_Send_Ping(threading.Thread):
         print("Starting main ping sending connection loop.")
         while True:
             time.sleep(constants.PING_SLEEP_DELAY)
+<<<<<<< HEAD
 
             if global_vars.radio is None or global_vars.radio.is_open() is False:
+=======
+            print("[BS] Trying to send ping")
+            # will break if global_vars.radio is ever None please add check for that at some point
+            is_radio_open = global_vars.radio.is_open()
+            if global_vars.radio is None or is_radio_open is False:
+                print("TEST radio not connected")
+>>>>>>> 3b6ab7ff3bad53221da2e1b6428ce3c34a6bfed3
                 global_vars.connect_to_radio(self.out_q)
             else:
                 try:
@@ -36,4 +44,4 @@ class BaseStation_Send_Ping(threading.Thread):
                         constants.radio_lock.release()
 
                 except Exception as e:
-                    raise Exception("Error occured : " + str(e))
+                    print("[BS] Exception thrown in bs send ping")
