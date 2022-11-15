@@ -4,10 +4,10 @@ import time
 hydrophone = Hydrophone()
 
 print('start recording')
-hydrophone.start()
+hydrophone.start_recording()
 time.sleep(1)
 print('...still recording...')
 time.sleep(1)
-hydrophone.stop()
+hydrophone.stop_recording()
 
 
