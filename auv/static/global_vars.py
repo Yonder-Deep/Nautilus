@@ -49,7 +49,7 @@ def connect_to_radio():
         log(warning_msg)
     else:
         log(success_msg)
-        print(radio)
+        print(Radio.is_open)
 
 
 def log(val):
