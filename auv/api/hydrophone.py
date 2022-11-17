@@ -5,6 +5,7 @@ import threading
 import sys
 import time
 import sounddevice as sd
+from scipy.io.wavfile import write
 import soundfile as sf
 import numpy  # Make sure NumPy is loaded before it is used in the callback
 assert numpy  # avoid "imported but unused" message (W0611)
@@ -15,6 +16,7 @@ class Hydrophone:
         self.filename = ""
         self.subtype = 'PCM_16'
         self.dtype = 'int16'
+        self.fs = 62000  # Sample rate
         self.q = queue.Queue()
         self.recorder = False
 
@@ -40,6 +42,12 @@ class Hydrophone:
         self.recorder = threading.Thread(target=self.rec)
         self.recorder.record = True
         self.recorder.start()
+
+    def start_recording(self, recording_seconds):
+        self.generate_new_audio_file_name()
+        audio_recording = sd.rec(int(recording_seconds * self.fs), samplerate=self.fs, channels=2)
+        sd.wait()
+        write(self.filename, self.fs, audio_recording)
 
     def stop_recording(self):
         self.recorder.record = False
