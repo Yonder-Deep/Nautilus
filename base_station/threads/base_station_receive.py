@@ -48,7 +48,7 @@ class BaseStation_Receive(threading.Thread):
         """ Instantiates a new Xbox Controller Instance """
         # Construct joystick and check that the driver/controller are working.
         self.joy = None
-        self.main.log("Attempting to connect xbox controller")
+        global_vars.log(self.out_q, "Attempting to connect xbox controller")
         while self.joy is None:
             self.main.update()
             try:
@@ -56,7 +56,7 @@ class BaseStation_Receive(threading.Thread):
                 raise Exception()
             except Exception as e:
                 continue
-        self.main.log("Xbox controller is connected.")
+        global_vars.log(self.out_q, "Xbox controller is connected.")
 
     def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
@@ -162,7 +162,7 @@ class BaseStation_Receive(threading.Thread):
                                 self.radio.flush()
                                 self.radio.close()
                                 self.radio, output_msg = global_vars.connect_to_radio()
-                                self.log(output_msg)
+                                global_vars.log(self.out_q, output_msg)
                                 break
 
                             intline = intline >> 32
@@ -172,7 +172,7 @@ class BaseStation_Receive(threading.Thread):
                                 self.time_since_last_ping = time.time()
                                 constants.lock.acquire()
                                 if global_vars.connected is False:
-                                    self.log("Connection to AUV verified.")
+                                    global_vars.log(self.out_q, "Connection to AUV verified.")
                                     self.out_q.put("set_connection(True)")
                                     global_vars.connected = True
                                 constants.lock.release()
