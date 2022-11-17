@@ -139,31 +139,30 @@ class Main():
         self.out_q = out_q  # Messages sent to base_station.py thread
 
         # Initializing our main frame
-        self.meta_frame = Frame(self.root, bd=1)
-        self.meta_frame.pack(fill=BOTH, padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
+        #self.meta_frame = Frame(self.root, bd=1)
+        #self.meta_frame.pack(fill=BOTH, padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
-        self.mainConsole = Text(self.meta_frame, state=DISABLED, width=WIDTH)
+        #self.mainConsole = Text(self.meta_frame, state=DISABLED, width=WIDTH)
 
-        self.mainScrollbar = Scrollbar(self.meta_frame)
-        self.mainScrollbar.config(command=self.mainConsole.yview)
-        self.mainConsole.configure(yscrollcommand=self.mainScrollbar.set)
-        self.mainScrollbar.pack(side=RIGHT, fill=Y)
-        self.mainConsole.pack()
+        #self.mainScrollbar = Scrollbar(self.meta_frame)
+        # self.mainScrollbar.config(command=self.mainConsole.yview)
+        # self.mainConsole.configure(yscrollcommand=self.mainScrollbar.set)
+        #self.mainScrollbar.pack(side=RIGHT, fill=Y)
+        # self.mainConsole.pack()
 
         # Initializing our top frame
-        self.top_frame = Frame(self.meta_frame, bd=1)
+        self.top_frame = Frame(self.root, bd=1)
         self.top_frame.pack(fill=BOTH, side=TOP,
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
         # Initializing our bottom frame
-        self.bot_frame = Frame(self.meta_frame, bd=1)
+        self.bot_frame = Frame(self.root, bd=1)
         self.bot_frame.pack(fill=BOTH, side=BOTTOM,
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
         # self.init_function_frame()
         self.init_stack_frame()
         self.init_camera_frame()  # for left panel
-        self.init_buttons_frame()  # for left panel
         self.init_motor_control_frame()  # for left panel
         self.init_map_frame()
         self.init_status_frame()
@@ -171,6 +170,7 @@ class Main():
         self.init_log_frame()
         self.init_mission_frame()
         self.create_map(self.map_frame)
+        self.init_buttons_frame()  # for left panel
 
         # Save our last received BS coordinates
         self.bs_coordinates = None
@@ -336,16 +336,16 @@ class Main():
                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
 
         self.calibrate_origin_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nOrigin", takefocus=False,
-                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.calibrate_origin_on_map)
+                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.calibrate_origin_on_map)
 
         self.clear_button = Button(self.buttons_frame, anchor=tkinter.W, text="Clear\nMap", takefocus=False,
-                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.map.clear)
+                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.clear)
 
         self.add_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Add\nWaypoint", takefocus=False,
-                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.map.new_waypoint_prompt)
+                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
 
         self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
-                                             padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.map.nav_to_waypoint)
+                                             padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: None)
 
         self.download_data_button.grid(row=0, column=0)
         self.calibrate_depth_button.grid(row=0, column=1)
@@ -878,6 +878,13 @@ class Main():
 
     def create_map(self, frame):
         self.map = Map(frame, self)
+        self.zoom_in_button = Button(self.map_frame, text="+", takefocus=False, width=1, height=1,
+                                     padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_in)
+        self.zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
+
+        self.zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
+                                      padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
+        self.zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
 
     def on_closing(self):
         #    self.map.on_close()
