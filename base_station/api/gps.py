@@ -35,6 +35,7 @@ class GPS(threading.Thread):
         if not self.gps.has_fix:
             self.out_q.put({
                 'has fix':'No',
+                'track angle':'Unknown',
                 'speed': 'Unknown',
                 'latitude': 'Unknown',
                 'longitude': 'Unknown'
@@ -43,6 +44,7 @@ class GPS(threading.Thread):
         else:
             self.out_q.put({
                 'has fix':'Yes',
+                'track angle':self.gps.track_angle_deg,
                 'speed': self.gps.speed_knots,
                 'latitude': self.gps.latitude,
                 'longitude': self.gps.longitude
