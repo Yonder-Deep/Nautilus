@@ -43,7 +43,7 @@ class Hydrophone:
         self.recorder.record = True
         self.recorder.start()
 
-    def start_recording(self, recording_seconds):
+    def start_recording_for(self, recording_seconds):
         self.generate_new_audio_file_name()
         audio_recording = sd.rec(int(recording_seconds * self.fs), samplerate=self.fs, channels=2)
         sd.wait()
