@@ -16,7 +16,7 @@ class Hydrophone:
         self.filename = ""
         self.subtype = 'PCM_16'
         self.dtype = 'int16'
-        self.fs = 16000  # Sample rate
+        self.fs = 8000  # Sample rate
         self.q = queue.Queue()
         self.recorder = False
 
