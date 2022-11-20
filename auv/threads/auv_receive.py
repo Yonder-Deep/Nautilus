@@ -186,9 +186,9 @@ class AUV_Receive(threading.Thread):
                                 elif (constant_select == 0b101):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = self.radio.read(7)
+                            line = global_vars.radio.read(7)
                         elif global_vars.sending_data:
-                            line = self.radio.read(constants.FILE_SEND_PACKET_SIZE)
+                            line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             line = global_vars.radio.read(7)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             self.data_connected()
