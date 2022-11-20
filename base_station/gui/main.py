@@ -27,6 +27,7 @@ from tkinter import font
 
 from static import constants
 from .map import Map
+from .viewmap import ViewMap
 from screeninfo import get_monitors, Enumerator
 
 # Begin Constants
@@ -165,11 +166,13 @@ class Main():
         self.init_camera_frame()  # for left panel
         self.init_motor_control_frame()  # for left panel
         self.init_map_frame()
+        self.init_viewmap_frame()
         self.init_status_frame()
         self.init_calibrate_frame()
         self.init_log_frame()
         self.init_mission_frame()
         self.create_map(self.map_frame)
+        self.create_view_map(self.viewmap_frame)
         self.init_buttons_frame()  # for left panel
 
         # Save our last received BS coordinates
@@ -491,11 +494,17 @@ class Main():
     def init_map_frame(self):
         """ Create the frame for the x, y map """
 
-        self.map_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT,
-                               width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
+        self.map_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT/2,
+                               width=TOP_FRAME_HEIGHT/2, bd=1, relief=SUNKEN)
         self.map_frame.pack(fill=X, padx=MAIN_PAD_X,  # fill=X at beginning
                             pady=MAIN_PAD_Y, side=LEFT, expand=YES)
         self.map_frame.pack_propagate(0)
+
+    def init_viewmap_frame(self):
+        self.viewmap_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT/2,
+                                   width=TOP_FRAME_HEIGHT/2, bd=1, relief=SUNKEN)
+        self.viewmap_frame.pack(fill=X, padx=MAIN_PAD_X,  # fill=X at beginning
+                                pady=MAIN_PAD_Y, side=LEFT, expand=YES)
 
     def init_status_frame(self):
         """ Initializes the status frame (top right frame). """
@@ -885,6 +894,9 @@ class Main():
         self.zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
                                       padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
         self.zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
+
+    def create_view_map(self, frame):
+        self.viewmap = ViewMap(frame, self, self.map)
 
     def on_closing(self):
         #    self.map.on_close()
