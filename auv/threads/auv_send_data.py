@@ -151,7 +151,7 @@ class AUV_Send_Data(threading.Thread):
 
     def send_dive_log(self):
         constants.RADIO_LOCK.acquire()
-        filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.path.isfile(os.join(constants.LOG_FOLDER_PATH, f))][0]
+        filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.path.isfile(os.path.join(constants.LOG_FOLDER_PATH, f))][0]
         filepath = constants.LOG_FOLDER_PATH + filename
         self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
         self.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
@@ -184,7 +184,7 @@ class AUV_Send_Data(threading.Thread):
     # Send Hydrophone Recording to Base Station
     def send_audio_file(self):
         constants.RADIO_LOCK.acquire()
-        filename = [f for f in os.listdir(constants.AUDIO_FOLDER_PATH) if os.path.isfile(os.join(constants.AUDIO_FOLDER_PATH, f))][0]
+        filename = [f for f in os.listdir(constants.AUDIO_FOLDER_PATH) if os.path.isfile(os.path.join(constants.AUDIO_FOLDER_PATH, f))][0]
         filepath = constants.AUDIO_FOLDER_PATH + filename
         self.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of audio file
         self.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of audio file
