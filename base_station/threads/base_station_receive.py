@@ -161,19 +161,19 @@ class BaseStation_Receive(threading.Thread):
                             print(f"THIS IS INTLINE: {intline}")
                             checksum = Crc32.confirm(intline)
 
-                            if not checksum:
-                                print('invalid line*************')
-                                print(bin(intline >> 32))
-                                self.radio.flush()
-                                self.radio.close()
-                                self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
-                                global_vars.log(self.out_q, output_msg)
-                                break
+                            # if not checksum:
+                            #     print('invalid line*************')
+                            #     print(bin(intline >> 32))
+                            #     self.radio.flush()
+                            #     self.radio.close()
+                            #     self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
+                            #     global_vars.log(self.out_q, output_msg)
+                            #     break
 
-                            intline = intline >> 32
+                            # intline = intline >> 32
                             header = intline >> 21     # get first 3 bits
                             # PING case
-                            if intline == constants.PING:
+                            if intline >> 32 == constants.PING:  # TODO MIGHT NEED TO CHANGE
                                 self.time_since_last_ping = time.time()
                                 constants.lock.acquire()
                                 if global_vars.connected is False:
@@ -205,7 +205,7 @@ class BaseStation_Receive(threading.Thread):
                             # Get second packet containing file name (includes file format)
                             if file is None:
                                 downloaded_filename = line.decode("utf-8")
-                                if downloaded_filename[-3:] == ".wav":
+                                if isAudio:
                                     file = open(constants.AUDIO_FOLDER_PATH + downloaded_filename, "wb")
                                 else:
                                     file = open(constants.LOG_FOLDER_PATH + downloaded_filename, "wb")

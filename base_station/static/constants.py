@@ -26,8 +26,8 @@ FILE_ENCODE = FILE_DATA << 21
 
 FILE_DL_PACKET_SIZE = 7  # Number to be determined (bytes)
 
-LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "logs/"
-AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "hydrophone_audio/"
+LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/logs/"
+AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/hydrophone_audio/"
 
 lock = threading.Lock()  # lock for writing to out_q to GUI
 radio_lock = threading.Lock()   # lock for writing to radio
