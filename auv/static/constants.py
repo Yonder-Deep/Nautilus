@@ -22,6 +22,7 @@ HEADING_DATA = 0b001
 MISC_DATA = 0b010
 TEMP_DATA = 0b10011
 DEPTH_DATA = 0b011
+DOWNLOAD_DATA = 0b101
 
 # Dive PID constants
 P_PITCH = 5.0
@@ -40,6 +41,8 @@ HEADING_ENCODE = HEADING_DATA << 21
 MISC_ENCODE = MISC_DATA << 21
 POSITION_ENCODE = POSITION_DATA << 21
 PID_ENCODE = PID_DATA << 21
+DOWNLOAD_AUDIO_ENCODE = DOWNLOAD_DATA << 21 & 0b1
+DOWNLOAD_LOG_ENCODE = DOWNLOAD_DATA << 21
 
 DEF_DIVE_SPD = 100
 
@@ -60,6 +63,7 @@ RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 FILE_SEND_PACKET_SIZE = 7  # bytes
 LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/logs/"
 AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/hydrophone_audio/"
+
 
 def log(val):
     print("[AUV]\t" + val)

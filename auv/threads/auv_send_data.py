@@ -60,7 +60,9 @@ class AUV_Send_Data(threading.Thread):
                         # TODO: Positioning, currently placeholder
                         self.send_positioning()
                     elif global_vars.connected and global_vars.sending_data:
-                        # self.send_audio_file()
+                        constants.RADIO_LOCK.acquire()
+                        global_vars.radio.write_data(constants.DOWNLOAD_LOG_ENCODE, constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
+                        constants.RADIO_LOCK.release()
                         self.send_dive_log()
                     else:
                         constants.LOCK.release()
