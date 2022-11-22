@@ -189,7 +189,10 @@ class AUV_Receive(threading.Thread):
                             line = global_vars.radio.read(7)
                         elif global_vars.sending_data:
                             line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
+                            print(f"LINE BEFORE: {line}")
                             line = global_vars.radio.read(7)
+                            print(f"LINE AFTER: {line}")
+
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             self.data_connected()
                             global_vars.bs_response_sent = True
