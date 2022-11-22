@@ -327,10 +327,12 @@ class Main():
     def init_buttons_frame(self):
         """ Creates the frame for buttons. """
         self.buttons_frame = Frame(
-            self.stack_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
+            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
 
-        self.buttons_frame.grid(
-            row=3, column=2, pady=CALIBRATE_PAD_Y)
+        # self.buttons_frame.grid(
+        # row=3, column=2, pady=CALIBRATE_PAD_Y)
+
+        self.buttons_frame.pack(side=BOTTOM)
 
         self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
                                            padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
@@ -493,25 +495,32 @@ class Main():
 
     def init_map_frame(self):
         """ Create the frame for the x, y map """
+        # Creates the container frame that contains both maps
+        self.map_container_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT,
+                                         width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
+        self.map_container_frame.pack(padx=MAIN_PAD_X,
+                                      pady=MAIN_PAD_Y, fill=BOTH, side=LEFT, expand=YES)
 
-        self.map_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT/2,
-                               width=TOP_FRAME_HEIGHT/2, bd=1, relief=SUNKEN)
-        self.map_frame.pack(fill=X, padx=MAIN_PAD_X,  # fill=X at beginning
-                            pady=MAIN_PAD_Y, side=LEFT, expand=YES)
+        # Creates the custom map interface
+        self.map_frame = Frame(self.map_container_frame, height=TOP_FRAME_HEIGHT/2,
+                               width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
+        self.map_frame.pack(padx=MAIN_PAD_X,  # fill=X at beginning
+                            pady=MAIN_PAD_Y, fill=BOTH, side=TOP, expand=YES)
         self.map_frame.pack_propagate(0)
 
     def init_viewmap_frame(self):
-        self.viewmap_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT/2,
-                                   width=TOP_FRAME_HEIGHT/2, bd=1, relief=SUNKEN)
-        self.viewmap_frame.pack(fill=X, padx=MAIN_PAD_X,  # fill=X at beginning
-                                pady=MAIN_PAD_Y, side=LEFT, expand=YES)
+        # Creates a more real-world map using imported tiles to construct the view
+        self.viewmap_frame = Frame(self.map_container_frame, height=TOP_FRAME_HEIGHT/2,
+                                   width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
+        self.viewmap_frame.pack(padx=MAIN_PAD_X,  # fill=X at beginning
+                                pady=MAIN_PAD_Y, fill=BOTH, side=BOTTOM, expand=YES)
 
     def init_status_frame(self):
         """ Initializes the status frame (top right frame). """
         self.status_frame = Frame(
             self.top_frame, height=TOP_FRAME_HEIGHT, width=2*STATUS_FRAME_WIDTH, bd=1, relief=SUNKEN)
         self.status_frame.pack(padx=MAIN_PAD_X,
-                               pady=MAIN_PAD_Y, side=LEFT, expand=NO)
+                               pady=MAIN_PAD_Y, fill=Y, side=RIGHT, expand=YES)
         self.status_frame.pack_propagate(0)
         self.status_label = Label(
             self.status_frame, text="AUV Data", font=(FONT, HEADING_SIZE))
