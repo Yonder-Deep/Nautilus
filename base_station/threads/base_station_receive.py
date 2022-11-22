@@ -158,7 +158,7 @@ class BaseStation_Receive(threading.Thread):
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
-
+                            print(f"THIS IS INTLINE: {intline}")
                             checksum = Crc32.confirm(intline)
 
                             if not checksum:
@@ -187,6 +187,7 @@ class BaseStation_Receive(threading.Thread):
                                 decode_command(self, header, intline)
                             # Check if an entire file is being sent from AUV
                             if header == constants.FILE_DATA:
+                                print("[BS] THIS IF BLOCK RAN ------------------")
                                 intline = int.from_bytes(line, "big")
                                 isAudio = True if 0b1 & intline == 0b1 else False
                                 file = None
