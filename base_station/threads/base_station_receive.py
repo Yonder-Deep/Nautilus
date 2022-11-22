@@ -203,11 +203,16 @@ class BaseStation_Receive(threading.Thread):
                                 continue
                             # Get second packet containing file name (includes file format)
                             if file is None:
-                                file = open(constants.LOG_FOLDER_PATH + line.decode("utf-8"), "wb")
+                                downloaded_filename = line.decode("utf-8")
+                                if downloaded_filename[-3:] == ".wav":
+                                    file = open(constants.AUDIO_FOLDER_PATH + downloaded_filename, "wb")
+                                else:
+                                    file = open(constants.LOG_FOLDER_PATH + downloaded_filename, "wb")
                                 continue
                             # Get packets of file contents, keep track of number of packets received
                             global_vars.file_packets_received += 1
                             global_vars.packet_received = True
+                            print(f"files received: {global_vars.file_packets_received}")
                             # Write to file
                             file.write(line)
                             # Get current file size
