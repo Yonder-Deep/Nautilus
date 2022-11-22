@@ -5,7 +5,7 @@
 # and other details.
 import time
 #import board
-#import busio
+# import busio./
 import serial
 import adafruit_gps
 # Create a serial connection for the GPS connection using default speed and
