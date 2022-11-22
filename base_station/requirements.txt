@@ -2,3 +2,4 @@ adafruit_circuitpython_gps==3.10.6
 matplotlib==3.6.1
 pyserial==3.5
 screeninfo==0.8.1
+tkintermapview==1.17
