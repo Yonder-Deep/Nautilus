@@ -649,6 +649,7 @@ class Main():
     def add_auv_coordinates(self, northing, easting):
         """ Plots the AUV's current coordinates onto the map, given its UTM-relative northing and easting. """
         self.map.add_auv_data(northing, easting)
+        self.viewmap.input_gps_coordinates(northing, easting, "AUV")
 
     def update_bs_coordinates(self, northing, easting):
         """ Saves base stations current coordinates, updates label on the data panel """
@@ -896,16 +897,23 @@ class Main():
 
     def create_map(self, frame):
         self.map = Map(frame, self)
-        self.zoom_in_button = Button(self.map_frame, text="+", takefocus=False, width=1, height=1,
-                                     padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_in)
-        self.zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
+        self.map_zoom_in_button = Button(self.map_frame, text="+", takefocus=False, width=1, height=1,
+                                         padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_in)
+        self.map_zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
 
-        self.zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
-                                      padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
-        self.zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
+        self.map_zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
+                                          padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
+        self.map_zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
 
     def create_view_map(self, frame):
         self.viewmap = ViewMap(frame, self, self.map)
+        self.viewmap_zoom_in_button = Button(self.viewmap_frame, text="+", takefocus=False, width=1, height=1,
+                                             padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.viewmap.zoom_in)
+        self.viewmap_zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
+
+        self.viewmap_zoom_out_button = Button(self.viewmap_frame, text="-", takefocus=False, width=1, height=1,
+                                              padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.viewmap.zoom_out)
+        self.viewmap_zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
 
     def on_closing(self):
         #    self.map.on_close()
