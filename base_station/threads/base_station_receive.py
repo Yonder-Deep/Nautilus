@@ -161,7 +161,7 @@ class BaseStation_Receive(threading.Thread):
                                 print(bin(intline >> 32))
                                 self.radio.flush()
                                 self.radio.close()
-                                self.radio, output_msg = global_vars.connect_to_radio()
+                                self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
                                 global_vars.log(self.out_q, output_msg)
                                 break
 

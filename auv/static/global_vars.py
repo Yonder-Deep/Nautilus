@@ -38,6 +38,7 @@ def connect_to_radio():
         try:
             radio = Radio(rp['path'])
             success_msg += "Successfully found radio device on path " + str(rp['radioNum']) + "."
+
             break
         except Exception as e:
             if rp["radioNum"] == 1:
@@ -48,6 +49,7 @@ def connect_to_radio():
         log(warning_msg)
     else:
         log(success_msg)
+        print(Radio.is_open)
 
 
 def log(val):
