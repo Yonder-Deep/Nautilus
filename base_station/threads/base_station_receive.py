@@ -11,9 +11,9 @@ from queue import Queue
 # Custom imports
 from api import Crc32
 from api import Radio
-#from api import GPS
+from api import GPS
 from api import decode_command
-
+from api import xbox
 from static import constants
 from static import global_vars
 
@@ -38,11 +38,6 @@ class BaseStation_Receive(threading.Thread):
         # Try to assign our radio object
         self.radio = radio
 
-        # Try to connect our Xbox 360 controller.
-
-# XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-
-        # Try to assign our GPS object connection to GPSD
         try:
             self.gps = GPS(self.gps_q)
             global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
@@ -53,7 +48,7 @@ class BaseStation_Receive(threading.Thread):
         """ Instantiates a new Xbox Controller Instance """
         # Construct joystick and check that the driver/controller are working.
         self.joy = None
-        self.main.log("Attempting to connect xbox controller")
+        global_vars.log(self.out_q, "Attempting to connect xbox controller")
         while self.joy is None:
             self.main.update()
             try:
@@ -61,7 +56,7 @@ class BaseStation_Receive(threading.Thread):
                 raise Exception()
             except Exception as e:
                 continue
-        self.main.log("Xbox controller is connected.")
+        global_vars.log(self.out_q, "Xbox controller is connected.")
 
     def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
