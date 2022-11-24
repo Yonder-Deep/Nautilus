@@ -157,18 +157,13 @@ class AUV_Send_Data(threading.Thread):
         filepath = constants.LOG_FOLDER_PATH + filename
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
         global_vars.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
-        # global_vars.radio.write_data("HELLO WORLD", constants.FILE_SEND_PACKET_SIZE)
-        # global_vars.radio.write_data(str(0b1000001), constants.FILE_SEND_PACKET_SIZE)
 
         # Start sending contents of file
         dive_log = open(filepath, "rb")
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             print(file_bytes)
-            # file_bytes = str(file_bytes)
             file_bytes = file_bytes.decode()
-            # global_vars.radio.write_data("HELLO WORLD", constants.FILE_SEND_PACKET_SIZE)
-
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1

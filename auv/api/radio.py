@@ -53,7 +53,7 @@ class Radio:
 
     def write_data(self, message, length):
         if isinstance(message, str):
-            encoded = str.encode(message + "\n")
+            encoded = str.encode(message)
             self.ser.write(encoded)
         elif isinstance(message, int):
             byte_arr = message.to_bytes(length, 'big')
