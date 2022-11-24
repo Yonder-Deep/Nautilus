@@ -197,9 +197,9 @@ class BaseStation_Receive(threading.Thread):
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
                             # Handles receiving an entire file from the AUV
-                            for i in range(10):
-                                line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
-                                print(str(line))
+                            # for i in range(10):
+                            #     line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+                            #     print(str(line))
 
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")

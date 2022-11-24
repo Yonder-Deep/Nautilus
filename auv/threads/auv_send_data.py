@@ -158,7 +158,7 @@ class AUV_Send_Data(threading.Thread):
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
         global_vars.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
         global_vars.radio.write_data("HELLO WORLD", constants.FILE_SEND_PACKET_SIZE)
-        global_vars.radio.write_data(0b1000001, constants.FILE_SEND_PACKET_SIZE)
+        global_vars.radio.write_data(str(0b1000001), constants.FILE_SEND_PACKET_SIZE)
 
         constants.RADIO_LOCK.release()
         # Start sending contents of file
