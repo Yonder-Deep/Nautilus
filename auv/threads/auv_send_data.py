@@ -160,17 +160,14 @@ class AUV_Send_Data(threading.Thread):
         global_vars.radio.write_data("HELLO WORLD", constants.FILE_SEND_PACKET_SIZE)
         global_vars.radio.write_data(str(0b1000001), constants.FILE_SEND_PACKET_SIZE)
 
-        constants.RADIO_LOCK.release()
         # Start sending contents of file
         dive_log = open(filepath, "rb")
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
-            constants.RADIO_LOCK.acquire()
             print(file_bytes)
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
-            constants.RADIO_LOCK.release()
             # Ensure that base station is receiving every packet sent
             # while global_vars.file_packets_sent != global_vars.file_packets_received:
             #     # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
@@ -187,8 +184,10 @@ class AUV_Send_Data(threading.Thread):
         global_vars.file_packets_received = 0
         global_vars.bs_response_sent = False
         dive_log.close()
+        constants.RADIO_LOCK.release()
 
     # Send Hydrophone Recording to Base Station
+
     def send_audio_file(self):
         constants.RADIO_LOCK.acquire()
         filename = [f for f in os.listdir(constants.AUDIO_FOLDER_PATH) if os.path.isfile(os.path.join(constants.AUDIO_FOLDER_PATH, f))][0]
