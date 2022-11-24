@@ -61,7 +61,7 @@ class AUV_Send_Data(threading.Thread):
                         self.send_positioning()
                     elif global_vars.connected and global_vars.sending_data:
                         constants.RADIO_LOCK.acquire()
-                        global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
+                        global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
                         constants.RADIO_LOCK.release()
                         self.send_dive_log()
                     else:
