@@ -214,6 +214,7 @@ class BaseStation_Receive(threading.Thread):
                             global_vars.file_packets_received += 1
                             global_vars.packet_received = True
                             print(f"files received: {global_vars.file_packets_received}")
+                            print(f"line: {line}")
                             # Write to file
                             file.write(line)
                             # Get current file size
