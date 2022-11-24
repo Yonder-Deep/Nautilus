@@ -161,19 +161,19 @@ class BaseStation_Receive(threading.Thread):
                             print(f"THIS IS INTLINE: {intline}")
                             checksum = Crc32.confirm(intline)
 
-                            # if not checksum:
-                            #     print('invalid line*************')
-                            #     print(bin(intline >> 32))
-                            #     self.radio.flush()
-                            #     self.radio.close()
-                            #     self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
-                            #     global_vars.log(self.out_q, output_msg)
-                            #     break
+                            if not checksum:
+                                print('invalid line*************')
+                                print(bin(intline >> 32))
+                                self.radio.flush()
+                                self.radio.close()
+                                self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
+                                global_vars.log(self.out_q, output_msg)
+                                break
 
-                            # intline = intline >> 32
+                            intline = intline >> 32
                             header = intline >> 21     # get first 3 bits
                             # PING case
-                            if intline >> 32 == constants.PING:  # TODO MIGHT NEED TO CHANGE
+                            if intline == constants.PING:  # TODO MIGHT NEED TO CHANGE
                                 self.time_since_last_ping = time.time()
                                 constants.lock.acquire()
                                 if global_vars.connected is False:

@@ -61,7 +61,7 @@ class AUV_Send_Data(threading.Thread):
                         self.send_positioning()
                     elif global_vars.connected and global_vars.sending_data:
                         constants.RADIO_LOCK.acquire()
-                        global_vars.radio.write_data(constants.DOWNLOAD_LOG_ENCODE, constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
+                        global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
                         constants.RADIO_LOCK.release()
                         self.send_dive_log()
                     else:
@@ -156,7 +156,7 @@ class AUV_Send_Data(threading.Thread):
         filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.path.isfile(os.path.join(constants.LOG_FOLDER_PATH, f))][0]
         filepath = constants.LOG_FOLDER_PATH + filename
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
-        global_vars.radio.write(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
+        global_vars.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
         constants.RADIO_LOCK.release()
         # Start sending contents of file
         dive_log = open(filepath, "rb")
@@ -165,7 +165,7 @@ class AUV_Send_Data(threading.Thread):
             constants.RADIO_LOCK.acquire()
             print(file_bytes)
             global_vars.bs_response_sent = False
-            global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
             constants.RADIO_LOCK.release()
             # Ensure that base station is receiving every packet sent
@@ -175,7 +175,7 @@ class AUV_Send_Data(threading.Thread):
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
                     constants.RADIO_LOCK.acquire()
-                    global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
                     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
@@ -191,21 +191,21 @@ class AUV_Send_Data(threading.Thread):
         filename = [f for f in os.listdir(constants.AUDIO_FOLDER_PATH) if os.path.isfile(os.path.join(constants.AUDIO_FOLDER_PATH, f))][0]
         filepath = constants.AUDIO_FOLDER_PATH + filename
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of audio file
-        global_vars.radio.write(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of audio file
+        global_vars.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of audio file
         # Start sending contents of file
         audio_file = open(filepath, "rb")
         file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             print(file_bytes)
             global_vars.bs_response_sent = False
-            global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
             # Ensure that base station is receiving every packet sent
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
-                    global_vars.radio.write(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
 
         constants.RADIO_LOCK.release()
