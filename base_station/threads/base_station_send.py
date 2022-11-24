@@ -167,7 +167,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot update pid because there is no connection to the AUV.")
+            global_vars.log(self.out_q,"Cannot update pid because there is no connection to the AUV.")
         else:
             constants.lock.release()
             constant_select = constant_select << 18
@@ -181,7 +181,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot manual dive because there is no connection to the AUV.")
+            global_vars.log(self.out_q,"Cannot manual dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
 
@@ -199,7 +199,7 @@ class BaseStation_Send(threading.Thread):
             print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
-            self.log('Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
+            global_vars.log(self.out_q,'Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
                      ', ' + str(seconds) + ')')
 
     def encode_xbox(self, x, y, right_trigger):
@@ -324,7 +324,7 @@ class BaseStation_Send(threading.Thread):
                     print(str(e))
                     self.radio.close()
                     self.radio = None
-                    global_vars.log(out_q, "Radio device has been disconnected.")
+                    global_vars.log(self.out_q, "Radio device has been disconnected.")
                     continue
             time.sleep(constants.THREAD_SLEEP_DELAY)
 
