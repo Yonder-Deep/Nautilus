@@ -155,6 +155,7 @@ class BaseStation_Receive(threading.Thread):
                     line = self.radio.read(7)
 
                     while(line != b''):
+                        time.sleep(0.5)
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
@@ -230,6 +231,7 @@ class BaseStation_Receive(threading.Thread):
                             if global_vars.file_packets_received == 3:
                                 file.close()
                             if curr_file_size >= global_vars.file_size:
+                                print("[BS] CLOSING THE LOG FILE")
                                 file.close()
                                 global_vars.downloading_file = False
                                 global_vars.file_size = 0
