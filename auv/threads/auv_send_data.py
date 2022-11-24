@@ -169,14 +169,14 @@ class AUV_Send_Data(threading.Thread):
             global_vars.file_packets_sent += 1
             constants.RADIO_LOCK.release()
             # Ensure that base station is receiving every packet sent
-            while global_vars.file_packets_sent != global_vars.file_packets_received:
-                # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
+            # while global_vars.file_packets_sent != global_vars.file_packets_received:
+            #     # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
 
-                if global_vars.bs_response_sent == True:
-                    global_vars.bs_response_sent = False
-                    constants.RADIO_LOCK.acquire()
-                    global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
-                    constants.RADIO_LOCK.release()
+            #     if global_vars.bs_response_sent == True:
+            #         global_vars.bs_response_sent = False
+            #         constants.RADIO_LOCK.acquire()
+            #         global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+            #         constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
         global_vars.sending_data = False
