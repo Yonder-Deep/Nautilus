@@ -35,6 +35,7 @@ class BaseStation_Send_Ping(threading.Thread):
                 try:
                     # Always send a connection verification packet
                     if not global_vars.downloading_file:
+                        print("[BS] Actually sent ping")
                         constants.radio_lock.acquire()
                         global_vars.radio.write(constants.PING)
                         constants.radio_lock.release()

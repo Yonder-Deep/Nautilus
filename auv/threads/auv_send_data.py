@@ -184,6 +184,7 @@ class AUV_Send_Data(threading.Thread):
         global_vars.bs_response_sent = False
         dive_log.close()
         constants.RADIO_LOCK.release()
+        print("SENDING DATA FINISHED")
 
     # Send Hydrophone Recording to Base Station
 
