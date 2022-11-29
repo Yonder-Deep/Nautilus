@@ -154,8 +154,7 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
-                    while(line != b''):
-                        time.sleep(0.5)
+                    while(line != b'' or global_vars.downloading):
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
@@ -198,6 +197,8 @@ class BaseStation_Receive(threading.Thread):
                         elif global_vars.downloading_file:
                             # Handles receiving an entire file from the AUV
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+                            if line == b'':
+                                continue
                             intline = int.from_bytes(line, "big")
                             print(f"intline: {intline}")
 
@@ -208,6 +209,7 @@ class BaseStation_Receive(threading.Thread):
                             # Get second packet containing file name (includes file format)
                             if file is None:
                                 downloaded_filename = line.decode("utf-8")
+
                                 if isAudio:
                                     file = open(constants.AUDIO_FOLDER_PATH + downloaded_filename, "wb")
                                 else:
