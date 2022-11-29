@@ -24,7 +24,7 @@ FILE_DATA = 0b101
 
 FILE_ENCODE = FILE_DATA << 21
 
-FILE_DL_PACKET_SIZE = 30  # Number to be determined (bytes)
+FILE_DL_PACKET_SIZE = 12  # Number to be determined (bytes)
 
 LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/logs/"
 AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/hydrophone_audio/"
