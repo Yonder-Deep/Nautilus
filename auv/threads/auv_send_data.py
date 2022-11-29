@@ -61,9 +61,6 @@ class AUV_Send_Data(threading.Thread):
                         self.send_positioning()
                     elif global_vars.connected and global_vars.sending_data:
                         constants.LOCK.release()
-                        constants.RADIO_LOCK.acquire()
-                        global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
-                        constants.RADIO_LOCK.release()
                         self.send_dive_log()
                     else:
                         constants.LOCK.release()
@@ -154,6 +151,7 @@ class AUV_Send_Data(threading.Thread):
 
     def send_dive_log(self):
         constants.RADIO_LOCK.acquire()
+        global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
         filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.path.isfile(os.path.join(constants.LOG_FOLDER_PATH, f))][0]
         filepath = constants.LOG_FOLDER_PATH + filename
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file

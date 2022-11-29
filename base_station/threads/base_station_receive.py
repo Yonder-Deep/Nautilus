@@ -175,6 +175,7 @@ class BaseStation_Receive(threading.Thread):
                             # PING case
                             if intline == constants.PING:  # TODO MIGHT NEED TO CHANGE
                                 self.time_since_last_ping = time.time()
+                                print("[AUV] Received ping")
                                 constants.lock.acquire()
                                 if global_vars.connected is False:
                                     global_vars.log(self.out_q, "Connection to AUV verified.")
