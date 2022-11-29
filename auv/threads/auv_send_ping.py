@@ -30,7 +30,6 @@ class AUV_Send_Ping(threading.Thread):
                     # Always send a connection verification packet
                     constants.RADIO_LOCK.acquire()
                     global_vars.radio.write(constants.PING, 3)
-                    # global_vars.radio.write("test")
                     constants.RADIO_LOCK.release()
 
                 except Exception as e:
