@@ -61,7 +61,7 @@ class AUV_Send_Data(threading.Thread):
                         self.send_positioning()
                     elif global_vars.connected and global_vars.sending_data:
                         constants.LOCK.release()
-                        self.send_dive_log()
+                        self.send_audio_file()
                     else:
                         constants.LOCK.release()
 
