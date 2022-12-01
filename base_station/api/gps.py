@@ -2,7 +2,8 @@ import threading
 import time
 import serial
 import adafruit_gps
-from static.constants import GPS_PATH
+
+GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 
 class GPS(threading.Thread):
     """ Class for basic GPS functionality """
@@ -24,11 +25,12 @@ class GPS(threading.Thread):
 
     def run(self):
 
+        
         # Make sure to call gps.update() every loop iteration and at least twice
         # as fast as data comes from the GPS unit (usually every second).
         # This returns a bool that's true if it parsed new data (you can ignore it
         # though if you don't care and instead look at the has_fix property).
-
+        
         self.gps.update()
         # Every second print out current location details if there's a fix.
         
@@ -48,4 +50,20 @@ class GPS(threading.Thread):
                 'speed': self.gps.speed_knots,
                 'latitude': self.gps.latitude,
                 'longitude': self.gps.longitude
+            
             })
+
+# Testing area for the GPS class
+
+# if __name__ == "__main__":
+#     import queue
+#     q = queue.Queue()
+#     gps = GPS(q)
+#     while True:
+#         try:
+#             print(q.get())
+#             gps.run()
+#             time.sleep(0.5)
+#         except KeyboardInterrupt:
+#             break
+    
