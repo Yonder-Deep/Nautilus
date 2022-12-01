@@ -203,7 +203,7 @@ class AUV_Send_Data(threading.Thread):
         file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             print(file_bytes)
-            file_bytes = int.from_bytes(file_bytes)
+            file_bytes = int.from_bytes(file_bytes, "big")
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
