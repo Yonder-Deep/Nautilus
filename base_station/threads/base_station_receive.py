@@ -200,6 +200,7 @@ class BaseStation_Receive(threading.Thread):
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             if line == b'':
                                 continue
+                            line.decode("utf-8")
                             intline = int.from_bytes(line, "big")
                             print(f"intline: {intline}")
 
