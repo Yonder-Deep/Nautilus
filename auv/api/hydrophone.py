@@ -22,7 +22,7 @@ class Hydrophone:
 
     def generate_new_audio_file_name(self):
         time_stamp = datetime.now().strftime('%Y-%m-%dT%H.%M.%S')
-        filename = constants.AUDIO_FOLDER_PATH + time_stamp + ".wav"
+        filename = time_stamp + ".wav"
         self.filename = filename
 
     def rec(self):
