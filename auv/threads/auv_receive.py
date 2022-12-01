@@ -486,6 +486,7 @@ class AUV_Receive(threading.Thread):
         # self.hydrophone.start_recording()
         # time.time.sleep(5)
         # self.hydrophone.stop_recording()
+
         self.hydrophone.start_recording_for(1)
         global_vars.sending_data = True
 

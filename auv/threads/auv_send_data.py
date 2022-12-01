@@ -215,7 +215,8 @@ class AUV_Send_Data(threading.Thread):
             #         global_vars.bs_response_sent = False
             #         global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
-        time.sleep(60)
+        print("BEFORE SLEEP")
+        time.sleep(30)
         constants.RADIO_LOCK.release()
         global_vars.sending_data = False
         global_vars.file_packets_sent = 0
