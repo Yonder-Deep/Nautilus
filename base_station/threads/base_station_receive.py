@@ -193,6 +193,8 @@ class BaseStation_Receive(threading.Thread):
                                 isAudio = True if 0b1 & intline == 0b1 else False
                                 file = None
                                 global_vars.downloading_file = True
+                                constants.radio_lock.acquire()
+                                constants.lock.acquire()
                                 continue
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
@@ -235,6 +237,8 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
                                 line = self.radio.read(7)
+                                constants.radio_lock.release()
+                                constants.lock.acquire()
 
                     self.radio.flush()
 
