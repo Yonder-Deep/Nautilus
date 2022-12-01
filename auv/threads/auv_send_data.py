@@ -162,7 +162,7 @@ class AUV_Send_Data(threading.Thread):
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             print(file_bytes)
-            file_bytes = file_bytes.encode("utf-8")
+            file_bytes = file_bytes.decode()
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
@@ -203,6 +203,7 @@ class AUV_Send_Data(threading.Thread):
         file_bytes = audio_file.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             print(file_bytes)
+            file_bytes = file_bytes.decode('utf-8')
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
