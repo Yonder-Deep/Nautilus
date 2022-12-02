@@ -4,7 +4,10 @@ The motor_controller class calibrates and sets the speed of all of the motors
 
 # System imports
 import time
-
+import sys
+sys.path.append('../')
+sys.path.append('/home/pi-2/dev/Nautilus/auv')
+sys.path.append('/home/pi-2/dev/Nautilus/auv/api')
 # Custom Imports
 import pigpio
 import RPi.GPIO as io
