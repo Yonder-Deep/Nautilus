@@ -47,7 +47,7 @@ class Motor:
         """
 
         self.set_speed(MAX_SPEED / 2)
-        time.sleep(5)
+        time.sleep(10)
         self.set_speed(0)
 
 
