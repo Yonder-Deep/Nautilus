@@ -217,7 +217,7 @@ class MotorController:
 
 def main():
     mc = MotorController()
-    mc.test_all()
+    mc.test_forward()
 
 
 if __name__ == '__main__':
