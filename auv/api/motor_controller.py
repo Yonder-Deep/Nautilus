@@ -12,14 +12,14 @@ from api import Motor
 from static import global_vars
 
 # GPIO Pin numbers for Motors
-FORWARD_GPIO_PIN = 13  # 18
+FORWARD_GPIO_PIN = 4  # 18
 TURN_GPIO_PIN = 11  # 24
 FRONT_GPIO_PIN = 18  # 4
 BACK_GPIO_PIN = 24  # 11
 
 
 # Define pin numbers for PI (Not the same as GPIO?)
-FORWARD_PI_PIN = 33          # Left pins
+FORWARD_PI_PIN = 7          # Left pins
 TURN_PI_PIN = 23            # Right pins
 FRONT_PI_PIN = 12           # Back pins
 BACK_PI_PIN = 18            # Front pins

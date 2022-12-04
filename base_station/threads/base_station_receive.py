@@ -19,7 +19,7 @@ from static import global_vars
 
 
 class BaseStation_Receive(threading.Thread):
-    def __init__(self, in_q=None, out_q=None):
+    def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
@@ -34,6 +34,9 @@ class BaseStation_Receive(threading.Thread):
 
         # Call super-class constructor
         threading.Thread.__init__(self)
+
+        # Try to assign our radio object
+        self.radio = radio
 
         # Try to connect our Xbox 360 controller.
 
@@ -133,14 +136,15 @@ class BaseStation_Receive(threading.Thread):
                 constants.lock.release()
 
             # This executes if we never had a radio object, or it got disconnected.
-            if global_vars.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
+            if self.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
                 # This executes if we HAD a radio object, but it got disconnected.
-                if global_vars.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
+                if self.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
                     global_vars.log(self.out_q, "Radio device has been disconnected.")
-                    global_vars.radio.close()
+                    self.radio.close()
 
                 # Try to assign us a new Radio object
                 global_vars.connect_to_radio(self.out_q)
+                self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -148,7 +152,7 @@ class BaseStation_Receive(threading.Thread):
                 try:
 
                     # Read 7 bytes
-                    line = global_vars.radio.read(7)
+                    line = self.radio.read(7)
 
                     while(line != b'' or global_vars.downloading_file):
                         if not global_vars.downloading_file and len(line) == 7:
@@ -160,9 +164,10 @@ class BaseStation_Receive(threading.Thread):
                             if not checksum:
                                 print('invalid line*************')
                                 print(bin(intline >> 32))
-                                global_vars.radio.flush()
-                                global_vars.radio.close()
-                                global_vars.connect_to_radio()
+                                self.radio.flush()
+                                self.radio.close()
+                                self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
+                                global_vars.log(self.out_q, output_msg)
                                 break
 
                             intline = intline >> 32
@@ -191,7 +196,7 @@ class BaseStation_Receive(threading.Thread):
                                 constants.radio_lock.acquire()
                                 constants.lock.acquire()
                                 continue
-                            line = global_vars.radio.read(7)
+                            line = self.radio.read(7)
                         elif global_vars.downloading_file:
                             # Handles receiving an entire file from the AUV
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
@@ -231,14 +236,16 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.file_size = 0
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
-                                line = global_vars.radio.read(7)
+                                line = self.radio.read(7)
+                                constants.radio_lock.release()
+                                constants.lock.acquire()
 
-                    global_vars.radio.flush()
+                    self.radio.flush()
 
                 except Exception as e:
                     print(str(e))
-                    global_vars.radio.close()
-                    global_vars.radio = None
+                    self.radio.close()
+                    self.radio = None
                     global_vars.log(self.out_q, "Radio device has been disconnected.")
                     continue
 

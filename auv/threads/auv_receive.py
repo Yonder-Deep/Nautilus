@@ -1,4 +1,3 @@
-from api import Hydrophone
 from missions import *
 from api import MotorQueue
 from api import MotorController
@@ -7,9 +6,11 @@ from api import Crc32
 from api import IMU
 from api import Radio
 from api import DiveController
+from api import Hydrophone
 from queue import Queue
 from static import global_vars
 from static import constants
+from datetime import datetime
 import math
 import time
 import os
@@ -33,6 +34,7 @@ class AUV_Receive(threading.Thread):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
+        self.hydrophone = Hydrophone()
         self.time_since_last_ping = time.time() + 4
         self.diving = False
         self.current_mission = None
@@ -97,10 +99,8 @@ class AUV_Receive(threading.Thread):
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
                     line = global_vars.radio.read(7)
-                    # global_vars.radio.flush()
-
                     while(line != b''):
-                        if not global_vars.sending_dive_log and len(line) == 7:
+                        if not global_vars.sending_data and len(line) == 7:
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
                             if not checksum:
@@ -132,6 +132,19 @@ class AUV_Receive(threading.Thread):
                                 print("We're calling dive command:", str(desired_depth))
                                 constants.LOCK.acquire()
                                 self.dive(desired_depth)
+                                constants.LOCK.release()
+
+                            elif header == constants.MANUAL_DIVE_ENCODE:
+                                global_vars.movement_status = 2
+                                seconds = message & 0b11111
+                                back_speed = message & 0b111111100000
+                                back_speed_sign = message & 0b1000000000000
+                                front_speed = message & 0b11111110000000000000
+                                front_speed_sign = message & 0b100000000000000000000
+
+                                print("We're calling the manual dive command:", str(seconds), str(front_speed), str(back_speed))
+                                constants.LOCK.acquire()
+                                self.manual_dive(front_speed_sign, front_speed, back_speed_sign, back_speed, seconds)
                                 constants.LOCK.release()
 
                             elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
@@ -172,87 +185,11 @@ class AUV_Receive(threading.Thread):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
                             line = global_vars.radio.read(7)
-                            continue
-
-                        print("NON-PING LINE READ WAS", bin(message))
-
-                        # case block
-                        header = message & 0xE00000
-
-                        if header == constants.XBOX_ENCODE:  # xbox navigation
-                            # Update motion type for display on gui
-                            global_vars.movement_status = 1
-                            self.read_xbox_command(message)
-
-                        elif header == constants.NAV_ENCODE:  # navigation
-                            # Update motion type for display on gui
-                            global_vars.movement_status = 2
-                            self.read_nav_command(message)
-
-                        elif header == constants.DIVE_ENCODE:  # dive
-                            # Update motion type for display on gui
-
-                            global_vars.movement_status = 2
-                            desired_depth = message & 0b111111
-                            print("We're calling dive command:", str(desired_depth))
-                            constants.LOCK.acquire()
-                            self.dive(desired_depth)
-                            constants.LOCK.release()
-
-                        elif header == constants.MANUAL_DIVE_ENCODE:
-                            global_vars.movement_status = 2
-                            seconds = message & 0b11111
-                            back_speed = message & 0b111111100000
-                            back_speed_sign = message & 0b1000000000000
-                            front_speed = message & 0b11111110000000000000
-                            front_speed_sign = message & 0b100000000000000000000
-
-                            print("We're calling the manual dive command:", str(seconds), str(front_speed), str(back_speed))
-                            constants.LOCK.acquire()
-                            self.manual_dive(front_speed_sign, front_speed, back_speed_sign, back_speed, seconds)
-                            constants.LOCK.release()
-
-                        elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
-                            self.read_mission_command(message)
-
-                        elif header == constants.KILL_ENCODE:  # Kill/restart AUV threads
-                            if (message & 1):
-                                # Restart AUV threads
-                                self.mc.zero_out_motors()
-                                global_vars.restart_threads = True
-                            else:
-                                # Kill AUV threads
-                                self.mc.zero_out_motors()
-                                global_vars.stop_all_threads = True
-                        elif header == constants.PID_ENCODE:
-                            # Update a PID value in the dive controller
-                            constant_select = (message >> 18) & 0b111
-                            # Extract last 18 bits from message
-                            # Map to smaller, more precise numbers later
-                            value = message & (0x3FFFF)
-                            print("Received PID Constant Select: {}".format(constant_select))
-                            if (constant_select == 0b000):
-                                constants.P_PITCH = value
-                                self.dive_controller.update_pitch_pid()
-                            elif (constant_select == 0b001):
-                                constants.I_PITCH = value
-                                self.dive_controller.update_pitch_pid()
-                            elif (constant_select == 0b010):
-                                constants.D_PITCH = value
-                                self.dive_controller.update_pitch_pid()
-                            elif (constant_select == 0b011):
-                                constants.P_DEPTH = value
-                                self.dive_controller.update_depth_pid()
-                            elif (constant_select == 0b100):
-                                constants.I_DEPTH = value
-                                self.dive_controller.update_depth_pid()
-                            elif (constant_select == 0b101):
-                                constants.D_DEPTH = value
-                                self.dive_controller.update_depth_pid()
-
-                        elif global_vars.sending_dive_log:
+                        elif global_vars.sending_data:
                             line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
+                            line = global_vars.radio.read(7)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
+                            self.data_connected()
                             global_vars.bs_response_sent = True
 
                     # end while
@@ -297,6 +234,18 @@ class AUV_Receive(threading.Thread):
         if depth is None or depth > 0:  # TODO: Decide on acceptable depth range
             self.mc.update_motor_speeds([0, 0, -25, -25])
         else:
+            self.mc.update_motor_speeds([0, 0, 0, 0])
+        constants.LOCK.release()
+
+    def data_connected(self):
+        global_vars.log("DATA PACKET")
+        self.time_since_last_ping = time.time()
+
+        constants.LOCK.acquire()
+        if global_vars.connected is False:
+            global_vars.log("Connection to BS verified.")
+            global_vars.connected = True
+            # Halt disconnected resurfacing
             self.mc.update_motor_speeds([0, 0, 0, 0])
         constants.LOCK.release()
 
@@ -383,7 +332,8 @@ class AUV_Receive(threading.Thread):
             pass
         if (x == 5):
             print("DOWNLOAD DATA")
-            global_vars.sending_dive_log = True
+            global_vars.sending_data = True
+
             pass
 
     def start_mission(self, mission):
@@ -442,7 +392,7 @@ class AUV_Receive(threading.Thread):
     def timed_dive(self, time):
         self.diving = True
         # Check if this path is actually right
-        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt"
+        file_path = self.get_log_filename()
         log_file = open(file_path, "a")
         self.dive_log(log_file)
 
@@ -490,9 +440,10 @@ class AUV_Receive(threading.Thread):
         log_file.close()
 
     def dive(self, to_depth):
+
         # self.diving = True
         # # Check if this path is actually right
-        # file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
+        # file_path = self.get_log_filename()
         # log_file = open(file_path, "a")
         # self.dive_log(log_file)
 
@@ -501,8 +452,12 @@ class AUV_Receive(threading.Thread):
         # # begin dive
         # self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
 
+        # self.hydrophone.start_recording()
+
         # # resurface
-        # self.dive_controller.start_dive()
+        # # self.dive_controller.start_dive()
+
+        # self.hydrophone.stop_recording()
 
         # '''
         # # Wait 10 sec
@@ -510,13 +465,13 @@ class AUV_Receive(threading.Thread):
         # while time.time() < end_time:
         #     pass
 
-        # global_vars.radio.flush()
+        # self.radio.flush()
         # for i in range(0, 3):
-        #     global_vars.radio.read(7)
+        #     self.radio.read(7)
 
         # intline = 0
         # while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
-        #     line = global_vars.radio.read(7)
+        #     line = self.radio.read(7)
         #     intline = int.from_bytes(line, "big") >> 32
 
         #     print(intline)
@@ -532,8 +487,8 @@ class AUV_Receive(threading.Thread):
         # time.time.sleep(5)
         # self.hydrophone.stop_recording()
 
-        self.hydrophone.start_recording_for(5)
-        # global_vars.sending_data = True
+        self.hydrophone.start_recording_for(1)
+        global_vars.sending_data = True
 
     # Logs with depth calibration offset (heading may need to be merged in first)
 
@@ -573,3 +528,8 @@ class AUV_Receive(threading.Thread):
             # TODO print statement, something went wrong!
             heading, roll, pitch = None, None, None
         return heading, roll, pitch
+
+    def get_log_filename(self):
+        time_stamp = datetime.now().strftime('%Y-%m-%dT%H.%M.%S')
+        filename = constants.LOG_FOLDER_PATH + time_stamp + ".txt"
+        self.filename = filename

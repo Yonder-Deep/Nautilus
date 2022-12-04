@@ -49,9 +49,9 @@ if __name__ == '__main__':
     global_vars.connect_to_radio(to_GUI)
 
     try:
-        bs_r_thread = BaseStation_Receive(to_BS, to_GUI)
-        bs_s_thread = BaseStation_Send(to_BS, to_GUI)
-        bs_ping_thread = BaseStation_Send_Ping(to_GUI)
+        bs_r_thread = BaseStation_Receive(global_vars.radio, to_BS, to_GUI)
+        bs_s_thread = BaseStation_Send(global_vars.radio, to_BS, to_GUI)
+        bs_ping_thread = BaseStation_Send_Ping(global_vars.radio, to_GUI)
 
         # ts.append(bs_r_thread)
         # ts.append(bs_s_thread)

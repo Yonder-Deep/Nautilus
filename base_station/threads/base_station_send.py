@@ -31,7 +31,7 @@ DL_DATA = 0b101
 
 
 class BaseStation_Send(threading.Thread):
-    def __init__(self, in_q=None, out_q=None):
+    def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
         debug: debugging flag """
 
@@ -43,6 +43,8 @@ class BaseStation_Send(threading.Thread):
 
         # Call super-class constructor
         threading.Thread.__init__(self)
+
+        self.radio = radio
 
         # Try to connect our Xbox 360 controller.
 
@@ -59,7 +61,6 @@ class BaseStation_Send(threading.Thread):
 
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-
 
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
@@ -84,16 +85,16 @@ class BaseStation_Send(threading.Thread):
             constants.lock.release()
             constants.radio_lock.acquire()
             if (motor == 'Forward'):
-                global_vars.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
+                self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
             elif (motor == 'Left'):
-                global_vars.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
+                self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
             elif (motor == 'Right'):
-                global_vars.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
+                self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
             constants.radio_lock.release()
 
             global_vars.log(self.out_q, 'Sending encoded task: test_motor("' + motor + '")')
 
-            # global_vars.radio.write('test_motor("' + motor + '")')
+            # self.radio.write('test_motor("' + motor + '")')
 
     def abort_mission(self):
         """ Attempts to abort the mission for the AUV."""
@@ -104,7 +105,7 @@ class BaseStation_Send(threading.Thread):
                             "Cannot abort mission because there is no connection to the AUV.")
         else:
             constants.lock.release()
-            # global_vars.radio.write("abort_mission()")
+            # self.radio.write("abort_mission()")
             global_vars.log(self.out_q, "Sending task: abort_mission()")
             self.manual_mode = True
 
@@ -120,7 +121,7 @@ class BaseStation_Send(threading.Thread):
             depth = (depth << 12) & 0x3F000
             t = (t << 3) & 0xFF8
             constants.radio_lock.acquire()
-            global_vars.radio.write(MISSION_ENCODE | depth | t | mission)
+            self.radio.write(MISSION_ENCODE | depth | t | mission)
             print(bin(MISSION_ENCODE | depth | t | mission))
 
             constants.radio_lock.release()
@@ -146,7 +147,7 @@ class BaseStation_Send(threading.Thread):
         else:
             constants.lock.release()
             constants.radio_lock.acquire()
-            global_vars.radio.write(DIVE_ENCODE | depth)
+            self.radio.write(DIVE_ENCODE | depth)
             print(bin(DIVE_ENCODE | depth))
             constants.radio_lock.release()
             global_vars.log(self.out_q, 'Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
@@ -155,7 +156,7 @@ class BaseStation_Send(threading.Thread):
         constants.radio_lock.acquire()
         # Currently using FILE_DL_PACKET_SIZE sized packets for sending num packets, though this is not really necessary
         # as the size is much larger than needed to send ints on this scale
-        global_vars.radio.write(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
+        self.radio.write_data(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         print(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         constants.radio_lock.release()
 
@@ -171,7 +172,7 @@ class BaseStation_Send(threading.Thread):
             constants.lock.release()
             constant_select = constant_select << 18
             constants.radio_lock.acquire()
-            global_vars.radio.write(PID_ENCODE | constant_select | value)
+            self.radio.write(PID_ENCODE | constant_select | value)
             print(bin(PID_ENCODE | constant_select | value))
             constants.radio_lock.release()
 
@@ -194,8 +195,7 @@ class BaseStation_Send(threading.Thread):
             print(front_motor_speed_sign, front_motor_speed, rear_motor_speed_sign, rear_motor_speed, seconds)
             constants.radio_lock.acquire()
 
-            global_vars.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed |
-                                    rear_motor_speed_sign | rear_motor_speed | seconds)
+            self.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
             print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
@@ -246,14 +246,15 @@ class BaseStation_Send(threading.Thread):
             #    self.joy = None
 
             # This executes if we never had a radio object, or it got disconnected.
-            if global_vars.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
+            if self.radio is None or not global_vars.path_existance(constants.RADIO_PATHS):
                 # This executes if we HAD a radio object, but it got disconnected.
-                if global_vars.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
+                if self.radio is not None and not global_vars.path_existance(constants.RADIO_PATHS):
                     global_vars.log(self.out_q, "Radio device has been disconnected.")
-                    global_vars.radio.close()
+                    self.radio.close()
 
                 # Try to assign us a new Radio object
                 global_vars.connect_to_radio(self.out_q)
+                self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
             else:
@@ -268,14 +269,14 @@ class BaseStation_Send(threading.Thread):
                             if self.joy.Guide():
                                 # Send restart command
                                 constants.radio_lock.acquire()
-                                global_vars.radio.write(KILL_ENCODE | 1)
+                                self.radio.write(KILL_ENCODE | 1)
                                 constants.radio_lock.release()
                                 print("Restarting AUV threads...")
 
                             elif self.joy.Back() and self.joy.Start():
                                 # Send kill-all command
                                 constants.radio_lock.acquire()
-                                global_vars.radio.write(KILL_ENCODE)
+                                self.radio.write(KILL_ENCODE)
                                 constants.radio_lock.release()
                                 print("Killing AUV threads...")
 
@@ -297,7 +298,7 @@ class BaseStation_Send(threading.Thread):
                                 navmsg = self.encode_xbox(x, y, right_trigger)
 
                                 constants.radio_lock.acquire()
-                                global_vars.radio.write(navmsg)
+                                self.radio.write(navmsg)
                                 constants.radio_lock.release()
 
                             except Exception as e:
@@ -306,7 +307,7 @@ class BaseStation_Send(threading.Thread):
                         # once A is no longer held, send one last zeroed out xbox command
                         if xbox_input and not self.joy.A():
                             constants.radio_lock.acquire()
-                            global_vars.radio.write(XBOX_ENCODE)
+                            self.radio.write(XBOX_ENCODE)
                             constants.radio_lock.release()
                             print("[XBOX] NO LONGER A\t")
                             self.out_q.put("set_xbox_status(0,0)")
@@ -321,8 +322,8 @@ class BaseStation_Send(threading.Thread):
                         constants.lock.release()
                 except Exception as e:
                     print(str(e))
-                    global_vars.radio.close()
-                    global_vars.radio = None
+                    self.radio.close()
+                    self.radio = None
                     global_vars.log(out_q, "Radio device has been disconnected.")
                     continue
             time.sleep(constants.THREAD_SLEEP_DELAY)
