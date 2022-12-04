@@ -10,8 +10,7 @@ from static import global_vars
 
 
 class BaseStation_Send_Ping(threading.Thread):
-    def __init__(self, radio, out_q=None):
-        self.radio = radio
+    def __init__(self, out_q=None):
         self.out_q = out_q
         threading.Thread.__init__(self)
 
