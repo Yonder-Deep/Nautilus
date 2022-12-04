@@ -1,4 +1,4 @@
-from auv.api.hydrophone import Hydrophone
+from api import Hydrophone
 from missions import *
 from api import MotorQueue
 from api import MotorController
