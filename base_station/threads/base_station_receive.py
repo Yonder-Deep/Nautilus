@@ -160,10 +160,9 @@ class BaseStation_Receive(threading.Thread):
                             if not checksum:
                                 print('invalid line*************')
                                 print(bin(intline >> 32))
-                                self.radio.flush()
-                                self.radio.close()
-                                self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
-                                global_vars.log(self.out_q, output_msg)
+                                global_vars.radio.flush()
+                                global_vars.radio.close()
+                                global_vars.connect_to_radio()
                                 break
 
                             intline = intline >> 32
@@ -232,9 +231,7 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.file_size = 0
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
-                                line = self.radio.read(7)
-                                constants.radio_lock.release()
-                                constants.lock.acquire()
+                                line = global_vars.radio.read(7)
 
                     global_vars.radio.flush()
 

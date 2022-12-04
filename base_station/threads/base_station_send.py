@@ -60,6 +60,7 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
+
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -154,7 +155,7 @@ class BaseStation_Send(threading.Thread):
         constants.radio_lock.acquire()
         # Currently using FILE_DL_PACKET_SIZE sized packets for sending num packets, though this is not really necessary
         # as the size is much larger than needed to send ints on this scale
-        self.radio.write_data(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
+        global_vars.radio.write(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         print(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         constants.radio_lock.release()
 
@@ -193,7 +194,8 @@ class BaseStation_Send(threading.Thread):
             print(front_motor_speed_sign, front_motor_speed, rear_motor_speed_sign, rear_motor_speed, seconds)
             constants.radio_lock.acquire()
 
-            global_vars.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
+            global_vars.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed |
+                                    rear_motor_speed_sign | rear_motor_speed | seconds)
             print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
