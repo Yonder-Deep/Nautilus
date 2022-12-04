@@ -160,9 +160,10 @@ class BaseStation_Receive(threading.Thread):
                             if not checksum:
                                 print('invalid line*************')
                                 print(bin(intline >> 32))
-                                global_vars.radio.flush()
-                                global_vars.radio.close()
-                                global_vars.connect_to_radio()
+                                self.radio.flush()
+                                self.radio.close()
+                                self.radio, output_msg = global_vars.connect_to_radio(self.out_q)
+                                global_vars.log(self.out_q, output_msg)
                                 break
 
                             intline = intline >> 32
@@ -172,7 +173,7 @@ class BaseStation_Receive(threading.Thread):
                                 self.time_since_last_ping = time.time()
                                 constants.lock.acquire()
                                 if global_vars.connected is False:
-                                    self.log("Connection to AUV verified.")
+                                    global_vars.log(self.out_q, "Connection to AUV verified.")
                                     self.out_q.put("set_connection(True)")
                                     global_vars.connected = True
                                 constants.lock.release()

@@ -27,6 +27,7 @@ from tkinter import font
 
 from static import constants
 from .map import Map
+from .viewmap import ViewMap
 from screeninfo import get_monitors, Enumerator
 
 # Begin Constants
@@ -84,7 +85,8 @@ class Main():
 
         # Begin initializing the main Tkinter (GUI) framework/root window
         self.root = Tk()
-        self.root.resizable(False, False)
+        self.root.resizable(1, 1)
+
         try:
             self.root.iconphoto(True, PhotoImage(file=ICON_PATH))
         except:
@@ -118,6 +120,7 @@ class Main():
         global WIDTH, HEIGHT, TOP_FRAME_HEIGHT, BOT_FRAME_HEIGHT, FUNC_FRAME_WIDTH, STATUS_FRAME_WIDTH, CALIBRATE_FRAME_WIDTH, MISSION_FRAME_WIDTH, LOG_FRAME_WIDTH, BUTTON_HEIGHT, BUTTON_WIDTH
         WIDTH = int(WIDTH * self.multiplier_x)
         HEIGHT = int(HEIGHT * self.multiplier_y)
+       # META_FRAME_WIDTH = int(META_FRAME_WIDTH * self.mutliplier_x)
         TOP_FRAME_HEIGHT = int(TOP_FRAME_HEIGHT * self.multiplier_y)
         BOT_FRAME_HEIGHT = int(BOT_FRAME_HEIGHT * self.multiplier_y)
         FUNC_FRAME_WIDTH = int(FUNC_FRAME_WIDTH * self.multiplier_x)
@@ -136,10 +139,24 @@ class Main():
         self.in_q = in_q  # Messages sent here from base_station.py thread
         self.out_q = out_q  # Messages sent to base_station.py thread
 
+        # Initializing our main frame
+        #self.meta_frame = Frame(self.root, bd=1)
+        #self.meta_frame.pack(fill=BOTH, padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
+
+        #self.mainConsole = Text(self.meta_frame, state=DISABLED, width=WIDTH)
+
+        #self.mainScrollbar = Scrollbar(self.meta_frame)
+        # self.mainScrollbar.config(command=self.mainConsole.yview)
+        # self.mainConsole.configure(yscrollcommand=self.mainScrollbar.set)
+        #self.mainScrollbar.pack(side=RIGHT, fill=Y)
+        # self.mainConsole.pack()
+
+        # Initializing our top frame
         self.top_frame = Frame(self.root, bd=1)
         self.top_frame.pack(fill=BOTH, side=TOP,
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
+        # Initializing our bottom frame
         self.bot_frame = Frame(self.root, bd=1)
         self.bot_frame.pack(fill=BOTH, side=BOTTOM,
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
@@ -147,14 +164,16 @@ class Main():
         # self.init_function_frame()
         self.init_stack_frame()
         self.init_camera_frame()  # for left panel
-        self.init_buttons_frame()  # for left panel
         self.init_motor_control_frame()  # for left panel
         self.init_map_frame()
+        self.init_viewmap_frame()
         self.init_status_frame()
         self.init_calibrate_frame()
         self.init_log_frame()
         self.init_mission_frame()
         self.create_map(self.map_frame)
+        self.create_view_map(self.viewmap_frame)
+        self.init_buttons_frame()  # for left panel
 
         # Save our last received BS coordinates
         self.bs_coordinates = None
@@ -209,7 +228,7 @@ class Main():
         self.download_data_button = Button(self.functions_frame, text="Download Data", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
                                            padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.out_q.put("download_data()"))
         self.clear_button = Button(self.functions_frame, text="Clear Map", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                   padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.clear)
+                                   padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.clear())
 
         self.heading_button.pack(expand=YES)
         self.origin_button.pack(expand=YES)
@@ -245,60 +264,59 @@ class Main():
         prompt_input_pid_depth_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_p_value.pack()
         prompt_input_pid_depth_p_value.place(relx=0.3, rely=0.025)
-        prompt_input_pid_depth_p_value.insert(0,'0')
+        prompt_input_pid_depth_p_value.insert(0, '0')
 
-        self.pid_depth_p_label =  Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
+        self.pid_depth_p_label = Label(self.camera_frame, text="Depth P", font=(FONT, FONT_SIZE))
         self.pid_depth_p_label.pack()
         self.pid_depth_p_label.place(relx=0.05, rely=0.000)
 
         prompt_input_pid_depth_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_i_value.pack()
         prompt_input_pid_depth_i_value.place(relx=0.3, rely=0.225)
-        prompt_input_pid_depth_i_value.insert(0,'0')
+        prompt_input_pid_depth_i_value.insert(0, '0')
 
-        self.pid_depth_i_label =  Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
+        self.pid_depth_i_label = Label(self.camera_frame, text="Depth I", font=(FONT, FONT_SIZE))
         self.pid_depth_i_label.pack()
         self.pid_depth_i_label.place(relx=0.05, rely=0.2)
 
         prompt_input_pid_depth_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_depth_d_value.pack()
         prompt_input_pid_depth_d_value.place(relx=0.3, rely=0.425)
-        prompt_input_pid_depth_d_value.insert(0,'0')
+        prompt_input_pid_depth_d_value.insert(0, '0')
 
-        self.pid_depth_d_label =  Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
+        self.pid_depth_d_label = Label(self.camera_frame, text="Depth D", font=(FONT, FONT_SIZE))
         self.pid_depth_d_label.pack()
         self.pid_depth_d_label.place(relx=0.05, rely=0.425)
 
         prompt_input_pid_pitch_p_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_p_value.pack()
         prompt_input_pid_pitch_p_value.place(relx=0.8, rely=0.025)
-        prompt_input_pid_pitch_p_value.insert(0,'0')
+        prompt_input_pid_pitch_p_value.insert(0, '0')
 
-
-        self.pid_pitch_p_label =  Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
+        self.pid_pitch_p_label = Label(self.camera_frame, text="Pitch P", font=(FONT, FONT_SIZE))
         self.pid_pitch_p_label.pack()
         self.pid_pitch_p_label.place(relx=0.55, rely=0.000)
 
         prompt_input_pid_pitch_i_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_i_value.pack()
         prompt_input_pid_pitch_i_value.place(relx=0.8, rely=0.225)
-        prompt_input_pid_pitch_i_value.insert(0,'0')
+        prompt_input_pid_pitch_i_value.insert(0, '0')
 
-        self.pid_pitch_i_label =  Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
+        self.pid_pitch_i_label = Label(self.camera_frame, text="Pitch I", font=(FONT, FONT_SIZE))
         self.pid_pitch_i_label.pack()
         self.pid_pitch_i_label.place(relx=0.55, rely=0.2)
 
         prompt_input_pid_pitch_d_value = Entry(self.camera_frame, bd=5, font=(FONT, FONT_SIZE-3), width=4)
         prompt_input_pid_pitch_d_value.pack()
         prompt_input_pid_pitch_d_value.place(relx=0.8, rely=0.425)
-        prompt_input_pid_pitch_d_value.insert(0,'0')
+        prompt_input_pid_pitch_d_value.insert(0, '0')
 
-        self.pid_pitch_d_label =  Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
+        self.pid_pitch_d_label = Label(self.camera_frame, text="Pitch D", font=(FONT, FONT_SIZE))
         self.pid_pitch_d_label.pack()
         self.pid_pitch_d_label.place(relx=0.55, rely=0.4)
 
         def build_pid_value_arrays():
-            return [prompt_input_pid_pitch_p_value.get(),prompt_input_pid_pitch_i_value.get(), prompt_input_pid_pitch_d_value.get(), prompt_input_pid_depth_p_value.get(), prompt_input_pid_depth_i_value.get(), prompt_input_pid_depth_d_value.get()]
+            return [prompt_input_pid_pitch_p_value.get(), prompt_input_pid_pitch_i_value.get(), prompt_input_pid_pitch_d_value.get(), prompt_input_pid_depth_p_value.get(), prompt_input_pid_depth_i_value.get(), prompt_input_pid_depth_d_value.get()]
 
         self.update_pid_button = Button(self.camera_frame, text="Update PID", takefocus=False,
                                         width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10, padx=BUTTON_PAD_X,
@@ -309,10 +327,12 @@ class Main():
     def init_buttons_frame(self):
         """ Creates the frame for buttons. """
         self.buttons_frame = Frame(
-            self.stack_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
+            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
 
-        self.buttons_frame.grid(
-            row=2, column=1, pady=CALIBRATE_PAD_Y)
+        # self.buttons_frame.grid(
+        # row=3, column=2, pady=CALIBRATE_PAD_Y)
+
+        self.buttons_frame.pack(side=BOTTOM)
 
         self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
                                            padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
@@ -320,9 +340,24 @@ class Main():
         self.calibrate_depth_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nDepth", takefocus=False,
                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
 
-        self.download_data_button.grid(row=0, column=0)
+        self.calibrate_origin_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nOrigin", takefocus=False,
+                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.calibrate_origin_on_map)
 
+        self.clear_button = Button(self.buttons_frame, anchor=tkinter.W, text="Clear\nMap", takefocus=False,
+                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.clear)
+
+        self.add_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Add\nWaypoint", takefocus=False,
+                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
+
+        self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
+                                             padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: None)
+
+        self.download_data_button.grid(row=0, column=0)
         self.calibrate_depth_button.grid(row=0, column=1)
+        self.calibrate_origin_button.grid(row=1, column=0)
+        self.clear_button.grid(row=1, column=1)
+        self.add_waypoint_button.grid(row=2, column=0)
+        self.nav_to_waypoint_button.grid(row=2, column=1)
 
     def front_motor_slider_function(self, front_slider_value):
         print(front_slider_value)
@@ -460,19 +495,32 @@ class Main():
 
     def init_map_frame(self):
         """ Create the frame for the x, y map """
+        # Creates the container frame that contains both maps
+        self.map_container_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT,
+                                         width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
+        self.map_container_frame.pack(padx=MAIN_PAD_X,
+                                      pady=MAIN_PAD_Y, fill=BOTH, side=LEFT, expand=YES)
 
-        self.map_frame = Frame(self.top_frame, height=TOP_FRAME_HEIGHT,
+        # Creates the custom map interface
+        self.map_frame = Frame(self.map_container_frame, height=TOP_FRAME_HEIGHT/2,
                                width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
-        self.map_frame.pack(fill=X, padx=MAIN_PAD_X,  # fill=X at beginning
-                            pady=MAIN_PAD_Y, side=LEFT, expand=YES)
+        self.map_frame.pack(padx=MAIN_PAD_X,  # fill=X at beginning
+                            pady=MAIN_PAD_Y, fill=BOTH, side=TOP, expand=YES)
         self.map_frame.pack_propagate(0)
+
+    def init_viewmap_frame(self):
+        # Creates a more real-world map using imported tiles to construct the view
+        self.viewmap_frame = Frame(self.map_container_frame, height=TOP_FRAME_HEIGHT/2,
+                                   width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
+        self.viewmap_frame.pack(padx=MAIN_PAD_X,  # fill=X at beginning
+                                pady=MAIN_PAD_Y, fill=BOTH, side=BOTTOM, expand=YES)
 
     def init_status_frame(self):
         """ Initializes the status frame (top right frame). """
         self.status_frame = Frame(
             self.top_frame, height=TOP_FRAME_HEIGHT, width=2*STATUS_FRAME_WIDTH, bd=1, relief=SUNKEN)
         self.status_frame.pack(padx=MAIN_PAD_X,
-                               pady=MAIN_PAD_Y, side=LEFT, expand=NO)
+                               pady=MAIN_PAD_Y, fill=Y, side=RIGHT, expand=YES)
         self.status_frame.pack_propagate(0)
         self.status_label = Label(
             self.status_frame, text="AUV Data", font=(FONT, HEADING_SIZE))
@@ -848,6 +896,16 @@ class Main():
 
     def create_map(self, frame):
         self.map = Map(frame, self)
+        self.zoom_in_button = Button(self.map_frame, text="+", takefocus=False, width=1, height=1,
+                                     padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_in)
+        self.zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
+
+        self.zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
+                                      padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
+        self.zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
+
+    def create_view_map(self, frame):
+        self.viewmap = ViewMap(frame, self, self.map)
 
     def on_closing(self):
         #    self.map.on_close()

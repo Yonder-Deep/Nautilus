@@ -24,7 +24,7 @@ MILES = "Miles (mi)"
 
 # Color Constants
 BACKGROUND_COLOR = 'darkturquoise'
-AUV_PATH_COLOR = 'red'
+AUV_PATH_COLOR = 'orange'
 WAYPOINT_COLOR = 'red'
 MINOR_TICK_COLOR = 'black'
 
@@ -77,9 +77,9 @@ class Map:
         self.map = self.init_map()
         self.canvas = self.init_canvas()
         # Start listening for mouse-clicks
-        #self.fig.canvas.mpl_connect('button_press_event',   self.on_press)
-        #self.fig.canvas.mpl_connect('button_release_event', self.on_release)
-        #self.fig.canvas.mpl_connect('motion_notify_event',  self.on_move)
+        self.fig.canvas.mpl_connect('button_press_event',   self.on_press)
+        self.fig.canvas.mpl_connect('button_release_event', self.on_release)
+        self.fig.canvas.mpl_connect('motion_notify_event',  self.on_move)
 
         # Assign default values.
         self.set_range()  # Set to default range
@@ -94,7 +94,7 @@ class Map:
         FONT_SIZE = int(FONT_SIZE * self.main.multiplier_x)
 
         self.draw_canvas()
-        self.add_waypoint(0, 0)
+        #self.add_waypoint(0, 0)
 
     def clear(self):
         """ Clears the map data """
@@ -113,24 +113,24 @@ class Map:
         self.auv_data[0].clear()  # clear all x values
         self.auv_data[1].clear()  # clear all y values
 
-    # def undraw_waypoints(self):
-    #     """ Clears waypoints from the map """
-    #     for waypoint in self.waypoints:
-    #         # Remove waypoint from map.
-    #         if waypoint[3] != None and type(waypoint[3]) != tuple:
-    #             waypoint[3].pop(0).remove()
-    #             waypoint[3] = None
+    def undraw_waypoints(self):
+        """ Clears waypoints from the map """
+        for waypoint in self.waypoints:
+            # Remove waypoint from map.
+            if waypoint[3] != None and type(waypoint[3]) != tuple:
+                waypoint[3].pop(0).remove()
+                waypoint[3] = None
 
-    #         if waypoint[4] != None:
-    #             waypoint[4].remove()
-    #             waypoint[4] = None
+            if waypoint[4] != None:
+                waypoint[4].remove()
+                waypoint[4] = None
 
-    #     self.draw_canvas()
+        self.draw_canvas()
 
-    # def clear_waypoints(self):
-    #     """ Clears and removes waypoints """
-    #     self.undraw_waypoints()
-    #     del self.waypoints[:]
+    def clear_waypoints(self):
+        """ Clears and removes waypoints """
+        self.undraw_waypoints()
+        del self.waypoints[:]
 
     def zero_map(self, x=0, y=0):
         """ Sets the origin of our coordinate system to (x,y) in UTM northing/eastings values"""
@@ -173,15 +173,15 @@ class Map:
 
             self.draw_canvas()
 
-    # def redraw_waypoints(self):
-    #     """ Undraws waypoint and redraws a waypoint """
-    #     self.undraw_waypoints()
-    #     for waypoint in self.waypoints:
-    #         # Draw waypoint again.
-    #         waypoint[3] = self.map.plot(
-    #             waypoint[0], waypoint[1], marker='o', markersize=5, color="red"),
-    #         waypoint[4] = self.map.annotate(xy=(waypoint[0], waypoint[1]), s=waypoint[2] + ", UTM: (" +
-    #                                         str(round(waypoint[0]+self.zero_offset_x, 5))+","+str(round(waypoint[1]+self.zero_offset_y, 5))+")")
+    def redraw_waypoints(self):
+        """ Undraws waypoint and redraws a waypoint """
+        self.undraw_waypoints()
+        for waypoint in self.waypoints:
+            # Draw waypoint again.
+            waypoint[3] = self.map.plot(
+                waypoint[0], waypoint[1], marker='o', markersize=5, color="red"),
+            waypoint[4] = self.map.annotate(xy=(waypoint[0], waypoint[1]), s=waypoint[2] + ", UTM: (" +
+                                            str(round(waypoint[0]+self.zero_offset_x, 5))+","+str(round(waypoint[1]+self.zero_offset_y, 5))+")")
 
         # Redraw canvas.
         self.draw_canvas()
@@ -258,12 +258,12 @@ class Map:
         prompt_window = Toplevel(self.window)
         # Change position of waypoint prompt to cursor position.
         center_x = ((self.main.root.winfo_x() +
-                     self.main.root.winfo_width()) / 2.5)
+                     self.main.root.winfo_width()) / 1)
         center_y = ((self.main.root.winfo_y() +
                      self.main.root.winfo_height()) / 2.5)
         prompt_window.geometry("+%d+%d" % (center_x, center_y))
 
-        prompt_window.resizable(False, False)
+        prompt_window.resizable(True, False)
         prompt_window.title("New Waypoint")
         prompt_window.wm_attributes('-topmost')
         Label(prompt_window, text="Name", font=(FONT, FONT_SIZE)).grid(row=0)
@@ -276,15 +276,14 @@ class Map:
         prompt_input_y = Entry(prompt_window, bd=5, font=(FONT, FONT_SIZE))
         prompt_input_y.grid(row=2, column=1)
 
-        prompt_input_name.insert(0, "My waypoint")  # Placeholder for input
+        prompt_input_name.insert(0, "Input Name")  # Placeholder for input
         prompt_input_x.insert(0, x)
         prompt_input_y.insert(0, y)
-        prompt_submit = Button(prompt_window, text="Save", font=(FONT, FONT_SIZE),
+        prompt_submit = Button(prompt_window, text="Create Waypoint", font=(FONT, FONT_SIZE),
                                command=lambda:  # Runs multiple functions.
                                [
                                    self.add_waypoint(float(prompt_input_x.get()),
-                                                     float(
-                                                         prompt_input_y.get()),
+                                                     float(prompt_input_y.get()),
                                                      str(prompt_input_name.get())),
                                    prompt_window.destroy()
         ])
@@ -417,24 +416,19 @@ class Map:
 
         prompt_submit.grid(row=3, column=0, padx=5, pady=5)
 
-    def add_waypoint(self, x=0, y=0, label="My Waypoint"):
+    def add_waypoint(self, x=0, y=0, label="Input Name"):
         # The code below should never fail (that would be a big problem).
-        try:
-            self.waypoints.append([
-                x, y,
-                label,
-                self.map.plot(x, y, marker='o', markersize=5,
-                              color=WAYPOINT_COLOR, label=label),
-                self.map.annotate(xy=(x, y), text="AUV")
-            ])
-        except:
-            self.waypoints.append([
-                x, y,
-                label,
-                self.map.plot(x, y, marker='o', markersize=5,
-                              color=WAYPOINT_COLOR, label=label),
-                self.map.annotate(xy=(x, y), s="AUV")
-            ])
+        if (label != "Input Name"):
+            waypoint_text = label
+        else:
+            waypoint_text = "(" + str(x) + ", " + str(y) + ")"
+        self.waypoints.append([
+            x, y,
+            label,
+            self.map.plot(x, y, marker='o', markersize=5,
+                          color=WAYPOINT_COLOR, label=label),
+            self.map.annotate(xy=(x, y), text=waypoint_text)
+        ])
 
         self.draw_canvas()
         return [x, y]
