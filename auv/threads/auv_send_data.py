@@ -62,6 +62,7 @@ class AUV_Send_Data(threading.Thread):
                         self.send_positioning()
                     elif global_vars.connected and global_vars.sending_data:
                         constants.LOCK.release()
+                        print("SEND DIVE LOG")
                         self.send_dive_log()
                     else:
                         constants.LOCK.release()
