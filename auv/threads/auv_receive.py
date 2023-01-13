@@ -441,20 +441,19 @@ class AUV_Receive(threading.Thread):
 
     def dive(self, to_depth):
 
-        self.diving = True
-        # Check if this path is actually right
-        file_path = self.get_log_filename()
-        log_file = open(file_path, "a")
-        self.dive_log(log_file)
+        # self.diving = True
+        # # Check if this path is actually right
+        # file_path = self.get_log_filename()
+        # log_file = open(file_path, "a")
+        # self.dive_log(log_file)
 
-        self.motor_queue.queue.clear()
+        # self.motor_queue.queue.clear()
 
         # begin dive
-        self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+        # self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
 
         # resurface
         # self.dive_controller.start_dive()
-
         '''
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
@@ -477,14 +476,14 @@ class AUV_Receive(threading.Thread):
             except:
                 print("Failed to read pressure going up")
         '''
-        self.diving = False
-        log_file.close()
+        # self.diving = False
+        # log_file.close()
         # self.hydrophone.start_recording()
         # time.time.sleep(5)
         # self.hydrophone.stop_recording()
 
         self.hydrophone.start_recording_for(5)
-        # global_vars.sending_data = True
+        global_vars.sending_data = True
 
     # Logs with depth calibration offset (heading may need to be merged in first)
 
