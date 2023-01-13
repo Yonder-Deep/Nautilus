@@ -155,7 +155,6 @@ class AUV_Send_Data(threading.Thread):
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
         filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.path.isfile(os.path.join(constants.LOG_FOLDER_PATH, f))][0]
-        filename = "dive_log.txt"
         filepath = constants.LOG_FOLDER_PATH + filename
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
         global_vars.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
@@ -180,12 +179,12 @@ class AUV_Send_Data(threading.Thread):
             #         constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
+        constants.RADIO_LOCK.release()
         global_vars.sending_data = False
         global_vars.file_packets_sent = 0
         global_vars.file_packets_received = 0
         global_vars.bs_response_sent = False
         dive_log.close()
-        constants.RADIO_LOCK.release()
         print("SENDING DATA FINISHED")
 
     # Send Hydrophone Recording to Base Station
