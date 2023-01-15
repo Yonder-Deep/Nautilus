@@ -169,6 +169,7 @@ class AUV_Send_Data(threading.Thread):
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
+            # TODO Implement checker for every packet sent over to basestation
             # Ensure that base station is receiving every packet sent
             # while global_vars.file_packets_sent != global_vars.file_packets_received:
             #     # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
@@ -191,7 +192,7 @@ class AUV_Send_Data(threading.Thread):
         print("SENDING DATA FINISHED")
 
     # Send Hydrophone Recording to Base Station
-
+    # TODO fix/finish implementing after send_dive_log() is completely finished
     def send_audio_file(self):
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
@@ -213,6 +214,7 @@ class AUV_Send_Data(threading.Thread):
             global_vars.bs_response_sent = False
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
             global_vars.file_packets_sent += 1
+            # TODO add packet checker
             # Ensure that base station is receiving every packet sent
             # while global_vars.file_packets_sent != global_vars.file_packets_received:
             #     print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
