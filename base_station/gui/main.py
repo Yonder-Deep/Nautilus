@@ -85,7 +85,7 @@ class Main():
 
         # Begin initializing the main Tkinter (GUI) framework/root window
         self.root = Tk()
-        self.root.resizable(1, 1)
+        self.root.geometry("1250x1100")
 
         try:
             self.root.iconphoto(True, PhotoImage(file=ICON_PATH))
