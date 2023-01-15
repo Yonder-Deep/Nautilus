@@ -179,12 +179,13 @@ class AUV_Send_Data(threading.Thread):
             #         constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
-        constants.RADIO_LOCK.release()
         global_vars.sending_data = False
         global_vars.file_packets_sent = 0
         global_vars.file_packets_received = 0
         global_vars.bs_response_sent = False
         dive_log.close()
+        constants.RADIO_LOCK.release()
+
         print("SENDING DATA FINISHED")
 
     # Send Hydrophone Recording to Base Station
