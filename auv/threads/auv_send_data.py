@@ -185,8 +185,7 @@ class AUV_Send_Data(threading.Thread):
         global_vars.file_packets_received = 0
         global_vars.bs_response_sent = False
         dive_log.close()
-        constants.LOCK.acquire()
-
+        constants.LOCK.release()
         constants.RADIO_LOCK.release()
 
         print("SENDING DATA FINISHED")
