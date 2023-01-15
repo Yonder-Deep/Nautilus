@@ -238,7 +238,7 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.file_packets_received = 0
                                 line = self.radio.read(7)
                                 constants.radio_lock.release()
-                                constants.lock.acquire()
+                                constants.lock.release()
 
                     self.radio.flush()
 
