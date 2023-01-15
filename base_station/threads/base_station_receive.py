@@ -6,6 +6,7 @@ import os
 import serial
 import time
 import threading
+import utm
 from queue import Queue
 
 # Custom imports
@@ -102,8 +103,8 @@ class BaseStation_Receive(threading.Thread):
                 self.out_q.put("add_auv_coordinates(" + self.auv_utm_coordinates[0] + ", " + self.auv_utm_coordinates[1] + ")")
             except:
                 global_vars.log(self.out_q, "Failed to convert the AUV's gps coordinates to UTM.")
-        # else:
-        #    global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
+        else:
+            global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
 
     def mission_failed(self):
         """ Mission return failure from AUV. """

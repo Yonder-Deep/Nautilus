@@ -531,13 +531,15 @@ class AUV_Receive(threading.Thread):
     # Logs with depth calibration offset (heading may need to be merged in first)
     def dive_log(self, file):
         if self.diving:
-            log_timer = threading.Timer(0.5, self.dive_log).start()
-            file.write(time.time())  # might want to change to a more readable time format
-            depth = self.get_depth() - global_vars.depth_offset
-            file.write("Depth=" + str(depth))
-            heading, roll, pitch = self.get_euler()
-            file.write("Heading=" + str(heading))
-            file.write("Pitch=" + str(pitch))
+            #log_timer = threading.Timer(0.5, self.dive_log).start()
+            file.write(str(time.time()))  # might want to change to a more readable time format
+
+            if self.get_depth is not None:
+                depth = self.get_depth() - global_vars.depth_offset
+                file.write("Depth=" + str(depth))
+                heading, roll, pitch = self.get_euler()
+                file.write("Heading=" + str(heading))
+                file.write("Pitch=" + str(pitch))
 
     # Does not include calibration offset
     def get_depth(self):
