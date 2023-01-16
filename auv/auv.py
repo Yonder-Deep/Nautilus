@@ -21,7 +21,7 @@ from api import PressureSensor
 from api import MotorController
 from api import MotorQueue
 from missions import *
-from auv import Indicator
+from api import Indicator
 
 from static import global_vars
 
