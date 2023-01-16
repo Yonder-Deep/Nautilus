@@ -8,7 +8,7 @@ class Indicator:
         GPIO.setwarnings(False)
         GPIO.setup(12, GPIO.OUT)
         print("LED on")
-        GPIO.output(18, GPIO.HIGH)
+        GPIO.output(12, GPIO.HIGH)
         time.sleep(10)
         print("LED off")
         GPIO.output(12, GPIO.LOW)
