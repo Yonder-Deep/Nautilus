@@ -172,7 +172,7 @@ class AUV_Send_Data(threading.Thread):
             # TODO Implement checker for every packet sent over to basestation
             # Ensure that base station is receiving every packet sent
             while global_vars.file_packets_sent != global_vars.file_packets_received:
-                print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
+                # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
 
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
