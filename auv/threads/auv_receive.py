@@ -99,7 +99,9 @@ class AUV_Receive(threading.Thread):
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
                     line = global_vars.radio.read(7)
+
                     while(line != b''):
+                        print("large While")
                         if not global_vars.sending_data and len(line) == 7:
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
