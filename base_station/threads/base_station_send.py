@@ -315,6 +315,7 @@ class BaseStation_Send(threading.Thread):
                     elif global_vars.connected and global_vars.downloading_file:
                         constants.radio_lock.acquire()
                         if global_vars.packet_received:
+                            print("packet_received")
                             self.send_packet_num()
                             global_vars.packet_received = False
                         constants.radio_lock.release()
