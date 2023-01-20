@@ -487,8 +487,7 @@ class AUV_Receive(threading.Thread):
         # self.hydrophone.stop_recording()
 
         # self.hydrophone.start_recording_for(5)
-        # global_vars.sending_data = True
-        pass
+        global_vars.sending_data = True
 
     # Logs with depth calibration offset (heading may need to be merged in first)
 
