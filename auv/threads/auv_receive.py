@@ -131,9 +131,9 @@ class AUV_Receive(threading.Thread):
                             elif header == constants.DIVE_ENCODE:  # dive
                                 desired_depth = message & 0b111111
                                 print("We're calling dive command:", str(desired_depth))
-                                constants.LOCK.acquire()
+                                # constants.LOCK.acquire()
                                 self.dive(desired_depth)
-                                constants.LOCK.release()
+                                # constants.LOCK.release()
 
                             elif header == constants.MANUAL_DIVE_ENCODE:
                                 global_vars.movement_status = 2
