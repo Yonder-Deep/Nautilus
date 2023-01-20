@@ -152,15 +152,15 @@ class AUV_Send_Data(threading.Thread):
         constants.RADIO_LOCK.release()
 
     def send_dive_log(self):
-
+        constants.RADIO_LOCK.acquire()
         global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
+        constants.RADIO_LOCK.release()
+
         filename = [f for f in os.listdir(constants.LOG_FOLDER_PATH) if os.path.isfile(os.path.join(constants.LOG_FOLDER_PATH, f))][0]
         filepath = constants.LOG_FOLDER_PATH + filename
-        constants.LOCK.acquire()
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write_data(os.path.getsize(filepath), constants.FILE_SEND_PACKET_SIZE)   # Send size of log file
         global_vars.radio.write_data(filename, constants.FILE_SEND_PACKET_SIZE)    # Send name of log file
-        constants.LOCK.release()
         constants.RADIO_LOCK.release()
         # Start sending contents of file
         dive_log = open(filepath, "rb")
@@ -169,10 +169,8 @@ class AUV_Send_Data(threading.Thread):
             print(file_bytes)
             file_bytes = file_bytes.decode()
             global_vars.bs_response_sent = False
-            constants.LOCK.acquire()
             constants.RADIO_LOCK.acquire()
             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
-            constants.LOCK.release()
             constants.RADIO_LOCK.release()
             global_vars.file_packets_sent += 1
             # TODO Implement checker for every packet sent over to basestation
@@ -182,10 +180,8 @@ class AUV_Send_Data(threading.Thread):
 
                 if global_vars.bs_response_sent == True:
                     global_vars.bs_response_sent = False
-                    constants.LOCK.acquire()
                     constants.RADIO_LOCK.acquire()
                     global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
-                    constants.LOCK.release()
                     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
