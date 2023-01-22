@@ -98,7 +98,7 @@ class AUV_Receive(threading.Thread):
                     line = global_vars.radio.read(7)
                     # global_vars.radio.flush()
 
-                    while(line != b''):
+                    while (line != b''):
                         if not global_vars.sending_dive_log and len(line) == 7:
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
@@ -263,7 +263,7 @@ class AUV_Receive(threading.Thread):
                     global_vars.log("Radio is disconnected from pi!")
                     continue
 
-            if(self.current_mission is not None):
+            if (self.current_mission is not None):
                 print(self.timer)
                 self.current_mission.loop()
 
@@ -334,9 +334,9 @@ class AUV_Receive(threading.Thread):
         y = message & 0x7F
         ysign = (message & 0x80) >> 7
         # Flip motors according to x and ysign
-        if xsign != 1:
+        if xsign == 1:
             x = -x
-        if ysign != 1:
+        if ysign == 1:
             y = -y
         #print("Xbox Command:", x, y)
         if vertical:
@@ -387,7 +387,7 @@ class AUV_Receive(threading.Thread):
 
     def start_mission(self, mission):
         """ Method that uses the mission selected and begin that mission """
-        if(mission == 0):  # Echo-location.
+        if (mission == 0):  # Echo-location.
             try:  # Try to start mission
                 self.current_mission = Mission1(
                     self, self.mc, self.pressure_sensor, self.imu)
