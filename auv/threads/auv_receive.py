@@ -193,6 +193,7 @@ class AUV_Receive(threading.Thread):
                             print(line)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             print("Updated file_packets_received", global_vars.file_packets_received)
+                            print("Length of line read", len(line))
                             # self.data_connected()
                             global_vars.bs_response_sent = True
 
