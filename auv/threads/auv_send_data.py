@@ -181,9 +181,9 @@ class AUV_Send_Data(threading.Thread):
                 # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
                 # if time.time() - time_sent <= constants.PACKET_SENT_TIMEOUT:
                 #     continue
-                print(global_vars.file_packets_sent, global_vars.file_packets_received)
                 if global_vars.bs_response_sent == True:
                     print("packet resent")
+                    print(global_vars.file_packets_sent, global_vars.file_packets_received)
                     global_vars.bs_response_sent = False
                     # constants.RADIO_LOCK.acquire()
                     global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
