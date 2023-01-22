@@ -152,7 +152,6 @@ class AUV_Send_Data(threading.Thread):
         constants.RADIO_LOCK.release()
 
     def send_dive_log(self):
-        constants.LOCK.acquire()
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(constants.DOWNLOAD_LOG_ENCODE, 3)
         # constants.RADIO_LOCK.release()
@@ -181,13 +180,12 @@ class AUV_Send_Data(threading.Thread):
                 # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
 
                 if global_vars.bs_response_sent == True:
+                    print("packet resent")
                     global_vars.bs_response_sent = False
                     # constants.RADIO_LOCK.acquire()
                     global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
                     # constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
-        constants.LOCK.release()
-
         global_vars.sending_data = False
         global_vars.file_packets_sent = 0
         global_vars.file_packets_received = 0
