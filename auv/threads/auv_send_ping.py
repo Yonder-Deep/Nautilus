@@ -27,11 +27,11 @@ class AUV_Send_Ping(threading.Thread):
                 global_vars.connect_to_radio()
             else:
                 try:
-                    # if not global_vars.sending_data:
-                    # Send a connection verification packet if not currently sending data
-                    constants.RADIO_LOCK.acquire()
-                    global_vars.radio.write(constants.PING, 3)
-                    constants.RADIO_LOCK.release()
+                    if not global_vars.sending_data:
+                        # Send a connection verification packet if not currently sending data
+                        constants.RADIO_LOCK.acquire()
+                        global_vars.radio.write(constants.PING, 3)
+                        constants.RADIO_LOCK.release()
 
                 except Exception as e:
                     global_vars.radio.close()
