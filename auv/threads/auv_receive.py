@@ -98,7 +98,7 @@ class AUV_Receive(threading.Thread):
                     line = global_vars.radio.read(7)
                     # global_vars.radio.flush()
 
-                    while (line != b''):
+                    while (line != b''):  # while there is no empty binary line being read from output
                         if not global_vars.sending_dive_log and len(line) == 7:
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
@@ -171,6 +171,7 @@ class AUV_Receive(threading.Thread):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
                             line = global_vars.radio.read(7)
+
                             continue
 
                         print("NON-PING LINE READ WAS", bin(message))
@@ -253,6 +254,8 @@ class AUV_Receive(threading.Thread):
                             line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             global_vars.bs_response_sent = True
+
+                        continue
 
                     # end while
                     global_vars.radio.flush()
