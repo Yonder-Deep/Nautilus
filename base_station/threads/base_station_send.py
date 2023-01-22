@@ -314,7 +314,6 @@ class BaseStation_Send(threading.Thread):
                             xbox_input = False
                     elif global_vars.connected and global_vars.downloading_file:
                         constants.lock.release()
-                        print("is it getting here")
                         if global_vars.packet_received:
                             print("packet_received")
                             self.send_packet_num()
