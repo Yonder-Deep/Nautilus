@@ -193,7 +193,7 @@ class AUV_Receive(threading.Thread):
                             print(line)
                             print("help me this ran though so that's")
                             global_vars.file_packets_received = int.from_bytes(line, "big")
-                            self.data_connected()
+                            # self.data_connected()
                             global_vars.bs_response_sent = True
                             print("does it get here")
 
