@@ -3,16 +3,16 @@ The motor_controller class calibrates and sets the speed of all of the motors
 """
 
 # System imports
+from static import global_vars
+from api import Motor
+import RPi.GPIO as io
+import pigpio
 import time
 import sys
 sys.path.append('../')
 sys.path.append('/home/pi-2/dev/Nautilus/auv')
 sys.path.append('/home/pi-2/dev/Nautilus/auv/api')
 # Custom Imports
-import pigpio
-import RPi.GPIO as io
-from api import Motor
-from static import global_vars
 
 # GPIO Pin numbers for Motors
 FORWARD_GPIO_PIN = 13  # 18
@@ -97,9 +97,13 @@ class MotorController:
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
+        print("Forward motor speed: " + self.forward_speed)
         self.motors[TURN_MOTOR_INDEX].set_speed(self.turn_speed)
+        print("Turning motor speed: " + self.turn_speed)
         self.motors[FRONT_MOTOR_INDEX].set_speed(self.front_speed)
+        print("Dive (front) motor speed: " + self.front_speed)
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
+        print("Dive (back) motor speed: " + self.back_speed)
 
     def pid_motor(self, pid_feedback):
         """
@@ -107,7 +111,7 @@ class MotorController:
 
         feedback: Feedback value from pid class.
         """
-        if(not pid_feedback):
+        if (not pid_feedback):
             self.turn_speed = 0
         else:
             self.turn_speed = self.calculate_pid_new_speed(pid_feedback)
@@ -123,7 +127,7 @@ class MotorController:
 
         feedback: Feedback value from pid class.
         """
-        if(not pid_feedback):
+        if (not pid_feedback):
             self.front_speed = 0
             self.back_speed = 0
         elif abs(current_value) > 30:

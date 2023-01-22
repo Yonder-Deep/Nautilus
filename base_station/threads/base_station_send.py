@@ -62,6 +62,7 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
+
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -167,7 +168,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            global_vars.log(self.out_q,"Cannot update pid because there is no connection to the AUV.")
+            global_vars.log(self.out_q, "Cannot update pid because there is no connection to the AUV.")
         else:
             constants.lock.release()
             constant_select = constant_select << 18
@@ -181,7 +182,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            global_vars.log(self.out_q,"Cannot manual dive because there is no connection to the AUV.")
+            global_vars.log(self.out_q, "Cannot manual dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
 
@@ -199,8 +200,8 @@ class BaseStation_Send(threading.Thread):
             print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
-            global_vars.log(self.out_q,'Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
-                     ', ' + str(seconds) + ')')
+            global_vars.log(self.out_q, 'Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
+                            ', ' + str(seconds) + ')')
 
     def encode_xbox(self, x, y, right_trigger):
         """ Encodes a navigation command given xbox input. """
@@ -294,7 +295,7 @@ class BaseStation_Send(threading.Thread):
                                 right_trigger = round(self.joy.rightTrigger()*10)
 
                                 self.out_q.put("set_xbox_status(1," + str(right_trigger/10) + ")")
-                                print(right_trigger)
+                                print("Righ trigger pushed: Value is " + right_trigger)
                                 navmsg = self.encode_xbox(x, y, right_trigger)
 
                                 constants.radio_lock.acquire()
@@ -331,7 +332,7 @@ class BaseStation_Send(threading.Thread):
     def close(self):
         """ Function that is executed upon the closure of the GUI (passed from input-queue). """
         # close the xbox controller
-        if(self.joy is not None):
+        if (self.joy is not None):
             self.joy.close()
         os._exit(1)  # => Force-exit the process immediately.
 
