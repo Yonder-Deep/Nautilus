@@ -193,10 +193,12 @@ class AUV_Receive(threading.Thread):
                             print(line)
                             print("Length of line read", len(line))
                             if len(line) != 0:
+                                constants.RADIO_LOCK.acquire()
                                 global_vars.file_packets_received = int.from_bytes(line, "big")
                                 global_vars.bs_response_sent = True
                                 print("Updated file_packets_received", global_vars.file_packets_received)
                                 self.data_connected()
+                                constants.RADIO_LOCK.release()
 
                     # end while
                     global_vars.radio.flush()
