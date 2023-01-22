@@ -195,7 +195,7 @@ class AUV_Receive(threading.Thread):
                             if len(line) != 0:
                                 global_vars.file_packets_received = int.from_bytes(line, "big")
                                 print("Updated file_packets_received", global_vars.file_packets_received)
-                                # self.data_connected()
+                                self.data_connected()
                                 global_vars.bs_response_sent = True
 
                     # end while
@@ -247,13 +247,14 @@ class AUV_Receive(threading.Thread):
         global_vars.log("DATA PACKET")
         self.time_since_last_ping = time.time()
 
-        constants.LOCK.acquire()
-        if global_vars.connected is False:
-            global_vars.log("Connection to BS verified.")
-            global_vars.connected = True
-            # Halt disconnected resurfacing
-            self.mc.update_motor_speeds([0, 0, 0, 0])
-        constants.LOCK.release()
+        # TODO: figure out if this is necessary
+        # constants.LOCK.acquire()
+        # if global_vars.connected is False:
+        #     global_vars.log("Connection to BS verified.")
+        #     global_vars.connected = True
+        #     # Halt disconnected resurfacing
+        #     self.mc.update_motor_speeds([0, 0, 0, 0])
+        # constants.LOCK.release()
 
     def ping_connected(self):
         global_vars.log("PING")
