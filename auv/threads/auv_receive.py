@@ -173,7 +173,7 @@ class AUV_Receive(threading.Thread):
                             line = global_vars.radio.read(7)
 
                             continue
-
+                        """
                         print("NON-PING LINE READ WAS", bin(message))
 
                         # case block
@@ -249,8 +249,8 @@ class AUV_Receive(threading.Thread):
                             elif (constant_select == 0b101):
                                 constants.D_DEPTH = value
                                 self.dive_controller.update_depth_pid()
-
-                        elif global_vars.sending_dive_log:
+                        """
+                        if global_vars.sending_dive_log:
                             line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             global_vars.bs_response_sent = True
