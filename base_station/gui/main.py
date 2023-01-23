@@ -139,18 +139,6 @@ class Main():
         self.in_q = in_q  # Messages sent here from base_station.py thread
         self.out_q = out_q  # Messages sent to base_station.py thread
 
-        # Initializing our main frame
-        #self.meta_frame = Frame(self.root, bd=1)
-        #self.meta_frame.pack(fill=BOTH, padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
-
-        #self.mainConsole = Text(self.meta_frame, state=DISABLED, width=WIDTH)
-
-        #self.mainScrollbar = Scrollbar(self.meta_frame)
-        # self.mainScrollbar.config(command=self.mainConsole.yview)
-        # self.mainConsole.configure(yscrollcommand=self.mainScrollbar.set)
-        #self.mainScrollbar.pack(side=RIGHT, fill=Y)
-        # self.mainConsole.pack()
-
         # Initializing our top frame
         self.top_frame = Frame(self.root, bd=1)
         self.top_frame.pack(fill=BOTH, side=TOP,
@@ -162,18 +150,18 @@ class Main():
                             padx=MAIN_PAD_X, pady=MAIN_PAD_Y, expand=YES)
 
         # self.init_function_frame()
-        self.init_stack_frame()
-        self.init_camera_frame()  # for left panel
-        self.init_motor_control_frame()  # for left panel
-        self.init_map_frame()
+        self.init_stack_frame()  # for left panel
+        self.init_camera_frame()
+        self.init_motor_control_frame()
+        self.init_map_frame()  # for central map panel
         self.init_viewmap_frame()
-        self.init_status_frame()
-        self.init_calibrate_frame()
-        self.init_log_frame()
-        self.init_mission_frame()
         self.create_map(self.map_frame)
         self.create_view_map(self.viewmap_frame)
-        self.init_buttons_frame()  # for left panel
+        self.init_status_frame()  # for right panel
+        self.init_buttons_frame()
+        self.init_calibrate_frame()  # for bottom panel
+        self.init_log_frame()
+        self.init_mission_frame()
 
         # Save our last received BS coordinates
         self.bs_coordinates = None
@@ -207,35 +195,6 @@ class Main():
     def get_time(self, now):
         """ Gets the current time in year-months-day hour:minute:second. """
         return now.strftime("%Y-%m-%d %I:%M %p: ")
-
-    def init_function_frame(self):
-        """ Creates the frame for all UI functions. """
-        self.functions_frame = Frame(
-            self.top_frame, height=TOP_FRAME_HEIGHT, width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
-        self.functions_frame.pack(
-            padx=MAIN_PAD_X, pady=MAIN_PAD_Y, side=LEFT, fill=BOTH, expand=NO)
-        self.functions_frame.pack_propagate(0)
-
-        self.heading_button = Button(self.functions_frame, text="Calibrate Heading", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                     padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.calibrate_heading_on_map)
-        self.origin_button = Button(self.functions_frame, text="Calibrate Origin", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                    padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.calibrate_origin_on_map)
-        self.add_waypoint_button = Button(self.functions_frame, text="Add Waypoint", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                          padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
-        self.nav_to_waypoint_button = Button(self.functions_frame, text="Nav. to Waypoint", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                             padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.nav_to_waypoint)
-        # this does not actually have a button --- placed outside, test this
-        self.download_data_button = Button(self.functions_frame, text="Download Data", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                           padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.out_q.put("download_data()"))
-        self.clear_button = Button(self.functions_frame, text="Clear Map", takefocus=False, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                                   padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.clear())
-
-        self.heading_button.pack(expand=YES)
-        self.origin_button.pack(expand=YES)
-        self.add_waypoint_button.pack(expand=YES)
-        self.nav_to_waypoint_button.pack(expand=YES)
-        self.download_data_button.pack(expand=YES)
-        self.clear_button.pack(expand=YES)
 
     def init_stack_frame(self):
         self.stack_frame = Frame(
@@ -324,60 +283,13 @@ class Main():
         self.update_pid_button.pack(expand=YES)
         self.update_pid_button.place(relx=0.05, rely=0.6)
 
-    def init_buttons_frame(self):
-        """ Creates the frame for buttons. """
-        self.buttons_frame = Frame(
-            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
+    # def front_motor_slider_function(self, front_slider_value):
+    #    print(front_slider_value)
+    #   self.log("Forward Slider")
 
-        # self.buttons_frame.grid(
-        # row=3, column=2, pady=CALIBRATE_PAD_Y)
-
-        self.buttons_frame.pack(side=BOTTOM)
-
-        self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
-                                           padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
-
-        self.calibrate_depth_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nDepth", takefocus=False,
-                                             padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
-
-        self.calibrate_origin_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nOrigin", takefocus=False,
-                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.calibrate_origin_on_map)
-
-        self.clear_button = Button(self.buttons_frame, anchor=tkinter.W, text="Clear\nMap", takefocus=False,
-                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.clear)
-
-        self.add_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Add\nWaypoint", takefocus=False,
-                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
-
-        self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
-                                             padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: None)
-
-        self.download_data_button.grid(row=0, column=0)
-        self.calibrate_depth_button.grid(row=0, column=1)
-        self.calibrate_origin_button.grid(row=1, column=0)
-        self.clear_button.grid(row=1, column=1)
-        self.add_waypoint_button.grid(row=2, column=0)
-        self.nav_to_waypoint_button.grid(row=2, column=1)
-
-    def front_motor_slider_function(self, front_slider_value):
-        print(front_slider_value)
-        self.log("Forward Slider")
-
-    def rear_motor_slider_function(self, rear_slider_value):
-        print(rear_slider_value)
-        self.log("Left Slider")
-
-    def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
-        self.log("Manual Dive")
-        if seconds < 1 or seconds > 32:
-            messagebox.showerror("ERROR", "Select a time between 1 and 32 seconds inclusive. ")
-            return
-
-        # Prompt mission start
-        prompt = "Dive for: " + str(seconds) + " seconds?"
-        ans = messagebox.askquestion("Dive", prompt)
-        if ans == 'yes':
-            self.out_q.put("send_dive_manual(" + str(front_motor_speed) + ',' + str(rear_motor_speed) + ',' + str(seconds) + ")")
+    # def rear_motor_slider_function(self, rear_slider_value):
+    #    print(rear_slider_value)
+    #    self.log("Left Slider")
 
     def init_motor_control_frame(self):
         """ Creates the frame for motor control. """
@@ -454,6 +366,18 @@ class Main():
                                   padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
         self.send_button.grid(row=12, column=1)
 
+    def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
+        self.log("Manual Dive")
+        if seconds < 1 or seconds > 32:
+            messagebox.showerror("ERROR", "Select a time between 1 and 32 seconds inclusive. ")
+            return
+
+        # Prompt mission start
+        prompt = "Dive for: " + str(seconds) + " seconds?"
+        ans = messagebox.askquestion("Dive", prompt)
+        if ans == 'yes':
+            self.out_q.put("send_dive_manual(" + str(front_motor_speed) + ',' + str(rear_motor_speed) + ',' + str(seconds) + ")")
+
     def send_halt(self):
         self.out_q.put("send_halt()")
 
@@ -514,6 +438,26 @@ class Main():
                                    width=TOP_FRAME_HEIGHT, bd=1, relief=SUNKEN)
         self.viewmap_frame.pack(padx=MAIN_PAD_X,  # fill=X at beginning
                                 pady=MAIN_PAD_Y, fill=BOTH, side=BOTTOM, expand=YES)
+
+    def create_map(self, frame):
+        self.map = Map(frame, self)
+        self.map_zoom_in_button = Button(self.map_frame, text="+", takefocus=False, width=1, height=1,
+                                         padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_in)
+        self.map_zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
+
+        self.map_zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
+                                          padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
+        self.map_zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
+
+    def create_view_map(self, frame):
+        self.viewmap = ViewMap(frame, self, self.map)
+        self.viewmap_zoom_in_button = Button(self.viewmap_frame, text="+", takefocus=False, width=1, height=1,
+                                             padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.viewmap.zoom_in)
+        self.viewmap_zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
+
+        self.viewmap_zoom_out_button = Button(self.viewmap_frame, text="-", takefocus=False, width=1, height=1,
+                                              padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.viewmap.zoom_out)
+        self.viewmap_zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
 
     def init_status_frame(self):
         """ Initializes the status frame (top right frame). """
@@ -623,38 +567,6 @@ class Main():
         # self.establish_comm_button.pack()
         # self.establish_comm_button.place(relx = 0.05, rely = 0.90);
 
-    def init_log_frame(self):
-        """ Initializes the log/console frame in the bottom-middle part of the GUI. """
-        self.log_frame = Frame(
-            self.bot_frame, height=BOT_FRAME_HEIGHT, width=LOG_FRAME_WIDTH, bd=1, relief=SUNKEN)
-        self.log_frame.pack(fill=BOTH, padx=MAIN_PAD_X,
-                            pady=MAIN_PAD_Y, side=LEFT, expand=YES)
-        self.log_frame.pack_propagate(0)
-        self.console = Text(self.log_frame, font=(
-            FONT, BUTTON_SIZE-2), state=DISABLED, width=LOG_FRAME_WIDTH)
-
-        self.scrollbar = Scrollbar(self.log_frame)
-        self.scrollbar.config(command=self.console.yview)
-        self.console.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.pack(side=RIGHT, fill=Y)
-        self.console.pack()
-
-    def log(self, string):
-        """ Inserts/Logs the message into the console object. """
-        time = self.get_time(datetime.datetime.now())
-        self.console.config(state=NORMAL)
-        self.console.insert(END, time + string + "\n")
-        self.console.config(state=DISABLED)
-
-    def add_auv_coordinates(self, northing, easting):
-        """ Plots the AUV's current coordinates onto the map, given its UTM-relative northing and easting. """
-        self.map.add_auv_data(northing, easting)
-        self.viewmap.input_gps_coordinates(northing, easting, "AUV")
-
-    def update_bs_coordinates(self, northing, easting):
-        """ Saves base stations current coordinates, updates label on the data panel """
-        self.bs_coordinates = (northing, easting)
-
     def set_connection(self, status):
         """ Sets the connection status text in the status frame. """
         if (status):
@@ -743,6 +655,74 @@ class Main():
         self.position_label_string.set(
             "Position \n \tX: " + str(xPos) + "\t Y: " + str(yPos))
 
+    def init_buttons_frame(self):
+        """ Creates the frame for buttons. """
+        self.buttons_frame = Frame(
+            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
+
+        # self.buttons_frame.grid(
+        # row=3, column=2, pady=CALIBRATE_PAD_Y)
+
+        self.buttons_frame.pack(side=BOTTOM)
+
+        self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
+                                           padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
+
+        self.calibrate_depth_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nDepth", takefocus=False,
+                                             padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_calibrate_depth()"))
+
+        self.calibrate_origin_button = Button(self.buttons_frame, anchor=tkinter.W, text="Calibrate\nOrigin", takefocus=False,
+                                              padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.calibrate_origin_on_map)
+
+        self.clear_button = Button(self.buttons_frame, anchor=tkinter.W, text="Clear\nMap", takefocus=False,
+                                   padx=BUTTON_PAD_X+45, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.clear)
+
+        self.add_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Add\nWaypoint", takefocus=False,
+                                          padx=BUTTON_PAD_X+35, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.new_waypoint_prompt)
+
+        self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
+                                             padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: None)
+
+        self.download_data_button.grid(row=0, column=0)
+        self.calibrate_depth_button.grid(row=0, column=1)
+        self.calibrate_origin_button.grid(row=1, column=0)
+        self.clear_button.grid(row=1, column=1)
+        self.add_waypoint_button.grid(row=2, column=0)
+        self.nav_to_waypoint_button.grid(row=2, column=1)
+
+    def add_auv_coordinates(self, northing, easting):
+        """ Plots the AUV's current coordinates onto the map, given its UTM-relative northing and easting. """
+        self.map.add_auv_data(northing, easting)
+        self.viewmap.input_gps_coordinates(northing, easting, "AUV")
+
+    def update_bs_coordinates(self, northing, easting):
+        """ Saves base stations current coordinates, updates label on the data panel """
+        self.bs_coordinates = (northing, easting)
+
+    def calibrate_origin_on_map(self):
+        """ Calibrates the origin on the map to the base stations coordinates """
+        print("ran calibrate origin")
+        if self.bs_coordinates is not None:
+            # Update the origin on our map.
+            self.map.zero_map(self.bs_coordinates[0], self.bs_coordinates[1])
+            self.log("Updated the origin on the map to UTM coordinates (" + str(self.bs_coordinates[0]) + "," + str(self.bs_coordinates[1]) + ").")
+        else:
+            self.log("Cannot calibrate origin because the base station has not reported GPS data.")
+
+    def calibrate_heading_on_map(self):
+        """ Calibrates heading on the map to the AUV's heading """
+        print("ran calibrate heading:")
+        if self.heading_label_string is not None:
+            # Update heading
+            self.heading_label_string.set("Heading: 0.0")
+            print("heading changed from", self.localized_heading)
+            self.localized_heading = self.current_heading
+            print("to", self.current_heading, self.localized_heading)
+        else:
+            self.log("Cannot calibrate heading because the base station has not reported heading data.")
+
+    # def get_angle(self):
+
     def init_calibrate_frame(self):
         self.calibrate_frame = Frame(
             self.bot_frame, height=BOT_FRAME_HEIGHT, width=CALIBRATE_FRAME_WIDTH, bd=1, relief=SUNKEN)
@@ -798,6 +778,29 @@ class Main():
                                              command=lambda: self.out_q.put("test_motor('Right')"))
         # X = 10, Y = 90
         self.right_calibrate_button.grid(row=5, column=1, pady=CALIBRATE_PAD_Y)
+
+    def init_log_frame(self):
+        """ Initializes the log/console frame in the bottom-middle part of the GUI. """
+        self.log_frame = Frame(
+            self.bot_frame, height=BOT_FRAME_HEIGHT, width=LOG_FRAME_WIDTH, bd=1, relief=SUNKEN)
+        self.log_frame.pack(fill=BOTH, padx=MAIN_PAD_X,
+                            pady=MAIN_PAD_Y, side=LEFT, expand=YES)
+        self.log_frame.pack_propagate(0)
+        self.console = Text(self.log_frame, font=(
+            FONT, BUTTON_SIZE-2), state=DISABLED, width=LOG_FRAME_WIDTH)
+
+        self.scrollbar = Scrollbar(self.log_frame)
+        self.scrollbar.config(command=self.console.yview)
+        self.console.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.pack(side=RIGHT, fill=Y)
+        self.console.pack()
+
+    def log(self, string):
+        """ Inserts/Logs the message into the console object. """
+        time = self.get_time(datetime.datetime.now())
+        self.console.config(state=NORMAL)
+        self.console.insert(END, time + string + "\n")
+        self.console.config(state=DISABLED)
 
     def init_mission_frame(self):
         self.mission_frame = Frame(
@@ -870,50 +873,6 @@ class Main():
             "Abort Misssion", "Are you sure you want to abort the mission?")
         if ans == 'yes':
             self.out_q.put("abort_mission()")
-
-    def calibrate_origin_on_map(self):
-        """ Calibrates the origin on the map to the base stations coordinates """
-        print("ran calibrate origin")
-        if self.bs_coordinates is not None:
-            # Update the origin on our map.
-            self.map.zero_map(self.bs_coordinates[0], self.bs_coordinates[1])
-            self.log("Updated the origin on the map to UTM coordinates (" + str(self.bs_coordinates[0]) + "," + str(self.bs_coordinates[1]) + ").")
-        else:
-            self.log("Cannot calibrate origin because the base station has not reported GPS data.")
-
-    def calibrate_heading_on_map(self):
-        """ Calibrates heading on the map to the AUV's heading """
-        print("ran calibrate heading:")
-        if self.heading_label_string is not None:
-            # Update heading
-            self.heading_label_string.set("Heading: 0.0")
-            print("heading changed from", self.localized_heading)
-            self.localized_heading = self.current_heading
-            print("to", self.current_heading, self.localized_heading)
-        else:
-            self.log("Cannot calibrate heading because the base station has not reported heading data.")
-
-    # def get_angle(self):
-
-    def create_map(self, frame):
-        self.map = Map(frame, self)
-        self.map_zoom_in_button = Button(self.map_frame, text="+", takefocus=False, width=1, height=1,
-                                         padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_in)
-        self.map_zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
-
-        self.map_zoom_out_button = Button(self.map_frame, text="-", takefocus=False, width=1, height=1,
-                                          padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.map.zoom_out)
-        self.map_zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
-
-    def create_view_map(self, frame):
-        self.viewmap = ViewMap(frame, self, self.map)
-        self.viewmap_zoom_in_button = Button(self.viewmap_frame, text="+", takefocus=False, width=1, height=1,
-                                             padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.viewmap.zoom_in)
-        self.viewmap_zoom_in_button.place(relx=1, rely=0.0, anchor=N+E)
-
-        self.viewmap_zoom_out_button = Button(self.viewmap_frame, text="-", takefocus=False, width=1, height=1,
-                                              padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=self.viewmap.zoom_out)
-        self.viewmap_zoom_out_button.place(relx=1, rely=0.06, anchor=N+E)
 
     def on_closing(self):
         #    self.map.on_close()
