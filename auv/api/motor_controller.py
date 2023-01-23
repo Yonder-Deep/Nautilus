@@ -97,13 +97,13 @@ class MotorController:
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
-        print("Forward motor speed: ", self.forward_speed)
+        #print("Forward motor speed: ", self.forward_speed)
         self.motors[TURN_MOTOR_INDEX].set_speed(self.turn_speed)
-        print("Turning motor speed: ", self.turn_speed)
+        #print("Turning motor speed: ", self.turn_speed)
         self.motors[FRONT_MOTOR_INDEX].set_speed(self.front_speed)
-        print("Dive (front) motor speed: ", self.front_speed)
+        #print("Dive (front) motor speed: ", self.front_speed)
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
-        print("Dive (back) motor speed: ", self.back_speed)
+        #print("Dive (back) motor speed: ", self.back_speed)
 
     def pid_motor(self, pid_feedback):
         """
