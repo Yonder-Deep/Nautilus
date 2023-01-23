@@ -59,5 +59,6 @@ RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 FILE_SEND_PACKET_SIZE = 7  # bytes
 DIVE_LOG = "dive_log.txt"
 
+
 def log(val):
     print("[AUV]\t" + val)

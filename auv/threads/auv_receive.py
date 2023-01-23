@@ -255,8 +255,6 @@ class AUV_Receive(threading.Thread):
                             global_vars.file_packets_received = int.from_bytes(line, "big")
                             global_vars.bs_response_sent = True
 
-                        continue
-
                     # end while
                     global_vars.radio.flush()
 
