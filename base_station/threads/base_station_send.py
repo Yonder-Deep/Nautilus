@@ -295,7 +295,7 @@ class BaseStation_Send(threading.Thread):
                                 right_trigger = round(self.joy.rightTrigger()*10)
 
                                 self.out_q.put("set_xbox_status(1," + str(right_trigger/10) + ")")
-                                print(right_trigger)
+                                print("Righ trigger pushed: Value is " + right_trigger)
                                 navmsg = self.encode_xbox(x, y, right_trigger)
 
                                 constants.radio_lock.acquire()
