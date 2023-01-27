@@ -227,8 +227,7 @@ class BaseStation_Send(threading.Thread):
 
         # Begin our main loop for this thread.
         while True:
-            if not global_vars.downloading_file:
-                time.sleep(constants.THREAD_SLEEP_DELAY)
+            time.sleep(constants.THREAD_SLEEP_DELAY)
             self.check_tasks()
 
             # Check if we have an Xbox controller
@@ -315,10 +314,11 @@ class BaseStation_Send(threading.Thread):
                             xbox_input = False
                     elif global_vars.connected and global_vars.downloading_file:
                         constants.lock.release()
-                        if global_vars.packet_received:
-                            print("packet_received")
-                            self.send_packet_num()
-                            global_vars.packet_received = False
+                        while global_vars.downloading_file:
+                            if global_vars.packet_received:
+                                print("packet_received")
+                                self.send_packet_num()
+                                global_vars.packet_received = False
                     else:
                         constants.lock.release()
                 except Exception as e:
