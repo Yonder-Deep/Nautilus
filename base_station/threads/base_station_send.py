@@ -227,7 +227,8 @@ class BaseStation_Send(threading.Thread):
 
         # Begin our main loop for this thread.
         while True:
-            time.sleep(constants.THREAD_SLEEP_DELAY)
+            if not global_vars.downloading_file:
+                time.sleep(constants.THREAD_SLEEP_DELAY)
             self.check_tasks()
 
             # Check if we have an Xbox controller
