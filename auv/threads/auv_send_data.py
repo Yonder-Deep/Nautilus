@@ -181,7 +181,7 @@ class AUV_Send_Data(threading.Thread):
                 # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
                 # if time.time() - time_sent <= constants.PACKET_SENT_TIMEOUT:
                 #     continue
-                print("waiting...")
+                print(global_vars.file_packets_sent, global_vars.file_packets_received)
                 # constants.RADIO_LOCK.acquire()
                 # if global_vars.bs_response_sent == True:
                 #     print("packet resent")
