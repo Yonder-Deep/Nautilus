@@ -179,7 +179,7 @@ class AUV_Send_Data(threading.Thread):
             # TODO lock issue potentially?
             # Ensure that base station is receiving every packet sent
             x = global_vars.file_packets_sent
-            y = global_vars.file_packets_receieved
+            y = global_vars.file_packets_received
 
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
@@ -188,7 +188,7 @@ class AUV_Send_Data(threading.Thread):
                 if x != global_vars.file_packets_sent or y != global_vars.file_packets_received:
                     print(global_vars.file_packets_sent, global_vars.file_packets_received)
                     x = global_vars.file_packets_sent
-                    y = global_vars.file_packets_receieved
+                    y = global_vars.file_packets_received
                 # constants.RADIO_LOCK.acquire()
                 # if global_vars.bs_response_sent == True:
                 #     print("packet resent")
