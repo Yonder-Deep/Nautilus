@@ -178,11 +178,17 @@ class AUV_Send_Data(threading.Thread):
             # TODO Currently in an infinite loop, radio.read in auv_receive isn't running when send_dive_log
             # TODO lock issue potentially?
             # Ensure that base station is receiving every packet sent
+            x = global_vars.file_packets_sent
+            y = global_vars.file_packets_receieved
+
             while global_vars.file_packets_sent != global_vars.file_packets_received:
                 # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
                 # if time.time() - time_sent <= constants.PACKET_SENT_TIMEOUT:
                 #     continue
-                print(global_vars.file_packets_sent, global_vars.file_packets_received)
+                if x != global_vars.file_packets_sent or y != global_vars.file_packets_received:
+                    print(global_vars.file_packets_sent, global_vars.file_packets_received)
+                    x = global_vars.file_packets_sent
+                    y = global_vars.file_packets_receieved
                 # constants.RADIO_LOCK.acquire()
                 # if global_vars.bs_response_sent == True:
                 #     print("packet resent")
