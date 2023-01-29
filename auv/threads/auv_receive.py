@@ -130,7 +130,7 @@ class AUV_Receive(threading.Thread):
                                 desired_depth = message & 0b111111
                                 print("We're calling dive command:", str(desired_depth))
                                 constants.LOCK.acquire()
-                                # self.dive(desired_depth)
+                                self.dive(desired_depth)
                                 print("diving pls")
                                 constants.LOCK.release()
 
