@@ -170,8 +170,7 @@ class AUV_Receive(threading.Thread):
                                 elif (constant_select == 0b101):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = global_vars.radio.read(7)
-
+                            #line = global_vars.radio.read(7)
                             continue
 
                         elif not global_vars.sending_dive_log:
