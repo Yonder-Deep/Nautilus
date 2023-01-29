@@ -507,12 +507,17 @@ class AUV_Receive(threading.Thread):
         self.dive_log(log_file)
 
         self.motor_queue.queue.clear()
-
+        print("dive command start")
         # begin dive
-        self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+        if to_depth:
+            self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+            self.dive_controller.start_dive()
 
+        else:
+            print("did not dive; no depth given")
+
+        print("dive command passed")
         # resurface
-        self.dive_controller.start_dive()
 
         '''
         # Wait 10 sec
