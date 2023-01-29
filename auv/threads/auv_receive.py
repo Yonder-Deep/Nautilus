@@ -506,7 +506,7 @@ class AUV_Receive(threading.Thread):
         log_file = open(file_path, "a")
         self.dive_log(log_file)
 
-        self.motor_queue.queue.clear()
+        # self.motor_queue.queue.clear()
         print("dive command start")
         # begin dive
         if to_depth:
