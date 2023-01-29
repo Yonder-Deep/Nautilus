@@ -129,9 +129,9 @@ class AUV_Receive(threading.Thread):
                             elif header == constants.DIVE_ENCODE:  # dive
                                 desired_depth = message & 0b111111
                                 print("We're calling dive command:", str(desired_depth))
-                                constants.LOCK.acquire()
+                                # constants.LOCK.acquire()
                                 self.dive(desired_depth)
-                                constants.LOCK.release()
+                                # constants.LOCK.release()
 
                             elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
                                 self.read_mission_command(message)
@@ -498,6 +498,7 @@ class AUV_Receive(threading.Thread):
         log_file.close()
 
     def dive(self, to_depth):
+        print("dive command executing")
         self.diving = True
         # Check if this path is actually right
         file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
