@@ -385,7 +385,8 @@ class AUV_Receive(threading.Thread):
             print("CALIBRATE")
 
             depth = self.get_depth()
-            global_vars.depth_offset = global_vars.depth_offset + depth
+            if depth is not None:
+                global_vars.depth_offset = global_vars.depth_offset + depth
         if (x == 4):
             print("ABORT")
             # abort()
@@ -507,16 +508,10 @@ class AUV_Receive(threading.Thread):
         self.dive_log(log_file)
 
         self.motor_queue.queue.clear()
-        print("dive command start")
         # begin dive
-        if to_depth:
+        if self.get_depth() is not None:
             self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
             self.dive_controller.start_dive()
-
-        else:
-            print("did not dive; no depth given")
-
-        print("dive command passed")
         # resurface
 
         '''
@@ -550,7 +545,7 @@ class AUV_Receive(threading.Thread):
             #log_timer = threading.Timer(0.5, self.dive_log).start()
             file.write(str(time.time()))  # might want to change to a more readable time format
 
-            if self.get_depth is not None:
+            if self.get_depth() is not None:
                 depth = self.get_depth() - global_vars.depth_offset
                 file.write("Depth=" + str(depth))
                 heading, roll, pitch = self.get_euler()
