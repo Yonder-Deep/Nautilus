@@ -363,7 +363,7 @@ class Main():
         self.halt_button.grid(row=12, column=0)
 
         self.send_button = Button(self.motor_control_frame, text="Send", takefocus=False, width=BUTTON_WIDTH-15, height=BUTTON_HEIGHT - 10,
-                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.send_halt())
+                                  padx=BUTTON_PAD_X, pady=BUTTON_PAD_Y, font=(FONT, BUTTON_SIZE), command=lambda: self.send_controls(str(self.prompt_input_distance.get()), str(self.prompt_input_angle.get())))
         self.send_button.grid(row=12, column=1)
 
     def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
