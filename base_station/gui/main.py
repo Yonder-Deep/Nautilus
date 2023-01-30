@@ -866,7 +866,7 @@ class Main():
             if ans == 'yes':  # Send index of mission (0, 1, 2, etc...)
 
                 self.out_q.put(
-                    "start_mission(" + str(self.mission_list.current()) + ")")
+                    "start_mission(" + str(self.mission_list.current()) + ',' + str(depth) + ',' + str(time) + ")")
 
     def abort_mission(self):
         ans = messagebox.askquestion(
