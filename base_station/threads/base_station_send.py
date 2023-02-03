@@ -131,6 +131,9 @@ class BaseStation_Send(threading.Thread):
     def send_halt(self):
         self.start_mission(HALT, 0, 0)
 
+    def send_controls(self, distance, angle):
+        pass
+
     def send_calibrate_depth(self):
         self.start_mission(CAL_DEPTH, 0, 0)
 
