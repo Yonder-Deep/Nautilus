@@ -12,6 +12,7 @@ import sys
 sys.path.append('../')
 sys.path.append('/home/pi-2/dev/Nautilus/auv')
 sys.path.append('/home/pi-2/dev/Nautilus/auv/api')
+sys.path.append('/home/pi-2/dev/Nautilus/auv/static')
 # Custom Imports
 
 # GPIO Pin numbers for Motors
