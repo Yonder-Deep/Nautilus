@@ -193,6 +193,7 @@ class BaseStation_Receive(threading.Thread):
                                 isAudio = True if 0b1 & intline == 0b1 else False
                                 file = None
                                 global_vars.downloading_file = True
+                                self.radio.ser.timeout = None
                                 continue
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
@@ -231,6 +232,7 @@ class BaseStation_Receive(threading.Thread):
                                 print("[BS] CLOSING THE LOG FILE")
                                 file.close()
                                 global_vars.downloading_file = False
+                                self.radio.ser.timeout = 0
                                 global_vars.file_size = 0
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
