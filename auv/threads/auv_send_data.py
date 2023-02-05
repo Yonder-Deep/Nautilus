@@ -189,13 +189,13 @@ class AUV_Send_Data(threading.Thread):
                     print(global_vars.file_packets_sent, global_vars.file_packets_received)
                     x = global_vars.file_packets_sent
                     y = global_vars.file_packets_received
-            # constants.RADIO_LOCK.acquire()
-            # if global_vars.bs_response_sent == True:
-            #     print("packet resent")
-            #     print(global_vars.file_packets_sent, global_vars.file_packets_received)
-            #     global_vars.bs_response_sent = False
-            #     global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
-            # constants.RADIO_LOCK.release()
+                    constants.RADIO_LOCK.acquire()
+                    if global_vars.bs_response_sent == True:
+                        print("packet resent")
+                        print(global_vars.file_packets_sent, global_vars.file_packets_received)
+                        global_vars.bs_response_sent = False
+                        global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                    constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         global_vars.sending_data = False
         global_vars.file_packets_sent = 0
