@@ -18,7 +18,7 @@ class ViewMap:
         self.zoom_factor = 6
         self.map_widget.set_zoom(self.zoom_factor)
         self.map_widget.add_right_click_menu_command(label="Add Marker", command=self.add_marker_event, pass_coords=True)
-        #self.map_widget.set_position(81.656359, 15.031130)
+        self.map_widget.set_position(81, 15)
         self.input_gps_coordinates(-81.656359/9, 15.031130/9, "here")
         # map_widget.pack()
 
