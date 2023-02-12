@@ -46,7 +46,7 @@ class AUV_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
         curr_time = datetime.now()
-        self.log_filename = constants.LOG_PATH + curr_time.strftime("%Y-%M-%D_%H-%M-%S.txt")
+        self.log_filename = constants.LOG_PATH + curr_time.strftime("%Y-%M-%D_%H-%M-%S") + ".txt"
         sensor_log = open(constants.LOG_PATH + self.log_filename, "w")
         sensor_log.write("File created: " + curr_time.strftime("%Y-%M-%D_%H:%M:%S"))
         sensor_log.close()
@@ -107,6 +107,8 @@ class AUV_Receive(threading.Thread):
                     # global_vars.radio.flush()
 
                     while(line != b''):
+                        self.sensor_log()
+
                         if not global_vars.sending_dive_log and len(line) == 7:
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
@@ -549,7 +551,19 @@ class AUV_Receive(threading.Thread):
 
     def sensor_log(self):
         sensor_log = open(constants.LOG_PATH + self.log_filename, "a")
-        sensor_log.write()
+        curr_time = datetime.now()
+        sensor_log.write("---------------------------------------------------------------------------------------")
+        sensor_log.write("Time: " + time.time())
+        sensor_log.write("Readable Time: " + curr_time.strftime("%Y-%M-%D_%H-%M-%S"))
+        try:
+            sensor_log.write("Heading, Roll, Pitch: " + str(self.imu.read_euler()))
+        except:
+            sensor_log.write("Heading, Roll, Pitch: " + "Failed to read IMU")
+        try:
+            self.pressure_sensor.read()
+            sensor_log.write("Pressure, Depth: " + str(self.pressure_sensor.pressure() + ", " + self.get_depth()))
+        except:
+            sensor_log.write("Pressure, Depth: " + "Failed to read pressure sensor")
         sensor_log.close()
 
     # Does not include calibration offset
