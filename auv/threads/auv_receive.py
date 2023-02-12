@@ -7,6 +7,7 @@ from api import IMU
 from api import Radio
 from api import DiveController
 from queue import Queue
+from datetime import datetime
 from static import global_vars
 from static import constants
 import math
@@ -43,6 +44,12 @@ class AUV_Receive(threading.Thread):
 
         self._ev = threading.Event()
         threading.Thread.__init__(self)
+
+        curr_time = datetime.now()
+        self.log_filename = constants.LOG_PATH + curr_time.strftime("%Y-%M-%D_%H-%M-%S.txt")
+        sensor_log = open(constants.LOG_PATH + self.log_filename, "w")
+        sensor_log.write("File created: " + curr_time.strftime("%Y-%M-%D_%H:%M:%S"))
+        sensor_log.close()
 
     def run(self):
         """ Constructor for the AUV """
@@ -83,6 +90,7 @@ class AUV_Receive(threading.Thread):
 
         count = 0
         global_vars.log("Starting main connection loop.")
+
         while not self._ev.wait(timeout=constants.RECEIVE_SLEEP_DELAY):
             # time.sleep(RECEIVE_SLEEP_DELAY)
 
@@ -538,6 +546,11 @@ class AUV_Receive(threading.Thread):
             heading, roll, pitch = self.get_euler()
             file.write("Heading=" + str(heading))
             file.write("Pitch=" + str(pitch))
+
+    def sensor_log(self):
+        sensor_log = open(constants.LOG_PATH + self.log_filename, "a")
+        sensor_log.write()
+        sensor_log.close()
 
     # Does not include calibration offset
     def get_depth(self):
