@@ -65,13 +65,13 @@ class AUV_Receive(threading.Thread):
         # Update motion type for display on gui
         self.mc.motion_type = 4
 
-        if motor == "FORWARD":  # Used to be LEFT motor
+        if motor == "FORWARD":  # Used to be LEFT motor, moves AUV forward (motor in back)
             self.mc.test_forward()
-        elif motor == "TURN":  # Used to be RIGHT MOTOR
+        elif motor == "TURN":  # Used to be RIGHT MOTOR, moves AUV left or right (motor in front)
             self.mc.test_turn()
-        elif motor == "FRONT":
+        elif motor == "FRONT":  # moves AUV down (front top motor)
             self.mc.test_front()
-        elif motor == "BACK":
+        elif motor == "BACK":  # moves AUV down (back top motor)
             self.mc.test_back()
         elif motor == "ALL":
             self.mc.test_all()
@@ -122,6 +122,9 @@ class AUV_Receive(threading.Thread):
 
                             if header == constants.NAV_ENCODE:  # navigation
                                 self.read_nav_command(message)
+
+                            elif header == constants.MOTOR_TEST_ENCODE:  # motor-testing
+                                self.read_motor_test_command(message)
 
                             elif header == constants.XBOX_ENCODE:  # xbox navigation
                                 self.read_xbox_command(message)
@@ -335,6 +338,19 @@ class AUV_Receive(threading.Thread):
 
         global_vars.log("Running motor command with (x, y): " + str(x) + "," + str(y))
         self.motor_queue.put((x, y, 0))
+
+    def read_motor_test_command(self, message):
+        d = (message & 0b111)
+        if (d == 0):  # front
+            self.mc.update_motor_speeds([50, 0, 0, 0])
+        elif (d == 1):  # back
+            self.mc.update_motor_speeds([-50, 0, 0, 0])
+        elif (d == 2):  # down
+            self.mc.update_motor_speeds([0, 0, 50, 50])
+        elif (d == 3):  # left
+            self.mc.update_motor_speeds([0, -50, 0, 0])
+        elif (d == 4):  # right
+            self.mc.update_motor_speeds([0, 50, 0, 0])
 
     def read_xbox_command(self, message):
         # xbox command
