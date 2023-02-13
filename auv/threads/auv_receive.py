@@ -252,11 +252,11 @@ class AUV_Receive(threading.Thread):
                         """
 
                         else:  # basically if global_vars.sending_dive_log:
-                            print("sending data")
-                            line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
-                            global_vars.file_packets_received = int.from_bytes(line, "big")
-                            global_vars.bs_response_sent = True
-                            global_vars.sending_dive_log = False
+                           print("sending data")
+                           line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
+                           global_vars.file_packets_received = int.from_bytes(line, "big")
+                           global_vars.bs_response_sent = True
+                           global_vars.sending_dive_log = False
 
                     # end while
                     global_vars.radio.flush()
