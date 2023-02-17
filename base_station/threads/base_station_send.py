@@ -16,6 +16,7 @@ from static import global_vars
 
 # Navigation Encoding
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
+MOTOR_TEST_ENCODE = 0b101000000000000000000000    # | with D   (motor test direction)
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000          # | with D   (depth)
@@ -85,17 +86,31 @@ class BaseStation_Send(threading.Thread):
         else:
             constants.lock.release()
             constants.radio_lock.acquire()
+            # if (motor == 'Forward'):
+            #     self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
+            # elif (motor == 'Backward'):
+            #     self.radio.write((NAV_ENCODE | (10 << 9) | (1 << 8) | (0)) & 0xFFFFFF)
+            # elif (motor == 'Left'):
+            #     self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
+            # elif (motor == 'Right'):
+            #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
+            # elif (motor == 'Down'):
+            #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 0) & 0xFFFFFF)
+
             if (motor == 'Forward'):
-                self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
+                self.radio.write(MOTOR_TEST_ENCODE | 0b000)
+            elif (motor == 'Backward'):
+                self.radio.write(MOTOR_TEST_ENCODE | 0b001)
             elif (motor == 'Left'):
-                self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
+                self.radio.write(MOTOR_TEST_ENCODE | 0b011)
             elif (motor == 'Right'):
-                self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
+                self.radio.write(MOTOR_TEST_ENCODE | 0b100)
+            elif (motor == 'Down'):
+                self.radio.write(MOTOR_TEST_ENCODE | 0b010)
+
             constants.radio_lock.release()
 
             global_vars.log(self.out_q, 'Sending encoded task: test_motor("' + motor + '")')
-
-            # self.radio.write('test_motor("' + motor + '")')
 
     def abort_mission(self):
         """ Attempts to abort the mission for the AUV."""
