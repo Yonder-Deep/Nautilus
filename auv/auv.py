@@ -21,6 +21,7 @@ from api import PressureSensor
 from api import MotorController
 from api import MotorQueue
 from missions import *
+from api import Indicator
 
 from static import global_vars
 
@@ -46,6 +47,13 @@ def stop_threads(ts):
 
 def start_threads(ts, queue, halt):
     # Initialize hardware
+    try:
+        indicator_LED = Indicator()
+        global_vars.log("Indicator LED detected")
+    except:
+        indicator_LED = None
+        global_vars.log("Indicator LED not detected")
+
     try:
         pressure_sensor = PressureSensor()
         pressure_sensor.init()
@@ -94,7 +102,7 @@ def start_threads(ts, queue, halt):
 
     # TODO - #35 GPS
     #gps_thread = GPS_Runner(None)
-    #gps_thread.start()
+    # gps_thread.start()
 
 
 if __name__ == '__main__':  # If we are executing this file as main

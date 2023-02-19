@@ -52,6 +52,7 @@ MAX_ITERATION_COUNT = MAX_TIME / SEND_SLEEP_DELAY / 7
 
 # Header encodings from BS
 NAV_ENCODE = 0b100000000000000000000000           # | with XSY (forward, angle sign, angle)
+MOTOR_TEST_ENCODE = 0b101000000000000000000
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
@@ -64,6 +65,7 @@ RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 FILE_SEND_PACKET_SIZE = 12  # bytes
 LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/logs/"
 AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/hydrophone_audio/"
+
 
 
 def log(val):

@@ -38,14 +38,14 @@ class DiveController:
         # Dive
 
         depth = self.get_depth()
-        start_heading, _, _ =  self.imu.read_euler()
+        start_heading, _, _ = self.imu.read_euler()
         start_time = time.time()
 
         target_met = False
         target_met_time = 0
 
-
         # modulo: a mod function that retains negatives (ex. -1 % 360 = -1)
+
         def modulo(x, y): return x % y if x > 0 else -1 * (abs(x) % y)
 
         # turn_error: Calculates distance between target and heading angles

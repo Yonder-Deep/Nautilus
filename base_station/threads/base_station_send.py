@@ -16,6 +16,7 @@ from static import global_vars
 
 # Navigation Encoding
 NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
+MOTOR_TEST_ENCODE = 0b101000000000000000000000    # | with D   (motor test direction)
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000          # | with D   (depth)
@@ -62,6 +63,7 @@ class BaseStation_Send(threading.Thread):
 
 # XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
 
+
     def check_tasks(self):
         """ This checks all of the tasks (given from the GUI thread) in our in_q, and evaluates them. """
 
@@ -84,17 +86,31 @@ class BaseStation_Send(threading.Thread):
         else:
             constants.lock.release()
             constants.radio_lock.acquire()
+            # if (motor == 'Forward'):
+            #     self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
+            # elif (motor == 'Backward'):
+            #     self.radio.write((NAV_ENCODE | (10 << 9) | (1 << 8) | (0)) & 0xFFFFFF)
+            # elif (motor == 'Left'):
+            #     self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
+            # elif (motor == 'Right'):
+            #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
+            # elif (motor == 'Down'):
+            #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 0) & 0xFFFFFF)
+
             if (motor == 'Forward'):
-                self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
+                self.radio.write(MOTOR_TEST_ENCODE | 0b000)
+            elif (motor == 'Backward'):
+                self.radio.write(MOTOR_TEST_ENCODE | 0b001)
             elif (motor == 'Left'):
-                self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
+                self.radio.write(MOTOR_TEST_ENCODE | 0b011)
             elif (motor == 'Right'):
-                self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
+                self.radio.write(MOTOR_TEST_ENCODE | 0b100)
+            elif (motor == 'Down'):
+                self.radio.write(MOTOR_TEST_ENCODE | 0b010)
+
             constants.radio_lock.release()
 
             global_vars.log(self.out_q, 'Sending encoded task: test_motor("' + motor + '")')
-
-            # self.radio.write('test_motor("' + motor + '")')
 
     def abort_mission(self):
         """ Attempts to abort the mission for the AUV."""
@@ -129,6 +145,9 @@ class BaseStation_Send(threading.Thread):
 
     def send_halt(self):
         self.start_mission(HALT, 0, 0)
+
+    def send_controls(self, distance, angle):
+        pass
 
     def send_calibrate_depth(self):
         self.start_mission(CAL_DEPTH, 0, 0)
@@ -167,7 +186,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot update pid because there is no connection to the AUV.")
+            global_vars.log(self.out_q, "Cannot update pid because there is no connection to the AUV.")
         else:
             constants.lock.release()
             constant_select = constant_select << 18
@@ -181,7 +200,7 @@ class BaseStation_Send(threading.Thread):
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            self.log("Cannot manual dive because there is no connection to the AUV.")
+            global_vars.log(self.out_q, "Cannot manual dive because there is no connection to the AUV.")
         else:
             constants.lock.release()
 
@@ -199,8 +218,8 @@ class BaseStation_Send(threading.Thread):
             print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
-            self.log('Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
-                     ', ' + str(seconds) + ')')
+            global_vars.log(self.out_q, 'Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
+                            ', ' + str(seconds) + ')')
 
     def encode_xbox(self, x, y, right_trigger):
         """ Encodes a navigation command given xbox input. """
@@ -294,7 +313,7 @@ class BaseStation_Send(threading.Thread):
                                 right_trigger = round(self.joy.rightTrigger()*10)
 
                                 self.out_q.put("set_xbox_status(1," + str(right_trigger/10) + ")")
-                                print(right_trigger)
+                                print("Right trigger pushed: Value is " + str(right_trigger))
                                 navmsg = self.encode_xbox(x, y, right_trigger)
 
                                 constants.radio_lock.acquire()
@@ -325,14 +344,14 @@ class BaseStation_Send(threading.Thread):
                     print(str(e))
                     self.radio.close()
                     self.radio = None
-                    global_vars.log(out_q, "Radio device has been disconnected.")
+                    global_vars.log(self.out_q, "Radio device has been disconnected.")
                     continue
             time.sleep(constants.THREAD_SLEEP_DELAY)
 
     def close(self):
         """ Function that is executed upon the closure of the GUI (passed from input-queue). """
         # close the xbox controller
-        if(self.joy is not None):
+        if (self.joy is not None):
             self.joy.close()
         os._exit(1)  # => Force-exit the process immediately.
 
