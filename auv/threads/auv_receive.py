@@ -511,6 +511,7 @@ class AUV_Receive(threading.Thread):
         # time.time.sleep(5)
         # self.hydrophone.stop_recording()
 
+        # TODO: current commit is theoretically working code for pool test, need to update with sending files to BS
         self.hydrophone.start_recording_for(5)
         global_vars.sending_data = False
 
