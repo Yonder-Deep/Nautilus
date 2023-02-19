@@ -100,13 +100,8 @@ class AUV_Receive(threading.Thread):
                     # Read seven bytes (3 byte message, 4 byte checksum)
                     line = global_vars.radio.read(7)
 
-<<<<<<< HEAD
                     while(line != b''):
                         if not global_vars.sending_data and len(line) == 7:
-=======
-                    while (line != b''):
-                        if not global_vars.sending_dive_log and len(line) == 7:
->>>>>>> 102/autonomous_nav
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
                             if not checksum:
@@ -203,7 +198,6 @@ class AUV_Receive(threading.Thread):
                             line = global_vars.radio.read(7)
                         elif global_vars.sending_data:
 
-<<<<<<< HEAD
                             # line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             line = global_vars.radio.read(7)
                             print(line)
@@ -215,14 +209,6 @@ class AUV_Receive(threading.Thread):
                                 print("Updated file_packets_received", global_vars.file_packets_received)
                                 self.data_connected()
                                 constants.RADIO_LOCK.release()
-=======
-                        else:  # basically if global_vars.sending_dive_log:
-                            print("sending data")
-                            line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
-                            global_vars.file_packets_received = int.from_bytes(line, "big")
-                            global_vars.bs_response_sent = True
-                            global_vars.sending_dive_log = False
->>>>>>> 102/autonomous_nav
 
                     # end while
                     global_vars.radio.flush()
@@ -525,8 +511,8 @@ class AUV_Receive(threading.Thread):
         # time.time.sleep(5)
         # self.hydrophone.stop_recording()
 
-        # self.hydrophone.start_recording_for(5)
-        global_vars.sending_data = True
+        self.hydrophone.start_recording_for(5)
+        global_vars.sending_data = False
 
     # Logs with depth calibration offset (heading may need to be merged in first)
 
