@@ -8,8 +8,6 @@ class IMU(super_imu):
 
     def __init__(self, serial_port, rst):
         """ Simply call our superclass constructor """
-        print(serial_port)
-        print(rst)
         super().__init__(serial_port=serial_port, rst=rst)
         error_count = 0
         while error_count < 20:
