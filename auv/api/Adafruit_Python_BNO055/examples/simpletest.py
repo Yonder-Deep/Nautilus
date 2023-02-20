@@ -1,28 +1,51 @@
+# Simple Adafruit BNO055 sensor reading example.  Will print the orientation
+# and calibration data every second.
+#
+# Copyright (c) 2015 Adafruit Industries
+# Author: Tony DiCola
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 import logging
 import sys
 import time
 
 from Adafruit_BNO055 import BNO055
 
-bno = BNO055.BNO055(serial_port="/dev/ttyAMA0", rst=18)
 
+# Create and configure the BNO sensor connection.  Make sure only ONE of the
+# below 'bno = ...' lines is uncommented:
+# Raspberry Pi configuration with serial UART and RST connected to GPIO 18:
+bno = BNO055.BNO055(serial_port='/dev/serial0', rst=18)
+# BeagleBone Black configuration with default I2C connection (SCL=P9_19, SDA=P9_20),
+# and RST connected to pin P9_12:
+#bno = BNO055.BNO055(rst='P9_12')
+
+
+# Enable verbose debug logging if -v is passed as a parameter.
 if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
     logging.basicConfig(level=logging.DEBUG)
 
-error_count = 0
+# Initialize the BNO055 and stop if something went wrong.
+if not bno.begin():
+    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
 
-while error_count < 20:
-    try:
-        begun = bno.begin()
-        break
-    except:
-        print("BNO didn't initialize. Retrying...")
-        error_count += 1
-        time.sleep(0.2)
-
-if error_count == 20:
-    raise RuntimeError("Failed to initialize BNO055! Is the sensor connected?")
-
+# Print system status and self test result.
 status, self_test, error = bno.get_system_status()
 print('System status: {0}'.format(status))
 print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
