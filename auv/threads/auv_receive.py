@@ -61,10 +61,10 @@ class AUV_Receive(threading.Thread):
 
     def test_motor(self, motor):
         """ Method to test all 4 motors on the AUV """
-
+        print("TESTING MOTOR 1")
         # Update motion type for display on gui
         self.mc.motion_type = 4
-
+        print(motor)
         if motor == "FORWARD":  # Used to be LEFT motor, moves AUV forward (motor in back)
             self.mc.test_forward()
         elif motor == "TURN":  # Used to be RIGHT MOTOR, moves AUV left or right (motor in front)
@@ -491,7 +491,7 @@ class AUV_Receive(threading.Thread):
     def dive_log(self, file):
         if self.diving:
             # log_timer = threading.Timer(0.5, self.dive_log).start()
-            file.write(time.time())  # might want to change to a more readable time format
+            file.write(str(time.time()))  # might want to change to a more readable time format
             depth = self.get_depth() - global_vars.depth_offset
             file.write("Depth=" + str(depth))
             heading, roll, pitch = self.get_euler()
