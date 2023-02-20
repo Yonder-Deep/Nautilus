@@ -16,8 +16,9 @@ while error_count < 20:
         begun = bno.begin()
         break
     except:
-        "BNO didn't initialize. Retrying..."
+        print("BNO didn't initialize. Retrying...")
         error_count += 1
+        time.sleep(0.2)
 
 if error_count == 20:
     raise RuntimeError("Failed to initialize BNO055! Is the sensor connected?")
