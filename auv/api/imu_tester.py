@@ -9,8 +9,18 @@ bno = BNO055.BNO055(serial_port="/dev/serial0", rst=18)
 if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
     logging.basicConfig(level=logging.DEBUG)
 
-if not bno.begin():
-    raise RuntimeError("Falied to initialize BNO055! Is the sensor connected?")
+error_count = 0
+
+while error_count < 20:
+    try:
+        begun = bno.begin()
+        break
+    except:
+        "BNO didn't initialize. Retrying..."
+        error_count += 1
+
+if error_count == 20:
+    raise RuntimeError("Failed to initialize BNO055! Is the sensor connected?")
 
 status, self_test, error = bno.get_system_status()
 print('System status: {0}'.format(status))
