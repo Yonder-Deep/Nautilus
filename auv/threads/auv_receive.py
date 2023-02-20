@@ -121,6 +121,7 @@ class AUV_Receive(threading.Thread):
                             header = message & 0xE00000
 
                             if header == constants.MOTOR_TEST_ENCODE:  # motor-testing
+                                print("motor test command received")
                                 self.read_motor_test_command(message)
 
                             elif header == constants.XBOX_ENCODE:  # xbox navigation
@@ -129,6 +130,7 @@ class AUV_Receive(threading.Thread):
                                 self.read_xbox_command(message)
 
                             elif header == constants.NAV_ENCODE:  # navigation
+                                print("nav command read")
                                 # Update motion type for display on gui
                                 global_vars.movement_status = 2
                                 self.read_nav_command(message)
@@ -271,7 +273,7 @@ class AUV_Receive(threading.Thread):
 
         if (sign == 1):
             y = y * -1
-
+        print("Nav command read")
         global_vars.log("Running motor command with (x, y): " + str(x) + "," + str(y))
         self.motor_queue.put((x, y, 0))
 
