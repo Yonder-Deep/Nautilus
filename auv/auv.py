@@ -65,7 +65,8 @@ def start_threads(ts, queue, halt):
     try:
         imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
         global_vars.log("IMU has been found.")
-    except:
+    except Exception as e:
+        print(e)
         imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
 
