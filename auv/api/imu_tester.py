@@ -4,7 +4,7 @@ import time
 
 from Adafruit_BNO055 import BNO055
 
-bno = BNO055.BNO055(serial_port="/dev/ttyAMA0", rst=8)
+bno = BNO055.BNO055(serial_port="/dev/serial0", rst=8)
 
 if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
     logging.basicConfig(level=logging.DEBUG)
