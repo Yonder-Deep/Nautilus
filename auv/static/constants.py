@@ -9,6 +9,7 @@ RADIO_PATH_5 = {'radioNum': 5, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_
 RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5]
 GPS_PATH = './/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0'
 IMU_PATH = '/dev/serial0'
+IMU_RESET_PIN = 8
 PING = 0xFFFFFF
 SEND_SLEEP_DELAY = 1
 RECEIVE_SLEEP_DELAY = 0.2

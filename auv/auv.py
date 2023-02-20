@@ -63,7 +63,7 @@ def start_threads(ts, queue, halt):
         global_vars.log("Pressure sensor is not connected to the AUV.")
 
     try:
-        imu = IMU(serial_port=constants.IMU_PATH, rst=18)
+        imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
         global_vars.log("IMU has been found.")
     except:
         imu = None

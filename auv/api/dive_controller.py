@@ -66,7 +66,7 @@ class DiveController:
                 continue
 
             try:
-                heading, pitch, _ = self.imu.read_euler()
+                heading, _, pitch = self.imu.read_euler()
             except:
                 print("Dive controller: Failed to read IMU value")
                 time.sleep(0.1)
