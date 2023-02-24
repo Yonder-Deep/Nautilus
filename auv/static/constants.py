@@ -10,6 +10,7 @@ RADIO_PATH_5 = {'radioNum': 5, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_
 RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5]
 GPS_PATH = './/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0'
 IMU_PATH = '/dev/serial0'
+IMU_RESET_PIN = 8
 PING = 0xFFFFFF
 SEND_SLEEP_DELAY = 1
 RECEIVE_SLEEP_DELAY = 0.2
@@ -52,7 +53,7 @@ MAX_ITERATION_COUNT = MAX_TIME / SEND_SLEEP_DELAY / 7
 
 # Header encodings from BS
 NAV_ENCODE = 0b100000000000000000000000           # | with XSY (forward, angle sign, angle)
-MOTOR_TEST_ENCODE = 0b101000000000000000000
+MOTOR_TEST_ENCODE = 0b101000000000000000000000
 XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
 MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
 DIVE_ENCODE = 0b110000000000000000000000           # | with D   (depth)
