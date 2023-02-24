@@ -5,7 +5,8 @@ import threading
 import sys
 import time
 import sounddevice as sd
-from scipy.io.wavfile import write
+# from scipy.io.wavfile import write
+#import wave
 import soundfile as sf
 import numpy  # Make sure NumPy is loaded before it is used in the callback
 assert numpy  # avoid "imported but unused" message (W0611)
@@ -47,7 +48,8 @@ class Hydrophone:
         self.generate_new_audio_file_name()
         audio_recording = sd.rec(int(recording_seconds * self.fs), samplerate=self.fs, channels=2)
         sd.wait()
-        write(self.filename, self.fs, audio_recording)
+        #write(self.filename, self.fs, audio_recording)
+        sf.write(self.filename, audio_recording, self.fs)
 
     def stop_recording(self):
         self.recorder.record = False
