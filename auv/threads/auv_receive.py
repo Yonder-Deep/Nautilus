@@ -149,10 +149,10 @@ class AUV_Receive(threading.Thread):
                             elif header == constants.MANUAL_DIVE_ENCODE:
                                 global_vars.movement_status = 2
                                 seconds = message & 0b11111
-                                back_speed = message & 0b111111100000
-                                back_speed_sign = message & 0b1000000000000
-                                front_speed = message & 0b11111110000000000000
-                                front_speed_sign = message & 0b100000000000000000000
+                                back_speed = (message & 0b111111100000) << 5
+                                back_speed_sign = (message & 0b1000000000000) << 12
+                                front_speed = (message & 0b11111110000000000000) << 13
+                                front_speed_sign = (message & 0b100000000000000000000) << 20
 
                                 print("We're calling the manual dive command:", str(seconds), str(front_speed), str(back_speed))
                                 constants.LOCK.acquire()
