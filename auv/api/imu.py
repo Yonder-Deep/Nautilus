@@ -8,7 +8,7 @@ class IMU(super_imu):
 
     def __init__(self, serial_port, rst):
         """ Simply call our superclass constructor """
-        super().__init__(serial_port=serial_port, rst=rst)
+        super().__init__()
         error_count = 0
         while error_count < 20:
             try:
