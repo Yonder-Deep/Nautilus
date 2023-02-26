@@ -46,10 +46,16 @@ class Hydrophone:
 
     def start_recording_for(self, recording_seconds):
         self.generate_new_audio_file_name()
+        print("recording audio")
         audio_recording = sd.rec(int(recording_seconds * self.fs), samplerate=self.fs, channels=2)
         sd.wait()
+        print("writing")
         #write(self.filename, self.fs, audio_recording)
+        print(audio_recording)
+        print(self.fs)
         sf.write(self.filename, audio_recording, self.fs)
+        print(self.filename)
+        print("written audio")
 
     def stop_recording(self):
         self.recorder.record = False
