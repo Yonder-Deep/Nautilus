@@ -4,9 +4,9 @@ import time
 
 class Indicator:
     def __init__(self):
-        GPIO.setup(14, GPIO.IN)
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
+        GPIO.setup(14, GPIO.IN)
         GPIO.setup(12, GPIO.OUT)
         print("LED on")
         GPIO.output(12, GPIO.HIGH)
