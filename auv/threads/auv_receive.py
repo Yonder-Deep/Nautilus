@@ -481,10 +481,10 @@ class AUV_Receive(threading.Thread):
         # self.motor_queue.queue.clear()
 
         # begin dive
-        # self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
+        self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
 
         # resurface
-        # self.dive_controller.start_dive()
+        self.dive_controller.start_dive()
         '''
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
