@@ -511,10 +511,10 @@ class AUV_Receive(threading.Thread):
         # self.hydrophone.stop_recording()
 
         # TODO: current commit is theoretically working code for pool test, need to update with sending files to BS
-        # global_vars.sending_data = True
+        global_vars.sending_data = True
         # resurface
-        self.dive_controller.start_dive()
-        self.hydrophone.start_recording_for(20)
+        # self.dive_controller.start_dive()
+        # self.hydrophone.start_recording_for(20)
 
     # Logs with depth calibration offset (heading may need to be merged in first)
 
