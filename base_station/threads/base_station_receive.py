@@ -104,7 +104,7 @@ class BaseStation_Receive(threading.Thread):
             except:
                 global_vars.log(self.out_q, "Failed to convert the AUV's gps coordinates to UTM.")
         else:
-            global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
+            global_vars.log(self.out_q, "The AUV did not report its latitude and longitude.")
 
     def mission_failed(self):
         """ Mission return failure from AUV. """
@@ -223,6 +223,7 @@ class BaseStation_Receive(threading.Thread):
                             file.seek(0, os.SEEK_END)
                             curr_file_size = file.tell()
                             # Return to normal operations when correct file size reached
+                            print(curr_file_size, global_vars.file_size)
                             if curr_file_size >= global_vars.file_size:
                                 print("[BS] CLOSING THE LOG FILE")
                                 file.close()
