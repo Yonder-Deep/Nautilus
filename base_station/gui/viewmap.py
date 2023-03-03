@@ -14,7 +14,7 @@ class ViewMap:
 
         self.map_widget = tkintermapview.TkinterMapView(self.window, width=800, height=600, corner_radius=0)
         self.map_widget.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-        self.map_widget.set_tile_server("https://tiles.arcticconnect.ca/osm_3575/{z}/{x}/{y}.png")
+        self.map_widget.set_tile_server("http://tiles.arcticconnect.ca/osm_3575/{z}/{x}/{y}.png")
         self.zoom_factor = 6
         self.map_widget.set_zoom(self.zoom_factor)
         self.map_widget.add_right_click_menu_command(label="Add Marker", command=self.add_marker_event, pass_coords=True)
