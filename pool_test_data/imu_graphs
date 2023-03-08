@@ -1,0 +1,57 @@
+# This program extracts imu data from the .txt file and plots it
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import matplotlib
+import os
+import sys
+import math
+
+f = open(os.path.join(sys.path[0], 'imu_data.txt'), "r")
+imuTbl = pd.DataFrame(columns=['Time', 'Heading', 'Roll', 'Pitch', 'Acc1', 'Acc2', 'Acc3',
+                      'LinAcc1', 'LinAcc2', 'LinAcc3', 'Acceleration', 'LinearAcceleration'])
+
+line = f.readline()
+while line:
+    if "Time" in line:
+        line = f.readline().rstrip('\n')
+        time = line
+    if "Heading" in line:
+        line = f.readline().rstrip('\n')
+        heading = line
+    if "Roll" in line:
+        line = f.readline().rstrip('\n')
+        roll = line
+    if "Pitch" in line:
+        line = f.readline().rstrip('\n')
+        pitch = line
+    if "Acceleration" in line:
+        line = f.readline().rstrip('\n')
+        #accStr = line.split(",")
+        acc = [float(x) for x in line.split(",")]
+
+    if "Linear acceleration" in line:
+        line = f.readline().rstrip('\n')
+        lacc = [float(x) for x in line.split(",")]
+
+        # update the table
+        new_row = {'Time': time, 'Heading': heading, 'Roll': roll, 'Pitch': pitch,
+                   'Acc1': acc[0], 'Acc2': acc[1], 'Acc3': acc[2],
+                   'LinAcc1': lacc[0], 'LinAcc2': lacc[1], 'LinAcc3': lacc[2],
+                   'Acceleration': math.sqrt(math.pow(acc[0], 2) + math.pow(acc[1], 2) + math.pow(acc[2], 2)),
+                   'LinearAcceleration': math.sqrt(math.pow(lacc[0], 2) + math.pow(lacc[1], 2) + math.pow(lacc[2], 2))}
+
+        #imuTbl = imuTbl.append(new_row, ignore_index=True)
+        imuTbl.loc[len(imuTbl)] = new_row
+    line = f.readline()
+
+imuTbl.to_csv(os.path.join(sys.path[0], 'dataTable.csv'))
+
+
+##xpoints = np.array([1, 8])
+##ypoints = np.array([3, 10])
+
+plt.plot(imuTbl['Time'], imuTbl['LinearAcceleration'])
+##plt.ylim(-1, 1)
+plt.show()
