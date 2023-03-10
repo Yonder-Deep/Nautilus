@@ -41,9 +41,10 @@ while line:
                    'LinAcc1': lacc[0], 'LinAcc2': lacc[1], 'LinAcc3': lacc[2],
                    'Acceleration': math.sqrt(math.pow(acc[0], 2) + math.pow(acc[1], 2) + math.pow(acc[2], 2)),
                    'LinearAcceleration': math.sqrt(math.pow(lacc[0], 2) + math.pow(lacc[1], 2) + math.pow(lacc[2], 2))}
-
-        #imuTbl = imuTbl.append(new_row, ignore_index=True)
-        imuTbl.loc[len(imuTbl)] = new_row
+        
+        if (math.sqrt(math.pow(acc[0], 2) + math.pow(acc[1], 2) + math.pow(acc[2], 2)) < 300):
+            #imuTbl = imuTbl.append(new_row, ignore_index=True)
+            imuTbl.loc[len(imuTbl)] = new_row
     line = f.readline()
 
 imuTbl.to_csv(os.path.join(sys.path[0], 'dataTable.csv'))
@@ -51,6 +52,58 @@ imuTbl.to_csv(os.path.join(sys.path[0], 'dataTable.csv'))
 
 ##xpoints = np.array([1, 8])
 ##ypoints = np.array([3, 10])
+
+fig, axs = plt.subplots(2, 2)
+##axs[0, 0].set(xlabel=None)
+axs[0,0].set_yticklabels([])
+axs[0,0].set_xticklabels([])
+axs[0, 0].plot(imuTbl['Time'], imuTbl['LinearAcceleration'])
+axs[0, 0].set_title('Linear Accelaration')
+
+##axs[0, 1].set(xlabel=None)
+axs[0,1].set_yticklabels([])
+axs[0,1].set_xticklabels([])
+axs[0, 1].plot(imuTbl['Time'], imuTbl['Pitch'], 'tab:orange')
+axs[0, 1].set_title('Pitch')
+
+##axs[1, 0].set(xlabel=None)
+axs[1,0].set_yticklabels([])
+axs[1,0].set_xticklabels([])
+axs[1, 0].plot(imuTbl['Time'], imuTbl['Acceleration'], 'tab:green')
+axs[1, 0].set_title('Acceleration')
+
+##axs[1, 1].set(xlabel=None)
+axs[1,1].set_yticklabels([])
+axs[1,1].set_xticklabels([])
+axs[1, 1].plot(imuTbl['Time'], imuTbl['Roll'], 'tab:red')
+axs[1, 1].set_title('Roll')
+
+ig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(5, sharex=True)
+
+ax1.set_yticklabels([])
+ax1.set_xticklabels([])
+ax1.plot(imuTbl['Time'], imuTbl['LinearAcceleration'])
+ax1.set_title('LinearAcceleration')
+
+ax2.set_yticklabels([])
+ax2.set_xticklabels([])
+ax2.plot(imuTbl['Time'], imuTbl['Acceleration'])
+ax2.set_title('Acceleration')
+
+ax3.set_yticklabels([])
+ax3.set_xticklabels([])
+ax3.plot(imuTbl['Time'], imuTbl['Roll'])
+ax3.set_title('Roll')
+
+ax4.set_yticklabels([])
+ax4.set_xticklabels([])
+ax4.plot(imuTbl['Time'], imuTbl['Pitch'])
+ax4.set_title('Pitch')
+
+ax5.set_yticklabels([])
+ax5.set_xticklabels([])
+ax5.plot(imuTbl['Time'], imuTbl['Heading'])
+ax5.set_title('Heading')
 
 plt.plot(imuTbl['Time'], imuTbl['LinearAcceleration'])
 ##plt.ylim(-1, 1)
