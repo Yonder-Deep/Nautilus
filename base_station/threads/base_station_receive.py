@@ -193,9 +193,10 @@ class BaseStation_Receive(threading.Thread):
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
                             # Handles receiving an entire file from the AUV
-                            line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
-                            if line == b'':
-                                continue
+                            line = b''
+                            while line == b'':
+                                line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+
                             intline = int.from_bytes(line, "big")
                             print(f"intline: {intline}")
 
@@ -214,7 +215,7 @@ class BaseStation_Receive(threading.Thread):
                                 continue
                             # Get packets of file contents, keep track of number of packets received
                             global_vars.file_packets_received += 1
-                            # global_vars.packet_received = True
+                            global_vars.packet_received = True
                             print(f"files received: {global_vars.file_packets_received}")
                             print(f"line: {line}")
                             # Write to file
@@ -227,10 +228,10 @@ class BaseStation_Receive(threading.Thread):
                             if curr_file_size >= global_vars.file_size:
                                 print("[BS] CLOSING THE LOG FILE")
                                 file.close()
-                                # global_vars.downloading_file = False
+                                global_vars.downloading_file = False
                                 global_vars.file_size = 0
-                                global_vars.packet_received = True
-                                # global_vars.file_packets_received = 0
+                                global_vars.packet_received = False
+                                global_vars.file_packets_received = 0
                                 line = self.radio.read(7)
 
                     self.radio.flush()

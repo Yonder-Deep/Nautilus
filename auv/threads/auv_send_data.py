@@ -181,21 +181,21 @@ class AUV_Send_Data(threading.Thread):
             x = global_vars.file_packets_sent
             y = global_vars.file_packets_received
 
-            # while global_vars.file_packets_sent != global_vars.file_packets_received:
-            #     # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
-            #     # if time.time() - time_sent <= constants.PACKET_SENT_TIMEOUT:
-            #     #     continue
-            #     if x != global_vars.file_packets_sent or y != global_vars.file_packets_received:
-            #         print(global_vars.file_packets_sent, global_vars.file_packets_received)
-            #         x = global_vars.file_packets_sent
-            #         y = global_vars.file_packets_received
-            #         constants.RADIO_LOCK.acquire()
-            #         if global_vars.bs_response_sent == True:
-            #             print("packet resent")
-            #             print(global_vars.file_packets_sent, global_vars.file_packets_received)
-            #             global_vars.bs_response_sent = False
-            #             global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
-            #         constants.RADIO_LOCK.release()
+            while global_vars.file_packets_sent != global_vars.file_packets_received:
+                print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
+                # if time.time() - time_sent <= constants.PACKET_SENT_TIMEOUT:
+                #     continue
+                # if x != global_vars.file_packets_sent or y != global_vars.file_packets_received:
+                #     print(global_vars.file_packets_sent, global_vars.file_packets_received)
+                #     x = global_vars.file_packets_sent
+                #     y = global_vars.file_packets_received
+                #     constants.RADIO_LOCK.acquire()
+                #     if global_vars.bs_response_sent == True:
+                #         print("packet resent")
+                #         print(global_vars.file_packets_sent, global_vars.file_packets_received)
+                #         global_vars.bs_response_sent = False
+                #         global_vars.radio.write_data(file_bytes, constants.FILE_SEND_PACKET_SIZE)
+                #     constants.RADIO_LOCK.release()
             file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
 
         while global_vars.file_packets_received < global_vars.file_packets_sent:
