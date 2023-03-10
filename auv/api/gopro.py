@@ -2,18 +2,14 @@ from goprocam import GoProCamera, constants
 import shutil
 import time
 
-go_pro = GoProCamera.GoPro()
 
-# shows everything on the camera: go_pro.listMedia(True)
-
-# to delete all: go_pro.delete("all")
-# # to delete last: go_pro.delete("last")
+def __init__(self):
+    # Need to be connected to the gopros wifi for running any function
+    go_pro = GoProCamera.GoPro()
 
 
-def take_photo_transfer_delete():
-    go_pro.take_photo(timer=5)
-    # go_pro.downloadLastMedia(custom_filename="yonderpic.JPG")
-    # go_pro.delete("last")
+def take_photo():
+    go_pro.take_photo()
 
 
 def timelapse(interval):
@@ -21,21 +17,21 @@ def timelapse(interval):
         go_pro.downloadLastMedia(go_pro.take_photo(timer=interval))
 
 
-def media_download_and_transfer_and_delete():
-    media = go_pro.downloadAll()
-    for i in media:
-        shutil.move('./100GOPRO-{}'.format(i), './gopro_images/100GOPRO-{}'.format(i))
-    # go_pro.delete("all")
-
-# The parameter time must be in seconds
+def start_video():
+    go_pro.shoot_video(True)
 
 
-def take_video(record_time):
-    # go_pro.getWebcamPreview()
-    go_pro.shoot_video(record_time)
+def stop_video():
+    go_pro.shoot_video(False)
 
 
-take_video(5)
-# take_photo_transfer_delete()
+def delete_all_media():
+    go_pro.delete("all")
 
-# go_pro.overview()
+
+def delete_latest_media():
+    go_pro.delete("last")
+
+
+def gopro_info():
+    go_pro.overview()
