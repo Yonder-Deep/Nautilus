@@ -182,7 +182,8 @@ class AUV_Send_Data(threading.Thread):
             y = global_vars.file_packets_received
 
             while global_vars.file_packets_sent != global_vars.file_packets_received:
-                print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
+                pass
+                # print(f"files sent: {global_vars.file_packets_sent}, files received: {global_vars.file_packets_received}")
                 # if time.time() - time_sent <= constants.PACKET_SENT_TIMEOUT:
                 #     continue
                 # if x != global_vars.file_packets_sent or y != global_vars.file_packets_received:
