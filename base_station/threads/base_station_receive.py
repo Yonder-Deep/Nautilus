@@ -214,7 +214,7 @@ class BaseStation_Receive(threading.Thread):
                                 continue
                             # Get packets of file contents, keep track of number of packets received
                             global_vars.file_packets_received += 1
-                            global_vars.packet_received = True
+                            # global_vars.packet_received = True
                             print(f"files received: {global_vars.file_packets_received}")
                             print(f"line: {line}")
                             # Write to file
@@ -227,10 +227,10 @@ class BaseStation_Receive(threading.Thread):
                             if curr_file_size >= global_vars.file_size:
                                 print("[BS] CLOSING THE LOG FILE")
                                 file.close()
-                                global_vars.downloading_file = False
+                                # global_vars.downloading_file = False
                                 global_vars.file_size = 0
-                                global_vars.packet_received = False
-                                global_vars.file_packets_received = 0
+                                global_vars.packet_received = True
+                                # global_vars.file_packets_received = 0
                                 line = self.radio.read(7)
 
                     self.radio.flush()
