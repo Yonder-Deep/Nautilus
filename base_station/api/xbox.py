@@ -50,7 +50,7 @@ class Joystick:
         self.connectStatus = False  # will be set to True once controller is detected and stays on
         self.reading = '0' * 140  # initialize stick readings to all zeros --> creates a super long bytestring of all 0s that is 140 bytes long
         #
-        self.refreshTime = 0  # absolute time when next refresh (read results from xboxdrv stdout pipe) is to occur
+        self.refreshTime = 2  # absolute time when next refresh (read results from xboxdrv stdout pipe) is to occur
         self.refreshDelay = 1.0 / refreshRate  # joystick refresh is to be performed 30 times per sec by default
         #
         # Read responses from 'xboxdrv' for upto 2 seconds, looking for controller/receiver to respond
