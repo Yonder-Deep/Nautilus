@@ -50,7 +50,7 @@ class Hydrophone:
         audio_recording = sd.rec(int(recording_seconds * self.fs), samplerate=self.fs, channels=2)
         sd.wait()
         print("writing")
-        #write(self.filename, self.fs, audio_recording)
+        # sd.write(self.filename, self.fs, audio_recording)
         print(audio_recording)
         print(self.fs)
         sf.write(self.filename, audio_recording, self.fs)
