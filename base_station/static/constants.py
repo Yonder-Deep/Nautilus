@@ -11,7 +11,8 @@ RADIO_PATH_5 = {'radioNum': 5, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_
 RADIO_PATH_6 = {'radioNum': 6, 'path': 'COM5'}
 RADIO_PATH_7 = {'radioNum': 7, 'path': 'COM4'}
 RADIO_PATH_8 = {'radioNum': 8, 'path': 'COM7'}
-RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5, RADIO_PATH_6, RADIO_PATH_7, RADIO_PATH_8]
+RADIO_PATH_9 = {'radioNum': 9, 'path': 'COM8'}
+RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5, RADIO_PATH_6, RADIO_PATH_7, RADIO_PATH_8, RADIO_PATH_9]
 GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 PING = 0xFFFFFF
 
