@@ -3,9 +3,9 @@ import shutil
 import time
 
 
-def __init__(self):
-    # Need to be connected to the gopros wifi for running any function
-    go_pro = GoProCamera.GoPro()
+# def __init__(self):
+# Need to be connected to the gopros wifi for running any function
+go_pro = GoProCamera.GoPro()
 
 
 def take_photo():
@@ -24,14 +24,27 @@ def start_video():
 def stop_video():
     go_pro.shoot_video(False)
 
+# WORKS
+
 
 def delete_all_media():
     go_pro.delete("all")
+
+# WORKS
 
 
 def delete_latest_media():
     go_pro.delete("last")
 
+# WORKS
+
 
 def gopro_info():
     go_pro.overview()
+
+
+# start_video()
+# time.sleep(5)
+# stop_video()
+delete_latest_media()
+# take_photo()
