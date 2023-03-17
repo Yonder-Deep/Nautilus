@@ -29,9 +29,15 @@ class AUV_Send_Ping(threading.Thread):
                 try:
                     # Always send a connection verification packet
                     constants.RADIO_LOCK.acquire()
-                    global_vars.radio.write(constants.PING, 3)
-                    # global_vars.radio.write("test")
-                    constants.RADIO_LOCK.release()
+                    try:
+                        global_vars.radio.write(constants.PING, 3)
+                        # global_vars.radio.write("test")
+                        constants.RADIO_LOCK.release()
+                    except Exception as i:
+                        global_vars.radio.close()
+                        global_vars.radio = None
+                        print("send ping exception")
+                        raise Exception("Error occured : " + str(i))
 
                 except Exception as e:
                     global_vars.radio.close()
