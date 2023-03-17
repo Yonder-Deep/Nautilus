@@ -5,6 +5,10 @@ import adafruit_gps
 import queue
 from static.constants import GPS_PATH
 
+# GPS PATH FOR WINDOWS
+# GPS_PATH = 'COM7'
+
+
 class GPS(threading.Thread):
     """ Class for basic GPS functionality """
 
@@ -34,10 +38,10 @@ class GPS(threading.Thread):
 
             self.gps.update()
             # Every second print out current location details if there's a fix.
-            
+
             if not self.gps.has_fix:
                 self.out_q.put({
-                    'has fix':'No',
+                    'has fix': 'No',
                     'speed': 'Unknown',
                     'latitude': 'Unknown',
                     'longitude': 'Unknown'
@@ -45,7 +49,7 @@ class GPS(threading.Thread):
 
             else:
                 self.out_q.put({
-                    'has fix':'Yes',
+                    'has fix': 'Yes',
                     'speed': self.gps.speed_knots,
                     'latitude': self.gps.latitude,
                     'longitude': self.gps.longitude
@@ -58,10 +62,10 @@ class GPS(threading.Thread):
 
             time.sleep(1)
 
+
 if __name__ == "__main__":
 
     # Create a queue for the GPS data
     out_q = queue.Queue()
 
     GPS(out_q)
-
