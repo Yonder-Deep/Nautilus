@@ -9,8 +9,9 @@ RADIO_PATH_2 = {'radioNum': 2, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_
 RADIO_PATH_3 = {'radioNum': 3, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AFD0I-if00-port0'}
 RADIO_PATH_4 = {'radioNum': 4, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AFALT-if00-port0'}
 RADIO_PATH_5 = {'radioNum': 5, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AF7PZ-if00-port0'}
-RADIO_PATH_6 = {'radioNum': 6, 'path': 'COM5'}
-RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5, RADIO_PATH_6]
+RADIO_PATH_6 = {'radioNum': 6, 'path': '/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30EZJIT-if00-port0'}
+RADIO_PATH_7 = {'radioNum': 7, 'path': '/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30EZV09-if00-port0'}
+RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5, RADIO_PATH_6, RADIO_PATH_7]
 GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 PING = 0xFFFFFF
 

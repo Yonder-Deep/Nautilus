@@ -7,7 +7,8 @@ RADIO_PATH_2 = {'radioNum': 2, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_
 RADIO_PATH_3 = {'radioNum': 3, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AFD0I-if00-port0'}
 RADIO_PATH_4 = {'radioNum': 4, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AFALT-if00-port0'}
 RADIO_PATH_5 = {'radioNum': 5, 'path': '/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AF7PZ-if00-port0'}
-RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5]
+RADIO_PATH_6 = {'radioNum': 6, 'path': '/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30EZO92-if00-port0'}
+RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5, RADIO_PATH_6]
 GPS_PATH = './/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0'
 IMU_PATH = '/dev/serial0'
 IMU_RESET_PIN = 8
@@ -66,7 +67,6 @@ RADIO_LOCK = threading.Lock()   # ensures one write to radio at a time
 FILE_SEND_PACKET_SIZE = 12  # bytes
 LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/logs/"
 AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/hydrophone_audio/"
-
 
 
 def log(val):
