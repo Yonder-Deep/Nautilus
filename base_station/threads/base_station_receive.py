@@ -230,9 +230,10 @@ class BaseStation_Receive(threading.Thread):
                     self.latitude = gps_data['latitude']
                     self.longitude = gps_data['longitude']
                     self.out_q.put("set_gps_position(" + str(self.latitude) + ", " + str(self.longitude) + ")")
+                    self.out_q.put("set_gps_status(\"Recieving data\")")
                 else:
                     self.latitude = 0
                     self.longitude = 0
-                    print("GPS does not have a fix")
+                    self.out_q.put("set_gps_status(\"No fix\")")
 
             time.sleep(constants.THREAD_SLEEP_DELAY)

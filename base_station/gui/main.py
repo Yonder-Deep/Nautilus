@@ -558,13 +558,21 @@ class Main():
         # self.xbox_label.place(relx=0.05, rely=0.98, anchor='sw')
         self.xbox_label.grid(row=11, column=0)
 
+        self.gps_status_string = StringVar()
+        self.gps_status = Label(self.status_frame, textvariable=self.gps_status_string, font=(
+            FONT, STATUS_SIZE), justify=LEFT)
+        # self.gpw_label.pack()
+        self.gps_status_string.set("GPS Status: Disconnected")
+        # self.gps_label.place(relx=0.05, rely=0.98, anchor='sw')
+        self.gps_status.grid(row=12, column=0)
+
         self.gps_label_string = StringVar()
         self.gps_label = Label(self.status_frame, textvariable=self.gps_label_string, font=(
             FONT, STATUS_SIZE), justify=LEFT)
         # self.gpw_label.pack()
         self.gps_label_string.set("GPS Values: Lat: N/A Long: N/A")
         # self.gps_label.place(relx=0.05, rely=0.98, anchor='sw')
-        self.gps_label.grid(row=12, column=0)
+        self.gps_label.grid(row=13, column=0)
 
         # self.calibrate_xbox_button           = Button(self.status_frame, text = "Calibrate Controller", takefocus = False, width = BUTTON_WIDTH + 10, height = BUTTON_HEIGHT,
         #                                      padx = BUTTON_PAD_X, pady = BUTTON_PAD_Y, font = (FONT, BUTTON_SIZE), command = self.base_station.calibrate_controller )
@@ -653,6 +661,10 @@ class Main():
         else:
             self.xbox_label_string.set(
                 "Xbox Controller: Sending Horizontal")
+
+    def set_gps_status(self, status):
+        if(status is not None):
+            self.gps_status_string.set("GPS Status: " + str(status))
 
     def set_gps_position(self, latitude, longitude):
         if (latitude is not None and longitude is not None):
