@@ -42,7 +42,7 @@ class Joystick:
         joy = xbox.Joystick()
     """
 
-    def __init__(self, refreshRate=30):
+    def __init__(self, refreshRate=10):
         self.proc = subprocess.Popen(['xboxdrv', '--no-uinput', '--detach-kernel-driver'], stdout=subprocess.PIPE,
                                      bufsize=0)  # connects to xbox controller hardware with driver
         self.pipe = self.proc.stdout  # pipeline of button press data coming out from the xbox controller into the base station

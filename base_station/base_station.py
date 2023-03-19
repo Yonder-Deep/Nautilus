@@ -70,4 +70,8 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("CLOSING")
         gui.root.destroy()
+        bs_r_thread.join()
+        bs_s_thread.join()
+        bs_ping_thread.join()
+        global_vars.radio.close()
         sys.exit()
