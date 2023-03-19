@@ -562,7 +562,7 @@ class Main():
         self.gps_label = Label(self.status_frame, textvariable=self.gps_label_string, font=(
             FONT, STATUS_SIZE), justify=LEFT)
         # self.gpw_label.pack()
-        self.gps_label_string.set("GPS Values: Lat: Long: ")
+        self.gps_label_string.set("GPS Values: Lat: N/A Long: N/A")
         # self.gps_label.place(relx=0.05, rely=0.98, anchor='sw')
         self.gps_label.grid(row=12, column=0)
 
@@ -656,9 +656,9 @@ class Main():
 
     def set_gps_position(self, latitude, longitude):
         if (latitude is not None and longitude is not None):
-            self.gps_label_string.set("GPS Values: Lat:" + str(latitude) + " Long:" + str(longitude))
+            self.gps_label_string.set("GPS Values: Lat: " + str(latitude) + " Long: " + str(longitude))
         else:
-            self.gps_label_string.set("GPS Values: Lat: Long: ")
+            self.gps_label_string.set("GPS Values: Lat: N/A Long: N/A")
 
     def set_dive(self, depth):
         """ Sets dive command """

@@ -222,16 +222,17 @@ class BaseStation_Receive(threading.Thread):
                     self.radio.close()
                     self.radio = None
                     global_vars.log(self.out_q, "Radio device has been disconnected.")
-                    continue
 
-            if (self.gps_connected is True):
-                print(self.gps_q.get)
-                self.latitude = 0
-                self.longitude = 0
-            else:
-                self.latitude = 0
-                self.longitude = 0
-
-            self.out_q.put("set_gps_position(" + str(self.latitude) + ", " + str(self.longitude) + ")")
+            if (self.gps_connected):
+                self.gps.run()
+                gps_data = self.gps_q.get()
+                if gps_data['has fix'] == 'Yes':
+                    self.latitude = gps_data['latitude']
+                    self.longitude = gps_data['longitude']
+                    self.out_q.put("set_gps_position(" + str(self.latitude) + ", " + str(self.longitude) + ")")
+                else:
+                    self.latitude = 0
+                    self.longitude = 0
+                    print("GPS does not have a fix")
 
             time.sleep(constants.THREAD_SLEEP_DELAY)
