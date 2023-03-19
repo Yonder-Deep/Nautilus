@@ -27,6 +27,10 @@ class BaseStation_Receive(threading.Thread):
         # Call super-class constructor
         # Instance variables
         self.gps = None
+        self.gps_connected = False
+        self.latitude = 0
+        self.longitude = 0
+
         self.in_q = in_q
         self.out_q = out_q
         self.gps_q = Queue()
@@ -42,6 +46,7 @@ class BaseStation_Receive(threading.Thread):
         try:
             self.gps = GPS(self.gps_q)
             global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
+            self.gps_connected = True
         except:
             global_vars.log(self.out_q, "Warning: Could not connect to a GPS socket service.")
 
@@ -104,7 +109,7 @@ class BaseStation_Receive(threading.Thread):
             except:
                 global_vars.log(self.out_q, "Failed to convert the AUV's gps coordinates to UTM.")
         else:
-            global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
+            global_vars.log(self.out_q, "The AUV did not report its latitude and longitude.")
 
     def mission_failed(self):
         """ Mission return failure from AUV. """
@@ -150,7 +155,7 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
-                    while(line != b''):
+                    while (line != b''):
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
@@ -218,5 +223,15 @@ class BaseStation_Receive(threading.Thread):
                     self.radio = None
                     global_vars.log(self.out_q, "Radio device has been disconnected.")
                     continue
+
+            if (self.gps_connected is True):
+                print(self.gps_q.get)
+                self.latitude = 0
+                self.longitude = 0
+            else:
+                self.latitude = 0
+                self.longitude = 0
+
+            self.out_q.put("set_gps_position(" + str(self.latitude) + ", " + str(self.longitude) + ")")
 
             time.sleep(constants.THREAD_SLEEP_DELAY)

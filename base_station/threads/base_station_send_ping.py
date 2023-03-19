@@ -27,7 +27,8 @@ class BaseStation_Send_Ping(threading.Thread):
             time.sleep(constants.PING_SLEEP_DELAY)
             print("[BS] Trying to send ping")
             # will break if global_vars.radio is ever None please add check for that at some point
-            is_radio_open = global_vars.radio.is_open()
+            if (global_vars.radio is not None):
+                is_radio_open = global_vars.radio.is_open()
             if global_vars.radio is None or is_radio_open is False:
                 print("TEST radio not connected")
                 global_vars.connect_to_radio(self.out_q)
