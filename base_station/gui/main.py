@@ -169,7 +169,7 @@ class Main():
         # Call function to properly end the program
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.root.update_idletasks()
-        self.root.update()
+        # self.root.update()
 
         # Loop that checks our in-queue tasks given from the BaseStation thread object
         self.root.after(REFRESH_TIME, self.check_tasks)
@@ -663,7 +663,7 @@ class Main():
                 "Xbox Controller: Sending Horizontal")
 
     def set_gps_status(self, status):
-        if(status is not None):
+        if (status is not None):
             self.gps_status_string.set("GPS Status: " + str(status))
 
     def set_gps_position(self, latitude, longitude):
