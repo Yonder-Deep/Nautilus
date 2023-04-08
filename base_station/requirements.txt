@@ -4,3 +4,4 @@ pyserial==3.5
 screeninfo==0.8.1
 tkintermapview==1.17
 pyproj==3.4.1
+pyrealsense2==2.53.1
