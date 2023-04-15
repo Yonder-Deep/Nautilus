@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.ttk import Combobox
 import matplotlib
 import matplotlib.axes
+import queue
 matplotlib.use('TkAgg')
 
 # Begin imports for tkinter
@@ -290,7 +291,7 @@ class Map:
         ])
 
         prompt_submit.grid(row=3, column=0, padx=5, pady=5)
- #       prompt_window.mainloop();
+#       prompt_window.mainloop();
         print("[MAP] returning from waypoint mainloop")
 
     def add_auv_data(self, x=0, y=0):
@@ -318,9 +319,6 @@ class Map:
         # # Re-draw the canvas.
         # self.draw_canvas()
 
-        # YASHIL'S CODE
-
-        import queue
         q = queue.Queue()
         gps = GPS(q)
         while True:
