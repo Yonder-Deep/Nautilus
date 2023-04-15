@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.ttk import Combobox
 import matplotlib
 import matplotlib.axes
+import queue
 matplotlib.use('TkAgg')
 
 # Begin imports for tkinter
@@ -35,6 +36,7 @@ KM_TO_MI = 0000.621371000
 M_TO_MI = 0000.000621371
 MI_TO_KM = 0001.609340000
 M_TO_KM = 0000.001000000
+KM_TO_M = 1/M_TO_KM
 
 # Other Debug Constants
 ZOOM_SCALAR = 1.15
@@ -94,7 +96,7 @@ class Map:
         FONT_SIZE = int(FONT_SIZE * self.main.multiplier_x)
 
         self.draw_canvas()
-        #self.add_waypoint(0, 0)
+        # self.add_waypoint(0, 0)
 
     def clear(self):
         """ Clears the map data """
@@ -289,7 +291,7 @@ class Map:
         ])
 
         prompt_submit.grid(row=3, column=0, padx=5, pady=5)
- #       prompt_window.mainloop();
+#       prompt_window.mainloop();
         print("[MAP] returning from waypoint mainloop")
 
     def add_auv_data(self, x=0, y=0):
@@ -306,16 +308,30 @@ class Map:
     def draw_auv_path(self):
         print("[MAP] Drawing (really re-drawing) AUV path.")
 
-        # Completely delete the previous line, if it exists.
-        if self.auv_path_obj != None:
-            self.auv_path_obj.pop(0).remove()
+        # # Completely delete the previous line, if it exists.
+        # if self.auv_path_obj != None:
+        #     self.auv_path_obj.pop(0).remove()
 
-        # Re-draw the entire line using the newly updated x-values (auv_data[0]) and y-values (auv_data[1])
-        self.auv_path_obj = self.map.plot(
-            self.auv_data[0]+self.zero_offset_x, self.auv_data[1]+self.zero_offset_y, label="AUV Path", color=AUV_PATH_COLOR)
+        # # Re-draw the entire line using the newly updated x-values (auv_data[0]) and y-values (auv_data[1])
+        # self.auv_path_obj = self.map.plot(
+        #     self.auv_data[0]+self.zero_offset_x, self.auv_data[1]+self.zero_offset_y, label="AUV Path", color=AUV_PATH_COLOR)
 
-        # Re-draw the canvas.
-        self.draw_canvas()
+        # # Re-draw the canvas.
+        # self.draw_canvas()
+
+        q = queue.Queue()
+        gps = GPS(q)
+        while True:
+            try:
+                # print(q.get())
+                self.add_waypoint(float(q.get()[0]), float(q.get()[1]), str(q.get())),
+                gps.run()
+                time.sleep(1)
+
+                distance = q.get()[0] + q.get()[1]  # HOW DO I GET THE DESTINATION COORDINATES?
+                print("Distance to target destination: " + distance + "m")
+            except KeyboardInterrupt:
+                break
 
     # need to see where to put this and what its parameters are
     # def blinking_dot(i=0):

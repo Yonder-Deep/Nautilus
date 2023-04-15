@@ -5,7 +5,7 @@ import serial
 import os
 from .crc32 import Crc32
 TIMEOUT_DURATION = 0
-DEFAULT_BAUDRATE = 57600 #115200
+DEFAULT_BAUDRATE = 57600  # 115200
 
 
 class Radio:
@@ -31,7 +31,7 @@ class Radio:
     #     """
     #     self.ser.write(message)
 
-    def write(self, message, length):
+    def write(self, message, length, checksum=1):
         """
         Sends provided message over serial connection.
 
@@ -49,6 +49,14 @@ class Radio:
             # message = Crc32.generate(message)
             message_double = Crc32.generate(message)
             byte_arr = message_double.to_bytes(length+4, 'big')
+            self.ser.write(byte_arr)
+
+    def write_data(self, message, length):
+        if isinstance(message, str):
+            encoded = str.encode(message)
+            self.ser.write(encoded)
+        elif isinstance(message, int):
+            byte_arr = message.to_bytes(length, 'big')
             self.ser.write(byte_arr)
 
     def read(self, n_bytes=1):

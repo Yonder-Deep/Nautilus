@@ -21,6 +21,7 @@ from api import PressureSensor
 from api import MotorController
 from api import MotorQueue
 from missions import *
+from api import Indicator
 
 from static import global_vars
 
@@ -47,6 +48,13 @@ def stop_threads(ts):
 def start_threads(ts, queue, halt):
     # Initialize hardware
     try:
+        indicator_LED = Indicator()
+        global_vars.log("Indicator LED detected")
+    except:
+        indicator_LED = None
+        global_vars.log("Indicator LED not detected")
+
+    try:
         pressure_sensor = PressureSensor()
         pressure_sensor.init()
         global_vars.log("Pressure sensor has been found")
@@ -55,20 +63,12 @@ def start_threads(ts, queue, halt):
         global_vars.log("Pressure sensor is not connected to the AUV.")
 
     try:
-        imu = IMU(serial_port=constants.IMU_PATH, rst=18)
+        imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
         global_vars.log("IMU has been found.")
-    except:
+    except Exception as e:
+        print(e)
         imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
-
-    for i in range(3):
-        try:
-            if not imu.begin():
-                print('Failed to initialize BNO055! Attempt:', i)
-            else:
-                break
-        except:
-            print('Exception thrown during BNO055 initialization')
 
     global_vars.connect_to_radio()
 
@@ -94,7 +94,7 @@ def start_threads(ts, queue, halt):
 
     # TODO - #35 GPS
     #gps_thread = GPS_Runner(None)
-    #gps_thread.start()
+    # gps_thread.start()
 
 
 if __name__ == '__main__':  # If we are executing this file as main

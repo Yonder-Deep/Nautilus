@@ -38,14 +38,14 @@ class DiveController:
         # Dive
 
         depth = self.get_depth()
-        start_heading, _, _ =  self.imu.read_euler()
+        start_heading, _, _ = self.imu.read_euler()
         start_time = time.time()
 
         target_met = False
         target_met_time = 0
 
-
         # modulo: a mod function that retains negatives (ex. -1 % 360 = -1)
+
         def modulo(x, y): return x % y if x > 0 else -1 * (abs(x) % y)
 
         # turn_error: Calculates distance between target and heading angles
@@ -66,7 +66,7 @@ class DiveController:
                 continue
 
             try:
-                heading, pitch, _ = self.imu.read_euler()
+                heading, _, pitch = self.imu.read_euler()
             except:
                 print("Dive controller: Failed to read IMU value")
                 time.sleep(0.1)
@@ -89,7 +89,7 @@ class DiveController:
             print("Current time elapsed: {}".format(time.time() - start_time))
 
             # NOTE: check side_motor_value to see if the sign is correct
-            self.mc.update_motor_speeds([side_motor_value, -side_motor_value, back_motor_value, front_motor_value])
+            self.mc.update_motor_speeds([min(side_motor_value,100), max(-side_motor_value,-100), min(back_motor_value,100), min(front_motor_value,100)])
 
             if self.pid_depth.within_tolerance and not target_met:
                 # want to wait for dive_length seconds before stopping

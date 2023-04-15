@@ -6,14 +6,15 @@ import os
 import serial
 import time
 import threading
+import utm
 from queue import Queue
 
 # Custom imports
 from api import Crc32
 from api import Radio
-#from api import GPS
+from api import GPS
 from api import decode_command
-
+from api import xbox
 from static import constants
 from static import global_vars
 
@@ -38,11 +39,6 @@ class BaseStation_Receive(threading.Thread):
         # Try to assign our radio object
         self.radio = radio
 
-        # Try to connect our Xbox 360 controller.
-
-# XXX ---------------------- XXX ---------------------------- XXX TESTING AREA
-
-        # Try to assign our GPS object connection to GPSD
         try:
             self.gps = GPS(self.gps_q)
             global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
@@ -53,7 +49,7 @@ class BaseStation_Receive(threading.Thread):
         """ Instantiates a new Xbox Controller Instance """
         # Construct joystick and check that the driver/controller are working.
         self.joy = None
-        self.main.log("Attempting to connect xbox controller")
+        global_vars.log(self.out_q, "Attempting to connect xbox controller")
         while self.joy is None:
             self.main.update()
             try:
@@ -61,7 +57,7 @@ class BaseStation_Receive(threading.Thread):
                 raise Exception()
             except Exception as e:
                 continue
-        self.main.log("Xbox controller is connected.")
+        global_vars.log(self.out_q, "Xbox controller is connected.")
 
     def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
         """ Parses the AUV data-update packet, stores knowledge of its on-board sensors"""
@@ -107,8 +103,8 @@ class BaseStation_Receive(threading.Thread):
                 self.out_q.put("add_auv_coordinates(" + self.auv_utm_coordinates[0] + ", " + self.auv_utm_coordinates[1] + ")")
             except:
                 global_vars.log(self.out_q, "Failed to convert the AUV's gps coordinates to UTM.")
-        # else:
-        #    global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
+        else:
+            global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
 
     def mission_failed(self):
         """ Mission return failure from AUV. """
@@ -154,11 +150,11 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
-                    while(line != b''):
+                    while(line != b'' or global_vars.downloading_file):
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
-
+                            print(f"THIS IS INTLINE: {intline}")
                             checksum = Crc32.confirm(intline)
 
                             if not checksum:
@@ -173,8 +169,9 @@ class BaseStation_Receive(threading.Thread):
                             intline = intline >> 32
                             header = intline >> 21     # get first 3 bits
                             # PING case
-                            if intline == constants.PING:
+                            if intline == constants.PING:  # TODO MIGHT NEED TO CHANGE
                                 self.time_since_last_ping = time.time()
+                                print("[BS] Received ping")
                                 constants.lock.acquire()
                                 if global_vars.connected is False:
                                     global_vars.log(self.out_q, "Connection to AUV verified.")
@@ -185,21 +182,41 @@ class BaseStation_Receive(threading.Thread):
                             else:
                                 print("HEADER_STR", header)
                                 decode_command(self, header, intline)
-
+                            # Check if an entire file is being sent from AUV
                             if header == constants.FILE_DATA:
+                                print("[BS] THIS IF BLOCK RAN ------------------")
+                                intline = int.from_bytes(line, "big")
+                                isAudio = True if 0b1 & intline == 0b1 else False
+                                file = None
                                 global_vars.downloading_file = True
-                                file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
                                 continue
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
+                            # Handles receiving an entire file from the AUV
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+                            if line == b'':
+                                continue
                             intline = int.from_bytes(line, "big")
+                            print(f"intline: {intline}")
+
                             # Get first packet containing final file size
                             if global_vars.file_size == 0:
                                 global_vars.file_size = intline
                                 continue
+                            # Get second packet containing file name (includes file format)
+                            if file is None:
+                                downloaded_filename = line.decode("utf-8")
+
+                                if isAudio:
+                                    file = open(constants.AUDIO_FOLDER_PATH + downloaded_filename, "wb")
+                                else:
+                                    file = open(constants.LOG_FOLDER_PATH + downloaded_filename, "wb")
+                                continue
+                            # Get packets of file contents, keep track of number of packets received
                             global_vars.file_packets_received += 1
                             global_vars.packet_received = True
+                            print(f"files received: {global_vars.file_packets_received}")
+                            print(f"line: {line}")
                             # Write to file
                             file.write(line)
                             # Get current file size
@@ -207,6 +224,7 @@ class BaseStation_Receive(threading.Thread):
                             curr_file_size = file.tell()
                             # Return to normal operations when correct file size reached
                             if curr_file_size >= global_vars.file_size:
+                                print("[BS] CLOSING THE LOG FILE")
                                 file.close()
                                 global_vars.downloading_file = False
                                 global_vars.file_size = 0

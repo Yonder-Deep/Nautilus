@@ -41,6 +41,10 @@ class Radio():
             byte_arr = message.to_bytes(7, 'big')
             self.ser.write(byte_arr)
 
+    def write_data(self, message, length):
+        byte_arr = message.to_bytes(length, 'big')
+        self.ser.write(byte_arr)
+
     def readlines(self):
         """
         Returns an array of lines

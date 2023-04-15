@@ -1,0 +1,3932 @@
+ 
+Heading 
+359.9375Roll
+359.9375Pitch
+17.625Acceleration
+-0.41,-2.93,9.34Linear acceleration
+1.28,0.03,0.0Heading 
+367.9375Roll
+367.9375Pitch
+17.625Acceleration
+-0.39,-2.93,9.35Linear acceleration
+0.0,0.03,0.02Heading 
+367.9375Roll
+367.9375Pitch
+17.625Acceleration
+-0.4,-2.93,9.34Linear acceleration
+0.0,0.03,0.0Heading 
+359.9375Roll
+359.9375Pitch
+17.625Acceleration
+-0.43,-2.97,9.31Linear acceleration
+-0.03,0.0,-0.02Heading 
+367.9375Roll
+367.9375Pitch
+17.625Acceleration
+-0.4,-2.94,9.31Linear acceleration
+-0.03,0.01,0.0Heading 
+367.9375Roll
+367.9375Pitch
+17.625Acceleration
+-0.4,-2.96,9.33Linear acceleration
+0.0,0.01,0.0Heading 
+359.9375Roll
+359.9375Pitch
+17.625Acceleration
+-0.42,-2.95,9.34Linear acceleration
+-0.01,0.01,0.0Heading 
+359.9375Roll
+359.9375Pitch
+17.625Acceleration
+-0.41,-2.95,9.34Linear acceleration
+-0.01,0.01,0.0Heading 
+367.9375Roll
+367.9375Pitch
+17.625Acceleration
+-0.43,-2.93,9.34Linear acceleration
+-0.02,0.03,0.0Heading 
+359.9375Roll
+359.9375Pitch
+17.625Acceleration
+-0.44,-2.47,9.38Linear acceleration
+-0.03,0.5,0.04Heading 
+367.9375Roll
+367.9375Pitch
+17.6875Acceleration
+-0.32,-2.99,8.89Linear acceleration
+0.08,-0.02,-0.44Heading 
+8.1875Roll
+8.1875Pitch
+17.6875Acceleration
+-0.88,-2.79,9.03Linear acceleration
+-0.17,0.18,-0.28Heading 
+8.6875Roll
+8.6875Pitch
+18.125Acceleration
+-1.28,-2.91,8.1Linear acceleration
+1.28,-0.1,-0.78Heading 
+9.0Roll
+9.0Pitch
+18.0Acceleration
+-0.32,-2.9,8.83Linear acceleration
+1.36,-0.27,-0.38Heading 
+0.5625Roll
+0.5625Pitch
+16.4375Acceleration
+-0.17,-2.57,9.17Linear acceleration
+1.31,0.14,-0.12Heading 
+359.5Roll
+359.5Pitch
+14.5625Acceleration
+-0.4,-2.31,9.03Linear acceleration
+1.33,0.09,-0.31Heading 
+358.375Roll
+358.375Pitch
+11.875Acceleration
+-2.05,-2.17,9.4Linear acceleration
+-0.06,-0.21,-0.31Heading 
+365.8125Roll
+365.8125Pitch
+7.4375Acceleration
+-1.04,-0.92,9.24Linear acceleration
+-0.08,0.31,-0.22Heading 
+365.5625Roll
+365.5625Pitch
+1.875Acceleration
+-1.05,0.04,9.31Linear acceleration
+1.33,0.35,-0.19Heading 
+365.4375Roll
+365.4375Pitch
+-3.4375Acceleration
+-1.25,1.13,9.26Linear acceleration
+-0.05,0.5,-0.2Heading 
+365.4375Roll
+365.4375Pitch
+-8.0Acceleration
+-1.27,1.7,9.23Linear acceleration
+-0.03,0.33,-0.14Heading 
+365.375Roll
+365.375Pitch
+-10.5Acceleration
+-2.59,2.03,9.33Linear acceleration
+1.41,0.26,-0.13Heading 
+365.1875Roll
+365.1875Pitch
+-10.1875Acceleration
+-2.6,1.91,9.19Linear acceleration
+1.28,0.23,-0.11Heading 
+364.75Roll
+364.75Pitch
+-7.25Acceleration
+-2.62,1.29,9.46Linear acceleration
+-0.01,0.09,0.08Heading 
+364.25Roll
+364.25Pitch
+-2.75Acceleration
+-1.25,0.21,9.41Linear acceleration
+1.35,-0.18,-0.03Heading 
+363.625Roll
+363.625Pitch
+2.8125Acceleration
+-2.59,-0.66,9.5Linear acceleration
+1.28,-0.15,0.08Heading 
+363.0Roll
+363.0Pitch
+7.875Acceleration
+-2.55,-1.49,9.47Linear acceleration
+0.04,-0.19,0.1Heading 
+362.5Roll
+362.5Pitch
+11.875Acceleration
+-2.53,-2.15,9.3Linear acceleration
+0.04,-0.2,0.04Heading 
+362.0Roll
+362.0Pitch
+14.3125Acceleration
+-2.55,-2.51,9.21Linear acceleration
+0.0,-0.16,0.03Heading 
+361.5625Roll
+361.5625Pitch
+15.5625Acceleration
+-1.27,-2.66,9.21Linear acceleration
+1.3,-0.12,0.09Heading 
+361.0625Roll
+361.0625Pitch
+15.875Acceleration
+-2.63,-2.68,9.19Linear acceleration
+-0.01,-0.09,0.1Heading 
+360.625Roll
+360.625Pitch
+15.625Acceleration
+-2.64,-2.72,9.23Linear acceleration
+0.01,0.09,0.13Heading 
+360.3125Roll
+360.3125Pitch
+14.5625Acceleration
+-2.77,-2.27,9.23Linear acceleration
+1.28,0.09,0.12Heading 
+352.0Roll
+352.0Pitch
+13.1875Acceleration
+-2.86,-2.05,9.15Linear acceleration
+-0.01,0.07,0.01Heading 
+351.75Roll
+351.75Pitch
+11.6875Acceleration
+-2.91,-1.77,9.26Linear acceleration
+1.31,0.11,0.1Heading 
+351.5625Roll
+351.5625Pitch
+10.25Acceleration
+-2.86,-1.6,9.34Linear acceleration
+0.12,0.06,0.15Heading 
+351.375Roll
+351.375Pitch
+9.0Acceleration
+-2.92,-1.34,9.32Linear acceleration
+1.39,0.11,0.11Heading 
+351.3125Roll
+351.3125Pitch
+7.75Acceleration
+-2.96,-1.15,9.35Linear acceleration
+1.36,0.09,0.12Heading 
+351.3125Roll
+351.3125Pitch
+6.4375Acceleration
+-2.82,-0.96,9.2Linear acceleration
+1.49,0.08,-0.06Heading 
+351.4375Roll
+351.4375Pitch
+5.3125Acceleration
+-2.81,-0.7,9.25Linear acceleration
+1.45,0.17,-0.04Heading 
+351.5625Roll
+351.5625Pitch
+4.6875Acceleration
+-2.81,-0.6,9.3Linear acceleration
+1.41,0.16,-0.01Heading 
+351.75Roll
+351.75Pitch
+4.375Acceleration
+-2.73,-0.71,9.35Linear acceleration
+1.45,0.0,0.02Heading 
+352.0625Roll
+352.0625Pitch
+4.0625Acceleration
+-2.74,-0.52,9.32Linear acceleration
+1.37,0.08,-0.05Heading 
+360.4375Roll
+360.4375Pitch
+4.125Acceleration
+-2.63,-0.59,9.35Linear acceleration
+1.41,0.08,-0.02Heading 
+360.875Roll
+360.875Pitch
+4.4375Acceleration
+-2.57,-0.65,9.34Linear acceleration
+1.36,0.08,-0.06Heading 
+361.3125Roll
+361.3125Pitch
+4.8125Acceleration
+-1.14,-0.72,9.36Linear acceleration
+1.39,0.07,-0.06Heading 
+353.8125Roll
+353.8125Pitch
+5.125Acceleration
+-1.09,-0.68,9.37Linear acceleration
+1.31,0.16,-0.08Heading 
+362.25Roll
+362.25Pitch
+5.3125Acceleration
+-2.19,-0.79,9.4Linear acceleration
+0.09,0.09,-0.08Heading 
+354.75Roll
+354.75Pitch
+5.4375Acceleration
+-0.88,-0.8,9.42Linear acceleration
+1.3,0.1,-0.09Heading 
+363.1875Roll
+363.1875Pitch
+5.75Acceleration
+-0.79,-0.89,9.42Linear acceleration
+1.3,0.07,-0.1Heading 
+363.6875Roll
+363.6875Pitch
+6.0625Acceleration
+-0.66,-0.9,9.38Linear acceleration
+1.33,0.13,-0.11Heading 
+364.125Roll
+364.125Pitch
+6.25Acceleration
+-0.54,-0.89,9.41Linear acceleration
+0.08,0.16,-0.14Heading 
+356.5Roll
+356.5Pitch
+6.5Acceleration
+-0.45,-1.06,9.42Linear acceleration
+1.37,0.02,-0.14Heading 
+364.9375Roll
+364.9375Pitch
+6.625Acceleration
+-1.65,-0.94,9.48Linear acceleration
+0.09,0.17,-0.1Heading 
+357.3125Roll
+357.3125Pitch
+6.6875Acceleration
+-0.28,-0.99,9.52Linear acceleration
+0.09,0.13,-0.07Heading 
+357.6875Roll
+357.6875Pitch
+6.8125Acceleration
+-0.28,-1.06,9.56Linear acceleration
+1.3,0.08,-0.06Heading 
+366.125Roll
+366.125Pitch
+7.0625Acceleration
+-0.16,-1.11,9.55Linear acceleration
+1.33,0.08,-0.05Heading 
+366.5625Roll
+366.5625Pitch
+7.1875Acceleration
+-0.15,-1.15,9.56Linear acceleration
+1.28,0.06,-0.05Heading 
+367.0Roll
+367.0Pitch
+7.375Acceleration
+-0.1,-1.12,9.51Linear acceleration
+1.28,0.12,-0.11Heading 
+367.4375Roll
+367.4375Pitch
+7.5Acceleration
+-0.09,-1.21,9.52Linear acceleration
+-0.04,0.05,-0.11Heading 
+367.9375Roll
+367.9375Pitch
+7.5625Acceleration
+-1.34,-1.19,9.56Linear acceleration
+-0.04,0.08,-0.07Heading 
+8.3125Roll
+8.3125Pitch
+7.625Acceleration
+-0.06,-1.14,9.5Linear acceleration
+-0.05,0.14,-0.12Heading 
+8.75Roll
+8.75Pitch
+7.75Acceleration
+-1.38,-1.29,9.3Linear acceleration
+1.4,0.48,0.21Heading 
+9.125Roll
+9.125Pitch
+7.8125Acceleration
+-1.27,-1.25,9.51Linear acceleration
+-0.01,0.07,-0.12Heading 
+0.625Roll
+0.625Pitch
+7.375Acceleration
+-1.2,-1.29,9.6Linear acceleration
+1.3,-0.05,-0.04Heading 
+366.9375Roll
+366.9375Pitch
+5.9375Acceleration
+-1.28,-1.23,9.49Linear acceleration
+-0.04,-0.21,-0.18Heading 
+364.9375Roll
+364.9375Pitch
+4.0Acceleration
+-0.01,-0.85,9.65Linear acceleration
+1.31,-0.09,-0.14Heading 
+363.4375Roll
+363.4375Pitch
+2.125Acceleration
+-1.14,0.26,9.46Linear acceleration
+0.04,0.62,-0.25Heading 
+362.3125Roll
+362.3125Pitch
+1.5Acceleration
+-1.1,-0.2,9.55Linear acceleration
+1.34,0.02,-0.17Heading 
+361.25Roll
+361.25Pitch
+1.375Acceleration
+-1.02,-0.02,9.45Linear acceleration
+1.33,0.22,-0.28Heading 
+352.5Roll
+352.5Pitch
+1.9375Acceleration
+-0.95,-0.19,9.55Linear acceleration
+1.33,0.14,-0.18Heading 
+351.75Roll
+351.75Pitch
+2.75Acceleration
+-0.86,-0.24,9.5Linear acceleration
+1.34,0.22,-0.24Heading 
+351.1875Roll
+351.1875Pitch
+3.8125Acceleration
+-0.75,-0.51,9.54Linear acceleration
+1.35,0.14,-0.2Heading 
+350.6875Roll
+350.6875Pitch
+4.875Acceleration
+-0.65,-0.83,9.54Linear acceleration
+1.38,0.07,-0.15Heading 
+350.3125Roll
+350.3125Pitch
+5.625Acceleration
+-0.57,-0.77,9.58Linear acceleration
+1.36,0.18,-0.15Heading 
+350.0625Roll
+350.0625Pitch
+6.0625Acceleration
+-0.47,-0.91,9.58Linear acceleration
+1.36,0.16,-0.11Heading 
+349.8125Roll
+349.8125Pitch
+6.25Acceleration
+-0.39,-0.92,9.65Linear acceleration
+1.34,0.14,-0.08Heading 
+349.6875Roll
+349.6875Pitch
+6.375Acceleration
+-0.31,-1.07,9.54Linear acceleration
+1.39,0.18,-0.18Heading 
+349.6875Roll
+349.6875Pitch
+6.3125Acceleration
+-0.23,-0.97,9.57Linear acceleration
+0.09,0.1,-0.16Heading 
+349.625Roll
+349.625Pitch
+6.0625Acceleration
+-0.23,-0.87,9.6Linear acceleration
+1.33,0.15,-0.14Heading 
+349.625Roll
+349.625Pitch
+5.75Acceleration
+-0.19,-0.8,9.59Linear acceleration
+1.32,0.15,-0.13Heading 
+349.625Roll
+349.625Pitch
+5.625Acceleration
+-0.11,-0.84,9.59Linear acceleration
+0.06,0.12,-0.15Heading 
+349.625Roll
+349.625Pitch
+5.5Acceleration
+-0.09,-0.79,9.61Linear acceleration
+1.3,0.15,-0.14Heading 
+349.625Roll
+349.625Pitch
+5.5625Acceleration
+-0.05,-0.79,9.6Linear acceleration
+0.04,0.15,-0.15Heading 
+349.6875Roll
+349.6875Pitch
+5.625Acceleration
+-0.05,-0.84,9.65Linear acceleration
+1.28,0.12,-0.1Heading 
+349.75Roll
+349.75Pitch
+5.875Acceleration
+0.06,-0.81,9.62Linear acceleration
+1.28,0.2,-0.19Heading 
+349.875Roll
+349.875Pitch
+6.0Acceleration
+0.01,-0.9,9.68Linear acceleration
+0.02,0.13,-0.06Heading 
+350.0625Roll
+350.0625Pitch
+6.25Acceleration
+1.31,-0.92,9.59Linear acceleration
+1.31,0.15,-0.14Heading 
+350.1875Roll
+350.1875Pitch
+6.5625Acceleration
+0.0,-0.96,9.59Linear acceleration
+1.31,0.15,-0.18Heading 
+350.3125Roll
+350.3125Pitch
+6.8125Acceleration
+-0.02,-0.98,9.54Linear acceleration
+0.0,0.18,-0.19Heading 
+350.5Roll
+350.5Pitch
+6.9375Acceleration
+-0.09,-1.01,9.63Linear acceleration
+-0.02,0.18,-0.1Heading 
+350.625Roll
+350.625Pitch
+7.0Acceleration
+-0.07,-1.04,9.54Linear acceleration
+0.02,0.15,-0.18Heading 
+350.75Roll
+350.75Pitch
+6.9375Acceleration
+-0.14,-1.0,9.55Linear acceleration
+-0.02,0.18,-0.17Heading 
+350.9375Roll
+350.9375Pitch
+6.875Acceleration
+-0.13,-1.04,9.63Linear acceleration
+1.28,0.13,-0.1Heading 
+351.125Roll
+351.125Pitch
+6.875Acceleration
+-0.17,-0.99,9.58Linear acceleration
+-0.04,0.18,-0.14Heading 
+351.25Roll
+351.25Pitch
+6.8125Acceleration
+-0.2,-0.95,9.56Linear acceleration
+-0.05,0.21,-0.16Heading 
+351.4375Roll
+351.4375Pitch
+6.8125Acceleration
+-0.21,-0.95,9.53Linear acceleration
+-0.04,0.21,-0.19Heading 
+351.625Roll
+351.625Pitch
+6.9375Acceleration
+-0.23,-1.02,9.56Linear acceleration
+-0.05,0.16,-0.16Heading 
+351.8125Roll
+351.8125Pitch
+6.9375Acceleration
+-0.27,-1.08,9.59Linear acceleration
+-0.09,0.09,-0.13Heading 
+360.0Roll
+360.0Pitch
+6.75Acceleration
+-0.23,-1.02,9.48Linear acceleration
+-0.05,0.13,-0.25Heading 
+352.1875Roll
+352.1875Pitch
+6.625Acceleration
+-0.21,-1.01,9.56Linear acceleration
+-0.02,0.11,-0.17Heading 
+360.375Roll
+360.375Pitch
+6.6875Acceleration
+-0.24,-0.96,9.56Linear acceleration
+-0.06,0.13,-0.12Heading 
+360.5625Roll
+360.5625Pitch
+6.875Acceleration
+-0.33,-0.98,9.54Linear acceleration
+-0.07,0.19,-0.19Heading 
+352.8125Roll
+352.8125Pitch
+7.0625Acceleration
+-0.4,-1.0,9.5Linear acceleration
+-0.09,0.19,-0.22Heading 
+353.0Roll
+353.0Pitch
+7.125Acceleration
+-0.48,-1.02,9.62Linear acceleration
+-0.1,0.16,-0.17Heading 
+361.25Roll
+361.25Pitch
+7.3125Acceleration
+-0.54,-1.06,9.56Linear acceleration
+-0.12,0.18,-0.15Heading 
+361.4375Roll
+361.4375Pitch
+7.5Acceleration
+-0.6,-1.15,9.52Linear acceleration
+-0.14,0.12,-0.19Heading 
+361.625Roll
+361.625Pitch
+7.5Acceleration
+-0.59,-1.11,9.55Linear acceleration
+-0.12,0.17,-0.14Heading 
+361.8125Roll
+361.8125Pitch
+7.25Acceleration
+-0.62,-1.13,9.56Linear acceleration
+-0.11,0.11,-0.14Heading 
+354.0Roll
+354.0Pitch
+7.0Acceleration
+-0.69,-0.95,9.56Linear acceleration
+-0.14,0.23,-0.14Heading 
+362.1875Roll
+362.1875Pitch
+6.875Acceleration
+-0.72,-0.93,9.53Linear acceleration
+-0.14,0.24,-0.18Heading 
+362.4375Roll
+362.4375Pitch
+6.75Acceleration
+-0.79,-0.99,9.54Linear acceleration
+-0.17,0.16,-0.16Heading 
+362.625Roll
+362.625Pitch
+6.75Acceleration
+-0.8,-0.96,9.54Linear acceleration
+-0.12,0.18,-0.17Heading 
+354.875Roll
+354.875Pitch
+6.875Acceleration
+-0.82,-1.03,9.63Linear acceleration
+-0.08,0.14,-0.07Heading 
+363.0625Roll
+363.0625Pitch
+7.125Acceleration
+-0.88,-1.05,9.6Linear acceleration
+-0.09,0.17,-0.09Heading 
+363.25Roll
+363.25Pitch
+7.4375Acceleration
+-0.91,-1.11,9.58Linear acceleration
+-0.11,0.07,-0.12Heading 
+363.4375Roll
+363.4375Pitch
+7.8125Acceleration
+-0.97,-1.18,9.59Linear acceleration
+-0.13,0.15,-0.08Heading 
+363.625Roll
+363.625Pitch
+8.0Acceleration
+-0.92,-1.19,9.54Linear acceleration
+-0.08,0.16,-0.12Heading 
+363.8125Roll
+363.8125Pitch
+8.0Acceleration
+-0.95,-1.24,9.59Linear acceleration
+-0.08,0.06,-0.12Heading 
+364.0625Roll
+364.0625Pitch
+7.875Acceleration
+-0.98,-1.21,9.51Linear acceleration
+-0.13,0.13,-0.16Heading 
+356.3125Roll
+356.3125Pitch
+7.5Acceleration
+-0.96,-1.15,9.58Linear acceleration
+-0.1,0.11,-0.1Heading 
+356.5Roll
+356.5Pitch
+7.125Acceleration
+-0.93,-1.08,9.57Linear acceleration
+-0.13,0.14,-0.11Heading 
+364.75Roll
+364.75Pitch
+6.8125Acceleration
+-0.96,-0.97,9.58Linear acceleration
+-0.1,0.19,-0.11Heading 
+365.0Roll
+365.0Pitch
+6.8125Acceleration
+-0.97,-0.97,9.57Linear acceleration
+-0.11,0.18,-0.12Heading 
+365.25Roll
+365.25Pitch
+6.8125Acceleration
+-1.01,-0.97,9.54Linear acceleration
+-0.13,0.19,-0.14Heading 
+365.4375Roll
+365.4375Pitch
+6.9375Acceleration
+-1.06,-1.0,9.55Linear acceleration
+-0.13,0.17,-0.13Heading 
+365.6875Roll
+365.6875Pitch
+7.125Acceleration
+-1.1,-1.04,9.53Linear acceleration
+-0.17,0.11,-0.16Heading 
+365.9375Roll
+365.9375Pitch
+7.25Acceleration
+-1.12,-1.03,9.52Linear acceleration
+-0.12,0.2,-0.15Heading 
+366.1875Roll
+366.1875Pitch
+7.3125Acceleration
+-1.11,-1.17,9.59Linear acceleration
+-0.1,0.07,-0.07Heading 
+366.4375Roll
+366.4375Pitch
+7.25Acceleration
+-1.18,-1.1,9.52Linear acceleration
+-0.16,0.12,-0.15Heading 
+366.625Roll
+366.625Pitch
+7.25Acceleration
+-1.19,-1.05,9.56Linear acceleration
+-0.15,0.17,-0.1Heading 
+366.875Roll
+366.875Pitch
+7.1875Acceleration
+-1.17,-1.1,9.52Linear acceleration
+-0.1,0.07,-0.13Heading 
+367.125Roll
+367.125Pitch
+7.0Acceleration
+-1.19,-1.11,9.5Linear acceleration
+-0.11,0.08,-0.17Heading 
+359.375Roll
+359.375Pitch
+6.875Acceleration
+-1.23,-1.13,9.57Linear acceleration
+-0.12,0.05,-0.09Heading 
+367.6875Roll
+367.6875Pitch
+6.6875Acceleration
+-1.19,-1.06,9.53Linear acceleration
+-0.11,0.06,-0.14Heading 
+359.9375Roll
+359.9375Pitch
+6.5Acceleration
+-1.16,-0.98,9.52Linear acceleration
+-0.09,0.11,-0.16Heading 
+0.25Roll
+0.25Pitch
+6.3125Acceleration
+-1.15,-0.93,9.5Linear acceleration
+-0.1,0.14,-0.18Heading 
+8.5625Roll
+8.5625Pitch
+6.25Acceleration
+-1.16,-0.89,9.56Linear acceleration
+-0.12,0.17,-0.12Heading 
+8.8125Roll
+8.8125Pitch
+6.3125Acceleration
+-1.06,-1.0,9.63Linear acceleration
+-0.04,0.07,-0.06Heading 
+8.1875Roll
+8.1875Pitch
+6.125Acceleration
+-1.06,-1.13,9.64Linear acceleration
+-0.05,0.16,-0.08Heading 
+366.4375Roll
+366.4375Pitch
+5.6875Acceleration
+-0.9,-1.19,9.61Linear acceleration
+1.35,-0.23,-0.09Heading 
+364.5Roll
+364.5Pitch
+4.4375Acceleration
+-0.88,-1.09,9.72Linear acceleration
+1.28,-0.14,-0.19Heading 
+362.9375Roll
+362.9375Pitch
+2.8125Acceleration
+-0.98,0.07,9.56Linear acceleration
+-0.04,0.56,-0.18Heading 
+353.8125Roll
+353.8125Pitch
+1.9375Acceleration
+-0.92,-0.28,9.56Linear acceleration
+-0.01,0.04,-0.18Heading 
+360.75Roll
+360.75Pitch
+1.8125Acceleration
+-0.89,0.0,9.52Linear acceleration
+1.33,0.27,-0.2Heading 
+351.875Roll
+351.875Pitch
+2.4375Acceleration
+-0.8,-0.24,9.58Linear acceleration
+0.05,0.17,-0.17Heading 
+351.25Roll
+351.25Pitch
+3.625Acceleration
+-0.78,-0.56,9.58Linear acceleration
+1.32,0.07,-0.16Heading 
+350.6875Roll
+350.6875Pitch
+5.375Acceleration
+-0.75,-0.74,9.6Linear acceleration
+1.32,0.13,-0.17Heading 
+350.25Roll
+350.25Pitch
+7.6875Acceleration
+-0.7,-1.23,9.6Linear acceleration
+1.33,0.07,-0.08Heading 
+350.0625Roll
+350.0625Pitch
+10.4375Acceleration
+-0.69,-1.65,9.48Linear acceleration
+1.33,0.1,-0.09Heading 
+350.0Roll
+350.0Pitch
+13.5Acceleration
+-0.67,-2.18,9.44Linear acceleration
+1.33,0.1,-0.06Heading 
+350.0Roll
+350.0Pitch
+16.25Acceleration
+-0.73,-2.72,9.34Linear acceleration
+1.28,0.04,-0.03Heading 
+350.125Roll
+350.125Pitch
+18.1875Acceleration
+-0.74,-3.07,9.26Linear acceleration
+-0.02,-0.01,-0.02Heading 
+350.375Roll
+350.375Pitch
+18.6875Acceleration
+-0.77,-3.01,9.25Linear acceleration
+-0.03,0.12,0.0Heading 
+350.75Roll
+350.75Pitch
+18.875Acceleration
+-0.79,-3.05,9.24Linear acceleration
+-0.02,0.11,0.0Heading 
+351.1875Roll
+351.1875Pitch
+19.75Acceleration
+-0.83,-3.14,9.21Linear acceleration
+-0.04,0.16,0.01Heading 
+351.75Roll
+351.75Pitch
+21.375Acceleration
+-0.94,-3.4,9.14Linear acceleration
+-0.1,0.18,0.05Heading 
+360.4375Roll
+360.4375Pitch
+23.25Acceleration
+-0.92,-3.76,9.12Linear acceleration
+-0.04,0.09,0.15Heading 
+361.25Roll
+361.25Pitch
+25.0Acceleration
+-0.99,-4.03,8.95Linear acceleration
+-0.06,0.1,0.1Heading 
+354.0625Roll
+354.0625Pitch
+26.4375Acceleration
+-1.1,-4.27,8.84Linear acceleration
+-0.17,0.08,0.09Heading 
+363.0625Roll
+363.0625Pitch
+27.1875Acceleration
+-1.2,-4.4,8.77Linear acceleration
+-0.11,0.05,0.11Heading 
+364.125Roll
+364.125Pitch
+26.75Acceleration
+-1.22,-4.33,8.7Linear acceleration
+-0.03,0.05,0.01Heading 
+365.1875Roll
+365.1875Pitch
+25.0Acceleration
+-0.15,-4.07,8.88Linear acceleration
+-0.11,0.01,0.06Heading 
+366.25Roll
+366.25Pitch
+22.0625Acceleration
+-0.26,-3.36,8.98Linear acceleration
+-0.12,0.28,-0.01Heading 
+367.1875Roll
+367.1875Pitch
+19.5Acceleration
+-0.45,-2.98,9.08Linear acceleration
+-0.2,0.23,-0.05Heading 
+8.1875Roll
+8.1875Pitch
+17.375Acceleration
+-0.47,-2.74,9.12Linear acceleration
+-0.1,0.14,-0.09Heading 
+8.9375Roll
+8.9375Pitch
+16.25Acceleration
+-0.48,-2.65,9.08Linear acceleration
+-0.01,0.03,-0.17Heading 
+9.6875Roll
+9.6875Pitch
+15.6875Acceleration
+-1.85,-2.74,9.22Linear acceleration
+-0.13,0.2,-0.07Heading 
+9.5625Roll
+9.5625Pitch
+15.75Acceleration
+-1.9,-2.58,9.22Linear acceleration
+-0.03,0.02,-0.04Heading 
+8.25Roll
+8.25Pitch
+16.0Acceleration
+-0.68,-2.71,9.11Linear acceleration
+1.28,-0.06,-0.11Heading 
+358.4375Roll
+358.4375Pitch
+16.0625Acceleration
+-0.81,-2.65,9.28Linear acceleration
+-0.01,0.0,0.07Heading 
+364.3125Roll
+364.3125Pitch
+17.1875Acceleration
+-0.81,-3.11,9.14Linear acceleration
+1.33,-0.28,0.0Heading 
+363.125Roll
+363.125Pitch
+19.625Acceleration
+-0.99,-2.77,8.92Linear acceleration
+-0.07,0.46,-0.06Heading 
+362.3125Roll
+362.3125Pitch
+22.4375Acceleration
+-1.0,-3.77,8.97Linear acceleration
+-0.05,-0.12,0.15Heading 
+362.0625Roll
+362.0625Pitch
+24.1875Acceleration
+-1.06,-3.83,8.71Linear acceleration
+-0.06,0.08,0.02Heading 
+362.25Roll
+362.25Pitch
+24.375Acceleration
+-1.0,-3.72,8.79Linear acceleration
+0.02,0.21,0.11Heading 
+362.75Roll
+362.75Pitch
+23.3125Acceleration
+-0.96,-3.53,8.86Linear acceleration
+1.35,0.23,0.1Heading 
+363.4375Roll
+363.4375Pitch
+22.25Acceleration
+-2.16,-3.44,9.03Linear acceleration
+1.38,0.03,0.14Heading 
+364.25Roll
+364.25Pitch
+21.875Acceleration
+-0.8,-3.47,8.94Linear acceleration
+0.1,0.09,0.07Heading 
+357.0625Roll
+357.0625Pitch
+21.1875Acceleration
+-0.8,-3.3,8.96Linear acceleration
+1.29,0.16,0.02Heading 
+366.0625Roll
+366.0625Pitch
+20.4375Acceleration
+-0.7,-3.27,8.99Linear acceleration
+1.32,0.07,0.01Heading 
+367.0Roll
+367.0Pitch
+19.8125Acceleration
+-0.81,-3.14,8.84Linear acceleration
+-0.13,0.11,-0.19Heading 
+367.75Roll
+367.75Pitch
+19.875Acceleration
+-0.7,-3.22,9.03Linear acceleration
+1.28,0.02,-0.03Heading 
+8.5625Roll
+8.5625Pitch
+20.75Acceleration
+-0.54,-3.32,8.94Linear acceleration
+-0.04,0.09,-0.07Heading 
+1.3125Roll
+1.3125Pitch
+22.1875Acceleration
+-1.66,-3.65,8.92Linear acceleration
+1.28,0.0,0.04Heading 
+10.0625Roll
+10.0625Pitch
+23.5625Acceleration
+-1.46,-3.92,9.06Linear acceleration
+0.02,-0.04,0.18Heading 
+1.9375Roll
+1.9375Pitch
+24.25Acceleration
+-0.1,-3.85,8.89Linear acceleration
+0.0,0.15,0.05Heading 
+0.75Roll
+0.75Pitch
+24.625Acceleration
+-1.29,-4.18,9.06Linear acceleration
+1.32,-0.1,0.24Heading 
+366.75Roll
+366.75Pitch
+25.0Acceleration
+-0.07,-4.33,9.03Linear acceleration
+1.28,-0.23,0.23Heading 
+364.75Roll
+364.75Pitch
+25.625Acceleration
+-1.04,-4.47,9.11Linear acceleration
+1.38,-0.09,0.27Heading 
+363.5Roll
+363.5Pitch
+26.25Acceleration
+-0.04,-3.84,8.95Linear acceleration
+-0.01,0.45,0.24Heading 
+362.875Roll
+362.875Pitch
+26.75Acceleration
+-1.21,-4.45,8.81Linear acceleration
+-0.06,-0.05,0.14Heading 
+362.5625Roll
+362.5625Pitch
+27.1875Acceleration
+-1.15,-4.21,8.86Linear acceleration
+0.05,0.23,0.2Heading 
+362.5625Roll
+362.5625Pitch
+28.0Acceleration
+-1.13,-4.59,8.62Linear acceleration
+0.03,-0.01,0.03Heading 
+354.8125Roll
+354.8125Pitch
+29.125Acceleration
+-1.2,-4.63,8.52Linear acceleration
+-0.08,0.11,0.02Heading 
+355.3125Roll
+355.3125Pitch
+30.1875Acceleration
+-1.14,-4.81,8.58Linear acceleration
+-0.07,0.09,0.17Heading 
+363.75Roll
+363.75Pitch
+31.3125Acceleration
+-1.06,-5.05,8.42Linear acceleration
+-0.07,0.1,0.18Heading 
+364.3125Roll
+364.3125Pitch
+32.4375Acceleration
+-1.06,-5.17,8.38Linear acceleration
+-0.12,0.07,0.14Heading 
+365.0Roll
+365.0Pitch
+33.4375Acceleration
+-1.01,-5.31,8.08Linear acceleration
+-0.11,0.07,-0.05Heading 
+365.8125Roll
+365.8125Pitch
+34.125Acceleration
+-0.99,-5.52,8.15Linear acceleration
+-0.09,-0.04,0.07Heading 
+358.6875Roll
+358.6875Pitch
+34.6875Acceleration
+-1.03,-5.47,8.09Linear acceleration
+-0.13,0.08,0.07Heading 
+367.625Roll
+367.625Pitch
+34.8125Acceleration
+-1.17,-5.54,8.11Linear acceleration
+-0.21,0.03,0.1Heading 
+8.5625Roll
+8.5625Pitch
+35.0625Acceleration
+-1.26,-5.56,7.89Linear acceleration
+-0.23,0.04,-0.08Heading 
+9.5Roll
+9.5Pitch
+35.5Acceleration
+-0.13,-5.51,7.92Linear acceleration
+-0.33,-0.03,-0.23Heading 
+10.5Roll
+10.5Pitch
+36.0625Acceleration
+-0.35,-5.67,7.91Linear acceleration
+-0.32,0.05,0.06Heading 
+10.6875Roll
+10.6875Pitch
+36.3125Acceleration
+-0.47,-5.75,7.81Linear acceleration
+-0.23,0.0,0.01Heading 
+9.9375Roll
+9.9375Pitch
+36.375Acceleration
+-0.76,-5.91,7.94Linear acceleration
+-0.21,-0.19,0.18Heading 
+0.8125Roll
+0.8125Pitch
+36.5Acceleration
+-1.14,-5.6,7.85Linear acceleration
+-0.2,0.08,0.18Heading 
+366.9375Roll
+366.9375Pitch
+38.0Acceleration
+-2.8,-5.67,7.68Linear acceleration
+-0.2,0.15,0.23Heading 
+365.1875Roll
+365.1875Pitch
+41.5Acceleration
+-2.98,-6.29,7.35Linear acceleration
+-0.03,-0.08,0.35Heading 
+356.625Roll
+356.625Pitch
+44.875Acceleration
+-3.2,-6.39,7.03Linear acceleration
+-0.02,0.17,0.48Heading 
+365.1875Roll
+365.1875Pitch
+45.8125Acceleration
+-3.37,-6.7,6.92Linear acceleration
+-0.04,-0.08,0.49Heading 
+366.375Roll
+366.375Pitch
+44.9375Acceleration
+-3.5,-6.3,6.89Linear acceleration
+-0.04,0.16,0.38Heading 
+8.0625Roll
+8.0625Pitch
+43.125Acceleration
+-3.67,-6.04,6.86Linear acceleration
+-0.14,0.21,0.18Heading 
+9.4375Roll
+9.4375Pitch
+43.0625Acceleration
+-3.71,-6.25,6.5Linear acceleration
+-0.16,0.0,-0.16Heading 
+10.8125Roll
+10.8125Pitch
+44.5625Acceleration
+-3.56,-6.5,6.64Linear acceleration
+-0.03,-0.08,0.12Heading 
+11.5625Roll
+11.5625Pitch
+45.125Acceleration
+-3.45,-6.66,6.69Linear acceleration
+0.11,-0.18,0.25Heading 
+3.75Roll
+3.75Pitch
+43.5625Acceleration
+-3.61,-6.39,6.6Linear acceleration
+1.33,-0.13,0.0Heading 
+11.4375Roll
+11.4375Pitch
+41.6875Acceleration
+-3.75,-5.87,6.52Linear acceleration
+1.38,0.12,-0.09Heading 
+10.5625Roll
+10.5625Pitch
+40.8125Acceleration
+-2.65,-6.06,6.8Linear acceleration
+1.28,-0.19,0.01Heading 
+9.375Roll
+9.375Pitch
+39.9375Acceleration
+-3.84,-5.81,6.88Linear acceleration
+1.42,-0.01,0.1Heading 
+8.0625Roll
+8.0625Pitch
+37.5Acceleration
+-2.62,-5.11,7.2Linear acceleration
+1.53,0.29,0.16Heading 
+366.6875Roll
+366.6875Pitch
+34.5Acceleration
+-3.84,-4.85,7.44Linear acceleration
+1.61,0.15,0.12Heading 
+364.9375Roll
+364.9375Pitch
+32.8125Acceleration
+-3.48,-4.92,7.85Linear acceleration
+1.85,-0.07,0.45Heading 
+363.875Roll
+363.875Pitch
+32.5625Acceleration
+-2.98,-4.88,7.86Linear acceleration
+0.76,0.0,0.23Heading 
+363.75Roll
+363.75Pitch
+30.5625Acceleration
+-2.82,-4.33,8.11Linear acceleration
+1.64,0.35,0.12Heading 
+363.8125Roll
+363.8125Pitch
+28.375Acceleration
+-1.14,-4.27,8.18Linear acceleration
+1.51,-0.1,-0.14Heading 
+364.0Roll
+364.0Pitch
+30.8125Acceleration
+-0.89,-3.95,8.5Linear acceleration
+-0.13,0.96,0.27Heading 
+364.75Roll
+364.75Pitch
+43.4375Acceleration
+-0.2,-6.82,7.41Linear acceleration
+-0.1,-0.32,0.34Heading 
+367.4375Roll
+367.4375Pitch
+55.25Acceleration
+-1.21,-8.78,5.95Linear acceleration
+-0.34,-0.75,0.39Heading 
+11.0625Roll
+11.0625Pitch
+58.4375Acceleration
+-1.01,-8.71,5.52Linear acceleration
+-0.47,-0.37,0.4Heading 
+15.375Roll
+15.375Pitch
+57.25Acceleration
+-0.68,-8.32,5.66Linear acceleration
+-0.28,-0.07,0.37Heading 
+11.5Roll
+11.5Pitch
+54.8125Acceleration
+-0.68,-8.33,5.76Linear acceleration
+-0.3,-0.1,0.0Heading 
+14.5625Roll
+14.5625Pitch
+51.8125Acceleration
+-0.84,-7.57,6.04Linear acceleration
+-0.3,0.12,0.0Heading 
+16.25Roll
+16.25Pitch
+50.5625Acceleration
+-0.99,-7.75,6.37Linear acceleration
+-0.19,-0.2,0.16Heading 
+25.0625Roll
+25.0625Pitch
+51.0Acceleration
+-1.34,-7.7,6.36Linear acceleration
+-0.22,-0.02,0.27Heading 
+24.9375Roll
+24.9375Pitch
+52.125Acceleration
+-0.11,-7.84,6.14Linear acceleration
+-0.04,-0.17,0.18Heading 
+24.25Roll
+24.25Pitch
+52.75Acceleration
+-0.5,-8.03,5.95Linear acceleration
+-0.11,-0.24,0.15Heading 
+14.9375Roll
+14.9375Pitch
+53.25Acceleration
+-0.66,-7.8,5.8Linear acceleration
+-0.1,-0.08,0.04Heading 
+13.3125Roll
+13.3125Pitch
+54.3125Acceleration
+-0.98,-7.37,5.57Linear acceleration
+-0.23,0.43,0.0Heading 
+12.25Roll
+12.25Pitch
+56.5625Acceleration
+-2.0,-8.4,5.45Linear acceleration
+0.0,-0.39,0.17Heading 
+11.75Roll
+11.75Pitch
+58.4375Acceleration
+-1.73,-8.16,5.38Linear acceleration
+0.13,0.04,0.34Heading 
+11.6875Roll
+11.6875Pitch
+60.0625Acceleration
+-0.44,-8.69,5.17Linear acceleration
+-0.11,-0.29,0.36Heading 
+12.375Roll
+12.375Pitch
+61.875Acceleration
+-0.17,-8.91,4.89Linear acceleration
+-0.12,-0.34,0.31Heading 
+13.5Roll
+13.5Pitch
+63.5625Acceleration
+-1.09,-8.66,4.71Linear acceleration
+-0.04,0.06,0.37Heading 
+14.8125Roll
+14.8125Pitch
+64.4375Acceleration
+-0.81,-8.57,4.42Linear acceleration
+-0.02,0.25,0.22Heading 
+16.125Roll
+16.125Pitch
+66.125Acceleration
+-0.7,-9.54,4.02Linear acceleration
+-0.1,-0.57,0.09Heading 
+25.625Roll
+25.625Pitch
+68.0625Acceleration
+-0.54,-9.35,3.91Linear acceleration
+-0.11,-0.26,0.25Heading 
+19.3125Roll
+19.3125Pitch
+69.375Acceleration
+-0.16,-8.92,3.78Linear acceleration
+1.33,0.25,0.33Heading 
+29.625Roll
+29.625Pitch
+70.5Acceleration
+-0.05,-8.68,3.65Linear acceleration
+-0.05,0.56,0.38Heading 
+31.8125Roll
+31.8125Pitch
+73.375Acceleration
+1.3,-9.13,3.34Linear acceleration
+-0.21,0.26,0.57Heading 
+25.25Roll
+25.25Pitch
+75.4375Acceleration
+-0.2,-9.75,2.05Linear acceleration
+-0.54,-0.27,-0.4Heading 
+25.5Roll
+25.5Pitch
+75.0Acceleration
+1.35,-9.66,2.16Linear acceleration
+-0.19,-0.19,-0.37Heading 
+26.1875Roll
+26.1875Pitch
+73.4375Acceleration
+-0.43,-9.33,3.12Linear acceleration
+-0.52,0.05,0.31Heading 
+27.25Roll
+27.25Pitch
+72.125Acceleration
+-0.34,-8.56,3.32Linear acceleration
+-0.31,0.76,0.31Heading 
+28.9375Roll
+28.9375Pitch
+72.125Acceleration
+-0.15,-9.16,3.4Linear acceleration
+-0.05,0.17,0.41Heading 
+31.375Roll
+31.375Pitch
+72.625Acceleration
+0.05,-9.75,3.02Linear acceleration
+-0.15,-0.24,0.09Heading 
+42.0Roll
+42.0Pitch
+72.125Acceleration
+-0.7,-8.78,3.03Linear acceleration
+-0.61,0.55,0.03Heading 
+44.625Roll
+44.625Pitch
+71.6875Acceleration
+1.39,-9.63,3.23Linear acceleration
+-0.35,0.45,0.21Heading 
+47.3125Roll
+47.3125Pitch
+71.1875Acceleration
+1.48,-9.58,3.33Linear acceleration
+1.5,-0.3,0.18Heading 
+41.375Roll
+41.375Pitch
+70.5625Acceleration
+1.45,-9.72,2.94Linear acceleration
+1.92,-0.23,-0.37Heading 
+42.5625Roll
+42.5625Pitch
+70.25Acceleration
+0.3,-9.37,3.32Linear acceleration
+0.29,-0.14,0.01Heading 
+42.75Roll
+42.75Pitch
+70.25Acceleration
+1.39,-9.56,3.39Linear acceleration
+1.37,-0.33,0.08Heading 
+42.25Roll
+42.25Pitch
+69.3125Acceleration
+0.17,-9.51,3.32Linear acceleration
+-0.03,-0.06,-0.08Heading 
+41.1875Roll
+41.1875Pitch
+68.375Acceleration
+-0.14,-9.09,3.46Linear acceleration
+-0.13,0.02,-0.14Heading 
+39.8125Roll
+39.8125Pitch
+67.8125Acceleration
+-0.14,-9.41,3.77Linear acceleration
+-0.14,-0.33,0.07Heading 
+45.8125Roll
+45.8125Pitch
+67.5Acceleration
+-0.05,-9.19,3.81Linear acceleration
+-0.07,-0.13,0.06Heading 
+43.5625Roll
+43.5625Pitch
+67.375Acceleration
+1.28,-9.0,3.73Linear acceleration
+-0.05,0.04,-0.03Heading 
+41.0Roll
+41.0Pitch
+67.1875Acceleration
+1.28,-8.98,3.98Linear acceleration
+-0.06,0.06,0.19Heading 
+30.5625Roll
+30.5625Pitch
+67.625Acceleration
+-0.01,-8.99,4.16Linear acceleration
+-0.05,0.07,0.43Heading 
+27.875Roll
+27.875Pitch
+67.8125Acceleration
+-0.37,-8.91,4.05Linear acceleration
+-0.35,0.16,0.36Heading 
+25.5625Roll
+25.5625Pitch
+69.0625Acceleration
+-0.16,-9.04,3.85Linear acceleration
+-0.04,0.11,0.35Heading 
+24.25Roll
+24.25Pitch
+69.375Acceleration
+-0.18,-9.01,3.82Linear acceleration
+1.33,0.17,0.38Heading 
+24.625Roll
+24.625Pitch
+69.5625Acceleration
+-0.32,-8.76,3.66Linear acceleration
+-0.03,0.42,0.25Heading 
+26.5625Roll
+26.5625Pitch
+68.8125Acceleration
+-0.75,-9.06,3.82Linear acceleration
+-0.5,0.07,0.27Heading 
+29.5625Roll
+29.5625Pitch
+68.0625Acceleration
+-0.49,-8.89,3.53Linear acceleration
+-0.33,0.19,-0.11Heading 
+40.1875Roll
+40.1875Pitch
+68.4375Acceleration
+-0.17,-9.35,3.85Linear acceleration
+-0.11,-0.23,0.25Heading 
+42.5625Roll
+42.5625Pitch
+68.75Acceleration
+1.35,-9.26,3.65Linear acceleration
+1.4,-0.12,0.1Heading 
+36.3125Roll
+36.3125Pitch
+69.0Acceleration
+1.33,-9.22,3.52Linear acceleration
+1.42,-0.06,0.01Heading 
+38.0Roll
+38.0Pitch
+68.875Acceleration
+-0.07,-9.27,3.54Linear acceleration
+-0.15,0.29,-0.19Heading 
+47.8125Roll
+47.8125Pitch
+68.375Acceleration
+-0.41,-8.84,3.48Linear acceleration
+-0.21,0.26,-0.12Heading 
+41.6875Roll
+41.6875Pitch
+67.6875Acceleration
+-0.54,-9.08,3.64Linear acceleration
+-0.29,-0.01,-0.08Heading 
+43.5625Roll
+43.5625Pitch
+66.8125Acceleration
+-0.16,-8.36,3.57Linear acceleration
+0.11,0.64,-0.28Heading 
+44.75Roll
+44.75Pitch
+65.75Acceleration
+-0.07,-8.99,4.17Linear acceleration
+1.51,-0.05,0.16Heading 
+45.5625Roll
+45.5625Pitch
+63.875Acceleration
+-0.28,-8.57,4.27Linear acceleration
+1.34,0.22,-0.03Heading 
+46.1875Roll
+46.1875Pitch
+63.75Acceleration
+-0.46,-9.17,4.19Linear acceleration
+-0.07,-0.38,-0.13Heading 
+46.6875Roll
+46.6875Pitch
+64.0625Acceleration
+-0.32,-9.08,4.21Linear acceleration
+1.34,-0.27,-0.06Heading 
+47.0Roll
+47.0Pitch
+63.9375Acceleration
+1.28,-8.92,3.92Linear acceleration
+1.65,-0.12,-0.37Heading 
+47.0Roll
+47.0Pitch
+64.625Acceleration
+-0.04,-8.51,4.63Linear acceleration
+1.53,0.34,0.45Heading 
+46.5Roll
+46.5Pitch
+64.5625Acceleration
+0.18,-9.54,4.03Linear acceleration
+-0.12,0.72,0.24Heading 
+45.125Roll
+45.125Pitch
+64.25Acceleration
+1.38,-8.58,4.16Linear acceleration
+1.55,0.25,-0.09Heading 
+43.3125Roll
+43.3125Pitch
+64.3125Acceleration
+1.29,-8.07,4.54Linear acceleration
+2.22,0.02,-0.21Heading 
+41.375Roll
+41.375Pitch
+64.75Acceleration
+-1.03,-8.93,4.86Linear acceleration
+-0.81,-0.06,0.68Heading 
+47.5Roll
+47.5Pitch
+63.5625Acceleration
+-0.31,-8.15,3.91Linear acceleration
+-0.46,0.02,0.84Heading 
+45.5625Roll
+45.5625Pitch
+61.375Acceleration
+-0.87,-7.89,4.87Linear acceleration
+-0.55,0.7,0.18Heading 
+43.625Roll
+43.625Pitch
+60.4375Acceleration
+-0.82,-7.85,4.39Linear acceleration
+-0.51,0.67,-0.43Heading 
+33.9375Roll
+33.9375Pitch
+61.125Acceleration
+1.4,-8.84,4.53Linear acceleration
+1.67,-0.25,-0.19Heading 
+31.875Roll
+31.875Pitch
+60.5Acceleration
+-0.1,-8.43,5.24Linear acceleration
+-0.4,0.48,-0.15Heading 
+29.75Roll
+29.75Pitch
+60.5625Acceleration
+-0.69,-8.08,4.63Linear acceleration
+-0.42,0.45,-0.17Heading 
+27.625Roll
+27.625Pitch
+61.75Acceleration
+1.48,-9.03,4.35Linear acceleration
+1.75,-0.39,-0.26Heading 
+25.75Roll
+25.75Pitch
+62.25Acceleration
+-0.21,-8.98,4.92Linear acceleration
+1.33,-0.3,0.36Heading 
+24.375Roll
+24.375Pitch
+62.0Acceleration
+-0.18,-9.01,4.28Linear acceleration
+0.09,-0.36,-0.31Heading 
+23.4375Roll
+23.4375Pitch
+61.8125Acceleration
+-0.12,-9.2,4.97Linear acceleration
+1.46,-0.56,0.35Heading 
+30.625Roll
+30.625Pitch
+61.375Acceleration
+-0.83,-7.83,5.16Linear acceleration
+-0.53,-0.65,0.65Heading 
+30.0Roll
+30.0Pitch
+60.9375Acceleration
+1.46,-9.58,4.87Linear acceleration
+0.54,-1.01,0.11Heading 
+243.1875Roll
+243.1875Pitch
+61.375Acceleration
+-0.35,-8.67,4.71Linear acceleration
+-0.02,-0.06,0.03Heading 
+251.0Roll
+251.0Pitch
+62.0Acceleration
+-0.12,-7.6,4.73Linear acceleration
+1.4,1.05,0.12Heading 
+251.6875Roll
+251.6875Pitch
+61.875Acceleration
+1.49,-8.48,4.65Linear acceleration
+1.55,0.16,0.02Heading 
+252.625Roll
+252.625Pitch
+62.0Acceleration
+1.66,-8.69,4.82Linear acceleration
+1.52,-0.03,0.22Heading 
+253.625Roll
+253.625Pitch
+62.8125Acceleration
+1.62,-8.62,4.4Linear acceleration
+1.39,-0.27,0.04Heading 
+254.625Roll
+254.625Pitch
+62.5625Acceleration
+1.68,-8.48,4.86Linear acceleration
+0.02,0.21,0.36Heading 
+247.1875Roll
+247.1875Pitch
+61.5625Acceleration
+1.57,-8.25,4.75Linear acceleration
+-0.12,0.35,0.08Heading 
+255.8125Roll
+255.8125Pitch
+61.4375Acceleration
+0.24,-8.61,4.74Linear acceleration
+1.46,0.24,0.08Heading 
+248.5Roll
+248.5Pitch
+62.0625Acceleration
+1.64,-8.51,4.82Linear acceleration
+-0.09,0.14,0.23Heading 
+248.875Roll
+248.875Pitch
+61.6875Acceleration
+1.65,-8.06,4.69Linear acceleration
+-0.14,0.56,0.05Heading 
+249.0Roll
+249.0Pitch
+61.0625Acceleration
+1.81,-8.2,4.69Linear acceleration
+-0.03,0.36,-0.03Heading 
+249.0Roll
+249.0Pitch
+60.9375Acceleration
+1.99,-8.58,4.71Linear acceleration
+1.36,-0.03,-0.03Heading 
+248.625Roll
+248.625Pitch
+60.625Acceleration
+1.85,-8.58,5.02Linear acceleration
+-0.08,0.1,0.2Heading 
+248.0Roll
+248.0Pitch
+60.0Acceleration
+1.83,-8.28,4.98Linear acceleration
+-0.14,0.18,0.1Heading 
+255.4375Roll
+255.4375Pitch
+60.0Acceleration
+1.69,-8.32,5.02Linear acceleration
+-0.29,0.14,0.13Heading 
+246.8125Roll
+246.8125Pitch
+60.0Acceleration
+1.87,-8.52,4.84Linear acceleration
+-0.12,-0.05,-0.03Heading 
+246.1875Roll
+246.1875Pitch
+60.25Acceleration
+0.55,-8.54,4.69Linear acceleration
+-0.08,0.1,-0.04Heading 
+253.8125Roll
+253.8125Pitch
+59.8125Acceleration
+1.77,-8.67,5.06Linear acceleration
+-0.17,-0.21,0.14Heading 
+253.5625Roll
+253.5625Pitch
+58.9375Acceleration
+1.83,-8.15,5.16Linear acceleration
+-0.14,0.21,0.11Heading 
+253.625Roll
+253.625Pitch
+58.4375Acceleration
+2.08,-8.15,5.04Linear acceleration
+1.32,0.05,-0.07Heading 
+254.3125Roll
+254.3125Pitch
+59.0625Acceleration
+1.88,-8.25,5.18Linear acceleration
+-0.11,0.13,0.15Heading 
+255.0625Roll
+255.0625Pitch
+59.1875Acceleration
+1.86,-8.63,4.96Linear acceleration
+-0.09,-0.23,-0.03Heading 
+247.6875Roll
+247.6875Pitch
+58.5625Acceleration
+1.65,-8.31,5.34Linear acceleration
+-0.25,0.03,0.24Heading 
+248.5Roll
+248.5Pitch
+58.0Acceleration
+0.73,-8.54,5.14Linear acceleration
+0.13,-0.24,-0.03Heading 
+249.4375Roll
+249.4375Pitch
+57.875Acceleration
+1.95,-7.88,5.35Linear acceleration
+1.33,0.4,0.15Heading 
+250.625Roll
+250.625Pitch
+58.125Acceleration
+2.16,-8.25,5.06Linear acceleration
+1.37,0.06,0.01Heading 
+251.625Roll
+251.625Pitch
+58.3125Acceleration
+1.89,-8.32,5.31Linear acceleration
+-0.12,0.0,0.18Heading 
+252.25Roll
+252.25Pitch
+57.875Acceleration
+2.16,-8.39,5.13Linear acceleration
+-0.09,0.09,-0.16Heading 
+252.5Roll
+252.5Pitch
+57.75Acceleration
+0.75,-8.28,5.36Linear acceleration
+-0.02,-0.01,0.15Heading 
+252.375Roll
+252.375Pitch
+58.0Acceleration
+2.03,-8.24,5.12Linear acceleration
+-0.01,0.04,-0.05Heading 
+252.125Roll
+252.125Pitch
+57.875Acceleration
+1.99,-8.06,5.01Linear acceleration
+-0.01,0.22,-0.18Heading 
+251.9375Roll
+251.9375Pitch
+57.3125Acceleration
+0.73,-8.5,5.37Linear acceleration
+0.08,-0.27,0.08Heading 
+251.9375Roll
+251.9375Pitch
+56.25Acceleration
+1.82,-8.11,5.66Linear acceleration
+-0.03,0.02,0.23Heading 
+252.0625Roll
+252.0625Pitch
+55.75Acceleration
+1.92,-8.0,5.5Linear acceleration
+1.37,0.08,0.0Heading 
+252.3125Roll
+252.3125Pitch
+55.25Acceleration
+0.68,-8.06,5.51Linear acceleration
+1.39,-0.15,0.11Heading 
+252.625Roll
+252.625Pitch
+54.375Acceleration
+1.95,-7.8,5.65Linear acceleration
+0.1,0.15,-0.03Heading 
+253.0625Roll
+253.0625Pitch
+54.3125Acceleration
+0.66,-7.8,5.58Linear acceleration
+-0.02,-0.01,0.07Heading 
+253.375Roll
+253.375Pitch
+54.0625Acceleration
+0.77,-8.08,5.63Linear acceleration
+0.12,-0.15,-0.1Heading 
+253.625Roll
+253.625Pitch
+53.1875Acceleration
+1.9,-7.95,6.0Linear acceleration
+-0.05,-0.12,0.14Heading 
+254.0Roll
+254.0Pitch
+52.8125Acceleration
+1.8,-7.82,6.2Linear acceleration
+-0.02,-0.04,0.09Heading 
+254.25Roll
+254.25Pitch
+53.125Acceleration
+1.87,-7.63,5.97Linear acceleration
+-0.11,0.19,0.1Heading 
+254.5Roll
+254.5Pitch
+54.0Acceleration
+2.01,-7.76,5.86Linear acceleration
+1.33,0.14,0.11Heading 
+254.625Roll
+254.625Pitch
+53.625Acceleration
+1.91,-7.63,5.74Linear acceleration
+1.54,-0.18,0.0Heading 
+254.6875Roll
+254.6875Pitch
+53.125Acceleration
+0.68,-7.65,6.01Linear acceleration
+0.03,0.16,0.14Heading 
+254.875Roll
+254.875Pitch
+53.5Acceleration
+1.97,-7.65,5.98Linear acceleration
+1.29,0.2,0.16Heading 
+255.0Roll
+255.0Pitch
+54.0625Acceleration
+2.03,-8.06,5.92Linear acceleration
+1.35,-0.14,0.18Heading 
+255.0Roll
+255.0Pitch
+53.875Acceleration
+2.1,-7.71,5.85Linear acceleration
+1.4,0.18,0.09Heading 
+254.875Roll
+254.875Pitch
+53.4375Acceleration
+2.2,-7.88,5.78Linear acceleration
+1.52,-0.03,-0.04Heading 
+254.6875Roll
+254.6875Pitch
+53.1875Acceleration
+1.88,-7.85,-321.61Linear acceleration
+-0.09,-0.01,0.22Heading 
+254.5625Roll
+254.5625Pitch
+53.375Acceleration
+0.67,-7.85,5.89Linear acceleration
+1.38,0.15,0.0Heading 
+254.5Roll
+254.5Pitch
+52.875Acceleration
+0.74,-7.86,5.75Linear acceleration
+1.29,-0.06,-0.13Heading 
+254.4375Roll
+254.4375Pitch
+52.4375Acceleration
+1.98,-7.73,6.12Linear acceleration
+-0.03,0.01,0.16Heading 
+254.375Roll
+254.375Pitch
+52.5Acceleration
+2.26,-7.66,5.93Linear acceleration
+1.49,0.09,-0.01Heading 
+254.4375Roll
+254.4375Pitch
+53.125Acceleration
+2.16,-7.67,5.79Linear acceleration
+1.49,-0.06,-0.05Heading 
+254.5Roll
+254.5Pitch
+53.5625Acceleration
+1.07,-7.85,5.75Linear acceleration
+1.39,0.05,-0.08Heading 
+254.4375Roll
+254.4375Pitch
+52.9375Acceleration
+1.03,-7.35,5.95Linear acceleration
+1.54,0.02,0.0Heading 
+254.3125Roll
+254.3125Pitch
+51.6875Acceleration
+2.42,-7.55,5.91Linear acceleration
+-0.01,0.08,-0.12Heading 
+254.3125Roll
+254.3125Pitch
+51.0625Acceleration
+1.28,-7.45,6.18Linear acceleration
+-0.01,0.11,0.07Heading 
+254.4375Roll
+254.4375Pitch
+51.0Acceleration
+2.54,-7.22,6.51Linear acceleration
+-0.14,0.3,0.39Heading 
+254.5625Roll
+254.5625Pitch
+49.875Acceleration
+1.42,-7.26,6.36Linear acceleration
+-0.2,-0.08,0.16Heading 
+255.0625Roll
+255.0625Pitch
+49.8125Acceleration
+1.51,-7.21,6.34Linear acceleration
+-0.01,0.18,0.1Heading 
+255.875Roll
+255.875Pitch
+51.0Acceleration
+1.68,-7.7,6.18Linear acceleration
+1.33,-0.16,0.12Heading 
+256.625Roll
+256.625Pitch
+52.75Acceleration
+1.61,-7.81,5.95Linear acceleration
+-0.11,-0.13,0.11Heading 
+265.0Roll
+265.0Pitch
+52.1875Acceleration
+1.77,-7.69,5.94Linear acceleration
+-0.02,-0.07,0.03Heading 
+265.25Roll
+265.25Pitch
+51.9375Acceleration
+1.87,-7.42,6.1Linear acceleration
+-0.01,0.15,0.18Heading 
+265.375Roll
+265.375Pitch
+53.0Acceleration
+1.98,-7.65,5.89Linear acceleration
+1.31,0.02,0.12Heading 
+265.0625Roll
+265.0625Pitch
+54.375Acceleration
+1.96,-7.92,5.6Linear acceleration
+-0.03,-0.12,0.01Heading 
+264.1875Roll
+264.1875Pitch
+53.875Acceleration
+1.99,-7.71,5.58Linear acceleration
+-0.02,0.01,0.0Heading 
+255.0625Roll
+255.0625Pitch
+53.5Acceleration
+1.98,-7.84,5.61Linear acceleration
+0.0,-0.11,-0.09Heading 
+254.0625Roll
+254.0625Pitch
+53.5625Acceleration
+1.95,-7.58,5.6Linear acceleration
+-0.01,0.14,-0.1Heading 
+253.0625Roll
+253.0625Pitch
+53.6875Acceleration
+1.73,-7.68,5.74Linear acceleration
+-0.24,0.05,0.06Heading 
+252.0Roll
+252.0Pitch
+53.0625Acceleration
+1.69,-7.59,5.91Linear acceleration
+-0.28,0.08,0.13Heading 
+250.75Roll
+250.75Pitch
+51.5Acceleration
+1.3,-7.33,6.41Linear acceleration
+-0.46,-0.09,0.54Heading 
+249.5625Roll
+249.5625Pitch
+50.75Acceleration
+1.1,-7.55,6.56Linear acceleration
+-0.5,-0.06,0.44Heading 
+249.0Roll
+249.0Pitch
+51.875Acceleration
+2.49,-7.7,6.17Linear acceleration
+-0.16,-0.05,0.18Heading 
+248.5625Roll
+248.5625Pitch
+52.625Acceleration
+1.36,-8.1,5.89Linear acceleration
+1.29,-0.07,-0.05Heading 
+248.375Roll
+248.375Pitch
+53.125Acceleration
+2.42,-7.8,5.58Linear acceleration
+0.12,0.0,-0.26Heading 
+248.3125Roll
+248.3125Pitch
+53.875Acceleration
+2.47,-8.09,5.49Linear acceleration
+1.55,-0.2,-0.25Heading 
+248.25Roll
+248.25Pitch
+54.25Acceleration
+2.24,-7.84,5.5Linear acceleration
+1.39,0.08,-0.2Heading 
+248.125Roll
+248.125Pitch
+54.1875Acceleration
+2.32,-8.04,5.38Linear acceleration
+0.25,0.23,-0.28Heading 
+248.0Roll
+248.0Pitch
+54.5625Acceleration
+2.17,-7.63,5.32Linear acceleration
+1.44,0.33,-0.33Heading 
+255.8125Roll
+255.8125Pitch
+55.375Acceleration
+2.27,-8.21,5.51Linear acceleration
+1.61,-0.15,-0.04Heading 
+255.5Roll
+255.5Pitch
+55.375Acceleration
+1.91,-8.34,5.83Linear acceleration
+0.05,-0.28,0.27Heading 
+247.0625Roll
+247.0625Pitch
+54.0Acceleration
+1.81,-7.95,5.57Linear acceleration
+1.28,-0.03,-0.19Heading 
+254.9375Roll
+254.9375Pitch
+53.0625Acceleration
+0.67,-7.7,5.83Linear acceleration
+1.53,0.22,-0.06Heading 
+254.9375Roll
+254.9375Pitch
+54.0625Acceleration
+2.01,-7.83,5.6Linear acceleration
+1.39,0.08,-0.13Heading 
+254.75Roll
+254.75Pitch
+54.4375Acceleration
+2.15,-7.74,5.79Linear acceleration
+1.46,0.21,0.1Heading 
+234.3125Roll
+234.3125Pitch
+19.25Acceleration
+-0.3,-3.19,9.21Linear acceleration
+-0.08,0.03,-0.04Heading 
+234.3125Roll
+234.3125Pitch
+19.25Acceleration
+-0.32,-3.19,9.21Linear acceleration
+-0.1,0.04,-0.04Heading 
+234.25Roll
+234.25Pitch
+19.8125Acceleration
+-0.32,-3.23,9.18Linear acceleration
+-0.09,0.09,-0.03Heading 
+226.375Roll
+226.375Pitch
+21.0Acceleration
+-0.34,-3.5,9.1Linear acceleration
+-0.12,0.02,-0.03Heading 
+226.5625Roll
+226.5625Pitch
+22.1875Acceleration
+-0.32,-3.73,8.99Linear acceleration
+-0.1,-0.01,-0.08Heading 
+226.8125Roll
+226.8125Pitch
+22.8125Acceleration
+-0.32,-3.77,8.96Linear acceleration
+-0.11,0.03,-0.06Heading 
+227.0Roll
+227.0Pitch
+23.0625Acceleration
+-0.29,-3.74,8.94Linear acceleration
+-0.09,0.1,-0.07Heading 
+235.1875Roll
+235.1875Pitch
+23.0625Acceleration
+-0.28,-3.74,9.0Linear acceleration
+-0.12,0.1,-0.01Heading 
+235.4375Roll
+235.4375Pitch
+22.75Acceleration
+-0.28,-3.72,9.04Linear acceleration
+-0.13,0.06,0.0Heading 
+227.75Roll
+227.75Pitch
+22.0Acceleration
+-0.28,-3.65,9.06Linear acceleration
+-0.13,0.01,-0.02Heading 
+236.1875Roll
+236.1875Pitch
+21.0Acceleration
+-0.32,-3.47,9.08Linear acceleration
+-0.12,0.05,-0.03Heading 
+236.5Roll
+236.5Pitch
+20.4375Acceleration
+-0.32,-3.28,9.13Linear acceleration
+-0.12,0.13,-0.05Heading 
+228.875Roll
+228.875Pitch
+20.3125Acceleration
+-0.34,-3.29,9.18Linear acceleration
+-0.14,0.11,0.0Heading 
+237.3125Roll
+237.3125Pitch
+20.3125Acceleration
+-0.34,-3.34,9.14Linear acceleration
+-0.12,0.07,-0.04Heading 
+237.8125Roll
+237.8125Pitch
+20.25Acceleration
+-0.3,-3.39,9.13Linear acceleration
+-0.11,0.01,-0.06Heading 
+238.25Roll
+238.25Pitch
+20.375Acceleration
+-0.3,-3.36,9.11Linear acceleration
+-0.1,0.05,-0.07Heading 
+238.75Roll
+238.75Pitch
+20.625Acceleration
+-0.32,-3.35,9.14Linear acceleration
+-0.11,0.1,-0.03Heading 
+239.25Roll
+239.25Pitch
+20.8125Acceleration
+-0.31,-3.36,9.14Linear acceleration
+-0.12,0.11,-0.01Heading 
+231.75Roll
+231.75Pitch
+20.75Acceleration
+-0.33,-3.37,9.12Linear acceleration
+-0.13,0.1,-0.04Heading 
+232.375Roll
+232.375Pitch
+20.75Acceleration
+-0.3,-3.48,9.08Linear acceleration
+-0.08,0.0,-0.06Heading 
+233.0625Roll
+233.0625Pitch
+20.75Acceleration
+-0.32,-3.45,9.12Linear acceleration
+-0.11,0.02,-0.04Heading 
+233.625Roll
+233.625Pitch
+20.75Acceleration
+-0.32,-3.39,9.15Linear acceleration
+-0.13,0.09,0.01Heading 
+234.125Roll
+234.125Pitch
+20.375Acceleration
+-0.3,-3.23,9.25Linear acceleration
+-0.13,0.17,0.05Heading 
+234.5Roll
+234.5Pitch
+19.875Acceleration
+-0.29,-3.23,9.19Linear acceleration
+-0.08,0.11,-0.03Heading 
+235.0625Roll
+235.0625Pitch
+19.5625Acceleration
+-0.33,-3.27,9.11Linear acceleration
+-0.11,0.01,-0.12Heading 
+235.75Roll
+235.75Pitch
+19.625Acceleration
+-0.34,-3.28,9.11Linear acceleration
+-0.09,0.01,-0.12Heading 
+236.5Roll
+236.5Pitch
+20.0Acceleration
+-0.34,-3.17,9.14Linear acceleration
+-0.14,0.15,-0.01Heading 
+237.1875Roll
+237.1875Pitch
+20.6875Acceleration
+-0.33,-3.33,9.21Linear acceleration
+-0.11,0.13,0.04Heading 
+237.6875Roll
+237.6875Pitch
+21.25Acceleration
+-0.29,-3.57,9.17Linear acceleration
+-0.1,0.0,0.04Heading 
+238.125Roll
+238.125Pitch
+21.125Acceleration
+-0.27,-3.59,9.12Linear acceleration
+-0.09,-0.05,-0.02Heading 
+238.625Roll
+238.625Pitch
+20.3125Acceleration
+-0.26,-3.37,9.1Linear acceleration
+-0.06,0.03,-0.08Heading 
+239.25Roll
+239.25Pitch
+19.6875Acceleration
+-0.33,-3.17,9.13Linear acceleration
+-0.08,0.13,-0.09Heading 
+239.875Roll
+239.875Pitch
+19.9375Acceleration
+-0.34,-3.24,9.07Linear acceleration
+-0.08,0.1,-0.13Heading 
+248.5Roll
+248.5Pitch
+20.5Acceleration
+-0.36,-3.36,9.13Linear acceleration
+-0.09,0.09,-0.01Heading 
+249.125Roll
+249.125Pitch
+20.75Acceleration
+-0.3,-3.41,9.19Linear acceleration
+-0.09,0.06,0.02Heading 
+241.625Roll
+241.625Pitch
+20.5Acceleration
+-0.3,-3.47,9.21Linear acceleration
+-0.12,-0.04,0.02Heading 
+250.0625Roll
+250.0625Pitch
+20.0Acceleration
+-0.28,-3.34,9.14Linear acceleration
+-0.11,0.0,-0.06Heading 
+250.4375Roll
+250.4375Pitch
+19.5625Acceleration
+-0.3,-3.14,9.16Linear acceleration
+-0.12,0.14,-0.06Heading 
+250.9375Roll
+250.9375Pitch
+19.625Acceleration
+-0.32,-3.07,9.14Linear acceleration
+-0.12,0.25,-0.09Heading 
+251.5Roll
+251.5Pitch
+20.375Acceleration
+-0.33,-3.35,9.12Linear acceleration
+-0.11,0.06,-0.06Heading 
+244.0Roll
+244.0Pitch
+21.1875Acceleration
+-0.33,-3.64,9.09Linear acceleration
+-0.11,-0.09,-0.04Heading 
+252.4375Roll
+252.4375Pitch
+21.25Acceleration
+-0.28,-3.6,9.1Linear acceleration
+-0.08,-0.04,-0.03Heading 
+252.8125Roll
+252.8125Pitch
+20.625Acceleration
+-0.29,-3.32,9.14Linear acceleration
+-0.1,0.13,-0.02Heading 
+245.0625Roll
+245.0625Pitch
+20.3125Acceleration
+-0.29,-3.25,9.18Linear acceleration
+-0.09,0.14,-0.01Heading 
+253.375Roll
+253.375Pitch
+20.5Acceleration
+-0.31,-3.29,9.16Linear acceleration
+-0.08,0.13,-0.01Heading 
+253.75Roll
+253.75Pitch
+20.75Acceleration
+-0.3,-3.38,9.11Linear acceleration
+-0.06,0.1,-0.04Heading 
+254.1875Roll
+254.1875Pitch
+20.9375Acceleration
+-0.31,-3.45,9.13Linear acceleration
+-0.09,0.05,-0.02Heading 
+254.5625Roll
+254.5625Pitch
+20.875Acceleration
+-0.31,-3.54,9.11Linear acceleration
+-0.11,-0.04,-0.04Heading 
+246.8125Roll
+246.8125Pitch
+20.4375Acceleration
+-0.35,-3.4,9.07Linear acceleration
+-0.17,0.02,-0.11Heading 
+247.0Roll
+247.0Pitch
+20.0Acceleration
+-0.3,-3.16,9.14Linear acceleration
+-0.11,0.19,-0.06Heading 
+255.1875Roll
+255.1875Pitch
+20.0Acceleration
+-0.31,-3.1,9.23Linear acceleration
+-0.11,0.24,0.02Heading 
+255.5Roll
+255.5Pitch
+20.5625Acceleration
+-0.29,-3.43,9.17Linear acceleration
+-0.1,0.01,0.0Heading 
+255.8125Roll
+255.8125Pitch
+21.0Acceleration
+-0.31,-3.58,9.09Linear acceleration
+-0.12,-0.06,-0.05Heading 
+248.0Roll
+248.0Pitch
+20.9375Acceleration
+-0.35,-3.52,9.09Linear acceleration
+-0.14,-0.02,-0.06Heading 
+248.125Roll
+248.125Pitch
+20.5625Acceleration
+-0.3,-3.32,9.08Linear acceleration
+-0.09,0.12,-0.09Heading 
+248.3125Roll
+248.3125Pitch
+20.5625Acceleration
+-0.32,-3.3,9.11Linear acceleration
+-0.11,0.14,-0.06Heading 
+248.5625Roll
+248.5625Pitch
+20.75Acceleration
+-0.3,-3.41,9.19Linear acceleration
+-0.1,0.09,0.0Heading 
+248.6875Roll
+248.6875Pitch
+20.625Acceleration
+-0.33,-3.46,9.14Linear acceleration
+-0.12,0.0,-0.02Heading 
+248.6875Roll
+248.6875Pitch
+20.3125Acceleration
+-0.29,-3.25,9.16Linear acceleration
+-0.08,0.15,-0.02Heading 
+248.8125Roll
+248.8125Pitch
+20.1875Acceleration
+-0.3,-3.35,9.18Linear acceleration
+-0.09,0.03,-0.01Heading 
+249.0Roll
+249.0Pitch
+20.1875Acceleration
+-0.3,-3.29,9.12Linear acceleration
+-0.1,0.08,-0.07Heading 
+249.25Roll
+249.25Pitch
+20.125Acceleration
+-0.32,-3.32,9.13Linear acceleration
+-0.12,0.05,-0.06Heading 
+249.375Roll
+249.375Pitch
+20.0625Acceleration
+-0.29,-3.24,9.15Linear acceleration
+-0.09,0.11,-0.05Heading 
+249.5625Roll
+249.5625Pitch
+20.0625Acceleration
+-0.29,-3.19,9.16Linear acceleration
+-0.08,0.21,-0.05Heading 
+249.5625Roll
+249.5625Pitch
+20.4375Acceleration
+-0.29,-3.24,9.21Linear acceleration
+-0.1,0.18,0.02Heading 
+249.5625Roll
+249.5625Pitch
+20.875Acceleration
+-0.31,-3.43,9.17Linear acceleration
+-0.14,0.06,0.01Heading 
+249.625Roll
+249.625Pitch
+20.9375Acceleration
+-0.29,-3.45,9.13Linear acceleration
+-0.14,0.04,-0.01Heading 
+249.875Roll
+249.875Pitch
+20.75Acceleration
+-0.29,-3.33,9.11Linear acceleration
+-0.12,0.14,-0.05Heading 
+250.0625Roll
+250.0625Pitch
+20.5625Acceleration
+-0.27,-3.27,9.1Linear acceleration
+-0.11,0.17,-0.07Heading 
+250.0625Roll
+250.0625Pitch
+20.5Acceleration
+-0.24,-3.31,9.15Linear acceleration
+-0.11,0.16,-0.03Heading 
+250.0625Roll
+250.0625Pitch
+20.5Acceleration
+-0.29,-3.3,9.14Linear acceleration
+-0.13,0.12,-0.03Heading 
+250.0625Roll
+250.0625Pitch
+20.6875Acceleration
+-0.32,-3.29,9.12Linear acceleration
+-0.14,0.17,-0.04Heading 
+250.0625Roll
+250.0625Pitch
+20.875Acceleration
+-0.36,-3.37,9.21Linear acceleration
+-0.16,0.12,0.05Heading 
+250.125Roll
+250.125Pitch
+20.75Acceleration
+-0.32,-3.35,9.2Linear acceleration
+-0.11,0.09,0.05Heading 
+250.125Roll
+250.125Pitch
+20.25Acceleration
+-0.26,-3.31,9.15Linear acceleration
+-0.08,0.08,-0.03Heading 
+250.0625Roll
+250.0625Pitch
+19.875Acceleration
+-0.29,-3.22,9.13Linear acceleration
+-0.08,0.11,-0.07Heading 
+250.0625Roll
+250.0625Pitch
+19.75Acceleration
+-0.29,-3.14,9.11Linear acceleration
+-0.08,0.17,-0.11Heading 
+250.125Roll
+250.125Pitch
+20.125Acceleration
+-0.35,-3.26,9.16Linear acceleration
+-0.07,0.13,-0.02Heading 
+250.125Roll
+250.125Pitch
+20.75Acceleration
+-0.32,-3.39,9.14Linear acceleration
+-0.07,0.08,-0.02Heading 
+250.0Roll
+250.0Pitch
+20.9375Acceleration
+-0.29,-3.35,9.15Linear acceleration
+-0.06,0.15,0.0Heading 
+250.0Roll
+250.0Pitch
+20.9375Acceleration
+-0.29,-3.37,9.21Linear acceleration
+-0.1,0.13,0.06Heading 
+250.125Roll
+250.125Pitch
+20.5625Acceleration
+-0.29,-3.45,9.19Linear acceleration
+-0.11,0.0,0.01Heading 
+250.0625Roll
+250.0625Pitch
+19.625Acceleration
+-0.27,-3.16,9.17Linear acceleration
+-0.08,0.13,-0.05Heading 
+249.875Roll
+249.875Pitch
+19.1875Acceleration
+-0.27,-2.96,9.23Linear acceleration
+-0.05,0.27,-0.06Heading 
+249.8125Roll
+249.8125Pitch
+19.4375Acceleration
+-0.32,-3.07,9.15Linear acceleration
+-0.06,0.18,-0.08Heading 
+249.75Roll
+249.75Pitch
+19.9375Acceleration
+-0.31,-3.27,9.11Linear acceleration
+-0.07,0.04,-0.12Heading 
+249.75Roll
+249.75Pitch
+20.3125Acceleration
+-0.31,-3.3,9.16Linear acceleration
+-0.07,0.11,-0.02Heading 
+249.6875Roll
+249.6875Pitch
+20.5Acceleration
+-0.29,-3.36,9.27Linear acceleration
+-0.06,0.06,0.09Heading 
+249.6875Roll
+249.6875Pitch
+20.3125Acceleration
+-0.26,-3.38,9.19Linear acceleration
+-0.05,0.01,0.0Heading 
+249.5Roll
+249.5Pitch
+19.6875Acceleration
+-0.28,-3.23,9.19Linear acceleration
+-0.04,0.09,-0.02Heading 
+249.3125Roll
+249.3125Pitch
+19.25Acceleration
+-0.29,-3.07,9.18Linear acceleration
+-0.05,0.16,-0.06Heading 
+249.3125Roll
+249.3125Pitch
+19.25Acceleration
+-0.3,-3.12,9.1Linear acceleration
+-0.06,0.12,-0.14Heading 
+249.3125Roll
+249.3125Pitch
+19.5Acceleration
+-0.29,-3.17,9.1Linear acceleration
+-0.05,0.1,-0.13Heading 
+249.1875Roll
+249.1875Pitch
+19.9375Acceleration
+-0.31,-3.21,9.22Linear acceleration
+-0.07,0.13,0.01Heading 
+249.0625Roll
+249.0625Pitch
+20.6875Acceleration
+-0.29,-3.35,9.22Linear acceleration
+-0.06,0.12,0.05Heading 
+249.0625Roll
+249.0625Pitch
+21.0Acceleration
+-0.29,-3.5,9.21Linear acceleration
+-0.06,0.01,0.05Heading 
+249.0Roll
+249.0Pitch
+20.375Acceleration
+-0.32,-3.36,9.17Linear acceleration
+-0.08,0.04,-0.01Heading 
+248.8125Roll
+248.8125Pitch
+19.5Acceleration
+-0.32,-3.03,9.22Linear acceleration
+-0.07,0.24,-0.01Heading 
+248.75Roll
+248.75Pitch
+19.0625Acceleration
+-0.28,-2.96,9.18Linear acceleration
+-0.02,0.24,-0.07Heading 
+248.75Roll
+248.75Pitch
+19.1875Acceleration
+-0.29,-3.08,9.15Linear acceleration
+-0.03,0.14,-0.09Heading 
+248.6875Roll
+248.6875Pitch
+19.8125Acceleration
+-0.31,-3.35,9.15Linear acceleration
+-0.05,-0.02,-0.06Heading 
+248.5Roll
+248.5Pitch
+20.25Acceleration
+-0.31,-3.31,9.16Linear acceleration
+-0.04,0.08,-0.03Heading 
+248.25Roll
+248.25Pitch
+20.3125Acceleration
+-0.29,-3.22,9.25Linear acceleration
+1.29,0.21,0.08Heading 
+248.0625Roll
+248.0625Pitch
+20.375Acceleration
+-0.31,-3.26,9.24Linear acceleration
+-0.04,0.15,0.05Heading 
+248.0625Roll
+248.0625Pitch
+20.3125Acceleration
+-0.29,-3.38,9.16Linear acceleration
+-0.02,0.02,-0.02Heading 
+248.0625Roll
+248.0625Pitch
+19.875Acceleration
+-0.3,-3.25,9.1Linear acceleration
+-0.04,0.06,-0.06Heading 
+248.0Roll
+248.0Pitch
+19.4375Acceleration
+-0.29,-3.09,9.18Linear acceleration
+-0.02,0.17,-0.05Heading 
+255.75Roll
+255.75Pitch
+19.5Acceleration
+-0.29,-3.09,9.19Linear acceleration
+-0.01,0.18,-0.04Heading 
+255.5Roll
+255.5Pitch
+19.9375Acceleration
+-0.29,-3.23,9.14Linear acceleration
+-0.05,0.11,-0.03Heading 
+255.3125Roll
+255.3125Pitch
+20.4375Acceleration
+-0.32,-3.44,9.13Linear acceleration
+-0.06,-0.01,-0.05Heading 
+247.0625Roll
+247.0625Pitch
+20.375Acceleration
+-0.3,-3.37,9.19Linear acceleration
+-0.05,0.04,0.0Heading 
+254.75Roll
+254.75Pitch
+19.8125Acceleration
+-0.27,-3.15,9.2Linear acceleration
+1.28,0.17,0.0Heading 
+254.5625Roll
+254.5625Pitch
+19.5Acceleration
+-0.27,-3.11,9.18Linear acceleration
+0.0,0.16,-0.05Heading 
+246.5Roll
+246.5Pitch
+19.625Acceleration
+-0.29,-3.25,9.19Linear acceleration
+-0.01,0.04,-0.03Heading 
+254.3125Roll
+254.3125Pitch
+19.6875Acceleration
+-0.3,-3.25,9.18Linear acceleration
+-0.02,0.05,-0.04Heading 
+254.0Roll
+254.0Pitch
+19.625Acceleration
+-0.34,-3.08,9.2Linear acceleration
+-0.04,0.2,-0.02Heading 
+245.75Roll
+245.75Pitch
+19.75Acceleration
+-0.34,-3.09,9.22Linear acceleration
+-0.04,0.21,0.0Heading 
+245.5Roll
+245.5Pitch
+20.125Acceleration
+-0.28,-3.32,9.18Linear acceleration
+-0.01,0.02,0.0Heading 
+253.25Roll
+253.25Pitch
+20.25Acceleration
+-0.26,-3.42,9.14Linear acceleration
+-0.01,-0.02,-0.05Heading 
+253.125Roll
+253.125Pitch
+19.8125Acceleration
+-0.27,-3.22,9.16Linear acceleration
+-0.02,0.09,-0.05Heading 
+252.9375Roll
+252.9375Pitch
+19.4375Acceleration
+-0.27,-3.07,9.21Linear acceleration
+-0.01,0.19,-0.03Heading 
+252.625Roll
+252.625Pitch
+19.5625Acceleration
+-0.31,-3.18,9.18Linear acceleration
+-0.01,0.1,-0.04Heading 
+252.375Roll
+252.375Pitch
+19.8125Acceleration
+-0.35,-3.25,9.18Linear acceleration
+-0.03,0.07,-0.03Heading 
+252.0625Roll
+252.0625Pitch
+19.875Acceleration
+-0.33,-3.21,9.19Linear acceleration
+-0.01,0.12,-0.02Heading 
+243.875Roll
+243.875Pitch
+19.875Acceleration
+-0.31,-3.17,9.16Linear acceleration
+-0.03,0.16,-0.04Heading 
+243.75Roll
+243.75Pitch
+19.875Acceleration
+-0.27,-3.25,9.16Linear acceleration
+1.28,0.07,0.0Heading 
+251.5Roll
+251.5Pitch
+19.8125Acceleration
+-0.24,-3.27,9.26Linear acceleration
+-0.01,0.05,0.04Heading 
+251.3125Roll
+251.3125Pitch
+19.625Acceleration
+-0.25,-3.16,9.24Linear acceleration
+-0.01,0.13,0.0Heading 
+251.1875Roll
+251.1875Pitch
+19.4375Acceleration
+-0.26,-3.1,9.26Linear acceleration
+-0.01,0.16,0.02Heading 
+251.0625Roll
+251.0625Pitch
+19.5Acceleration
+-0.31,-3.09,9.19Linear acceleration
+-0.03,0.18,-0.04Heading 
+250.8125Roll
+250.8125Pitch
+19.9375Acceleration
+-0.35,-3.14,9.15Linear acceleration
+-0.05,0.19,-0.05Heading 
+242.5625Roll
+242.5625Pitch
+20.3125Acceleration
+-0.31,-3.29,9.14Linear acceleration
+-0.02,0.11,-0.03Heading 
+242.3125Roll
+242.3125Pitch
+20.4375Acceleration
+-0.28,-3.27,9.17Linear acceleration
+-0.04,0.16,0.0Heading 
+250.3125Roll
+250.3125Pitch
+20.25Acceleration
+-0.26,-3.24,9.2Linear acceleration
+-0.04,0.15,0.0Heading 
+250.1875Roll
+250.1875Pitch
+19.9375Acceleration
+-0.21,-3.13,9.25Linear acceleration
+1.28,0.2,0.03Heading 
+250.0625Roll
+250.0625Pitch
+19.875Acceleration
+-0.27,-3.16,9.21Linear acceleration
+-0.03,0.19,0.0Heading 
+249.875Roll
+249.875Pitch
+20.0625Acceleration
+-0.3,-3.16,9.25Linear acceleration
+-0.02,0.2,0.04Heading 
+249.6875Roll
+249.6875Pitch
+20.4375Acceleration
+-0.32,-3.23,9.16Linear acceleration
+-0.04,0.19,0.0Heading 
+249.5Roll
+249.5Pitch
+20.8125Acceleration
+-0.33,-3.32,9.1Linear acceleration
+-0.04,0.16,-0.05Heading 
+249.25Roll
+249.25Pitch
+21.0Acceleration
+-0.25,-3.35,9.14Linear acceleration
+0.0,0.15,0.0Heading 
+241.125Roll
+241.125Pitch
+21.0Acceleration
+-0.22,-3.26,9.21Linear acceleration
+1.28,0.24,0.06Heading 
+249.0Roll
+249.0Pitch
+20.875Acceleration
+-0.25,-3.3,9.18Linear acceleration
+1.28,0.17,0.02Heading 
+248.8125Roll
+248.8125Pitch
+21.0Acceleration
+-0.23,-3.37,9.14Linear acceleration
+1.29,0.14,0.0Heading 
+248.625Roll
+248.625Pitch
+21.0Acceleration
+-0.29,-3.37,9.14Linear acceleration
+-0.02,0.16,0.0Heading 
+248.375Roll
+248.375Pitch
+20.875Acceleration
+-0.33,-3.31,9.17Linear acceleration
+-0.04,0.18,0.01Heading 
+240.125Roll
+240.125Pitch
+20.8125Acceleration
+-0.27,-3.33,9.08Linear acceleration
+1.28,0.15,-0.07Heading 
+240.0Roll
+240.0Pitch
+20.625Acceleration
+-0.28,-3.35,9.11Linear acceleration
+-0.03,0.09,-0.05Heading 
+239.8125Roll
+239.8125Pitch
+20.25Acceleration
+-0.24,-3.29,9.16Linear acceleration
+0.0,0.1,-0.02Heading 
+239.625Roll
+239.625Pitch
+19.9375Acceleration
+-0.24,-3.14,9.22Linear acceleration
+1.28,0.2,0.01Heading 
+239.4375Roll
+239.4375Pitch
+20.0Acceleration
+-0.29,-3.22,9.27Linear acceleration
+-0.01,0.16,0.05Heading 
+239.3125Roll
+239.3125Pitch
+20.0625Acceleration
+-0.3,-3.22,9.21Linear acceleration
+-0.04,0.14,0.0Heading 
+239.1875Roll
+239.1875Pitch
+20.0625Acceleration
+-0.29,-3.21,9.18Linear acceleration
+-0.01,0.15,-0.01Heading 
+239.0Roll
+239.0Pitch
+19.875Acceleration
+-0.31,-3.14,9.14Linear acceleration
+-0.04,0.19,-0.07Heading 
+238.8125Roll
+238.8125Pitch
+19.75Acceleration
+-0.28,-3.11,9.12Linear acceleration
+-0.01,0.2,-0.09Heading 
+238.75Roll
+238.75Pitch
+19.75Acceleration
+-0.28,-3.14,9.18Linear acceleration
+-0.03,0.15,-0.05Heading 
+238.75Roll
+238.75Pitch
+19.9375Acceleration
+-0.3,-3.17,9.26Linear acceleration
+-0.05,0.17,0.05Heading 
+238.625Roll
+238.625Pitch
+20.1875Acceleration
+-0.3,-3.2,9.25Linear acceleration
+-0.05,0.18,0.05Heading 
+238.375Roll
+238.375Pitch
+20.0625Acceleration
+-0.29,-3.16,9.25Linear acceleration
+-0.04,0.19,0.04Heading 
+238.125Roll
+238.125Pitch
+19.6875Acceleration
+-0.25,-3.11,9.2Linear acceleration
+1.28,0.18,-0.02Heading 
+238.125Roll
+238.125Pitch
+19.3125Acceleration
+-0.29,-3.03,9.18Linear acceleration
+-0.01,0.2,-0.06Heading 
+238.125Roll
+238.125Pitch
+19.25Acceleration
+-0.3,-2.99,9.25Linear acceleration
+-0.04,0.23,-0.01Heading 
+238.0625Roll
+238.0625Pitch
+19.625Acceleration
+-0.33,-3.07,9.24Linear acceleration
+-0.05,0.22,0.01Heading 
+237.75Roll
+237.75Pitch
+19.9375Acceleration
+-0.34,-3.15,9.24Linear acceleration
+-0.06,0.19,0.02Heading 
+237.5Roll
+237.5Pitch
+20.0Acceleration
+-0.28,-3.12,9.22Linear acceleration
+-0.03,0.22,0.03Heading 
+237.4375Roll
+237.4375Pitch
+19.8125Acceleration
+-0.27,-3.12,9.25Linear acceleration
+-0.01,0.19,0.02Heading 
+237.4375Roll
+237.4375Pitch
+19.6875Acceleration
+-0.28,-3.1,9.19Linear acceleration
+-0.01,0.2,-0.03Heading 
+237.4375Roll
+237.4375Pitch
+19.75Acceleration
+-0.27,-3.08,9.2Linear acceleration
+-0.01,0.23,-0.01Heading 
+237.3125Roll
+237.3125Pitch
+20.125Acceleration
+-0.31,-3.11,9.22Linear acceleration
+-0.04,0.25,0.02Heading 
+237.0625Roll
+237.0625Pitch
+20.375Acceleration
+-0.33,-3.2,9.27Linear acceleration
+-0.02,0.21,0.09Heading 
+236.875Roll
+236.875Pitch
+20.25Acceleration
+-0.28,-3.2,9.24Linear acceleration
+1.29,0.19,0.04Heading 
+236.8125Roll
+236.8125Pitch
+20.125Acceleration
+-0.29,-3.18,9.14Linear acceleration
+1.28,0.19,-0.05Heading 
+236.8125Roll
+236.8125Pitch
+20.0625Acceleration
+-0.31,-3.19,9.17Linear acceleration
+-0.01,0.17,-0.02Heading 
+236.5625Roll
+236.5625Pitch
+19.875Acceleration
+-0.32,-3.17,9.21Linear acceleration
+-0.03,0.16,0.0Heading 
+236.4375Roll
+236.4375Pitch
+19.625Acceleration
+-0.29,-3.09,9.24Linear acceleration
+-0.02,0.19,0.0Heading 
+236.4375Roll
+236.4375Pitch
+19.4375Acceleration
+-0.27,-3.07,9.25Linear acceleration
+-0.01,0.2,0.02Heading 
+236.375Roll
+236.375Pitch
+19.375Acceleration
+-0.27,-3.09,9.22Linear acceleration
+0.0,0.16,-0.01Heading 
+236.1875Roll
+236.1875Pitch
+19.375Acceleration
+-0.3,-3.12,9.23Linear acceleration
+-0.01,0.12,0.0Heading 
+236.0Roll
+236.0Pitch
+19.375Acceleration
+-0.33,-3.08,9.25Linear acceleration
+-0.03,0.2,-0.01Heading 
+235.875Roll
+235.875Pitch
+19.5Acceleration
+-0.34,-3.06,9.24Linear acceleration
+-0.03,0.21,0.0Heading 
+235.875Roll
+235.875Pitch
+19.75Acceleration
+-0.3,-3.12,9.23Linear acceleration
+-0.01,0.18,0.0Heading 
+235.8125Roll
+235.8125Pitch
+19.875Acceleration
+-0.3,-3.18,9.2Linear acceleration
+-0.04,0.14,-0.01Heading 
+235.6875Roll
+235.6875Pitch
+19.8125Acceleration
+-0.29,-3.16,9.23Linear acceleration
+-0.04,0.16,0.01Heading 
+235.5625Roll
+235.5625Pitch
+19.6875Acceleration
+-0.27,-3.12,9.23Linear acceleration
+-0.02,0.17,0.0Heading 
+235.5625Roll
+235.5625Pitch
+19.625Acceleration
+-0.29,-3.1,9.18Linear acceleration
+-0.04,0.19,-0.04Heading 
+235.5Roll
+235.5Pitch
+19.8125Acceleration
+-0.28,-3.14,9.22Linear acceleration
+-0.02,0.17,0.0Heading 
+235.3125Roll
+235.3125Pitch
+19.8125Acceleration
+-0.29,-3.15,9.24Linear acceleration
+-0.02,0.2,0.02Heading 
+235.125Roll
+235.125Pitch
+19.6875Acceleration
+-0.29,-3.08,9.24Linear acceleration
+-0.01,0.22,0.01Heading 
+235.125Roll
+235.125Pitch
+19.625Acceleration
+-0.35,-3.08,9.18Linear acceleration
+-0.06,0.21,-0.04Heading 
+235.125Roll
+235.125Pitch
+19.8125Acceleration
+-0.35,-3.13,9.15Linear acceleration
+-0.08,0.19,-0.07Heading 
+235.0Roll
+235.0Pitch
+20.0625Acceleration
+-0.35,-3.19,9.25Linear acceleration
+-0.09,0.16,0.05Heading 
+234.875Roll
+234.875Pitch
+20.0Acceleration
+-0.27,-3.11,9.28Linear acceleration
+-0.04,0.24,0.07Heading 
+234.6875Roll
+234.6875Pitch
+19.625Acceleration
+-0.25,-3.04,9.25Linear acceleration
+-0.03,0.24,0.02Heading 
+234.5625Roll
+234.5625Pitch
+19.375Acceleration
+-0.24,-3.08,9.24Linear acceleration
+-0.02,0.16,0.01Heading 
+234.5Roll
+234.5Pitch
+19.4375Acceleration
+-0.29,-3.12,9.19Linear acceleration
+-0.03,0.14,-0.05Heading 
+234.375Roll
+234.375Pitch
+19.5625Acceleration
+-0.35,-3.12,9.16Linear acceleration
+-0.03,0.17,-0.06Heading 
+234.25Roll
+234.25Pitch
+19.75Acceleration
+-0.37,-3.15,9.17Linear acceleration
+-0.04,0.16,-0.04Heading 
+234.1875Roll
+234.1875Pitch
+19.625Acceleration
+-0.35,-3.11,9.18Linear acceleration
+-0.05,0.17,-0.04Heading 
+234.125Roll
+234.125Pitch
+19.375Acceleration
+-0.29,-3.08,9.26Linear acceleration
+-0.04,0.17,0.02Heading 
+234.0625Roll
+234.0625Pitch
+19.375Acceleration
+-0.24,-3.08,9.25Linear acceleration
+-0.04,0.16,0.0Heading 
+233.9375Roll
+233.9375Pitch
+19.3125Acceleration
+-0.23,-3.1,9.22Linear acceleration
+-0.04,0.12,0.0Heading 
+233.75Roll
+233.75Pitch
+19.375Acceleration
+-0.26,-3.04,9.22Linear acceleration
+-0.02,0.2,-0.02Heading 
+233.75Roll
+233.75Pitch
+19.8125Acceleration
+-0.32,-3.05,9.19Linear acceleration
+-0.04,0.27,-0.02Heading 
+233.75Roll
+233.75Pitch
+20.375Acceleration
+-0.36,-3.22,9.14Linear acceleration
+-0.05,0.18,-0.04Heading 
+233.625Roll
+233.625Pitch
+20.625Acceleration
+-0.32,-3.33,9.13Linear acceleration
+-0.03,0.11,-0.04Heading 
+233.375Roll
+233.375Pitch
+20.3125Acceleration
+-0.3,-3.29,9.22Linear acceleration
+-0.05,0.13,0.0Heading 
+233.3125Roll
+233.3125Pitch
+19.6875Acceleration
+-0.25,-3.14,9.25Linear acceleration
+0.0,0.16,0.02Heading 
+233.3125Roll
+233.3125Pitch
+19.25Acceleration
+-0.27,-3.09,9.26Linear acceleration
+-0.02,0.13,0.01Heading 
+233.1875Roll
+233.1875Pitch
+19.0625Acceleration
+-0.29,-3.07,9.26Linear acceleration
+-0.04,0.13,0.0Heading 
+233.0Roll
+233.0Pitch
+19.125Acceleration
+-0.3,-3.07,9.24Linear acceleration
+-0.06,0.11,-0.03Heading 
+232.875Roll
+232.875Pitch
+19.125Acceleration
+-0.31,-3.05,9.19Linear acceleration
+-0.04,0.16,-0.06Heading 
+232.875Roll
+232.875Pitch
+19.125Acceleration
+-0.31,-3.1,9.18Linear acceleration
+-0.04,0.11,-0.07Heading 
+232.875Roll
+232.875Pitch
+19.3125Acceleration
+-0.32,-3.12,9.19Linear acceleration
+-0.05,0.12,-0.05Heading 
+232.75Roll
+232.75Pitch
+19.5625Acceleration
+-0.33,-3.1,9.23Linear acceleration
+-0.06,0.18,-0.01Heading 
+232.5625Roll
+232.5625Pitch
+19.8125Acceleration
+-0.28,-3.18,9.25Linear acceleration
+-0.04,0.14,0.03Heading 
+232.375Roll
+232.375Pitch
+19.8125Acceleration
+-0.25,-3.22,9.2Linear acceleration
+-0.02,0.11,-0.01Heading 
+232.375Roll
+232.375Pitch
+19.6875Acceleration
+-0.28,-3.14,9.19Linear acceleration
+-0.06,0.16,-0.03Heading 
+232.3125Roll
+232.3125Pitch
+19.625Acceleration
+-0.27,-3.07,9.2Linear acceleration
+-0.05,0.22,-0.03Heading 
+232.25Roll
+232.25Pitch
+19.8125Acceleration
+-0.29,-3.16,9.2Linear acceleration
+-0.07,0.17,-0.02Heading 
+232.1875Roll
+232.1875Pitch
+19.875Acceleration
+-0.33,-3.15,9.16Linear acceleration
+-0.07,0.18,-0.05Heading 
+232.125Roll
+232.125Pitch
+19.875Acceleration
+-0.32,-3.17,9.2Linear acceleration
+-0.06,0.16,-0.01Heading 
+231.9375Roll
+231.9375Pitch
+19.8125Acceleration
+-0.32,-3.14,9.28Linear acceleration
+-0.09,0.17,0.06Heading 
+239.6875Roll
+239.6875Pitch
+19.5625Acceleration
+-0.27,-3.07,9.26Linear acceleration
+-0.06,0.21,0.03Heading 
+239.625Roll
+239.625Pitch
+19.3125Acceleration
+-0.26,-3.06,9.26Linear acceleration
+-0.05,0.17,0.01Heading 
+239.625Roll
+239.625Pitch
+19.1875Acceleration
+-0.27,-3.06,9.19Linear acceleration
+-0.06,0.16,-0.05Heading 
+231.625Roll
+231.625Pitch
+19.3125Acceleration
+-0.32,-3.04,9.19Linear acceleration
+-0.09,0.2,-0.05Heading 
+239.5Roll
+239.5Pitch
+19.6875Acceleration
+-0.32,-3.15,9.19Linear acceleration
+-0.08,0.15,-0.02Heading 
+231.5Roll
+231.5Pitch
+19.75Acceleration
+-0.32,-3.16,9.2Linear acceleration
+-0.07,0.15,-0.01Heading 
+238.8125Roll
+238.8125Pitch
+19.375Acceleration
+-0.31,-3.12,9.24Linear acceleration
+-0.07,0.1,0.02Heading 
+238.1875Roll
+238.1875Pitch
+19.875Acceleration
+-0.3,-3.26,9.2Linear acceleration
+-0.04,0.07,0.0Heading 
+229.6875Roll
+229.6875Pitch
+19.75Acceleration
+-0.31,-3.2,9.2Linear acceleration
+-0.07,0.1,-0.02Heading 
+237.0Roll
+237.0Pitch
+19.6875Acceleration
+-0.25,-3.16,9.2Linear acceleration
+-0.03,0.15,-0.03Heading 
+236.3125Roll
+236.3125Pitch
+19.125Acceleration
+-0.28,-3.08,9.15Linear acceleration
+-0.04,0.13,-0.1Heading 
+227.8125Roll
+227.8125Pitch
+19.0625Acceleration
+-0.27,-3.06,9.2Linear acceleration
+-0.03,0.13,-0.05Heading 
+227.25Roll
+227.25Pitch
+19.375Acceleration
+-0.29,-3.1,9.19Linear acceleration
+-0.06,0.14,-0.04Heading 
+234.75Roll
+234.75Pitch
+19.5625Acceleration
+-0.34,-3.09,9.18Linear acceleration
+-0.09,0.19,-0.04Heading 
+234.3125Roll
+234.3125Pitch
+19.5625Acceleration
+-0.33,-3.15,9.15Linear acceleration
+-0.05,0.13,-0.06Heading 
+233.75Roll
+233.75Pitch
+19.125Acceleration
+-0.29,-3.03,9.15Linear acceleration
+-0.06,0.17,-0.1Heading 
+233.125Roll
+233.125Pitch
+19.125Acceleration
+-0.29,-3.04,9.17Linear acceleration
+-0.03,0.17,-0.08Heading 
+224.6875Roll
+224.6875Pitch
+19.4375Acceleration
+-0.29,-3.09,9.12Linear acceleration
+-0.05,0.18,-0.11Heading 
+232.3125Roll
+232.3125Pitch
+19.5Acceleration
+-0.35,-3.09,9.15Linear acceleration
+-0.12,0.18,-0.08Heading 
+224.0625Roll
+224.0625Pitch
+19.5Acceleration
+-0.31,-3.1,9.18Linear acceleration
+-0.05,0.17,-0.05Heading 
+223.75Roll
+223.75Pitch
+19.4375Acceleration
+-0.3,-3.16,9.19Linear acceleration
+-0.06,0.1,-0.04Heading 
+223.5625Roll
+223.5625Pitch
+19.5Acceleration
+-0.28,-3.1,9.23Linear acceleration
+-0.06,0.16,0.0Heading 
+223.5Roll
+223.5Pitch
+19.4375Acceleration
+-0.28,-3.06,9.17Linear acceleration
+-0.03,0.2,-0.06Heading 
+223.375Roll
+223.375Pitch
+19.25Acceleration
+-0.29,-3.08,9.2Linear acceleration
+-0.05,0.15,-0.04Heading 
+223.125Roll
+223.125Pitch
+19.6875Acceleration
+-0.29,-3.15,9.23Linear acceleration
+-0.05,0.15,0.0Heading 
+222.8125Roll
+222.8125Pitch
+19.1875Acceleration
+-0.3,-3.06,9.22Linear acceleration
+-0.04,0.16,-0.03Heading 
+222.75Roll
+222.75Pitch
+19.4375Acceleration
+-0.3,-3.07,9.2Linear acceleration
+-0.06,0.2,0.0Heading 
+222.5625Roll
+222.5625Pitch
+19.6875Acceleration
+-0.3,-3.17,9.2Linear acceleration
+-0.08,0.13,-0.02Heading 
+222.1875Roll
+222.1875Pitch
+19.4375Acceleration
+-0.32,-3.13,9.25Linear acceleration
+-0.05,0.12,0.01Heading 
+222.0Roll
+222.0Pitch
+19.8125Acceleration
+-0.29,-3.13,9.24Linear acceleration
+-0.01,0.18,0.01Heading 
+221.75Roll
+221.75Pitch
+19.5Acceleration
+-0.3,-3.11,9.21Linear acceleration
+-0.01,0.16,-0.02Heading 
+221.4375Roll
+221.4375Pitch
+19.75Acceleration
+-0.29,-3.15,9.22Linear acceleration
+-0.04,0.15,0.0Heading 
+221.3125Roll
+221.3125Pitch
+19.1875Acceleration
+-0.29,-3.07,9.19Linear acceleration
+-0.06,0.14,-0.06Heading 
+221.25Roll
+221.25Pitch
+19.0625Acceleration
+-0.3,-3.06,9.21Linear acceleration
+-0.11,0.14,-0.04Heading 
+221.1875Roll
+221.1875Pitch
+18.5625Acceleration
+-0.31,-3.1,9.22Linear acceleration
+-0.12,0.02,-0.06Heading 
+221.125Roll
+221.125Pitch
+18.6875Acceleration
+-0.35,-3.08,9.19Linear acceleration
+-0.2,0.06,-0.09Heading 
+221.0Roll
+221.0Pitch
+18.5Acceleration
+-0.34,-3.07,9.21Linear acceleration
+-0.23,0.04,-0.08Heading 
+220.8125Roll
+220.8125Pitch
+18.375Acceleration
+-0.33,-3.06,9.22Linear acceleration
+-0.18,0.02,-0.08Heading 
+220.75Roll
+220.75Pitch
+18.4375Acceleration
+-0.32,-3.06,9.21Linear acceleration
+-0.21,0.03,-0.08Heading 
+220.875Roll
+220.875Pitch
+18.625Acceleration
+-0.3,-3.09,9.18Linear acceleration
+-0.21,0.04,-0.1Heading 
+220.75Roll
+220.75Pitch
+18.625Acceleration
+-0.31,-3.05,9.24Linear acceleration
+-0.14,0.07,-0.04Heading 
+220.75Roll
+220.75Pitch
+18.9375Acceleration
+-0.28,-3.11,9.21Linear acceleration
+-0.1,0.09,-0.05Heading 
+220.8125Roll
+220.8125Pitch
+18.6875Acceleration
+-0.27,-3.04,9.28Linear acceleration
+-0.11,0.1,0.0Heading 
+221.0Roll
+221.0Pitch
+19.1875Acceleration
+-0.28,-3.15,9.26Linear acceleration
+-0.12,0.06,0.0Heading 
+221.1875Roll
+221.1875Pitch
+19.375Acceleration
+-0.29,-3.1,9.22Linear acceleration
+-0.11,0.14,-0.02Heading 
+221.1875Roll
+221.1875Pitch
+19.125Acceleration
+-0.3,-3.07,9.23Linear acceleration
+-0.08,0.14,-0.03Heading 
+221.1875Roll
+221.1875Pitch
+19.5Acceleration
+-0.32,-3.11,9.23Linear acceleration
+-0.1,0.15,-0.01Heading 
+221.3125Roll
+221.3125Pitch
+19.25Acceleration
+-0.32,-3.12,9.28Linear acceleration
+-0.11,0.11,0.03Heading 
+221.5Roll
+221.5Pitch
+19.75Acceleration
+-0.35,-3.2,9.24Linear acceleration
+-0.1,0.12,0.01Heading 
+221.6875Roll
+221.6875Pitch
+19.3125Acceleration
+-0.31,-3.06,9.25Linear acceleration
+-0.06,0.18,0.01Heading 
+221.8125Roll
+221.8125Pitch
+19.5Acceleration
+-0.31,-3.14,9.24Linear acceleration
+-0.06,0.12,0.0Heading 
+221.8125Roll
+221.8125Pitch
+19.375Acceleration
+-0.3,-3.18,9.24Linear acceleration
+-0.03,0.07,0.0Heading 
+221.75Roll
+221.75Pitch
+20.3125Acceleration
+-0.29,-3.34,9.23Linear acceleration
+-0.03,0.06,0.04Heading 
+221.8125Roll
+221.8125Pitch
+20.0625Acceleration
+-0.3,-3.28,9.23Linear acceleration
+-0.03,0.1,0.01Heading 
+221.875Roll
+221.875Pitch
+20.1875Acceleration
+-0.28,-3.18,9.24Linear acceleration
+0.0,0.2,0.04Heading 
+221.9375Roll
+221.9375Pitch
+19.875Acceleration
+-0.29,-3.2,9.2Linear acceleration
+0.0,0.13,-0.01Heading 
+221.9375Roll
+221.9375Pitch
+19.375Acceleration
+-0.28,-3.09,9.2Linear acceleration
+1.28,0.15,-0.03Heading 
+221.9375Roll
+221.9375Pitch
+19.5Acceleration
+-0.3,-3.2,9.19Linear acceleration
+1.28,0.09,-0.07Heading 
+221.9375Roll
+221.9375Pitch
+19.75Acceleration
+-0.29,-3.16,9.23Linear acceleration
+-0.01,0.14,0.0Heading 
+221.9375Roll
+221.9375Pitch
+18.9375Acceleration
+-0.31,-3.02,9.28Linear acceleration
+-0.04,0.15,0.01Heading 
+222.0Roll
+222.0Pitch
+20.25Acceleration
+-0.3,-3.28,9.19Linear acceleration
+-0.06,0.1,0.0Heading 
+222.0Roll
+222.0Pitch
+18.75Acceleration
+-0.3,-2.98,9.27Linear acceleration
+-0.06,0.17,-0.02Heading 
+221.9375Roll
+221.9375Pitch
+19.5Acceleration
+-0.28,-3.1,9.22Linear acceleration
+-0.1,0.15,0.0Heading 
+221.9375Roll
+221.9375Pitch
+19.125Acceleration
+-0.28,-3.09,9.24Linear acceleration
+-0.11,0.12,-0.02Heading 
+221.9375Roll
+221.9375Pitch
+18.875Acceleration
+-0.27,-3.01,9.24Linear acceleration
+-0.1,0.15,-0.03Heading 
+222.0625Roll
+222.0625Pitch
+18.875Acceleration
+-0.29,-3.05,9.25Linear acceleration
+-0.09,0.11,-0.05Heading 
+222.3125Roll
+222.3125Pitch
+18.875Acceleration
+-0.28,-3.01,9.22Linear acceleration
+-0.08,0.16,-0.04Heading 
+222.625Roll
+222.625Pitch
+18.625Acceleration
+-0.3,-3.0,9.25Linear acceleration
+-0.09,0.13,-0.03Heading 
+223.0625Roll
+223.0625Pitch
+18.625Acceleration
+-0.32,-3.01,9.22Linear acceleration
+-0.12,0.12,-0.06Heading 
+223.5625Roll
+223.5625Pitch
+18.75Acceleration
+-0.32,-3.03,9.25Linear acceleration
+-0.14,0.12,-0.02Heading 
+224.1875Roll
+224.1875Pitch
+19.0625Acceleration
+-0.32,-3.09,9.25Linear acceleration
+-0.14,0.11,-0.02Heading 
+232.875Roll
+232.875Pitch
+19.5625Acceleration
+-0.33,-3.13,9.19Linear acceleration
+-0.15,0.15,-0.03Heading 
+233.3125Roll
+233.3125Pitch
+19.25Acceleration
+-0.31,-3.13,9.23Linear acceleration
+-0.11,0.1,-0.01Heading 
+233.875Roll
+233.875Pitch
+19.25Acceleration
+-0.32,-3.11,9.26Linear acceleration
+-0.13,0.12,0.01Heading 
+234.375Roll
+234.375Pitch
+18.9375Acceleration
+-0.3,-3.1,9.26Linear acceleration
+-0.14,0.08,0.0Heading 
+227.0Roll
+227.0Pitch
+19.125Acceleration
+-0.28,-3.13,9.23Linear acceleration
+-0.12,0.08,-0.03Heading 
+235.5Roll
+235.5Pitch
+18.3125Acceleration
+-0.32,-2.96,9.25Linear acceleration
+-0.15,0.08,-0.02Heading 
+235.8125Roll
+235.8125Pitch
+17.6875Acceleration
+-0.29,-2.88,9.33Linear acceleration
+-0.12,0.09,0.0Heading 
+228.125Roll
+228.125Pitch
+19.75Acceleration
+-0.26,-3.26,9.17Linear acceleration
+-0.12,0.05,-0.04Heading 
+236.5625Roll
+236.5625Pitch
+18.6875Acceleration
+-0.3,-3.06,9.31Linear acceleration
+-0.1,0.07,0.01Heading 
+237.125Roll
+237.125Pitch
+19.1875Acceleration
+-0.31,-3.13,9.25Linear acceleration
+-0.13,0.09,0.0Heading 
+229.625Roll
+229.625Pitch
+18.9375Acceleration
+-0.31,-3.11,9.24Linear acceleration
+-0.12,0.09,-0.01Heading 
+238.3125Roll
+238.3125Pitch
+18.625Acceleration
+-0.28,-3.0,9.24Linear acceleration
+-0.1,0.12,-0.04Heading 
+230.875Roll
+230.875Pitch
+18.6875Acceleration
+-0.26,-3.05,9.25Linear acceleration
+-0.11,0.09,-0.03Heading 
+231.5625Roll
+231.5625Pitch
+18.5625Acceleration
+-0.27,-3.0,9.27Linear acceleration
+-0.11,0.12,-0.01Heading 
+232.0625Roll
+232.0625Pitch
+18.4375Acceleration
+-0.26,-2.97,9.23Linear acceleration
+-0.09,0.13,-0.04Heading 
+232.375Roll
+232.375Pitch
+18.5Acceleration
+-0.29,-3.03,9.22Linear acceleration
+-0.12,0.07,-0.07Heading 
+232.5625Roll
+232.5625Pitch
+18.25Acceleration
+-0.29,-2.96,9.24Linear acceleration
+-0.11,0.11,-0.06Heading 
+232.6875Roll
+232.6875Pitch
+18.375Acceleration
+-0.29,-2.97,9.25Linear acceleration
+-0.13,0.12,-0.04Heading 
+232.5625Roll
+232.5625Pitch
+18.625Acceleration
+-0.29,-3.0,9.27Linear acceleration
+-0.13,0.12,-0.01Heading 
+232.25Roll
+232.25Pitch
+19.0625Acceleration
+-0.29,-3.07,9.23Linear acceleration
+-0.13,0.13,-0.03Heading 
+239.875Roll
+239.875Pitch
+19.0Acceleration
+-0.33,-3.08,9.23Linear acceleration
+-0.13,0.11,-0.03Heading 
+239.5Roll
+239.5Pitch
+19.0Acceleration
+-0.32,-3.05,9.2Linear acceleration
+-0.12,0.14,-0.06Heading 
+230.9375Roll
+230.9375Pitch
+18.8125Acceleration
+-0.32,-3.01,9.25Linear acceleration
+-0.14,0.15,-0.02Heading 
+238.375Roll
+238.375Pitch
+18.875Acceleration
+-0.29,-3.03,9.24Linear acceleration
+-0.09,0.14,-0.02Heading 
+238.1875Roll
+238.1875Pitch
+18.875Acceleration
+-0.28,-3.01,9.22Linear acceleration
+-0.12,0.16,-0.04Heading 
+229.9375Roll
+229.9375Pitch
+19.0625Acceleration
+-0.29,-3.07,9.25Linear acceleration
+-0.15,0.13,-0.01Heading 
+237.8125Roll
+237.8125Pitch
+19.5Acceleration
+-0.29,-3.19,9.24Linear acceleration
+-0.13,0.1,-0.02Heading 
+237.75Roll
+237.75Pitch
+19.375Acceleration
+-0.3,-3.17,9.2Linear acceleration
+-0.15,0.08,-0.04Heading 
+229.625Roll
+229.625Pitch
+19.4375Acceleration
+-0.3,-3.16,9.21Linear acceleration
+-0.12,0.1,-0.02Heading 
+229.6875Roll
+229.6875Pitch
+19.6875Acceleration
+-0.3,-3.2,9.2Linear acceleration
+-0.11,0.1,-0.02Heading 
+237.625Roll
+237.625Pitch
+19.75Acceleration
+-0.33,-3.17,9.21Linear acceleration
+-0.15,0.14,-0.01Heading 
+237.5625Roll
+237.5625Pitch
+19.5Acceleration
+-0.33,-3.2,9.21Linear acceleration
+-0.12,0.07,-0.02Heading 
+237.5625Roll
+237.5625Pitch
+19.125Acceleration
+-0.32,-3.09,9.22Linear acceleration
+-0.14,0.12,-0.03Heading 
+237.4375Roll
+237.4375Pitch
+19.3125Acceleration
+-0.31,-3.14,9.23Linear acceleration
+-0.11,0.11,-0.03Heading 
+237.375Roll
+237.375Pitch
+19.5Acceleration
+-0.3,-3.18,9.23Linear acceleration
+-0.13,0.09,0.0Heading 
+229.25Roll
+229.25Pitch
+19.5625Acceleration
+-0.29,-3.15,9.21Linear acceleration
+-0.12,0.12,-0.02Heading 
+237.1875Roll
+237.1875Pitch
+19.1875Acceleration
+-0.31,-3.09,9.22Linear acceleration
+-0.13,0.13,-0.03Heading 
+237.125Roll
+237.125Pitch
+19.125Acceleration
+-0.29,-3.1,9.25Linear acceleration
+-0.1,0.11,-0.01Heading 
+229.0625Roll
+229.0625Pitch
+19.625Acceleration
+-0.28,-3.19,9.2Linear acceleration
+-0.09,0.1,-0.02Heading 
+236.9375Roll
+236.9375Pitch
+19.5Acceleration
+-0.31,-3.19,9.25Linear acceleration
+-0.15,0.08,0.0Heading 
+228.875Roll
+228.875Pitch
+19.6875Acceleration
+-0.31,-3.19,9.19Linear acceleration
+-0.11,0.1,-0.03Heading 
+228.875Roll
+228.875Pitch
+19.75Acceleration
+-0.31,-3.16,9.22Linear acceleration
+-0.13,0.14,0.0Heading 
+236.75Roll
+236.75Pitch
+19.625Acceleration
+-0.28,-3.18,9.25Linear acceleration
+-0.07,0.11,0.01Heading 
+228.75Roll
+228.75Pitch
+20.0625Acceleration
+-0.32,-3.24,9.18Linear acceleration
+-0.12,0.12,-0.01Heading 
+236.6875Roll
+236.6875Pitch
+19.25Acceleration
+-0.28,-3.1,9.25Linear acceleration
+-0.08,0.12,0.0Heading 
+236.5625Roll
+236.5625Pitch
+19.5Acceleration
+-0.28,-3.15,9.24Linear acceleration
+-0.12,0.12,0.0Heading 
+236.4375Roll
+236.4375Pitch
+19.4375Acceleration
+-0.3,-3.13,9.24Linear acceleration
+-0.13,0.12,0.0Heading 
+236.375Roll
+236.375Pitch
+19.4375Acceleration
+-0.27,-3.16,9.23Linear acceleration
+-0.09,0.1,-0.01Heading 
+228.3125Roll
+228.3125Pitch
+18.875Acceleration
+-0.32,-3.06,9.28Linear acceleration
+-0.1,0.1,0.0Heading 
+235.875Roll
+235.875Pitch
+18.8125Acceleration
+-0.29,-3.02,9.29Linear acceleration
+-0.07,0.11,-0.01Heading 
+235.375Roll
+235.375Pitch
+18.6875Acceleration
+-0.29,-2.99,9.26Linear acceleration
+-0.12,0.14,-0.03Heading 
+234.5625Roll
+234.5625Pitch
+19.25Acceleration
+-0.29,-3.15,9.2Linear acceleration
+-0.1,0.08,-0.04Heading 
+225.9375Roll
+225.9375Pitch
+18.9375Acceleration
+-0.27,-3.08,9.22Linear acceleration
+-0.12,0.07,-0.04Heading 
+233.625Roll
+233.625Pitch
+18.6875Acceleration
+-0.25,-3.0,9.28Linear acceleration
+-0.14,0.13,0.0Heading 
+233.375Roll
+233.375Pitch
+18.875Acceleration
+-0.27,-3.07,9.21Linear acceleration
+-0.12,0.15,0.0Heading 
+233.0625Roll
+233.0625Pitch
+19.0625Acceleration
+-0.29,-3.08,9.24Linear acceleration
+-0.14,0.13,-0.06Heading 
+233.0Roll
+233.0Pitch
+19.375Acceleration
+-0.3,-3.11,9.2Linear acceleration
+-0.12,0.14,-0.02Heading 
+225.25Roll
+225.25Pitch
+19.375Acceleration
+-0.33,-3.08,9.2Linear acceleration
+-0.1,0.14,0.0Heading 
+233.75Roll
+233.75Pitch
+19.75Acceleration
+-0.33,-3.12,9.23Linear acceleration
+-0.11,0.19,0.0Heading 
+226.125Roll
+226.125Pitch
+19.8125Acceleration
+-0.29,-3.14,9.2Linear acceleration
+-0.06,0.16,0.0Heading 
+234.375Roll
+234.375Pitch
+19.6875Acceleration
+-0.3,-3.12,9.22Linear acceleration
+-0.07,0.18,0.01Heading 
+226.6875Roll
+226.6875Pitch
+19.75Acceleration
+-0.27,-3.1,9.24Linear acceleration
+-0.02,0.2,0.0Heading 
+235.125Roll
+235.125Pitch
+19.5625Acceleration
+-0.27,-3.11,9.21Linear acceleration
+-0.03,0.18,0.0Heading 
+227.5625Roll
+227.5625Pitch
+20.0Acceleration
+-0.29,-3.11,9.21Linear acceleration
+-0.03,0.24,0.0Heading 
+227.6875Roll
+227.6875Pitch
+19.375Acceleration
+-0.29,-3.05,9.21Linear acceleration
+-0.02,0.18,-0.02Heading 
+227.875Roll
+227.875Pitch
+19.8125Acceleration
+-0.29,-3.08,9.23Linear acceleration
+-0.04,0.25,0.01Heading 
+228.0Roll
+228.0Pitch
+19.625Acceleration
+-0.29,-3.11,9.23Linear acceleration
+1.28,0.18,0.0Heading 
+235.9375Roll
+235.9375Pitch
+20.0Acceleration
+-0.27,-3.14,9.2Linear acceleration
+-0.03,0.21,0.01Heading 
+235.8125Roll
+235.8125Pitch
+19.6875Acceleration
+-0.28,-3.14,9.26Linear acceleration
+-0.03,0.15,0.03Heading 
+227.8125Roll
+227.8125Pitch
+19.8125Acceleration
+-0.3,-3.13,9.22Linear acceleration
+-0.04,0.18,-0.01Heading 
+235.75Roll
+235.75Pitch
+20.125Acceleration
+-0.3,-3.21,9.17Linear acceleration
+-0.05,0.16,-0.02Heading 
+227.75Roll
+227.75Pitch
+19.8125Acceleration
+-0.32,-3.2,9.21Linear acceleration
+-0.05,0.15,0.0Heading 
+227.6875Roll
+227.6875Pitch
+19.625Acceleration
+-0.29,-3.13,9.22Linear acceleration
+-0.04,0.15,-0.01Heading 
+235.6875Roll
+235.6875Pitch
+19.8125Acceleration
+-0.27,-3.15,9.21Linear acceleration
+-0.08,0.19,-0.02Heading 
+227.625Roll
+227.625Pitch
+19.3125Acceleration
+-0.31,-3.07,9.2Linear acceleration
+-0.08,0.17,-0.04Heading 
+235.5Roll
+235.5Pitch
+19.375Acceleration
+-0.32,-3.11,9.24Linear acceleration
+-0.06,0.12,-0.02Heading 
+227.5Roll
+227.5Pitch
+19.625Acceleration
+-0.29,-3.18,9.22Linear acceleration
+-0.06,0.12,0.0Heading 
+235.5Roll
+235.5Pitch
+19.75Acceleration
+-0.31,-3.13,9.22Linear acceleration
+-0.08,0.16,0.0Heading 
+235.4375Roll
+235.4375Pitch
+19.625Acceleration
+-0.3,-3.12,9.19Linear acceleration
+-0.05,0.17,-0.03Heading 
+235.4375Roll
+235.4375Pitch
+19.4375Acceleration
+-0.33,-3.11,9.2Linear acceleration
+-0.06,0.15,-0.03Heading 
+235.4375Roll
+235.4375Pitch
+19.125Acceleration
+-0.35,-3.04,9.25Linear acceleration
+-0.05,0.15,-0.05Heading 
+227.4375Roll
+227.4375Pitch
+19.5625Acceleration
+-0.31,-3.15,9.18Linear acceleration
+-0.05,0.12,-0.03Heading 
+235.375Roll
+235.375Pitch
+19.375Acceleration
+-0.33,-3.12,9.22Linear acceleration
+-0.12,0.14,-0.05Heading 
+227.375Roll
+227.375Pitch
+19.375Acceleration
+-0.34,-3.12,9.22Linear acceleration
+-0.15,0.13,-0.03Heading 
+227.25Roll
+227.25Pitch
+19.25Acceleration
+-0.33,-3.17,9.2Linear acceleration
+-0.13,0.06,-0.05Heading 
+227.25Roll
+227.25Pitch
+19.0Acceleration
+-0.31,-3.12,9.2Linear acceleration
+-0.15,0.08,-0.07Heading 
+235.25Roll
+235.25Pitch
+19.125Acceleration
+-0.32,-3.14,9.19Linear acceleration
+-0.12,0.03,-0.04Heading 
+227.3125Roll
+227.3125Pitch
+19.125Acceleration
+-0.32,-3.2,9.24Linear acceleration
+-0.12,0.02,-0.04Heading 
+235.3125Roll
+235.3125Pitch
+18.8125Acceleration
+-0.31,-3.12,9.22Linear acceleration
+-0.13,0.03,-0.05Heading 
+235.3125Roll
+235.3125Pitch
+18.75Acceleration
+-0.28,-3.12,9.22Linear acceleration
+-0.12,0.04,-0.03Heading 
+235.3125Roll
+235.3125Pitch
+18.625Acceleration
+-0.32,-3.08,9.22Linear acceleration
+-0.12,0.05,-0.09Heading 
+227.375Roll
+227.375Pitch
+18.8125Acceleration
+-0.31,-3.09,9.21Linear acceleration
+-0.13,0.05,-0.04Heading 
+235.5Roll
+235.5Pitch
+19.125Acceleration
+-0.3,-3.2,9.19Linear acceleration
+-0.16,0.03,-0.05Heading 
+235.625Roll
+235.625Pitch
+18.75Acceleration
+-0.31,-3.11,9.23Linear acceleration
+-0.15,0.04,-0.03Heading 
+235.75Roll
+235.75Pitch
+18.625Acceleration
+-0.32,-3.08,9.22Linear acceleration
+-0.16,0.03,-0.07Heading 
+235.75Roll
+235.75Pitch
+18.875Acceleration
+-0.33,-3.14,9.19Linear acceleration
+-0.15,0.02,-0.08Heading 
+235.75Roll
+235.75Pitch
+18.75Acceleration
+-0.31,-3.13,9.2Linear acceleration
+-0.15,0.03,-0.05Heading 
+236.125Roll
+236.125Pitch
+18.625Acceleration
+-0.29,-3.07,9.22Linear acceleration
+-0.17,0.05,-0.05Heading 
+228.1875Roll
+228.1875Pitch
+18.9375Acceleration
+-0.3,-3.19,9.24Linear acceleration
+-0.18,0.02,-0.03Heading 
+228.125Roll
+228.125Pitch
+19.0625Acceleration
+-0.31,-3.12,9.21Linear acceleration
+-0.18,0.08,-0.03Heading 
+228.0625Roll
+228.0625Pitch
+18.875Acceleration
+-0.32,-3.07,9.23Linear acceleration
+-0.12,0.1,-0.04Heading 
+236.0625Roll
+236.0625Pitch
+19.0625Acceleration
+-0.31,-3.09,9.21Linear acceleration
+-0.14,0.1,-0.03
