@@ -27,6 +27,7 @@ from tkinter import font
 
 from static import constants
 from .map import Map
+
 from .viewmap import ViewMap
 from screeninfo import get_monitors, Enumerator
 
