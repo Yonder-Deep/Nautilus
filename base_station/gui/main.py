@@ -874,8 +874,22 @@ class Main():
         self.root.destroy()
         sys.exit()
 
+    # CREATING BUTTONS FOR GO-PRO
+
+    def init_recording_frame(self):
+        """ Creates the frame for recording buttons. """
+        self.buttons_frame = Frame(
+            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
+
+        self.buttons_frame.pack(side=TOP)
+
+        self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
+                                           padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
+
+        self.download_data_button.grid(row=0, column=0)
+
     def start_recording(self):
-        self.out_q.put("method()")
+        self.out_q.put("start_video()")
 
     def stop_recording(self):
-        self.out_q.put("method()")
+        self.out_q.put("stop_video()")
