@@ -48,6 +48,7 @@ STATUS_FRAME_WIDTH = 350
 CALIBRATE_FRAME_WIDTH = 350
 MISSION_FRAME_WIDTH = 300
 LOG_FRAME_WIDTH = 650
+RECORDING_FRAME_WIDTH = 50
 # Font Constants
 FONT = "Arial"
 FONT_SIZE = 11
@@ -879,17 +880,28 @@ class Main():
     def init_recording_frame(self):
         """ Creates the frame for recording buttons. """
         self.buttons_frame = Frame(
-            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=FUNC_FRAME_WIDTH, bd=1, relief=SUNKEN)
+            self.status_frame, height=TOP_FRAME_HEIGHT*(1/7), width=RECORDING_FRAME_WIDTH, bd=1, relief=SUNKEN)
 
         self.buttons_frame.pack(side=TOP)
 
-        self.download_data_button = Button(self.buttons_frame, anchor=tkinter.W, text="Download\nData", takefocus=False,
-                                           padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
+        self.start_record_button = Button(self.buttons_frame, anchor=tkinter.W, text="Start\nRecording", takefocus=False,
+                                          padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("start_recording()"))
 
-        self.download_data_button.grid(row=0, column=0)
+        self.stop_record_button = Button(self.buttons_frame, anchor=tkinter.W, text="Stop\nRecording", takefocus=False,
+                                         padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("stop_recording()"))
+
+        self.take_picture_button = Button(self.buttons_frame, anchor=tkinter.W, text="Capture\Picture", takefocus=False,
+                                          padx=BUTTON_PAD_X+25, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: self.out_q.put("send_download_data()"))
+
+        self.start_record_button.grid(row=0, column=0)
+        self.stop_record_button.grid(row=0, column=1)
+        self.take_picture_button.grid(row=1, column=0)
 
     def start_recording(self):
         self.out_q.put("start_video()")
 
     def stop_recording(self):
         self.out_q.put("stop_video()")
+
+    def capture_photo(self):
+        self.out_q.put("take_photo()")
