@@ -11,12 +11,13 @@ class GPS(threading.Thread):
         # Call the threading super-class constructor (inheritance)
         threading.Thread.__init__(self)
 
-        try:
-            for gps_path in GPS_PATHS:
+        for gps_path in GPS_PATHS:
+            try:
                 uart = serial.Serial(gps_path, baudrate=9600, timeout=10)
                 break
-        except:
-            print("GPS not found")
+            except:
+                pass
+
         # If using I2C, we'll create an I2C interface to talk to using default pins
         # i2c = board.I2C()
         # Create a GPS module instance.
