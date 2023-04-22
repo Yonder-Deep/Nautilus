@@ -45,10 +45,12 @@ class AUV_Send_Data(threading.Thread):
 
         try:
             self.gps = GPS(self.gps_q)
-            global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
+            print("Successfully connected to GPS socket service.")
+            #global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
             self.gps_connected = True
         except:
-            global_vars.log(self.out_q, "Warning: Could not connect to a GPS socket service.")
+            print("Warning: Could not connect to a GPS socket service.")
+            #global_vars.log(self.out_q, "Warning: Could not connect to a GPS socket service.")
 
     def run(self):
         """ Main connection loop for the AUV. """
