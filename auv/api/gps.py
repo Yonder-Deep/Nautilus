@@ -2,7 +2,7 @@ import threading
 import time
 import serial
 import adafruit_gps
-from static.constants import GPS_PATH
+from static.constants import GPS_PATHS
 
 class GPS(threading.Thread):
     """ Class for basic GPS functionality """
@@ -11,7 +11,12 @@ class GPS(threading.Thread):
         # Call the threading super-class constructor (inheritance)
         threading.Thread.__init__(self)
 
-        uart = serial.Serial(GPS_PATH, baudrate=9600, timeout=10)
+        try:
+            for gps_path in GPS_PATHS:
+                uart = serial.Serial(gps_path, baudrate=9600, timeout=10)
+                break
+        except:
+            print("GPS not found")
         # If using I2C, we'll create an I2C interface to talk to using default pins
         # i2c = board.I2C()
         # Create a GPS module instance.
