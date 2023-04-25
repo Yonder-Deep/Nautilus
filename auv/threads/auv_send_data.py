@@ -149,36 +149,39 @@ class AUV_Send_Data(threading.Thread):
 
     def send_positioning(self):
         if (self.gps_connected):
-                self.gps.run()
-                gps_data = self.gps_q.get()
-                if gps_data['has fix'] == 'Yes':
-                    self.latitude = gps_data['latitude']
-                    self.longitude = gps_data['longitude']
+            self.gps.run()
+            gps_data = self.gps_q.get()
+            if gps_data['has fix'] == 'Yes':
+                self.latitude = gps_data['latitude']
+                self.longitude = gps_data['longitude']
 
-                    x, y = self.latitude, self.longitude
-                    x_bits = abs(x) & 0x1FF
-                    y_bits = abs(y) & 0x1FF
+                x, y = self.latitude, self.longitude
+                print(str(x) + ", " + str(y))
+                '''
+                x_bits = abs(x) & 0x1FF
+                y_bits = abs(y) & 0x1FF
 
-                    x_sign = 0 if x >= 0 else 1
-                    y_sign = 0 if y >= 0 else 1
+                x_sign = 0 if x >= 0 else 1
+                y_sign = 0 if y >= 0 else 1
 
-                    x_bits = x_bits | (x_sign << 9)
-                    y_bits = y_bits | (y_sign << 9)
-                    position_encode = (constants.POSITION_ENCODE | x_bits << 10 | y_bits)
-                    constants.RADIO_LOCK.acquire()
-                    print(bin(position_encode))
-                    global_vars.radio.write(position_encode, 3)
-                    constants.RADIO_LOCK.release()
+                x_bits = x_bits | (x_sign << 9)
+                y_bits = y_bits | (y_sign << 9)
 
-                    #self.out_q.put("set_gps_status(\"Recieving data\")")
-                    print("GPS recieving data")
-                
-                else:
-                    self.latitude = 0
-                    self.longitude = 0
+                position_encode = (constants.POSITION_ENCODE | x_bits << 10 | y_bits)
+                constants.RADIO_LOCK.acquire()
+                print(bin(position_encode))
+                global_vars.radio.write(position_encode, 3)
+                constants.RADIO_LOCK.release()
+                '''
+                #self.out_q.put("set_gps_status(\"Recieving data\")")
+                print("Sending GPS data")
 
-                    #self.out_q.put("set_gps_status(\"No fix\")")
-                    print("No fix")
+            else:
+                self.latitude = 0
+                self.longitude = 0
+
+                #self.out_q.put("set_gps_status(\"No fix\")")
+                print("No fix")
 
         else:
             print("GPS Not Connected")
