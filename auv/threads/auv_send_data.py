@@ -157,6 +157,7 @@ class AUV_Send_Data(threading.Thread):
 
                 x, y = self.latitude, self.longitude
                 print(str(x) + ", " + str(y))
+                print(str(bin(x)) + ", " + str(bin(y)))
                 '''
                 x_bits = abs(x) & 0x1FF
                 y_bits = abs(y) & 0x1FF
