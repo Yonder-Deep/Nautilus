@@ -11,6 +11,7 @@ import math
 import os
 import threading
 import sys
+import struct
 sys.path.append('..')
 
 
@@ -156,8 +157,13 @@ class AUV_Send_Data(threading.Thread):
                 self.longitude = gps_data['longitude']
 
                 x, y = self.latitude, self.longitude
+                xBytes = struct.pack('f', x)
+                yBytes = struct.pack('f', y)
+
                 print(str(x) + ", " + str(y))
                 print(str(float.hex(x)) + ", " + str(float.hex(y)))
+                print(xBytes)
+                print(yBytes)
                 '''
                 x_bits = abs(x) & 0x1FF
                 y_bits = abs(y) & 0x1FF
