@@ -6,21 +6,34 @@ DEPTH_DATA = 0b011
 
 
 def decode_command(self_obj, header, line):
-    remain = line & 0x1FFFFF
+    remain = line & 0x1FFFFFFFFFFFFF
     if header == POSITION_DATA:
-        data = remain & 0x7FFFF
-        x = data >> 10
-        x_sign = (x & 0x200) >> 9
-        y = data & 0x1FF
-        y_sign = (y & 0x200) >> 9
+        no_fix = remain >> 52
+        if no_fix:
+            self_obj.out_q.put("set_auv_gps_status(\"No fix\")")
+        else:
+            lat_bits = remain >> 26
+            long_bits = remain & 0x3FFFFFF
 
-        x &= 0x1FF
-        y &= 0x1FF
+            lat_sign = lat_bits >> 25
+            long_sign = long_bits >> 25
 
-        x = -x if x_sign else x
-        y = -y if y_sign else y
+            lat_wi = int(lat_bits >> 17)
+            long_wi = int(long_bits >> 17)
+            lat_di = int(lat_bits & 0x1FFFF)
+            long_di = int(long_bits & 0x1FFFF)
 
-        self_obj.out_q.put("set_position(" + str(int(x)) + ", " + str(int(y)) + ")")
+            if lat_sign:
+                lat_wi *= -1
+            if long_sign:
+                long_wi *= -1
+
+            lat = str(lat_wi) + "." + str(lat_di)
+            long = str(long_wi) + "." + str(long_di)
+
+            self_obj.out_q.put("set_auv_gps_position(" + lat + ", " + long + ")")
+            self_obj.out_q.put("set_auv_gps_status(\"Recieving data\")")
+
     elif header == HEADING_DATA:
         data = remain & 0x1FFFF
         whole = data >> 7

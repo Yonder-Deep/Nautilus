@@ -74,8 +74,7 @@ class AUV_Send_Data(threading.Thread):
                         # Pressure
                         if self.pressure_sensor is not None:
                             self.send_depth()
-
-                        # TODO: Positioning, currently placeholder
+                        # GPS
                         self.send_positioning()
 
                     else:
@@ -101,7 +100,7 @@ class AUV_Send_Data(threading.Thread):
         heading_encode = (constants.HEADING_ENCODE | whole_heading | decimal_heading)
 
         constants.RADIO_LOCK.acquire()
-        global_vars.radio.write(heading_encode, 3)
+        global_vars.radio.write(heading_encode, 7)
         constants.RADIO_LOCK.release()
 
     def send_misc_data(self):
@@ -129,7 +128,7 @@ class AUV_Send_Data(threading.Thread):
 
         message_encode = (constants.MISC_ENCODE | sign | whole_temperature | movement)
         constants.RADIO_LOCK.acquire()
-        global_vars.radio.write(message_encode, 3)
+        global_vars.radio.write(message_encode, 7)
         constants.RADIO_LOCK.release()
 
     def send_depth(self):
@@ -145,7 +144,7 @@ class AUV_Send_Data(threading.Thread):
         depth_encode = (constants.DEPTH_ENCODE | whole | decimal)
 
         constants.RADIO_LOCK.acquire()
-        global_vars.radio.write(depth_encode, 3)
+        global_vars.radio.write(depth_encode, 7)
         constants.RADIO_LOCK.release()
 
     def send_positioning(self):
@@ -156,36 +155,51 @@ class AUV_Send_Data(threading.Thread):
                 self.latitude = gps_data['latitude']
                 self.longitude = gps_data['longitude']
 
-                x, y = self.latitude, self.longitude
-                xBytes = struct.pack('f', x)
-                yBytes = struct.pack('f', y)
+                x, y = str(self.latitude), str(self.longitude)
+                x_whole, x_dec = x.split('.')
+                y_whole, y_dec = y.split('.')
+                x_wi, y_wi = int(x_whole), int(y_whole)
+                x_di, y_di = int(x_dec), int(y_dec)
 
+                if x_wi < 0:
+                    x_s = 1
+                    x_wi *= -1
+                else:
+                    x_s = 0
+
+                if y_wi < 0:
+                    y_s = 1
+                    y_wi *= -1
+                else:
+                    y_s = 0
+
+                '''
                 print(str(x) + ", " + str(y))
                 print(str(float.hex(x)) + ", " + str(float.hex(y)))
                 print(xBytes)
                 print(yBytes)
                 '''
-                x_bits = abs(x) & 0x1FF
-                y_bits = abs(y) & 0x1FF
 
-                x_sign = 0 if x >= 0 else 1
-                y_sign = 0 if y >= 0 else 1
+                x_bits = (x_s << 25) | (x_wi << 17) | x_di
+                y_bits = (y_s << 25) | (y_wi << 17) | y_di
 
-                x_bits = x_bits | (x_sign << 9)
-                y_bits = y_bits | (y_sign << 9)
-
-                position_encode = (constants.POSITION_ENCODE | x_bits << 10 | y_bits)
+                position_encode = (constants.POSITION_ENCODE | (x_bits << 26) | y_bits)
                 constants.RADIO_LOCK.acquire()
                 print(bin(position_encode))
-                global_vars.radio.write(position_encode, 3)
+                global_vars.radio.write(position_encode, 7)
                 constants.RADIO_LOCK.release()
-                '''
                 #self.out_q.put("set_gps_status(\"Recieving data\")")
                 print("Sending GPS data")
 
             else:
                 self.latitude = 0
                 self.longitude = 0
+
+                position_encode = (constants.POSITION_ENCODE | (1 << 52))
+                constants.RADIO_LOCK.acquire()
+                print(bin(position_encode))
+                global_vars.radio.write(position_encode, 7)
+                constants.RADIO_LOCK.release()
 
                 #self.out_q.put("set_gps_status(\"No fix\")")
                 print("No fix")

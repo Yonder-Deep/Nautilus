@@ -152,11 +152,11 @@ class BaseStation_Receive(threading.Thread):
                 # Try to read line from radio.
                 try:
 
-                    # Read 7 bytes
-                    line = self.radio.read(7)
+                    # Read 11 bytes
+                    line = self.radio.read(11)
 
                     while (line != b''):
-                        if not global_vars.downloading_file and len(line) == 7:
+                        if not global_vars.downloading_file and len(line) == 11:
                             print('read line')
                             intline = int.from_bytes(line, "big")
 
@@ -172,7 +172,7 @@ class BaseStation_Receive(threading.Thread):
                                 break
 
                             intline = intline >> 32
-                            header = intline >> 21     # get first 3 bits
+                            header = intline >> 53     # get first 3 bits
                             # PING case
                             if intline == constants.PING:
                                 self.time_since_last_ping = time.time()
@@ -191,7 +191,7 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.downloading_file = True
                                 file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
                                 continue
-                            line = self.radio.read(7)
+                            line = self.radio.read(11)
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
@@ -213,7 +213,7 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.file_size = 0
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
-                                line = self.radio.read(7)
+                                line = self.radio.read(11)
 
                     self.radio.flush()
 
@@ -229,11 +229,11 @@ class BaseStation_Receive(threading.Thread):
                 if gps_data['has fix'] == 'Yes':
                     self.latitude = gps_data['latitude']
                     self.longitude = gps_data['longitude']
-                    self.out_q.put("set_gps_position(" + str(self.latitude) + ", " + str(self.longitude) + ")")
-                    self.out_q.put("set_gps_status(\"Recieving data\")")
+                    self.out_q.put("set_bs_gps_position(" + str(self.latitude) + ", " + str(self.longitude) + ")")
+                    self.out_q.put("set_bs_gps_status(\"Recieving data\")")
                 else:
                     self.latitude = 0
                     self.longitude = 0
-                    self.out_q.put("set_gps_status(\"No fix\")")
+                    self.out_q.put("set_bs_gps_status(\"No fix\")")
 
             time.sleep(constants.THREAD_SLEEP_DELAY)

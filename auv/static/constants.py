@@ -12,10 +12,10 @@ RADIO_PATH_8 = {'radioNum': 8, 'path': '/dev/serial/by-id/usb-FTDI_FT231X_USB_UA
 RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5, RADIO_PATH_6, RADIO_PATH_7, RADIO_PATH_8]
 GPS_PATH = '/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0'
 GPS_PATH_2 = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
-GPS_PATHS = [GPS_PATH , GPS_PATH_2]
+GPS_PATHS = [GPS_PATH, GPS_PATH_2]
 IMU_PATH = '/dev/serial0'
 IMU_RESET_PIN = 8
-PING = 0xFFFFFF
+PING = 0xFFFFFFFFFFFFFF  # changed to reflect standard change
 SEND_SLEEP_DELAY = 1
 RECEIVE_SLEEP_DELAY = 0.2
 PING_SLEEP_DELAY = 3
@@ -40,11 +40,11 @@ I_HEADING = 2.0
 D_HEADING = 0.0
 PID_DATA = 0b010
 
-DEPTH_ENCODE = DEPTH_DATA << 21
-HEADING_ENCODE = HEADING_DATA << 21
-MISC_ENCODE = MISC_DATA << 21
-POSITION_ENCODE = POSITION_DATA << 21
-PID_ENCODE = PID_DATA << 21
+DEPTH_ENCODE = DEPTH_DATA << 53
+HEADING_ENCODE = HEADING_DATA << 53
+MISC_ENCODE = MISC_DATA << 53
+POSITION_ENCODE = POSITION_DATA << 53
+PID_ENCODE = PID_DATA << 53  # changed all of these from 21 to 53 to comply to new standard bcuz of gps data
 
 DEF_DIVE_SPD = 100
 
