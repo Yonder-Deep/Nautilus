@@ -17,11 +17,13 @@ def decode_command(self_obj, header, line):
 
             lat_sign = lat_bits >> 25
             long_sign = long_bits >> 25
+            lat_val = lat_bits & 0x1FFFFFF
+            long_val = long_bits & 0x1FFFFFF
 
-            lat_wi = int(lat_bits >> 17)
-            long_wi = int(long_bits >> 17)
-            lat_di = int(lat_bits & 0x1FFFF)
-            long_di = int(long_bits & 0x1FFFF)
+            lat_wi = int(lat_val >> 17)
+            long_wi = int(long_val >> 17)
+            lat_di = int(lat_val & 0x1FFFF)
+            long_di = int(long_val & 0x1FFFF)
 
             if lat_sign:
                 lat_wi *= -1
