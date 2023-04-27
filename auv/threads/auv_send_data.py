@@ -155,7 +155,7 @@ class AUV_Send_Data(threading.Thread):
                 self.latitude = gps_data['latitude']
                 self.longitude = gps_data['longitude']
                 self.latitude = round(self.latitude, 5)
-                self.longitude = round(self.latitude, 5)
+                self.longitude = round(self.longitude, 5)
 
                 lat, long = str(self.latitude), str(self.longitude)
                 lat_whole, lat_dec = lat.split('.')
