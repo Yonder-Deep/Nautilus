@@ -191,7 +191,7 @@ class AUV_Send_Data(threading.Thread):
                 global_vars.radio.write(position_encode, 7)
                 constants.RADIO_LOCK.release()
                 #self.out_q.put("set_gps_status(\"Recieving data\")")
-                print(x + "," + y)
+                print(lat + "," + long)
                 print("Sending GPS data")
 
             else:
