@@ -38,7 +38,7 @@ class Radio():
 
             # print("bytes written")
             message = Crc32.generate(message)
-            byte_arr = message.to_bytes(7, 'big')
+            byte_arr = message.to_bytes(11, 'big')
             self.ser.write(byte_arr)
 
     def readlines(self):
