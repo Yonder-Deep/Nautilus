@@ -154,24 +154,26 @@ class AUV_Send_Data(threading.Thread):
             if gps_data['has fix'] == 'Yes':
                 self.latitude = gps_data['latitude']
                 self.longitude = gps_data['longitude']
+                self.latitude = round(self.latitude, 5)
+                self.longitude = round(self.latitude, 5)
 
-                x, y = str(self.latitude), str(self.longitude)
-                x_whole, x_dec = x.split('.')
-                y_whole, y_dec = y.split('.')
-                x_wi, y_wi = int(x_whole), int(y_whole)
-                x_di, y_di = int(x_dec), int(y_dec)
+                lat, long = str(self.latitude), str(self.longitude)
+                lat_whole, lat_dec = lat.split('.')
+                long_whole, long_dec = long.split('.')
+                lat_wi, long_wi = int(lat_whole), int(long_whole)
+                lat_di, long_di = int(lat_dec), int(long_dec)
 
-                if x_wi < 0:
-                    x_s = 1
-                    x_wi *= -1
+                if lat_wi < 0:
+                    lat_s = 1
+                    lat_wi *= -1
                 else:
-                    x_s = 0
+                    lat_s = 0
 
-                if y_wi < 0:
-                    y_s = 1
-                    y_wi *= -1
+                if long_wi < 0:
+                    long_s = 1
+                    long_wi *= -1
                 else:
-                    y_s = 0
+                    long_s = 0
 
                 '''
                 print(str(x) + ", " + str(y))
@@ -180,10 +182,10 @@ class AUV_Send_Data(threading.Thread):
                 print(yBytes)
                 '''
 
-                x_bits = (x_s << 25) | (x_wi << 17) | x_di
-                y_bits = (y_s << 25) | (y_wi << 17) | y_di
+                lat_bits = (lat_s << 25) | (lat_wi << 17) | lat_di
+                long_bits = (long_s << 25) | (long_wi << 17) | long_di
 
-                position_encode = (constants.POSITION_ENCODE | (x_bits << 26) | y_bits)
+                position_encode = (constants.POSITION_ENCODE | (lat_bits << 26) | long_bits)
                 constants.RADIO_LOCK.acquire()
                 print(bin(position_encode))
                 global_vars.radio.write(position_encode, 7)
