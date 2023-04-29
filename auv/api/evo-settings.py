@@ -37,7 +37,7 @@ def set_phantom_power(channel, power_on):
     else:
         dataFragment = b'\x00\x00\x00\x00'
 
-    assert dev.ctrl_transfer(0x21, 1, 0x0000, 0x3a00, dataFragment) == len(dataFragment)
+    assert dev.ctrl_transfer(0x21, channel, 0x0000, 0x3a00, dataFragment) == len(dataFragment)
 
 
 dev = find_device()
