@@ -25,33 +25,24 @@ def get_heading_encode(data):
 class AUV_Send_Data(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self, pressure_sensor, imu, mc):
+    def __init__(self, pressure_sensor, imu, mc, gps, gps_q):
         """ Constructor for the AUV """
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
+        self.gps = gps
+        self.gps_q = gps_q
+        self.gps_connected = True if gps is not None else False
+        self.latitude = 0
+        self.longitude = 0
         self.time_since_last_ping = 0.0
         self.current_mission = None
         self.timer = 0
 
         self._ev = threading.Event()
 
-        self.gps = None
-        self.gps_connected = False
-        self.latitude = 0
-        self.longitude = 0
-        self.gps_q = Queue()
-
         threading.Thread.__init__(self)
 
-        try:
-            self.gps = GPS(self.gps_q)
-            print("Successfully connected to GPS socket service.")
-            #global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
-            self.gps_connected = True
-        except:
-            print("Warning: Could not connect to a GPS socket service.")
-            #global_vars.log(self.out_q, "Warning: Could not connect to a GPS socket service.")
 
     def run(self):
         """ Main connection loop for the AUV. """

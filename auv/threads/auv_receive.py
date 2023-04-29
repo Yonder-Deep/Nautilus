@@ -28,10 +28,12 @@ sys.path.append('..')
 class AUV_Receive(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self, queue, halt, pressure_sensor, imu, mc):
+    def __init__(self, queue, halt, pressure_sensor, imu, mc, gps, gps_q):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
+        self.gps = gps
+        self.gps_q = gps_q
         self.time_since_last_ping = time.time() + 4
         self.diving = False
         self.current_mission = None

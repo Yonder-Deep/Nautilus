@@ -20,6 +20,7 @@ from api import Crc32
 from api import PressureSensor
 from api import MotorController
 from api import MotorQueue
+from api import GPS
 from missions import *
 from api import Indicator
 
@@ -46,12 +47,13 @@ def stop_threads(ts):
 
 
 def start_threads(ts, queue, halt):
+    gps_q = Queue()
+
     # Initialize hardware
     try:
         indicator_LED = Indicator()
-        global_vars.log("Indicator LED detected")
+        global_vars.log("Starting Up")
     except:
-        indicator_LED = None
         global_vars.log("Indicator LED not detected")
 
     try:
@@ -61,6 +63,13 @@ def start_threads(ts, queue, halt):
     except:
         pressure_sensor = None
         global_vars.log("Pressure sensor is not connected to the AUV.")
+
+    try:
+        gps = GPS(gps_q)
+        print("Successfully connected to GPS socket service.")
+    except:
+        gps = None
+        print("Warning: Could not connect to a GPS socket service.")
 
     '''
     try:
@@ -77,11 +86,11 @@ def start_threads(ts, queue, halt):
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc)
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q)
 
     ts = []
 
-    auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc)
+    auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc, gps, gps_q)
     auv_ping_thread = AUV_Send_Ping()
 
     ts.append(auv_motor_thread)
