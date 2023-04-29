@@ -407,6 +407,8 @@ class Map:
             self.nav_y = self.waypoints[self.waypoint_list.current()][1]
             self.main.log("Selected waypoint: " + str(self.nav_x) + " " + str(self.nav_y))
 
+            # implment code for sending gps data over radio here
+
         # save button that calls set_waypoint()
         prompt_submit = Button(prompt_window, text="Save", font=(FONT, FONT_SIZE),
                                command=lambda:  # Runs multiple functions.
