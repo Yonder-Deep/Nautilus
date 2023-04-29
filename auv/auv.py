@@ -23,12 +23,14 @@ from api import MotorQueue
 from api import GPS
 from missions import *
 from api import Indicator
+from api import RealSenseCamera
 
 from static import global_vars
 
 from threads.auv_send_data import AUV_Send_Data
 from threads.auv_send_ping import AUV_Send_Ping
 from threads.auv_receive import AUV_Receive
+from threads.autonomous_nav import Autonomous_Nav
 
 from static import constants
 from static import global_vars
@@ -73,6 +75,13 @@ def start_threads(ts, queue, halt):
         gps = None
         print("Warning: Could not connect to a GPS socket service.")
 
+    try:
+        depth_cam = RealSenseCamera()
+        print("Depth cam has been found.")
+    except:
+        depth_cam = None
+        print("Depth cam could not be found.")
+
     '''
     try:
         imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
@@ -88,7 +97,8 @@ def start_threads(ts, queue, halt):
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav)
+    auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav)   
 
     ts = []
 
