@@ -51,7 +51,7 @@ usb.util.claim_interface(dev, 0)
 dev.reset()
 # set the active configuration. With no arguments, the first
 # configuration will be the active one
-config = usb.core.Configuration(dev, 0)
+config = usb.core.Configuration(dev, 1)
 dev.set_configuration(config)
 
 # SEND CONTROL DATA
