@@ -1,41 +1,99 @@
-import numpy as np
-import cv2
 import pyrealsense2 as rs
+import numpy as np
+import cv2 as cv
 
-# Configure depth stream
-pipeline = rs.pipeline()
-config = rs.config()
-config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+class RealSenseCamera:
+    """
+    
+    Initialize a RealSenseCamera object with the following attributes:
+    :param serial_number: The serial number of the RealSense camera
+    
+    """
 
-# Start streaming
-pipeline.start(config)
+    def __init__(self) -> None:
+        # Query all existing RealSense cameras connected to the computer and get the serial number of the first cam found
 
-# Create color map
-color_map = cv2.COLORMAP_JET
+        # INITIALIZE CAMERA
+        try:
+            ctx = rs.context()
+            devices = ctx.query_devices()
+            serial_number = devices[0].get_info(rs.camera_info.serial_number)
 
-try:
-    while True:
-        # Wait for a coherent pair of frames: depth and color
-        frames = pipeline.wait_for_frames()
-        depth_frame = frames.get_depth_frame()
+            # Create RealSense D415 camera object and pipeline
+            self.serial_number = serial_number
+            self.pipeline = rs.pipeline()
+            self.config = rs.config()
+            self.config.enable_device(serial_number)
+            self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 60)
+            self.config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 60)
+            self.config.enable_stream(rs.stream.infrared, 640, 480, rs.format.y8, 60)
 
-        # Convert depth data to a numpy array
-        depth_image = np.asanyarray(depth_frame.get_data())
+            # Start streaming
+            self.pipeline.start(self.config)
 
-        # Apply color map to depth data
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), color_map)
+            # Enable IR emitter and set max laser power
+            self.profile = self.pipeline.get_active_profile()
+            self.depth_sensor = self.profile.get_device().first_depth_sensor()
+            self.depth_sensor.set_option(rs.option.emitter_enabled, 1)
+            #self.depth_sensor.set_option(rs.option.enable_auto_exposure, 1)
+            #self.depth_sensor.set_option(rs.option.enable_auto_white_balance, 1)
+            #self.depth_sensor.set_option(rs.option.output_trigger_enabled, 1)
+            self.depth_sensor.set_option(rs.option.laser_power, 360)
+            self.depth_sensor.set_option(rs.option.global_time_enabled, 1)
+        except:
+            print("No RealSense camera found. Please connect a RealSense camera and try again.")
+            exit()
 
-        # Display the depth data
-        cv2.imshow('Depth', depth_colormap)
+    def get_frames(self):
+        """
+        :return: The frameset of the RealSenseCamera object
+        """
+        return self.pipeline.wait_for_frames()
+        
+    def process_frames(self, frames):
+        """
+        
+        :param frames: The frameset of the RealSenseCamera object
 
-        # Wait for key press
-        key = cv2.waitKey(1)
-        if key == 27:  # ESC
-            break
+        """    
+        aligned_frames = rs.align(rs.stream.depth).process(frames)
 
-finally:
-    # Stop streaming
-    pipeline.stop()
+        # Get aligned frames
+        self.aligned_depth_frame = aligned_frames.get_depth_frame()  # aligned_depth_frame is a 640x480 depth image
+        self.aligned_depth_frame = rs.decimation_filter(1).process(self.aligned_depth_frame)
+        self.aligned_depth_frame = rs.disparity_transform(True).process(self.aligned_depth_frame)
+        self.aligned_depth_frame = rs.spatial_filter().process(self.aligned_depth_frame)
+        self.aligned_depth_frame = rs.temporal_filter().process(self.aligned_depth_frame)
+        self.aligned_depth_frame = rs.disparity_transform(False).process(self.aligned_depth_frame)
 
-    # Close all windows
-    cv2.destroyAllWindows()
+        self.color_frame = aligned_frames.get_color_frame()
+        self.raw_color_frame = frames.get_color_frame()
+
+    def detect_obstacles(self):
+        """
+        Detect obstacles in the RealSenseCamera object's frameset
+        """
+        # TODO: Implement obstacle detection
+
+    def save_frames(self):
+        """
+        Save the frames of the RealSenseCamera object as .jpg and .npy files
+        """
+        # Convert images to numpy arrays
+        depth_image = np.asanyarray(self.aligned_depth_frame.get_data())
+        color_image = np.asanyarray(self.color_frame.get_data())
+        raw_color_image = np.asanyarray(self.raw_color_frame.get_data())
+        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+
+        # Save color as .jpg and depth as .npy
+        cv.imwrite("./Camera_Data/" + self.serial_number + "/sample_images/image.jpg", color_image)
+        cv.imwrite("./Camera_Data/" + self.serial_number + "/sample_images/raw_image.jpg", raw_color_image)
+        np.save("./Camera_Data/" + self.serial_number + "/sample_images/depth_map.npy", depth_image)
+        cv.imwrite("./Camera_Data/" + self.serial_number + "/sample_images/depth.png", depth_colormap)
+
+if __name__ == "__main__":
+    camera = RealSenseCamera()
+    frames = camera.get_frames()
+    camera.process_frames(frames)
+
