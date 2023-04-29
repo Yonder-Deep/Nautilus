@@ -153,10 +153,10 @@ class BaseStation_Receive(threading.Thread):
                 try:
 
                     # Read 11 bytes
-                    line = self.radio.read(11)
+                    line = self.radio.read(constants.COMM_BUFFER_WIDTH + 4)
 
                     while (line != b''):
-                        if not global_vars.downloading_file and len(line) == 11:
+                        if not global_vars.downloading_file and len(line) == (constants.COMM_BUFFER_WIDTH + 4):
                             print('read line')
                             intline = int.from_bytes(line, "big")
 
@@ -172,7 +172,7 @@ class BaseStation_Receive(threading.Thread):
                                 break
 
                             intline = intline >> 32
-                            header = intline >> 53     # get first 3 bits
+                            header = intline >> (constants.COMM_BUFFER_WIDTH*8-3)     # get first 3 bits
                             # PING case
                             if intline == constants.PING:
                                 self.time_since_last_ping = time.time()
@@ -191,7 +191,7 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.downloading_file = True
                                 file = open(os.path.dirname(os.path.dirname(__file__)) + "logs/dive_log.txt", "wb")
                                 continue
-                            line = self.radio.read(11)
+                            line = self.radio.read(constants.COMM_BUFFER_WIDTH + 4)
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
@@ -213,7 +213,7 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.file_size = 0
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
-                                line = self.radio.read(11)
+                                line = self.radio.read(constants.COMM_BUFFER_WIDTH + 4)
 
                     self.radio.flush()
 

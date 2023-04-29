@@ -18,7 +18,9 @@ RADIO_PATH_12 = {'radioNum': 12, 'path': 'COM10'}
 RADIO_PATHS = [RADIO_PATH, RADIO_PATH_2, RADIO_PATH_3, RADIO_PATH_4, RADIO_PATH_5,
                RADIO_PATH_6, RADIO_PATH_7, RADIO_PATH_8, RADIO_PATH_9, RADIO_PATH_10, RADIO_PATH_11, RADIO_PATH_12]
 GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
-PING = 0xFFFFFFFFFFFFFF
+COMM_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
+PING = int('0x' + 'F'*2*COMM_BUFFER_WIDTH, 16)
+INTERPRETER_TRUNC = int('0x' + 'F'*2*COMM_BUFFER_WIDTH, 16) >> 3
 
 CONNECTION_TIMEOUT = 6  # Seconds before BS is determined to have lost radio connection to AUV
 

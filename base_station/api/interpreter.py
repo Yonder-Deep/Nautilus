@@ -1,3 +1,5 @@
+from static import constants
+
 # Encoding headers
 POSITION_DATA = 0b000
 HEADING_DATA = 0b001
@@ -6,7 +8,7 @@ DEPTH_DATA = 0b011
 
 
 def decode_command(self_obj, header, line):
-    remain = line & 0x1FFFFFFFFFFFFF
+    remain = line & constants.INTERPRETER_TRUNC
     if header == POSITION_DATA:
         no_fix = remain >> 52
         if no_fix:

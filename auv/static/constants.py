@@ -15,7 +15,8 @@ GPS_PATH_2 = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GN
 GPS_PATHS = [GPS_PATH, GPS_PATH_2]
 IMU_PATH = '/dev/serial0'
 IMU_RESET_PIN = 8
-PING = 0xFFFFFFFFFFFFFF  # changed to reflect standard change
+COMM_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
+PING = int('0x' + 'F'*2*COMM_BUFFER_WIDTH, 16)
 SEND_SLEEP_DELAY = 1
 RECEIVE_SLEEP_DELAY = 0.2
 PING_SLEEP_DELAY = 3
@@ -40,11 +41,11 @@ I_HEADING = 2.0
 D_HEADING = 0.0
 PID_DATA = 0b010
 
-DEPTH_ENCODE = DEPTH_DATA << 53
-HEADING_ENCODE = HEADING_DATA << 53
-MISC_ENCODE = MISC_DATA << 53
-POSITION_ENCODE = POSITION_DATA << 53
-PID_ENCODE = PID_DATA << 53  # changed all of these from 21 to 53 to comply to new standard bcuz of gps data
+DEPTH_ENCODE = DEPTH_DATA << (COMM_BUFFER_WIDTH*8-3)
+HEADING_ENCODE = HEADING_DATA << (COMM_BUFFER_WIDTH*8-3)
+MISC_ENCODE = MISC_DATA << (COMM_BUFFER_WIDTH*8-3)
+POSITION_ENCODE = POSITION_DATA << (COMM_BUFFER_WIDTH*8-3)
+PID_ENCODE = PID_DATA << (COMM_BUFFER_WIDTH*8-3)  # changed all of these from 21 to 53 to comply to new standard bcuz of gps data
 
 DEF_DIVE_SPD = 100
 

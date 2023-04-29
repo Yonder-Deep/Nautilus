@@ -95,11 +95,11 @@ class AUV_Receive(threading.Thread):
             else:
                 try:
                     # Read seven bytes (3 byte message, 4 byte checksum)
-                    line = global_vars.radio.read(11)
+                    line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH + 4)
                     # global_vars.radio.flush()
 
                     while (line != b''):
-                        if not global_vars.sending_dive_log and len(line) == 11:
+                        if not global_vars.sending_dive_log and len(line) == (constants.COMM_BUFFER_WIDTH + 4):
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
                             if not checksum:
@@ -112,7 +112,7 @@ class AUV_Receive(threading.Thread):
                             message = intline >> 32
                             if message == constants.PING:  # We have a ping!
                                 self.ping_connected()
-                                line = global_vars.radio.read(11)
+                                line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH + 4)
                                 continue
 
                             print("NON-PING LINE READ WAS", bin(message))
@@ -195,7 +195,7 @@ class AUV_Receive(threading.Thread):
                                 elif (constant_select == 0b101):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = global_vars.radio.read(11)
+                            line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH + 4)
                             continue
 
                         else:  # basically if global_vars.sending_dive_log:
