@@ -70,7 +70,9 @@ set_phantom_power(4, True)
 # Mic (channel 1) Volume. 2nd byte in data is volume level from 0x00 to 0x31
 dataFragment = b'\x00\x61\x00\x00'
 assert dev.ctrl_transfer(0x21, 1, 0x0100, 0x3a00, dataFragment) == len(dataFragment)
-
+assert dev.ctrl_transfer(0x21, 2, 0x0100, 0x3a00, dataFragment) == len(dataFragment)
+assert dev.ctrl_transfer(0x21, 3, 0x0100, 0x3a00, dataFragment) == len(dataFragment)
+assert dev.ctrl_transfer(0x21, 4, 0x0100, 0x3a00, dataFragment) == len(dataFragment)
 
 # This is needed to release interface, otherwise attach_kernel_driver fails
 # due to "Resource busy"
