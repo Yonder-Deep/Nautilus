@@ -51,7 +51,8 @@ usb.util.claim_interface(dev, 0)
 dev.reset()
 # set the active configuration. With no arguments, the first
 # configuration will be the active one
-dev.set_configuration()
+config = usb.core.Configuration(dev, 0)
+dev.set_configuration(config)
 
 # SEND CONTROL DATA
 # Params are: bmRequestType, bmRequest, wValue, wIndex, dataFragment
