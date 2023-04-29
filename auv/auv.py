@@ -48,6 +48,8 @@ def stop_threads(ts):
 
 def start_threads(ts, queue, halt):
     gps_q = Queue()
+    autonav_to_receive = Queue()
+    receive_to_autonav = Queue()
 
     # Initialize hardware
     try:
@@ -86,7 +88,7 @@ def start_threads(ts, queue, halt):
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q)
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav)
 
     ts = []
 

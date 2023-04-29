@@ -4,11 +4,21 @@ import time
 class Autonomous_Nav(threading.Thread):
     """ Class for Autonomous Navigation """
 
-    def __init__(self, out_queue):
+    def __init__(self, motor_q, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, in_q, out_q):
         self.dest_longitude = None
         self.dest_latitude = None
         self.curr_longitude = None
         self.curr_latitude = None
+        self.motor_q = motor_q
+        self.halt = halt
+        self.pressure_sensor = pressure_sensor
+        self.imu = imu
+        self.mc = mc
+        self.gps = gps
+        self.gps_q = gps_q
+        self.depth_cam = depth_cam
+        self.in_q = in_q
+        self.out_q = out_q
 
     def set_destination(self, latitude, longitude):
         self.dest_latitude, self.dest_longitude = latitude, longitude
