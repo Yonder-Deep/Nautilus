@@ -72,6 +72,8 @@ def start_threads(ts, queue, halt):
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
     '''
 
+    imu = None
+
     global_vars.connect_to_radio()
 
     mc = MotorController()
