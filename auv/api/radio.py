@@ -32,7 +32,7 @@ class Radio:
     #     """
     #     self.ser.write(message)
 
-    def write(self, message, length):
+    def write(self, message):
         """
         Sends provided message over serial connection.
 
