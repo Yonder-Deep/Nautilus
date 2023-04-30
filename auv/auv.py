@@ -91,6 +91,7 @@ def start_threads(ts, queue, halt):
         imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
     '''
+    imu = None
 
     global_vars.connect_to_radio()
 
@@ -98,7 +99,7 @@ def start_threads(ts, queue, halt):
 
     auv_motor_thread = MotorQueue(queue, halt)
     auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
-    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav)   
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav, auv_auto_thread)
 
     ts = []
 
@@ -106,6 +107,7 @@ def start_threads(ts, queue, halt):
     auv_ping_thread = AUV_Send_Ping()
 
     ts.append(auv_motor_thread)
+    ts.append(auv_auto_thread)
     ts.append(auv_r_thread)
     ts.append(auv_s_thread)
     ts.append(auv_ping_thread)
@@ -149,7 +151,8 @@ if __name__ == '__main__':  # If we are executing this file as main
     except KeyboardInterrupt:
         # kill threads
         for t in ts:
-            t.stop()
+            if t.is_alive():
+                t.stop()
 
     print("waiting to stop")
     while threads_active(ts):

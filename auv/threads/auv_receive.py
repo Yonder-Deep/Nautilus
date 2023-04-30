@@ -28,7 +28,7 @@ sys.path.append('..')
 class AUV_Receive(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
 
-    def __init__(self, queue, halt, pressure_sensor, imu, mc, gps, gps_q, in_q, out_q):
+    def __init__(self, queue, halt, pressure_sensor, imu, mc, gps, gps_q, in_q, out_q, auto_nav_thread):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -42,6 +42,7 @@ class AUV_Receive(threading.Thread):
         self.halt = halt              # List for MotorQueue to check updated halt status
         self.in_q = in_q
         self.out_q = out_q
+        self.auto_nav_thread = auto_nav_thread
 
         self.dive_controller = DiveController(self.mc, self.pressure_sensor, self.imu)
 
