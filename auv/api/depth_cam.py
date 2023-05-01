@@ -1,6 +1,7 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2 as cv
+import time
 
 class RealSenseCamera:
     """
@@ -75,7 +76,7 @@ class RealSenseCamera:
         """
         # TODO: Implement obstacle detection
 
-    def save_frames(self):
+    def save_current_frames(self):
         """
         Save the frames of the RealSenseCamera object as .jpg and .npy files
         """
@@ -91,6 +92,39 @@ class RealSenseCamera:
         cv.imwrite("./Camera_Data/" + self.serial_number + "/sample_images/raw_image.jpg", raw_color_image)
         np.save("./Camera_Data/" + self.serial_number + "/sample_images/depth_map.npy", depth_image)
         cv.imwrite("./Camera_Data/" + self.serial_number + "/sample_images/depth.png", depth_colormap)
+
+    def record_video(self, seconds):
+        """
+        Record a video using the RealSenseCamera object
+        """
+
+        # Use OpenCV to write video
+        fourcc = cv.VideoWriter_fourcc(*'XVID')
+        out = cv.VideoWriter('./Camera_Data/' + self.serial_number + '/sample_videos/video.avi', fourcc, 20.0, (640, 480))
+
+        # Record video for specified number of seconds
+        start_time = time.time()
+        while (time.time() - start_time) < seconds:
+            frames = self.get_frames()
+            self.process_frames(frames)
+            color_image = np.asanyarray(self.color_frame.get_data())
+            out.write(color_image)
+
+        # Release video
+        out.release()
+
+
+    def get_serial_number(self):
+        """
+        :return: The serial number of the RealSenseCamera object
+        """
+        return self.serial_number
+
+    def stop(self):
+        """
+        Stop the RealSenseCamera object's pipeline
+        """
+        self.pipeline.stop()
 
 if __name__ == "__main__":
     camera = RealSenseCamera()
