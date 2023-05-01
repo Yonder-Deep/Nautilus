@@ -2,6 +2,11 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2 as cv
 import time
+import torch
+
+# This is a pre-trained object detection model
+# This will give a UserWarning when run, but that can be ignored
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 class RealSenseCamera:
     """
@@ -70,11 +75,54 @@ class RealSenseCamera:
         self.color_frame = aligned_frames.get_color_frame()
         self.raw_color_frame = frames.get_color_frame()
 
-    def detect_obstacles(self):
+    def detect_obstacles_depth(self, threshold):
         """
         Detect obstacles in the RealSenseCamera object's frameset
+        Method: using depth map to find the average depth of pixels in each third of the image (split vertically)
+        and identify which third has obsacles in it
         """
-        # TODO: Implement obstacle detection
+
+        # Get depth map
+        depth_image = np.asanyarray(self.aligned_depth_frame.get_data())
+
+        # Split depth map into thirds
+        third = int(depth_image.shape[1] / 3)
+        left = depth_image[:, :third]
+        middle = depth_image[:, third:third * 2]
+        right = depth_image[:, third * 2:]
+
+        # Find average depth of each third
+        left_avg = np.average(left)
+        middle_avg = np.average(middle)
+        right_avg = np.average(right)
+
+        # If a third has a signiicantly lower average depth than the other two, there is an obstacle in that third
+        # TODO: modify this code and fine-tune it to work better
+        # TEST IT ON REAL DATA AND OBSTACLES!!!
+        if left_avg < threshold and left_avg < middle_avg and left_avg < right_avg:
+            return "left"
+        elif middle_avg < threshold and middle_avg < left_avg and middle_avg < right_avg:
+            return "middle"
+        elif right_avg < threshold and right_avg < left_avg and right_avg < middle_avg:
+            return "right"
+        else:
+            return "none"
+        
+    def detect_obstacles_yolo(self):
+        """
+        Detect obstacles in the RealSenseCamera object's current frameset
+        Method: using YOLOv5 object detection to find the number of obstacles in the image
+        """
+        # Get color image
+        color_image = np.asanyarray(self.color_frame.get_data())
+
+        # Detect objects in image
+        results = model(color_image)
+
+        # Return list of names of detected objects
+        return results.names
+        # TODO: make this method more useful to detect different kinds of obstacles
+
 
     def save_current_frames(self):
         """
