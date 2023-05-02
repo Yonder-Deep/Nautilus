@@ -8,12 +8,13 @@ import torch
 # This will give a UserWarning when run, but that can be ignored
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
+
 class RealSenseCamera:
     """
-    
+
     Initialize a RealSenseCamera object with the following attributes:
     :param serial_number: The serial number of the RealSense camera
-    
+
     """
 
     def __init__(self) -> None:
@@ -46,22 +47,22 @@ class RealSenseCamera:
             #self.depth_sensor.set_option(rs.option.output_trigger_enabled, 1)
             self.depth_sensor.set_option(rs.option.laser_power, 360)
             self.depth_sensor.set_option(rs.option.global_time_enabled, 1)
-        except:
+        except Exception as err:
             print("No RealSense camera found. Please connect a RealSense camera and try again.")
-            exit()
+            return str(err)
 
     def get_frames(self):
         """
         :return: The frameset of the RealSenseCamera object
         """
         return self.pipeline.wait_for_frames()
-        
+
     def process_frames(self, frames):
         """
-        
+
         :param frames: The frameset of the RealSenseCamera object
 
-        """    
+        """
         aligned_frames = rs.align(rs.stream.depth).process(frames)
 
         # Get aligned frames
@@ -107,7 +108,7 @@ class RealSenseCamera:
             return "right"
         else:
             return "none"
-        
+
     def detect_obstacles_yolo(self):
         """
         Detect obstacles in the RealSenseCamera object's current frameset
@@ -122,7 +123,6 @@ class RealSenseCamera:
         # Return list of names of detected objects
         return results.names
         # TODO: make this method more useful to detect different kinds of obstacles
-
 
     def save_current_frames(self):
         """
@@ -161,7 +161,6 @@ class RealSenseCamera:
         # Release video
         out.release()
 
-
     def get_serial_number(self):
         """
         :return: The serial number of the RealSenseCamera object
@@ -174,8 +173,8 @@ class RealSenseCamera:
         """
         self.pipeline.stop()
 
+
 if __name__ == "__main__":
     camera = RealSenseCamera()
     frames = camera.get_frames()
     camera.process_frames(frames)
-
