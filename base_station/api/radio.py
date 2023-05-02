@@ -5,8 +5,8 @@ import serial
 from .crc32 import Crc32
 from static import constants
 TIMEOUT_DURATION = 0
-#DEFAULT_BAUDRATE = 115200
-DEFAULT_BAUDRATE = 57600
+DEFAULT_BAUDRATE = 115200
+#DEFAULT_BAUDRATE = 57600
 
 
 class Radio():
@@ -38,6 +38,8 @@ class Radio():
         elif isinstance(message, int):
             message = Crc32.generate(message)
             byte_arr = message.to_bytes(constants.COMM_BUFFER_WIDTH + 4, 'big')
+            print(message)
+            print(byte_arr)
             self.ser.write(byte_arr)
 
     def readlines(self):

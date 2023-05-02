@@ -6,7 +6,8 @@ import os
 from .crc32 import Crc32
 from static import constants
 TIMEOUT_DURATION = 0
-DEFAULT_BAUDRATE = 57600  # 115200
+DEFAULT_BAUDRATE = 115200
+# 57600
 
 
 class Radio:
