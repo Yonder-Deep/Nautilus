@@ -50,7 +50,7 @@ RADIO_PATHS = [
 GPS_PATH = (
     "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
 )
-PAYLOAD_BUFFER_WIDTH = 7  # the length in bytes of a single bytestring used to communicate over radio, change as needed
+PAYLOAD_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
 COMM_BUFFER_WIDTH = PAYLOAD_BUFFER_WIDTH + 4
 PING = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16)
 INTERPRETER_TRUNC = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16) >> 3
