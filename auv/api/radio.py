@@ -53,7 +53,6 @@ class Radio:
             # message = Crc32.generate(message)
             message_double = Crc32.generate(message)
             byte_arr = message_double.to_bytes((constants.COMM_BUFFER_WIDTH), "big")
-            print(message_double)
             self.ser.write(byte_arr)
 
     def read(self, n_bytes=1):

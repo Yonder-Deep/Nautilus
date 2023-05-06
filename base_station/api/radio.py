@@ -42,7 +42,6 @@ class Radio:
         elif isinstance(message, int):
             message = Crc32.generate(message)
             byte_arr = message.to_bytes((constants.COMM_BUFFER_WIDTH), "big")
-            print(message)
             self.ser.write(byte_arr)
 
     def readlines(self):
