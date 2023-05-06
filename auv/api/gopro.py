@@ -41,10 +41,3 @@ def delete_latest_media():
 
 def gopro_info():
     go_pro.overview()
-
-
-# start_video()
-# time.sleep(5)
-# stop_video()
-delete_latest_media()
-# take_photo()
