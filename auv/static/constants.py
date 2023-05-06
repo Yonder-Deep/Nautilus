@@ -52,8 +52,9 @@ GPS_PATH_2 = (
 GPS_PATHS = [GPS_PATH, GPS_PATH_2]
 IMU_PATH = "/dev/serial0"
 IMU_RESET_PIN = 8
-COMM_BUFFER_WIDTH = 7  # the length in bytes of a single bytestring used to communicate over radio, change as needed
-PING = int("0x" + "F" * 2 * COMM_BUFFER_WIDTH, 16)
+PAYLOAD_BUFFER_WIDTH = 7  # the length in bytes of a single bytestring used to communicate over radio, change as needed
+COMM_BUFFER_WIDTH = PAYLOAD_BUFFER_WIDTH + 4
+PING = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16)
 SEND_SLEEP_DELAY = 1
 RECEIVE_SLEEP_DELAY = 0.2
 PING_SLEEP_DELAY = 3
@@ -86,12 +87,12 @@ DIVE_DATA = 0b110
 KILL_DATA = 0b001
 MANUAL_DIVE_DATA = 0b011
 
-DEPTH_ENCODE = DEPTH_DATA << (COMM_BUFFER_WIDTH * 8 - 3)
-HEADING_ENCODE = HEADING_DATA << (COMM_BUFFER_WIDTH * 8 - 3)
-MISC_ENCODE = MISC_DATA << (COMM_BUFFER_WIDTH * 8 - 3)
-POSITION_ENCODE = POSITION_DATA << (COMM_BUFFER_WIDTH * 8 - 3)
+DEPTH_ENCODE = DEPTH_DATA << (PAYLOAD_BUFFER_WIDTH * 8 - 3)
+HEADING_ENCODE = HEADING_DATA << (PAYLOAD_BUFFER_WIDTH * 8 - 3)
+MISC_ENCODE = MISC_DATA << (PAYLOAD_BUFFER_WIDTH * 8 - 3)
+POSITION_ENCODE = POSITION_DATA << (PAYLOAD_BUFFER_WIDTH * 8 - 3)
 PID_ENCODE = PID_DATA << (
-    COMM_BUFFER_WIDTH * 8 - 3
+    PAYLOAD_BUFFER_WIDTH * 8 - 3
 )  # changed all of these from 21 to 53 to comply to new standard bcuz of gps data
 
 DEF_DIVE_SPD = 100
