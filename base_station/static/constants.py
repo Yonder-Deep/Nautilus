@@ -52,6 +52,7 @@ GPS_PATH = (
 )
 PAYLOAD_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
 COMM_BUFFER_WIDTH = PAYLOAD_BUFFER_WIDTH + 4
+HEADER_SHIFT = PAYLOAD_BUFFER_WIDTH * 8 - 3
 PING = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16)
 INTERPRETER_TRUNC = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16) >> 3
 

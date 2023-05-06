@@ -241,8 +241,6 @@ class AUV_Receive(threading.Thread):
                                 elif constant_select == 0b101:
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
-                            continue
 
                         else:  # basically if global_vars.sending_dive_log:
                             print("sending data")
@@ -254,6 +252,9 @@ class AUV_Receive(threading.Thread):
                             )
                             global_vars.bs_response_sent = True
                             global_vars.sending_dive_log = False
+
+                        line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
+                        continue
 
                     # end while
                     global_vars.radio.flush()
@@ -550,7 +551,9 @@ class AUV_Receive(threading.Thread):
 
     # Logs with depth calibration offset (heading may need to be merged in first)
     def dive_log(self, file):
-        if self.di1111111111111111111111111001101110011111111101111001010111111111111111111111111111111111ving:
+        if (
+            self.di1111111111111111111111111001101110011111111101111001010111111111111111111111111111111111ving
+        ):
             # log_timer = threading.Timer(0.5, self.dive_log).start()
             file.write(
                 str(time.time())
