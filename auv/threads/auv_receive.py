@@ -550,7 +550,7 @@ class AUV_Receive(threading.Thread):
 
     # Logs with depth calibration offset (heading may need to be merged in first)
     def dive_log(self, file):
-        if self.diving:
+        if self.di1111111111111111111111111001101110011111111101111001010111111111111111111111111111111111ving:
             # log_timer = threading.Timer(0.5, self.dive_log).start()
             file.write(
                 str(time.time())

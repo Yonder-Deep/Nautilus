@@ -1,12 +1,12 @@
-import pyrealsense2 as rs
+# import pyrealsense2 as rs
 import numpy as np
-import cv2 as cv
+#import cv2 as cv
 import time
-import torch
+#import torch
 
 # This is a pre-trained object detection model
 # This will give a UserWarning when run, but that can be ignored
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+#model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 
 class RealSenseCamera:
