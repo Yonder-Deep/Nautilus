@@ -241,9 +241,7 @@ class AUV_Receive(threading.Thread):
                                 elif constant_select == 0b101:
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = global_vars.radio.read(
-                                constants.COMM_BUFFER_WIDTH
-                            )
+                            line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
                             continue
 
                         else:  # basically if global_vars.sending_dive_log:
@@ -525,7 +523,6 @@ class AUV_Receive(threading.Thread):
         # resurface
         self.dive_controller.start_dive()
 
-<<<<<<< HEAD
         """
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
@@ -548,8 +545,6 @@ class AUV_Receive(threading.Thread):
             except:
                 print("Failed to read pressure going up")
         """
-=======
->>>>>>> 8feb992dc71c09b97f39f5a7c4beca520acc5670
         self.diving = False
         log_file.close()
 
