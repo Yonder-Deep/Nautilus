@@ -33,7 +33,7 @@ class Autonomous_Nav(threading.Thread):
         self.dest_latitude, self.dest_longitude = latitude, longitude
 
     def retrieve_curr_position(self):
-        # We are assuming gps is already conencted
+        # We are assuming gps is already connected
         self.gps.run()
         gps_data = self.gps_q.get()
         if gps_data['has fix'] == 'Yes':
@@ -96,13 +96,47 @@ class Autonomous_Nav(threading.Thread):
             if True:
                 searching = False
 
-    def run(self, dest_lat, dest_long):
+    def dive(self, to_depth, depth_time):
+        self.diving = True
+        # Check if this path is actually right
+        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
+        log_file = open(file_path, "a")
+        self.dive_log(log_file)
+
+        self.motor_queue.queue.clear()
+
+        # begin dive
+        self.dive_controller.start_dive(to_depth=to_depth, dive_length=depth_time)
+
+        # resurface
+        self.dive_controller.start_dive()
+
+        self.diving = False
+        log_file.close()
+
+    def run(self, dest_lat, dest_long, depth, time):
         ''' Main loop for autonomous nav '''
+        # Travelling to destination
         if self.gps_connected == True:
-            while True:
+            reached_destination = False
+            self.set_destination(dest_lat, dest_long)
+            
+            ''' Navigating to destination autonomously '''
+            while reached_destination == False:
                 time.sleep(0.5)
-                self.set_destination(dest_lat, dest_long)
+                # TODO: Check if here is an obstacle- if true: apply path finding algo , IF NOT, CONTINUE WITH THE STEPS BELOW
+
                 self.retrieve_curr_position()
                 self.mc.update_motor_speeds()
+
+                if self.curr_latitude == dest_lat and self.curr_longitude == dest_long:
+                    reached_destination = True
+                
+            ''' Diving autonomously '''
+            self.dive(depth, time)
+
         else:
+            # Add a print statement? or a message to the console?
             exit()
+
+

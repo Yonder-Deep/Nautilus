@@ -469,28 +469,6 @@ class AUV_Receive(threading.Thread):
         # resurface
         self.dive_controller.start_dive()
 
-        '''
-        # Wait 10 sec
-        end_time = time.time() + 10  # 10 sec
-        while time.time() < end_time:
-            pass
-
-        global_vars.radio.flush()
-        for i in range(0, 3):
-            global_vars.radio.read(7)
-
-        intline = 0
-        while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
-            line = global_vars.radio.read(7)
-            intline = int.from_bytes(line, "big") >> 32
-
-            print(intline)
-            try:
-                depth = self.get_depth()
-                print("Succeeded on way up. Depth is", depth)
-            except:
-                print("Failed to read pressure going up")
-        '''
         self.diving = False
         log_file.close()
 
