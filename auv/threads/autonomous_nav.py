@@ -1,7 +1,10 @@
 import threading
 import time
 import math
+import numpy as np
 import pyproj
+from queue import Queue
+from queue import LifoQueue
 
 
 class Autonomous_Nav(threading.Thread):
@@ -12,7 +15,7 @@ class Autonomous_Nav(threading.Thread):
         self.dest_latitude = None
         self.curr_longitude = None
         self.curr_latitude = None
-        self.curr_gps_speed = None
+        self.curr_accel = None
         self.motor_q = motor_q
         self.halt = halt
         self.pressure_sensor = pressure_sensor
@@ -21,6 +24,7 @@ class Autonomous_Nav(threading.Thread):
         self.gps = gps
         self.gps_connected = True if gps is not None else False
         self.gps_q = gps_q
+        self.gps_speed_stack = LifoQueue()
         self.depth_cam = depth_cam
         self.in_q = in_q
         self.out_q = out_q
@@ -63,6 +67,16 @@ class Autonomous_Nav(threading.Thread):
 
         return geodetic_dist, vert_dist, horiz_dist
 
+    def update_movement(self):
+        speed1 = self.gps_speed_stack.get()  # these will be important for adjusting thrust to reach omptimum speed
+        speed2 = self.gps_speed_stack.get()
+        speed3 = self.gps_speed_stack.get()
+        speed4 = self.gps_speed_stack.get()
+
+        geod_dist, vert_dist, horiz_dist = self.distance_calc(self.curr_latitude, self.curr_longitude, self.dest_latitude, self.dest_longitude)
+        angle = np.arctan(vert_dist/horiz_dist)
+        diag_dist = math.sqrt(pow(horiz_dist, 2) + pow(vert_dist, 2))
+
     def obstacle_path_find(self):
         searching = True
         direction_flag = 0
@@ -83,10 +97,12 @@ class Autonomous_Nav(threading.Thread):
                 searching = False
 
     def run(self, dest_lat, dest_long):
+        ''' Main loop for autonomous nav '''
         if self.gps_connected == True:
-            self.set_destination(dest_lat, dest_long)
-            self.retrieve_curr_position()
-            # self.imu.read_euler() idk what to do about the imu. does this branch even have the most recent code? a queue would be best
-            pass
+            while True:
+                time.sleep(0.5)
+                self.set_destination(dest_lat, dest_long)
+                self.retrieve_curr_position()
+                self.mc.update_motor_speeds()
         else:
             exit()
