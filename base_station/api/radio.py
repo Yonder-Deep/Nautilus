@@ -4,12 +4,13 @@ The radio class enables communication over wireless serial radios.
 import serial
 from .crc32 import Crc32
 from static import constants
+
 TIMEOUT_DURATION = 0
-#DEFAULT_BAUDRATE = 115200
+# DEFAULT_BAUDRATE = 115200
 DEFAULT_BAUDRATE = 57600
 
 
-class Radio():
+class Radio:
     def __init__(self, serial_path, baudrate=DEFAULT_BAUDRATE):
         """
         Initializes the radio object.
@@ -18,11 +19,14 @@ class Radio():
         """
 
         # Establish connection to the serial radio.
-        self.ser = serial.Serial(serial_path,
-                                 baudrate=baudrate, parity=serial.PARITY_NONE,
-                                 stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
-                                 timeout=TIMEOUT_DURATION
-                                 )
+        self.ser = serial.Serial(
+            serial_path,
+            baudrate=baudrate,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+            timeout=TIMEOUT_DURATION,
+        )
 
     def write(self, message):
         """
@@ -37,9 +41,8 @@ class Radio():
 
         elif isinstance(message, int):
             message = Crc32.generate(message)
-            byte_arr = message.to_bytes(constants.COMM_BUFFER_WIDTH + 4, 'big')
+            byte_arr = message.to_bytes((constants.COMM_BUFFER_WIDTH + 4), "big")
             print(message)
-            print(byte_arr)
             self.ser.write(byte_arr)
 
     def readlines(self):
@@ -47,7 +50,7 @@ class Radio():
         Returns an array of lines
         """
         lines = self.ser.readlines()
-        return [line.decode('utf-8').replace("\n", "") for line in lines]
+        return [line.decode("utf-8").replace("\n", "") for line in lines]
 
     def read_bytes(self):
         """
@@ -65,7 +68,7 @@ class Radio():
         """
         Returns a string from the serial connection.
         """
-        return self.ser.readline().decode('utf-8').replace("\n", "")
+        return self.ser.readline().decode("utf-8").replace("\n", "")
 
     def is_open(self):
         """

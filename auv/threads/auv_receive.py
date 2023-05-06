@@ -14,7 +14,8 @@ import time
 import os
 import threading
 import sys
-sys.path.append('..')
+
+sys.path.append("..")
 
 # System imports
 
@@ -26,9 +27,21 @@ sys.path.append('..')
 
 
 class AUV_Receive(threading.Thread):
-    """ Class for the AUV object. Acts as the main file for the AUV. """
+    """Class for the AUV object. Acts as the main file for the AUV."""
 
-    def __init__(self, queue, halt, pressure_sensor, imu, mc, gps, gps_q, in_q, out_q, auto_nav_thread):
+    def __init__(
+        self,
+        queue,
+        halt,
+        pressure_sensor,
+        imu,
+        mc,
+        gps,
+        gps_q,
+        in_q,
+        out_q,
+        auto_nav_thread,
+    ):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -39,7 +52,7 @@ class AUV_Receive(threading.Thread):
         self.current_mission = None
         self.timer = 0
         self.motor_queue = queue
-        self.halt = halt              # List for MotorQueue to check updated halt status
+        self.halt = halt  # List for MotorQueue to check updated halt status
         self.in_q = in_q
         self.out_q = out_q
         self.auto_nav_thread = auto_nav_thread
@@ -50,7 +63,7 @@ class AUV_Receive(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        """ Constructor for the AUV """
+        """Constructor for the AUV"""
 
         self._ev = threading.Event()
 
@@ -65,14 +78,18 @@ class AUV_Receive(threading.Thread):
         self.mc.update_motor_speeds(data)
 
     def test_motor(self, motor):
-        """ Method to test all 4 motors on the AUV """
+        """Method to test all 4 motors on the AUV"""
         print("TESTING MOTOR 1")
         # Update motion type for display on gui
         self.mc.motion_type = 4
         print(motor)
-        if motor == "FORWARD":  # Used to be LEFT motor, moves AUV forward (motor in back)
+        if (
+            motor == "FORWARD"
+        ):  # Used to be LEFT motor, moves AUV forward (motor in back)
             self.mc.test_forward()
-        elif motor == "TURN":  # Used to be RIGHT MOTOR, moves AUV left or right (motor in front)
+        elif (
+            motor == "TURN"
+        ):  # Used to be RIGHT MOTOR, moves AUV left or right (motor in front)
             self.mc.test_turn()
         elif motor == "FRONT":  # moves AUV down (front top motor)
             self.mc.test_front()
@@ -81,10 +98,10 @@ class AUV_Receive(threading.Thread):
         elif motor == "ALL":
             self.mc.test_all()
         else:
-            raise Exception('No implementation for motor name: ', motor)
+            raise Exception("No implementation for motor name: ", motor)
 
     def run(self):
-        """ Main connection loop for the AUV. """
+        """Main connection loop for the AUV."""
 
         count = 0
         global_vars.log("Starting main connection loop.")
@@ -103,12 +120,15 @@ class AUV_Receive(threading.Thread):
                     line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH + 4)
                     # global_vars.radio.flush()
 
-                    while (line != b''):
-                        if not global_vars.sending_dive_log and len(line) == (constants.COMM_BUFFER_WIDTH + 4):
+                    while line != b"":
+                        if not global_vars.sending_dive_log and len(line) == (
+                            constants.COMM_BUFFER_WIDTH + 4
+                        ):
                             intline = int.from_bytes(line, "big")
                             checksum = Crc32.confirm(intline)
                             if not checksum:
                                 global_vars.log("invalid line***********************")
+                                print(bin(intline))
                                 # global_vars.radio.flush()
                                 self.mc.update_motor_speeds([0, 0, 0, 0])
                                 break
@@ -117,7 +137,9 @@ class AUV_Receive(threading.Thread):
                             message = intline >> 32
                             if message == constants.PING:  # We have a ping!
                                 self.ping_connected()
-                                line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH + 4)
+                                line = global_vars.radio.read(
+                                    constants.COMM_BUFFER_WIDTH + 4
+                                )
                                 continue
 
                             print("NON-PING LINE READ WAS", bin(message))
@@ -157,16 +179,31 @@ class AUV_Receive(threading.Thread):
                                 front_speed = message & 0b11111110000000000000
                                 front_speed_sign = message & 0b100000000000000000000
 
-                                print("We're calling the manual dive command:", str(seconds), str(front_speed), str(back_speed))
+                                print(
+                                    "We're calling the manual dive command:",
+                                    str(seconds),
+                                    str(front_speed),
+                                    str(back_speed),
+                                )
                                 constants.LOCK.acquire()
-                                self.manual_dive(front_speed_sign, front_speed, back_speed_sign, back_speed, seconds)
+                                self.manual_dive(
+                                    front_speed_sign,
+                                    front_speed,
+                                    back_speed_sign,
+                                    back_speed,
+                                    seconds,
+                                )
                                 constants.LOCK.release()
 
-                            elif header == constants.MISSION_ENCODE:  # mission/halt/calibrate/download data
+                            elif (
+                                header == constants.MISSION_ENCODE
+                            ):  # mission/halt/calibrate/download data
                                 self.read_mission_command(message)
 
-                            elif header == constants.KILL_ENCODE:  # Kill/restart AUV threads
-                                if (message & 1):
+                            elif (
+                                header == constants.KILL_ENCODE
+                            ):  # Kill/restart AUV threads
+                                if message & 1:
                                     # Restart AUV threads
                                     self.mc.zero_out_motors()
                                     global_vars.restart_threads = True
@@ -181,32 +218,42 @@ class AUV_Receive(threading.Thread):
                                 # Extract last 18 bits from message
                                 # Map to smaller, more precise numbers later
                                 value = message & (0x3FFFF)
-                                print("Received PID Constant Select: {}".format(constant_select))
-                                if (constant_select == 0b000):
+                                print(
+                                    "Received PID Constant Select: {}".format(
+                                        constant_select
+                                    )
+                                )
+                                if constant_select == 0b000:
                                     constants.P_PITCH = value
                                     self.dive_controller.update_pitch_pid()
-                                elif (constant_select == 0b001):
+                                elif constant_select == 0b001:
                                     constants.I_PITCH = value
                                     self.dive_controller.update_pitch_pid()
-                                elif (constant_select == 0b010):
+                                elif constant_select == 0b010:
                                     constants.D_PITCH = value
                                     self.dive_controller.update_pitch_pid()
-                                elif (constant_select == 0b011):
+                                elif constant_select == 0b011:
                                     constants.P_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                                elif (constant_select == 0b100):
+                                elif constant_select == 0b100:
                                     constants.I_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                                elif (constant_select == 0b101):
+                                elif constant_select == 0b101:
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
-                            line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH + 4)
+                            line = global_vars.radio.read(
+                                constants.COMM_BUFFER_WIDTH + 4
+                            )
                             continue
 
                         else:  # basically if global_vars.sending_dive_log:
                             print("sending data")
-                            line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
-                            global_vars.file_packets_received = int.from_bytes(line, "big")
+                            line = global_vars.radio.read(
+                                constants.FILE_SEND_PACKET_SIZE
+                            )
+                            global_vars.file_packets_received = int.from_bytes(
+                                line, "big"
+                            )
                             global_vars.bs_response_sent = True
                             global_vars.sending_dive_log = False
 
@@ -219,7 +266,7 @@ class AUV_Receive(threading.Thread):
                     global_vars.log("Radio is disconnected from pi!")
                     continue
 
-            if (self.current_mission is not None):
+            if self.current_mission is not None:
                 print(self.timer)
                 self.current_mission.loop()
 
@@ -274,30 +321,30 @@ class AUV_Receive(threading.Thread):
     def read_nav_command(self, message):
         x = (message & 0x01F600) >> 9
         sign = (message & 0x000100) >> 8
-        y = (message & 0x0000FF)
+        y = message & 0x0000FF
 
-        if (sign == 1):
+        if sign == 1:
             y = y * -1
         print("Nav command read")
         global_vars.log("Running motor command with (x, y): " + str(x) + "," + str(y))
         self.motor_queue.put((x, y, 0))
 
     def read_motor_test_command(self, message):
-        d = (message & 0b111)
-        if (d == 0):  # front
+        d = message & 0b111
+        if d == 0:  # front
             self.mc.update_motor_speeds([50, 0, 0, 0])
-        elif (d == 1):  # back
+        elif d == 1:  # back
             self.mc.update_motor_speeds([-50, 0, 0, 0])
-        elif (d == 2):  # down
+        elif d == 2:  # down
             self.mc.update_motor_speeds([0, 0, 50, 50])
-        elif (d == 3):  # left
+        elif d == 3:  # left
             self.mc.update_motor_speeds([0, -50, 0, 0])
-        elif (d == 4):  # right
+        elif d == 4:  # right
             self.mc.update_motor_speeds([0, 50, 0, 0])
 
     def read_xbox_command(self, message):
         # xbox command
-        vertical = (message & 0x10000)
+        vertical = message & 0x10000
         x = (message & 0x7F00) >> 8
         xsign = (message & 0x8000) >> 15
         y = message & 0x7F
@@ -307,7 +354,7 @@ class AUV_Receive(threading.Thread):
             x = -x
         if ysign != 1:
             y = -y
-        #print("Xbox Command:", x, y)
+        # print("Xbox Command:", x, y)
         if vertical:
             self.motor_queue.put((x, y, 2))
         else:
@@ -330,7 +377,7 @@ class AUV_Receive(threading.Thread):
 
             # self.start_mission(x)  # 0 for mission 1, and 1 for mission 2 TODO
             # audioSampleMission() if x == 0 else mission2()
-        if (x == 2 or x == 4):
+        if x == 2 or x == 4:
             # halt
             print("HALT")
             self.mc.update_motor_speeds([0, 0, 0, 0])  # stop motors
@@ -340,29 +387,31 @@ class AUV_Receive(threading.Thread):
             # send exit command to MotorQueue object
             self.halt[0] = True
 
-        if (x == 3):
+        if x == 3:
             print("CALIBRATE")
 
             depth = self.get_depth()
             global_vars.depth_offset = global_vars.depth_offset + depth
 
-        if (x == 5):
+        if x == 5:
             print("DOWNLOAD DATA")
             global_vars.sending_dive_log = True
             pass
 
     def start_mission(self, mission):
-        """ Method that uses the mission selected and begin that mission """
-        if (mission == 0):  # Echo-location.
+        """Method that uses the mission selected and begin that mission"""
+        if mission == 0:  # Echo-location.
             try:  # Try to start mission
                 self.current_mission = Mission1(
-                    self, self.mc, self.pressure_sensor, self.imu)
+                    self, self.mc, self.pressure_sensor, self.imu
+                )
                 self.timer = 0
                 global_vars.log("Successfully started mission " + str(mission) + ".")
                 # global_vars.radio.write(str.encode("mission_started("+str(mission)+")\n"))
             except Exception as e:
-                raise Exception("Mission " + str(mission) +
-                                " failed to start. Error: " + str(e))
+                raise Exception(
+                    "Mission " + str(mission) + " failed to start. Error: " + str(e)
+                )
         # elif(mission == 2):
         #     self.current_mission = Mission2()
         # if self.current_mission is None:
@@ -380,8 +429,9 @@ class AUV_Receive(threading.Thread):
         global_vars.log("Successfully aborted the current mission.")
         # global_vars.radio.write(str.encode("mission_failed()\n"))
 
-    def manual_dive(self, front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive):
-
+    def manual_dive(
+        self, front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive
+    ):
         print(front_speed_sign, front_speed, back_speed_sign, back_speed, time_dive)
 
         front_speed = (-1) * front_speed if front_speed_sign == 0 else front_speed
@@ -390,7 +440,7 @@ class AUV_Receive(threading.Thread):
         time_begin = time.time()
 
         while time.time() - time_begin < time_dive:
-            self.mc.update_motor_speeds([0, 0, 1.5*front_speed, 1.5*back_speed])
+            self.mc.update_motor_speeds([0, 0, 1.5 * front_speed, 1.5 * back_speed])
             try:
                 depth = self.get_depth()
                 print("Succeeded on way down. Depth is", depth)
@@ -417,7 +467,9 @@ class AUV_Receive(threading.Thread):
         # Dive
         depth = self.get_depth()
         start_time = time.time()
-        self.mc.update_motor_speeds([0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD])
+        self.mc.update_motor_speeds(
+            [0, 0, constants.DEF_DIVE_SPD, constants.DEF_DIVE_SPD]
+        )
         # Time out and stop diving if > 1 min
         while time.time() < start_time + time:
             try:
@@ -438,7 +490,9 @@ class AUV_Receive(threading.Thread):
             global_vars.radio.read(7)
 
         # Resurface
-        self.mc.update_motor_speeds([0, 0, -constants.DEF_DIVE_SPD, -constants.DEF_DIVE_SPD])
+        self.mc.update_motor_speeds(
+            [0, 0, -constants.DEF_DIVE_SPD, -constants.DEF_DIVE_SPD]
+        )
         intline = 0
         while intline == 0:  # TODO: check what is a good surface condition
             line = global_vars.radio.read(7)
@@ -457,7 +511,9 @@ class AUV_Receive(threading.Thread):
     def dive(self, to_depth):
         self.diving = True
         # Check if this path is actually right
-        file_path = os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
+        file_path = (
+            os.path.dirname(os.path.dirname(__file__)) + "logs/" + constants.DIVE_LOG
+        )
         log_file = open(file_path, "a")
         self.dive_log(log_file)
 
@@ -469,7 +525,7 @@ class AUV_Receive(threading.Thread):
         # resurface
         self.dive_controller.start_dive()
 
-        '''
+        """
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
         while time.time() < end_time:
@@ -490,7 +546,7 @@ class AUV_Receive(threading.Thread):
                 print("Succeeded on way up. Depth is", depth)
             except:
                 print("Failed to read pressure going up")
-        '''
+        """
         self.diving = False
         log_file.close()
 
@@ -498,7 +554,9 @@ class AUV_Receive(threading.Thread):
     def dive_log(self, file):
         if self.diving:
             # log_timer = threading.Timer(0.5, self.dive_log).start()
-            file.write(str(time.time()))  # might want to change to a more readable time format
+            file.write(
+                str(time.time())
+            )  # might want to change to a more readable time format
             depth = self.get_depth() - global_vars.depth_offset
             file.write("Depth=" + str(depth))
             heading, roll, pitch = self.get_euler()
@@ -516,7 +574,7 @@ class AUV_Receive(threading.Thread):
                 print("Failed to read pressure sensor")
 
             # TODO: Check if this is accurate, mbars to m
-            depth = (pressure-1013.25)/1000 * 10.2
+            depth = (pressure - 1013.25) / 1000 * 10.2
             return depth
         else:
             global_vars.log("No pressure sensor found.")
