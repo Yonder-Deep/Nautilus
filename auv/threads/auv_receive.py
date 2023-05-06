@@ -525,7 +525,6 @@ class AUV_Receive(threading.Thread):
         # resurface
         self.dive_controller.start_dive()
 
-<<<<<<< HEAD
         """
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
@@ -548,8 +547,7 @@ class AUV_Receive(threading.Thread):
             except:
                 print("Failed to read pressure going up")
         """
-=======
->>>>>>> 8feb992dc71c09b97f39f5a7c4beca520acc5670
+
         self.diving = False
         log_file.close()
 
