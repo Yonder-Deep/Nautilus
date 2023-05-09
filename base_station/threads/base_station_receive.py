@@ -218,8 +218,8 @@ class BaseStation_Receive(threading.Thread):
                                     global_vars.connected = True
                                 constants.lock.release()
 
-                                line = self.radio.read(constants.COMM_BUFFER_WIDTH)
-                                continue
+                                # line = self.radio.read(constants.COMM_BUFFER_WIDTH)
+                                # continue
 
                             # Data cases
                             else:
@@ -236,7 +236,6 @@ class BaseStation_Receive(threading.Thread):
                                     continue
 
                                 line = self.radio.read(constants.COMM_BUFFER_WIDTH)
-                                continue
 
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
