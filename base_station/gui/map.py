@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.ttk import Combobox
 import matplotlib
 import matplotlib.axes
+from static import global_vars
 matplotlib.use('TkAgg')
 
 # Begin imports for tkinter
@@ -253,6 +254,10 @@ class Map:
         self.draw_canvas()
         self.main.log("Waypoint \"" + waypoint[2] + "\" removed!")
         return
+
+    def toggle_auto_nav():
+        global_vars.in_autonomous_nav = True
+        pass
 
     def new_waypoint_prompt(self, x=0, y=0):
         print("[MAP] Opening new-waypoint prompt.")
