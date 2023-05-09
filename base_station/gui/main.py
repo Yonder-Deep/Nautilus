@@ -731,12 +731,16 @@ class Main():
         self.nav_to_waypoint_button = Button(self.buttons_frame, anchor=tkinter.W, text="Nav. to\nWaypoint", takefocus=False,
                                              padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=lambda: None)
 
+        self.toggle_autonomous_nav_button = Button(self.buttons_frame, anchor=tkinter.W, text="Toggle Auto \nNav", takefocus=False,
+                                                   padx=BUTTON_PAD_X+30, pady=BUTTON_PAD_Y, font=(FONT_SIZE, BUTTON_SIZE), command=self.map.trigger_auto_nav)
+
         self.download_data_button.grid(row=0, column=0)
         self.calibrate_depth_button.grid(row=0, column=1)
         self.calibrate_origin_button.grid(row=1, column=0)
         self.clear_button.grid(row=1, column=1)
         self.add_waypoint_button.grid(row=2, column=0)
         self.nav_to_waypoint_button.grid(row=2, column=1)
+        self.toggle_autonomous_nav_button.grid(row=3, column=0)
 
     def add_auv_coordinates(self, northing, easting):
         """ Plots the AUV's current coordinates onto the map, given its UTM-relative northing and easting. """
