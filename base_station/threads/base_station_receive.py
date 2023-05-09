@@ -204,7 +204,7 @@ class BaseStation_Receive(threading.Thread):
 
                             intline = intline >> 32
                             header = intline >> (
-                                constants.HEADER_SHIFT
+                                constants.PAYLOAD_BUFFER_WIDTH * 8 - 3
                             )  # get first 3 bits
                             # PING case
                             if intline == constants.PING:
@@ -217,27 +217,20 @@ class BaseStation_Receive(threading.Thread):
                                     self.out_q.put("set_connection(True)")
                                     global_vars.connected = True
                                 constants.lock.release()
-
-                                line = self.radio.read(constants.COMM_BUFFER_WIDTH)
-                                continue
-
                             # Data cases
                             else:
                                 print("HEADER_STR", header)
                                 decode_command(self, header, intline)
 
-                                if header == constants.FILE_DATA:
-                                    global_vars.downloading_file = True
-                                    file = open(
-                                        os.path.dirname(os.path.dirname(__file__))
-                                        + "logs/dive_log.txt",
-                                        "wb",
-                                    )
-                                    continue
-
-                                line = self.radio.read(constants.COMM_BUFFER_WIDTH)
+                            if header == constants.FILE_DATA:
+                                global_vars.downloading_file = True
+                                file = open(
+                                    os.path.dirname(os.path.dirname(__file__))
+                                    + "logs/dive_log.txt",
+                                    "wb",
+                                )
                                 continue
-
+                            line = self.radio.read(constants.COMM_BUFFER_WIDTH)
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
