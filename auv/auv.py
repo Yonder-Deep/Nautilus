@@ -23,7 +23,7 @@ from api import MotorQueue
 from api import GPS
 from missions import *
 from api import Indicator
-from api import RealSenseCamera
+# from api import RealSenseCamera
 
 from static import global_vars
 
@@ -76,7 +76,7 @@ def start_threads(ts, queue, halt):
         print("Warning: Could not connect to a GPS socket service.")
 
     try:
-        depth_cam = RealSenseCamera()
+        # depth_cam = RealSenseCamera()
         print("Depth cam has been found.")
     except:
         depth_cam = None
@@ -92,6 +92,7 @@ def start_threads(ts, queue, halt):
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
     '''
     imu = None
+    depth_cam = None
 
     imu = None
 
