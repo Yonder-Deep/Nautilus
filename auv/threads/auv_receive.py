@@ -116,7 +116,7 @@ class AUV_Receive(threading.Thread):
                 global_vars.connect_to_radio()
             else:
                 try:
-                    # Read seven bytes (3 byte message, 4 byte checksum)
+                    # read whatever bytes
                     line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
                     # global_vars.radio.flush()
 
@@ -145,7 +145,7 @@ class AUV_Receive(threading.Thread):
                             print("NON-PING LINE READ WAS", bin(message))
 
                             # case block
-                            header = message & 0xE00000
+                            header = message & 0xF800000000000000
 
                             if header == constants.MOTOR_TEST_ENCODE:  # motor-testing
                                 print("motor test command received")
@@ -196,7 +196,7 @@ class AUV_Receive(threading.Thread):
                                 constants.LOCK.release()
 
                             elif (
-                                header == constants.MISSION_ENCODE
+                                header == constants.MISS8ION_ENCODE
                             ):  # mission/halt/calibrate/download data
                                 self.read_mission_command(message)
 
@@ -241,6 +241,7 @@ class AUV_Receive(threading.Thread):
                                 elif constant_select == 0b101:
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
+
                             line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
                             continue
 
@@ -550,7 +551,7 @@ class AUV_Receive(threading.Thread):
 
     # Logs with depth calibration offset (heading may need to be merged in first)
     def dive_log(self, file):
-        if self.di1111111111111111111111111001101110011111111101111001010111111111111111111111111111111111ving:
+        if self.diving:
             # log_timer = threading.Timer(0.5, self.dive_log).start()
             file.write(
                 str(time.time())
