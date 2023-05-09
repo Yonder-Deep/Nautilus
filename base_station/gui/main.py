@@ -467,24 +467,8 @@ class Main():
                                pady=MAIN_PAD_Y, fill=Y, side=RIGHT, expand=YES)
         self.status_frame.pack_propagate(0)
         self.status_label = Label(
-            self.status_frame, text="AUV Data", font=(FONT, HEADING_SIZE))
+            self.status_frame, text="AUV Status", font=(FONT, HEADING_SIZE))
         self.status_label.grid(row=0, column=0)
-
-        self.position_label_string = StringVar()
-        self.position_label = Label(self.status_frame, textvariable=self.position_label_string, font=(
-            FONT, STATUS_SIZE), justify=LEFT)
-        # self.position_label.pack()
-        self.position_label_string.set("Position \n \tX: N/A \t Y: N/A")
-        # self.position_label.place(relx=0.05, rely=0.25, anchor='sw')
-        self.position_label.grid(row=1, column=0)
-
-        self.heading_label_string = StringVar()
-        self.heading_label = Label(self.status_frame, textvariable=self.heading_label_string, font=(
-            FONT, STATUS_SIZE), justify=LEFT, anchor="w")  # )
-        # self.heading_label.pack()
-        self.heading_label_string.set("Heading: N/A")
-        # self.heading_label.place(relx=0.05, rely=0.37, anchor='sw')
-        self.heading_label.grid(row=2, column=0)
 
         self.battery_status_string = StringVar()
         self.battery_voltage = Label(
@@ -492,7 +476,7 @@ class Main():
         # self.battery_voltage.pack()
         self.battery_status_string.set("Battery Voltage: Not Implemented")
         # self.battery_voltage.place(relx=0.05, rely=0.45, anchor='sw')
-        self.battery_voltage.grid(row=3, column=0)
+        self.battery_voltage.grid(row=1, column=0)
 
         self.temperature_string = StringVar()
         self.temperature = Label(
@@ -500,23 +484,7 @@ class Main():
         # self.temperature.pack()
         self.temperature_string.set("Internal Temperature: N/A")
         # self.temperature.place(relx=0.05, rely=0.52, anchor='sw')
-        self.temperature.grid(row=4, column=0)
-
-        self.movement_status_string = StringVar()
-        self.movement_status = Label(
-            self.status_frame, textvariable=self.movement_status_string, font=(FONT, STATUS_SIZE))
-        # self.movement_status.pack()
-        self.movement_status_string.set("Movement Status: TODO")
-        # self.movement_status.place(relx=0.05, rely=0.59, anchor='sw')
-        self.movement_status.grid(row=5, column=0)
-
-        self.mission_status_string = StringVar()
-        self.mission_status = Label(
-            self.status_frame, textvariable=self.mission_status_string, font=(FONT, STATUS_SIZE))
-        # self.mission_status.pack()
-        self.mission_status_string.set("Mission Status: Waiting")
-        # self.mission_status.place(relx=0.05, rely=0.66, anchor='sw')
-        self.mission_status.grid(row=6, column=0)
+        self.temperature.grid(row=2, column=0)
 
         self.flooded_string = StringVar()
         self.flooded = Label(
@@ -524,15 +492,55 @@ class Main():
         # self.flooded.pack()
         self.flooded_string.set("Flooded: Not Implemented")
         # self.flooded.place(relx=0.05, rely=0.73, anchor='sw')
-        self.flooded.grid(row=7, column=0)
+        self.flooded.grid(row=3, column=0)
+
+        self.position_label_string = StringVar()
+        self.position_label = Label(self.status_frame, textvariable=self.position_label_string, font=(
+            FONT, STATUS_SIZE), justify=LEFT)
+        # self.position_label.pack()
+        self.position_label_string.set("GPS Position: Lat: N/A Long: N/A")
+        # self.position_label.place(relx=0.05, rely=0.25, anchor='sw')
+        self.position_label.grid(row=4, column=0)
+
+        self.position_status_label_string = StringVar()
+        self.position_status_label = Label(self.status_frame, textvariable=self.position_status_label_string, font=(
+            FONT, STATUS_SIZE), justify=LEFT)
+        # self.position_label.pack()
+        self.position_status_label_string.set("GPS Status: Disconnected")
+        # self.position_label.place(relx=0.05, rely=0.25, anchor='sw')
+        self.position_status_label.grid(row=5, column=0)
+
+        self.heading_label_string = StringVar()
+        self.heading_label = Label(self.status_frame, textvariable=self.heading_label_string, font=(
+            FONT, STATUS_SIZE), justify=LEFT, anchor="w")  # )
+        # self.heading_label.pack()
+        self.heading_label_string.set("Heading: N/A")
+        # self.heading_label.place(relx=0.05, rely=0.37, anchor='sw')
+        self.heading_label.grid(row=6, column=0)
 
         self.depth_string = StringVar()
         self.depth = Label(
             self.status_frame, textvariable=self.depth_string, font=(FONT, STATUS_SIZE))
         # self.depth.pack()
-        self.depth_string.set("Depth: 0meters")
+        self.depth_string.set("Depth: 0 m")
         # self.depth.place(relx=0.05, rely=0.80, anchor='sw')
-        self.depth.grid(row=8, column=0)
+        self.depth.grid(row=7, column=0)
+
+        self.movement_status_string = StringVar()
+        self.movement_status = Label(
+            self.status_frame, textvariable=self.movement_status_string, font=(FONT, STATUS_SIZE))
+        # self.movement_status.pack()
+        self.movement_status_string.set("Movement Status: TODO")
+        # self.movement_status.place(relx=0.05, rely=0.59, anchor='sw')
+        self.movement_status.grid(row=8, column=0)
+
+        self.mission_status_string = StringVar()
+        self.mission_status = Label(
+            self.status_frame, textvariable=self.mission_status_string, font=(FONT, STATUS_SIZE))
+        # self.mission_status.pack()
+        self.mission_status_string.set("Mission Status: Waiting")
+        # self.mission_status.place(relx=0.05, rely=0.66, anchor='sw')
+        self.mission_status.grid(row=9, column=0)
 
         self.control_string = StringVar()
         self.control = Label(
@@ -540,7 +548,11 @@ class Main():
         # self.control.pack()
         self.control_string.set("Control: (distance/angle or xbox)\n (calculated locally)")
         # self.control.place(relx=0.05, rely=0.87, anchor='sw')
-        self.control.grid(row=9, column=0)
+        self.control.grid(row=10, column=0)
+
+        self.status_label = Label(
+            self.status_frame, text="\nBase Station Status", font=(FONT, HEADING_SIZE))
+        self.status_label.grid(row=11, column=0)
 
         self.comms_status_string = StringVar()
         self.comms_status = Label(
@@ -548,7 +560,7 @@ class Main():
         # self.comms_status.pack()
         self.comms_status_string.set("Comms: not connected")
         # self.comms_status.place(relx=0.05, rely=0.93, anchor='sw')
-        self.comms_status.grid(row=10, column=0)
+        self.comms_status.grid(row=12, column=0)
 
         self.xbox_label_string = StringVar()
         self.xbox_label = Label(self.status_frame, textvariable=self.xbox_label_string, font=(
@@ -556,7 +568,7 @@ class Main():
         # self.xbox_label.pack()
         self.xbox_label_string.set("Xbox Controller: Inactive")
         # self.xbox_label.place(relx=0.05, rely=0.98, anchor='sw')
-        self.xbox_label.grid(row=11, column=0)
+        self.xbox_label.grid(row=13, column=0)
 
         self.gps_status_string = StringVar()
         self.gps_status = Label(self.status_frame, textvariable=self.gps_status_string, font=(
@@ -564,7 +576,7 @@ class Main():
         # self.gpw_label.pack()
         self.gps_status_string.set("GPS Status: Disconnected")
         # self.gps_label.place(relx=0.05, rely=0.98, anchor='sw')
-        self.gps_status.grid(row=12, column=0)
+        self.gps_status.grid(row=14, column=0)
 
         self.gps_label_string = StringVar()
         self.gps_label = Label(self.status_frame, textvariable=self.gps_label_string, font=(
@@ -572,7 +584,7 @@ class Main():
         # self.gpw_label.pack()
         self.gps_label_string.set("GPS Values: Lat: N/A Long: N/A")
         # self.gps_label.place(relx=0.05, rely=0.98, anchor='sw')
-        self.gps_label.grid(row=13, column=0)
+        self.gps_label.grid(row=15, column=0)
 
         # self.calibrate_xbox_button           = Button(self.status_frame, text = "Calibrate Controller", takefocus = False, width = BUTTON_WIDTH + 10, height = BUTTON_HEIGHT,
         #                                      padx = BUTTON_PAD_X, pady = BUTTON_PAD_Y, font = (FONT, BUTTON_SIZE), command = self.base_station.calibrate_controller )
@@ -662,15 +674,25 @@ class Main():
             self.xbox_label_string.set(
                 "Xbox Controller: Sending Horizontal")
 
-    def set_gps_status(self, status):
+    def set_bs_gps_status(self, status):
         if (status is not None):
             self.gps_status_string.set("GPS Status: " + str(status))
 
-    def set_gps_position(self, latitude, longitude):
+    def set_bs_gps_position(self, latitude, longitude):
         if (latitude is not None and longitude is not None):
             self.gps_label_string.set("GPS Values: Lat: " + str(latitude) + " Long: " + str(longitude))
         else:
             self.gps_label_string.set("GPS Values: Lat: N/A Long: N/A")
+
+    def set_auv_gps_status(self, status):
+        if (status is not None):
+            self.position_status_label_string.set("GPS Status: " + str(status))
+
+    def set_auv_gps_position(self, latitude, longitude):
+        if (latitude is not None and longitude is not None):
+            self.position_label_string.set("GPS Position: Lat: " + str(latitude) + " Long: " + str(longitude))
+        else:
+            self.position_label_string.set("GPS Position: Lat: N/A Long: N/A")
 
     def set_dive(self, depth):
         """ Sets dive command """

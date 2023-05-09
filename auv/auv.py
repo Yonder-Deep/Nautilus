@@ -20,14 +20,17 @@ from api import Crc32
 from api import PressureSensor
 from api import MotorController
 from api import MotorQueue
+from api import GPS
 from missions import *
 from api import Indicator
+from api import RealSenseCamera
 
 from static import global_vars
 
 from threads.auv_send_data import AUV_Send_Data
 from threads.auv_send_ping import AUV_Send_Ping
 from threads.auv_receive import AUV_Receive
+#from threads.autonomous_nav import Autonomous_Nav
 
 from static import constants
 from static import global_vars
@@ -46,12 +49,15 @@ def stop_threads(ts):
 
 
 def start_threads(ts, queue, halt):
+    gps_q = Queue()
+    autonav_to_receive = Queue()
+    receive_to_autonav = Queue()
+
     # Initialize hardware
     try:
         indicator_LED = Indicator()
-        global_vars.log("Indicator LED detected")
+        global_vars.log("Starting Up")
     except:
-        indicator_LED = None
         global_vars.log("Indicator LED not detected")
 
     try:
@@ -63,26 +69,48 @@ def start_threads(ts, queue, halt):
         global_vars.log("Pressure sensor is not connected to the AUV.")
 
     try:
+        gps = GPS(gps_q)
+        print("Successfully connected to GPS socket service.")
+    except:
+        gps = None
+        print("Warning: Could not connect to a GPS socket service.")
+
+    try:
+        depth_cam = RealSenseCamera()
+        print("Depth cam has been found.")
+    except:
+        depth_cam = None
+        print("Depth cam could not be found.")
+
+    '''
+    try:
         imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
         global_vars.log("IMU has been found.")
     except Exception as e:
         print(e)
         imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
+    '''
+    imu = None
+
+    imu = None
 
     global_vars.connect_to_radio()
 
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc)
+   # auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
+    auv_auto_thread = None
+    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav, auv_auto_thread)
 
     ts = []
 
-    auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc)
+    auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc, gps, gps_q)
     auv_ping_thread = AUV_Send_Ping()
 
     ts.append(auv_motor_thread)
+    ts.append(auv_auto_thread)
     ts.append(auv_r_thread)
     ts.append(auv_s_thread)
     ts.append(auv_ping_thread)
@@ -126,7 +154,8 @@ if __name__ == '__main__':  # If we are executing this file as main
     except KeyboardInterrupt:
         # kill threads
         for t in ts:
-            t.stop()
+            if t.is_alive():
+                t.stop()
 
     print("waiting to stop")
     while threads_active(ts):
