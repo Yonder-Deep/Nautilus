@@ -51,12 +51,13 @@ class BaseStation_Receive(threading.Thread):
         self.joy = None
         global_vars.log(self.out_q, "Attempting to connect xbox controller")
         while self.joy is None:
-            self.main.update()
             try:
-                # self.joy = xbox.Joystick() TODO
-                raise Exception()
+                self.joy = xbox.Joystick()
+
             except Exception as e:
+                print("Joystick exception: ", e)
                 continue
+
         global_vars.log(self.out_q, "Xbox controller is connected.")
 
     def auv_data(self, heading, temperature, pressure, movement, mission, flooded, control, longitude=None, latitude=None):
@@ -104,7 +105,7 @@ class BaseStation_Receive(threading.Thread):
             except:
                 global_vars.log(self.out_q, "Failed to convert the AUV's gps coordinates to UTM.")
         else:
-            global_vars.log(self.out_q,"The AUV did not report its latitude and longitude.")
+            global_vars.log(self.out_q, "The AUV did not report its latitude and longitude.")
 
     def mission_failed(self):
         """ Mission return failure from AUV. """
@@ -150,7 +151,7 @@ class BaseStation_Receive(threading.Thread):
                     # Read 7 bytes
                     line = self.radio.read(7)
 
-                    while(line != b'' or global_vars.downloading_file):
+                    while (line != b'' or global_vars.downloading_file):
                         if not global_vars.downloading_file and len(line) == 7:
                             print('read line')
                             intline = int.from_bytes(line, "big")
