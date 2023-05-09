@@ -10,6 +10,7 @@ downloading_file = False
 file_size = 0
 file_packets_received = 0
 packet_received = False
+in_autonomous_nav = False
 
 
 def path_existance(radioPaths):
