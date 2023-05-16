@@ -1,12 +1,13 @@
-# import pyrealsense2 as rs
+import pyrealsense2 as rs
 import numpy as np
-#import cv2 as cv
+import cv2 as cv
 import time
-#import torch
+import torch
 
 # This is a pre-trained object detection model
 # This will give a UserWarning when run, but that can be ignored
-#model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+thresh = 7500
 
 
 class RealSenseCamera:
@@ -85,6 +86,7 @@ class RealSenseCamera:
 
         # Get depth map
         depth_image = np.asanyarray(self.aligned_depth_frame.get_data())
+        depth_image = cv.rotate(depth_image, cv.ROTATE_90_CLOCKWISE)
 
         # Split depth map into thirds
         third = int(depth_image.shape[1] / 3)
@@ -176,5 +178,24 @@ class RealSenseCamera:
 
 if __name__ == "__main__":
     camera = RealSenseCamera()
-    frames = camera.get_frames()
-    camera.process_frames(frames)
+    # Continuous while loop to get data from frames, show data in cv2 window
+    try:
+        while True:
+            frames = camera.get_frames()
+            camera.process_frames(frames)
+            color = np.asanyarray(camera.raw_color_frame.get_data())
+            color = cv.rotate(color, cv.ROTATE_90_CLOCKWISE)
+            cv.imshow("Color",color)
+            depth_image = np.asanyarray(camera.aligned_depth_frame.get_data())
+            depth_image = cv.rotate(depth_image, cv.ROTATE_90_CLOCKWISE)
+            depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+            cv.imshow("Depth",depth_colormap)
+            #print("Average depth map:", np.mean(depth_image))
+            print(camera.detect_obstacles_depth(threshold=thresh))
+            key = cv.waitKey(1)
+            if key == ord('q'):
+                break
+    
+    except KeyboardInterrupt:
+        camera.stop()
+        cv.destroyAllWindows()
