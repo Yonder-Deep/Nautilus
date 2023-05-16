@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cae68a1a45ed1ca25c422e5adcbd83b5 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_cae68a1a45ed1ca25c422e5adcbd83b5" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cae68a1a45ed1ca25c422e5adcbd83b5 = L.map(
+                "map_cae68a1a45ed1ca25c422e5adcbd83b5",
+                {
+                    center: [0, 0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 1,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_df8deb46c84d1e3a06a5db8381173b1d = L.tileLayer(
+                "http://tiles.arcticconnect.ca/osm_3575/{z}/{x}/{y}.png",
+                {"attribution": "toner-bcg", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_cae68a1a45ed1ca25c422e5adcbd83b5);
+        
+    
+            map_cae68a1a45ed1ca25c422e5adcbd83b5.fitBounds(
+                [[null, null], [null, null]],
+                {}
+            );
+        
+    
+            var marker_bacdcbedf682e0b19a5ab530651bf0b2 = L.marker(
+                [50.0, 50.0],
+                {}
+            ).addTo(map_cae68a1a45ed1ca25c422e5adcbd83b5);
+        
+    
+        var popup_fa26820855b200e789cd9f7296c884d7 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ac4194affda5bc2fb9c702318409fea2 = $(`<div id="html_ac4194affda5bc2fb9c702318409fea2" style="width: 100.0%; height: 100.0%;">-1564534.020059517,-8873031.432906717</div>`)[0];
+                popup_fa26820855b200e789cd9f7296c884d7.setContent(html_ac4194affda5bc2fb9c702318409fea2);
+            
+        
+
+        marker_bacdcbedf682e0b19a5ab530651bf0b2.bindPopup(popup_fa26820855b200e789cd9f7296c884d7)
+        ;
+
+        
+    
+</script>
+</html>
