@@ -203,9 +203,6 @@ class BaseStation_Receive(threading.Thread):
                                 break
 
                             intline = intline >> 32
-                            header = intline >> (
-                                constants.PAYLOAD_BUFFER_WIDTH * 8 - 3
-                            )  # get first 3 bits
                             # PING case
                             if intline == constants.PING:
                                 self.time_since_last_ping = time.time()
@@ -219,6 +216,7 @@ class BaseStation_Receive(threading.Thread):
                                 constants.lock.release()
                             # Data cases
                             else:
+                                header = intline >> (constants.HEADER_SHIFT)
                                 print("HEADER_STR", header)
                                 decode_command(self, header, intline)
 

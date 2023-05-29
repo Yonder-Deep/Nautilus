@@ -33,6 +33,7 @@ RADIO_PATH_10 = {
 }
 RADIO_PATH_11 = {"radioNum": 11, "path": "COM9"}
 RADIO_PATH_12 = {"radioNum": 12, "path": "COM10"}
+RADIO_PATH_13 = {"radioNum": 13, "path": "COM12"}
 RADIO_PATHS = [
     RADIO_PATH,
     RADIO_PATH_2,
@@ -46,14 +47,21 @@ RADIO_PATHS = [
     RADIO_PATH_10,
     RADIO_PATH_11,
     RADIO_PATH_12,
+    RADIO_PATH_13,
 ]
 GPS_PATH = (
     "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
 )
-PAYLOAD_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
-COMM_BUFFER_WIDTH = PAYLOAD_BUFFER_WIDTH + 4
-HEADER_SHIFT = PAYLOAD_BUFFER_WIDTH * 8 - 3
-PING = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16)
+PAYLOAD_BUFFER_WIDTH = 8  # the length of the bytes of a single line of data transmitted over radio, change as needed
+HEADER_SIZE = 5
+
+COMM_BUFFER_WIDTH = (
+    PAYLOAD_BUFFER_WIDTH + 4
+)  # the length of a single bytestring transmitted over radio that includes the data bytes + 4 for CRC
+HEADER_SHIFT = PAYLOAD_BUFFER_WIDTH * 8 - HEADER_SIZE
+PING = int(
+    "0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16
+)  # a string of all 1s, length is determined by payload size --> represents a PING
 INTERPRETER_TRUNC = int("0x" + "F" * 2 * PAYLOAD_BUFFER_WIDTH, 16) >> 3
 
 CONNECTION_TIMEOUT = (
@@ -65,11 +73,12 @@ MAX_AUV_SPEED = 100
 MAX_TURN_SPEED = 50
 
 # Encoding headers
+'''
 FILE_DATA = 0b101
-
 FILE_ENCODE = FILE_DATA << 21
+'''
 
-FILE_DL_PACKET_SIZE = 8  # Number to be determined (bytes)
+FILE_DL_PACKET_SIZE = PAYLOAD_BUFFER_WIDTH  # Number to be determined (bytes)
 
 lock = threading.Lock()  # lock for writing to out_q to GUI
 radio_lock = threading.Lock()  # lock for writing to radio
