@@ -121,22 +121,22 @@ class AUV_Receive(threading.Thread):
                             # case block
                             header = message >> constants.HEADER_SHIFT
 
-                            if header == constants.MOTOR_TEST_ENCODE:  # motor-testing
+                            if header == constants.MOTOR_TEST_COMMAND:  # motor-testing
                                 print("motor test command received")
                                 self.read_motor_test_command(message)
 
-                            elif header == constants.XBOX_ENCODE:  # xbox navigation
+                            elif header == constants.XBOX_COMMAND:  # xbox navigation
                                 # Update motion type for display on gui
                                 global_vars.movement_status = 1
                                 self.read_xbox_command(message)
 
-                            elif header == constants.NAV_ENCODE:  # navigation
+                            elif header == constants.NAV_COMMAND:  # navigation
                                 print("nav command read")
                                 # Update motion type for display on gui
                                 global_vars.movement_status = 2
                                 self.read_nav_command(message)
 
-                            elif header == constants.DIVE_ENCODE:  # dive
+                            elif header == constants.DIVE_COMMAND:  # dive
                                 # Update motion type for display on gui
                                 global_vars.movement_status = 2
                                 desired_depth = message & 0b111111
@@ -145,7 +145,7 @@ class AUV_Receive(threading.Thread):
                                 self.dive(desired_depth)
                                 constants.LOCK.release()
 
-                            elif header == constants.MANUAL_DIVE_ENCODE:
+                            elif header == constants.MANUAL_DIVE_COMMAND:
                                 global_vars.movement_status = 2
                                 seconds = message & 0b11111
                                 back_speed = message & 0b111111100000
@@ -170,12 +170,12 @@ class AUV_Receive(threading.Thread):
                                 constants.LOCK.release()
 
                             elif (
-                                header == constants.MISSION_ENCODE
+                                header == constants.MISSION_COMMAND
                             ):  # mission/halt/calibrate/download data
                                 self.read_mission_command(message)
 
                             elif (
-                                header == constants.KILL_ENCODE
+                                header == constants.KILL_COMMAND
                             ):  # Kill/restart AUV threads
                                 if message & 1:
                                     # Restart AUV threads
@@ -186,7 +186,7 @@ class AUV_Receive(threading.Thread):
                                     self.mc.zero_out_motors()
                                     global_vars.stop_all_threads = True
 
-                            elif header == constants.PID_ENCODE:
+                            elif header == constants.PID_COMMAND:
                                 # Update a PID value in the dive controller
                                 constant_select = (message >> 18) & 0b111
                                 # Extract last 18 bits from message
