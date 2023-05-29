@@ -29,19 +29,7 @@ sys.path.append("..")
 class AUV_Receive(threading.Thread):
     """Class for the AUV object. Acts as the main file for the AUV."""
 
-    def __init__(
-        self,
-        queue,
-        halt,
-        pressure_sensor,
-        imu,
-        mc,
-        gps,
-        gps_q,
-        in_q,
-        out_q,
-        auto_nav_thread,
-    ):
+    def __init__(self, queue, halt, pressure_sensor, imu, mc, gps, gps_q, in_q, out_q, auto_nav_thread):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -56,9 +44,7 @@ class AUV_Receive(threading.Thread):
         self.in_q = in_q
         self.out_q = out_q
         self.auto_nav_thread = auto_nav_thread
-
         self.dive_controller = DiveController(self.mc, self.pressure_sensor, self.imu)
-
         self._ev = threading.Event()
         threading.Thread.__init__(self)
 
@@ -66,16 +52,10 @@ class AUV_Receive(threading.Thread):
         """Constructor for the AUV"""
 
         self._ev = threading.Event()
-
         threading.Thread.__init__(self)
 
     def stop(self):
         self._ev.set()
-
-    # TODO delete
-
-    def x(self, data):
-        self.mc.update_motor_speeds(data)
 
     def test_motor(self, motor):
         """Method to test all 4 motors on the AUV"""
@@ -116,36 +96,30 @@ class AUV_Receive(threading.Thread):
                 global_vars.connect_to_radio()
             else:
                 try:
-                    # read whatever bytes
-                    line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
-                    # global_vars.radio.flush()
+                    line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)   #reads bytestring of desired packet size from the serial interface of the radio (radio recieves bytes over airwaves)
 
-                    while line != b"":
+                    while line != b"":  # while bytes are still being read from the radio (radio is recieving information)
                         if not global_vars.sending_dive_log and len(line) == (
                             constants.COMM_BUFFER_WIDTH
                         ):
-                            intline = int.from_bytes(line, "big")
-                            checksum = Crc32.confirm(intline)
-                            if not checksum:
-                                global_vars.log("invalid line***********************")
-                                print(bin(intline))
-                                # global_vars.radio.flush()
+                            intline = int.from_bytes(line, "big")   #converts the bytes into a binary string (integer) using big endian format
+                            checksum = Crc32.confirm(intline)       #checks if the encapsulated packet is valid using cyclical redundacy check
+                            if not checksum:                          
+                                global_vars.log("invalid line***********************")  #the binary string is invalid
+                                print(bin(intline))                                     #prints the invalid line
                                 self.mc.update_motor_speeds([0, 0, 0, 0])
                                 break
 
-                            # message contains packet data without checksum
-                            message = intline >> 32
-                            if message == constants.PING:  # We have a ping!
-                                self.ping_connected()
-                                line = global_vars.radio.read(
-                                    constants.COMM_BUFFER_WIDTH
-                                )
+                            message = intline >> 32 #removes the CRC encoding from the message
+                            if message == constants.PING:  # The message is a PING!
+                                self.ping_connected()  #sets connection status to True
+                                line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH) #reads a new line from the radio so that cycle can start again
                                 continue
 
-                            print("NON-PING LINE READ WAS", bin(message))
+                            print("NON-PING LINE READ WAS", bin(message))   #if our message is not a ping
 
                             # case block
-                            header = message & 0xF800000000000000
+                            header = message >> constants.HEADER_SHIFT
 
                             if header == constants.MOTOR_TEST_ENCODE:  # motor-testing
                                 print("motor test command received")
@@ -196,7 +170,7 @@ class AUV_Receive(threading.Thread):
                                 constants.LOCK.release()
 
                             elif (
-                                header == constants.MISS8ION_ENCODE
+                                header == constants.MISSION_ENCODE
                             ):  # mission/halt/calibrate/download data
                                 self.read_mission_command(message)
 
@@ -451,7 +425,7 @@ class AUV_Receive(threading.Thread):
         global_vars.radio.flush()
 
         for i in range(0, 3):
-            global_vars.radio.read(7)
+            global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
 
     def timed_dive(self, time):
         self.diving = True
@@ -486,7 +460,7 @@ class AUV_Receive(threading.Thread):
         # clear radio
         global_vars.radio.flush()
         for i in range(0, 3):
-            global_vars.radio.read(7)
+            global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
 
         # Resurface
         self.mc.update_motor_speeds(
@@ -494,7 +468,7 @@ class AUV_Receive(threading.Thread):
         )
         intline = 0
         while intline == 0:  # TODO: check what is a good surface condition
-            line = global_vars.radio.read(7)
+            line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
             intline = int.from_bytes(line, "big") >> 32
 
             print(intline)
@@ -532,11 +506,11 @@ class AUV_Receive(threading.Thread):
 
         global_vars.radio.flush()
         for i in range(0, 3):
-            global_vars.radio.read(7)
+            global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
 
         intline = 0
         while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
-            line = global_vars.radio.read(7)
+            line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
             intline = int.from_bytes(line, "big") >> 32
 
             print(intline)

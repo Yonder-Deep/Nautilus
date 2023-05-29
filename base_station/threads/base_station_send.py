@@ -14,23 +14,6 @@ from api import xbox
 from static import constants
 from static import global_vars
 
-# Navigation Encoding
-NAV_ENCODE = 0b000000100000000000000000           # | with XSY (forward, angle sign, angle)
-MOTOR_TEST_ENCODE = 0b101000000000000000000000    # | with D   (motor test direction)
-XBOX_ENCODE = 0b111000000000000000000000          # | with XY (left/right, down/up xbox input)
-MISSION_ENCODE = 0b000000000000000000000000       # | with X   (mission)
-DIVE_ENCODE = 0b110000000000000000000000          # | with D   (depth)
-KILL_ENCODE = 0b001000000000000000000000          # | with X (kill all / restart threads)
-MANUAL_DIVE_ENCODE = 0b011000000000000000000000    # | with D (manual dive)
-PID_ENCODE = 0b010000000000000000000000           # | with CX (which constant to update, value)
-
-# Action Encodings
-HALT = 0b010
-CAL_DEPTH = 0b011
-ABORT = 0b100
-DL_DATA = 0b101
-
-
 class BaseStation_Send(threading.Thread):
     def __init__(self, radio, in_q=None, out_q=None):
         """ Initialize Serial Port and Class Variables
@@ -98,15 +81,15 @@ class BaseStation_Send(threading.Thread):
             #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 0) & 0xFFFFFF)
 
             if (motor == 'Forward'):
-                self.radio.write(MOTOR_TEST_ENCODE | 0b000)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b000)
             elif (motor == 'Backward'):
-                self.radio.write(MOTOR_TEST_ENCODE | 0b001)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b001)
             elif (motor == 'Left'):
-                self.radio.write(MOTOR_TEST_ENCODE | 0b011)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b011)
             elif (motor == 'Right'):
-                self.radio.write(MOTOR_TEST_ENCODE | 0b100)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b100)
             elif (motor == 'Down'):
-                self.radio.write(MOTOR_TEST_ENCODE | 0b010)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b010)
 
             constants.radio_lock.release()
 
@@ -137,26 +120,26 @@ class BaseStation_Send(threading.Thread):
             depth = (depth << 12) & 0x3F000
             t = (t << 3) & 0xFF8
             constants.radio_lock.acquire()
-            self.radio.write(MISSION_ENCODE | depth | t | mission)
-            print(bin(MISSION_ENCODE | depth | t | mission))
+            self.radio.write((constants.MISSION_COMMAND << constants.HEADER_SHIFT) | depth | t | mission)
+            print(bin((constants.MISSION_COMMAND << constants.HEADER_SHIFT) | depth | t | mission))
 
             constants.radio_lock.release()
             global_vars.log(self.out_q, 'Sending task: start_mission(' + str(mission) + ')')
 
     def send_halt(self):
-        self.start_mission(HALT, 0, 0)
+        self.start_mission(constants.HALT_COMMAND, 0, 0)
 
     def send_controls(self, distance, angle):
         pass
 
     def send_calibrate_depth(self):
-        self.start_mission(CAL_DEPTH, 0, 0)
+        self.start_mission(constants.CAL_DEPTH_COMMAND, 0, 0)
 
     def send_abort(self):
-        self.start_mission(ABORT, 0, 0)
+        self.start_mission(constants.ABORT_COMMAND, 0, 0)
 
     def send_download_data(self):
-        self.start_mission(DL_DATA, 0, 0)
+        self.start_mission(constants.DL_DATA_COMMAND, 0, 0)
 
     def send_dive(self, depth):
         constants.lock.acquire()
@@ -166,8 +149,8 @@ class BaseStation_Send(threading.Thread):
         else:
             constants.lock.release()
             constants.radio_lock.acquire()
-            self.radio.write(DIVE_ENCODE | depth)
-            print(bin(DIVE_ENCODE | depth))
+            self.radio.write((constants.DIVE_COMMAND << constants.HEADER_SHIFT) | depth)
+            print(bin((constants.DIVE_COMMAND << constants.HEADER_SHIFT) | depth))
             constants.radio_lock.release()
             global_vars.log(self.out_q, 'Sending task: dive(' + str(depth) + ')')  # TODO: change to whatever the actual command is called
 
@@ -191,8 +174,8 @@ class BaseStation_Send(threading.Thread):
             constants.lock.release()
             constant_select = constant_select << 18
             constants.radio_lock.acquire()
-            self.radio.write(PID_ENCODE | constant_select | value)
-            print(bin(PID_ENCODE | constant_select | value))
+            self.radio.write((constants.PID_COMMAND << constants.HEADER_SHIFT) | constant_select | value)
+            print(bin((constants.PID_COMMAND << constants.HEADER_SHIFT) | constant_select | value))
             constants.radio_lock.release()
 
     def send_dive_manual(self, front_motor_speed, rear_motor_speed, seconds):
@@ -214,8 +197,8 @@ class BaseStation_Send(threading.Thread):
             print(front_motor_speed_sign, front_motor_speed, rear_motor_speed_sign, rear_motor_speed, seconds)
             constants.radio_lock.acquire()
 
-            self.radio.write(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
-            print(bin(MANUAL_DIVE_ENCODE | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
+            self.radio.write(M(constants.MANUAL_DIVE_COMMAND << constants.HEADER_SHIFT) | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
+            print(bin((constants.MANUAL_DIVE_COMMAND << constants.HEADER_SHIFT) | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
             global_vars.log(self.out_q, 'Sending task: manual_dive(' + str(front_motor_speed_sign) + ',' + str(front_motor_speed) + ', ' + str(rear_motor_speed_sign) + ',' + str(rear_motor_speed) +
@@ -238,7 +221,7 @@ class BaseStation_Send(threading.Thread):
         xsign = xsign << 15
         ysign = ysign << 7
         vertical = vertical << 16
-        return XBOX_ENCODE | vertical | xsign | xshift | ysign | y
+        return (constants.XBOX_COMMAND << constants.HEADER_SHIFT) | vertical | xsign | xshift | ysign | y
 
     def run(self):
         """ Main sending threaded loop for the base station. """
@@ -288,14 +271,14 @@ class BaseStation_Send(threading.Thread):
                             if self.joy.Guide():
                                 # Send restart command
                                 constants.radio_lock.acquire()
-                                self.radio.write(KILL_ENCODE | 1)
+                                self.radio.write((constants.KILL_COMMAND << constants.HEADER_SHIFT) | 1)
                                 constants.radio_lock.release()
                                 print("Restarting AUV threads...")
 
                             elif self.joy.Back() and self.joy.Start():
                                 # Send kill-all command
                                 constants.radio_lock.acquire()
-                                self.radio.write(KILL_ENCODE)
+                                self.radio.write((constants.KILL_COMMAND << constants.HEADER_SHIFT))
                                 constants.radio_lock.release()
                                 print("Killing AUV threads...")
 
@@ -326,11 +309,12 @@ class BaseStation_Send(threading.Thread):
                         # once A is no longer held, send one last zeroed out xbox command
                         if xbox_input and not self.joy.A():
                             constants.radio_lock.acquire()
-                            self.radio.write(XBOX_ENCODE)
+                            self.radio.write((constants.XBOX_COMMAND << constants.HEADER_SHIFT))
                             constants.radio_lock.release()
                             print("[XBOX] NO LONGER A\t")
                             self.out_q.put("set_xbox_status(0,0)")
                             xbox_input = False
+                            
                     elif global_vars.connected and global_vars.downloading_file:
                         constants.radio_lock.acquire()
                         if global_vars.packet_received:

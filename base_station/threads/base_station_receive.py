@@ -214,21 +214,27 @@ class BaseStation_Receive(threading.Thread):
                                     self.out_q.put("set_connection(True)")
                                     global_vars.connected = True
                                 constants.lock.release()
+                                self.radio.flush()
+
                             # Data cases
                             else:
                                 header = intline >> (constants.HEADER_SHIFT)
                                 print("HEADER_STR", header)
-                                decode_command(self, header, intline)
 
-                            if header == constants.FILE_DATA:
-                                global_vars.downloading_file = True
-                                file = open(
-                                    os.path.dirname(os.path.dirname(__file__))
-                                    + "logs/dive_log.txt",
-                                    "wb",
-                                )
-                                continue
+                                if header == constants.FILE_DATA:
+                                    global_vars.downloading_file = True
+                                    file = open(
+                                        os.path.dirname(os.path.dirname(__file__))
+                                        + "logs/dive_log.txt",
+                                        "wb",
+                                    )
+                                    continue
+
+                                else:
+                                    decode_command(self, header, intline)
+
                             line = self.radio.read(constants.COMM_BUFFER_WIDTH)
+
                         elif global_vars.downloading_file:
                             line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
                             intline = int.from_bytes(line, "big")
@@ -251,8 +257,6 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.packet_received = False
                                 global_vars.file_packets_received = 0
                                 line = self.radio.read(constants.COMM_BUFFER_WIDTH)
-
-                    self.radio.flush()
 
                 except Exception as e:
                     print(str(e))
