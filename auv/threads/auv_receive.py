@@ -283,10 +283,7 @@ class AUV_Receive(threading.Thread):
         if global_vars.connected is False:
             global_vars.log("Connection to BS verified.")
             global_vars.connected = True
-
-            # TODO test case: set motor speeds
-            data = [1, 2, 3, 4]
-            self.x(data)
+            
             # Halt disconnected resurfacing
             self.mc.update_motor_speeds([0, 0, 0, 0])
         constants.LOCK.release()
