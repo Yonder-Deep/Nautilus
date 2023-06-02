@@ -84,7 +84,6 @@ POSITION_DATA = 0b10100
 FILE_DATA = 0b10101
 
 # BS Command Data Encoding headers
-# Navigation Encoding
 MOTOR_TEST_COMMAND = 0b00001
 HALT_COMMAND = 0b00010
 XBOX_COMMAND = 0b00011

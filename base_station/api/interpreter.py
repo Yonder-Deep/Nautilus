@@ -1,15 +1,8 @@
 from static import constants
 
-# Encoding headers
-POSITION_DATA = 0b000
-HEADING_DATA = 0b001
-COMBINATION_DATA = 0b010
-DEPTH_DATA = 0b011
-
-
 def decode_command(self_obj, header, line):
     remain = line & constants.INTERPRETER_TRUNC
-    if header == POSITION_DATA:
+    if header == constants.POSITION_DATA:
         no_fix = remain >> 58
         if no_fix:
             self_obj.out_q.put("set_auv_gps_status(\"No fix\")")
@@ -39,7 +32,7 @@ def decode_command(self_obj, header, line):
             self_obj.out_q.put("set_auv_gps_status(\"Recieving data\")")
             print("Lat: " + lat + ", Long: " + long)
 
-    elif header == HEADING_DATA:
+    elif header == constants.HEADING_DATA:
         data = remain & 0x1FFFF
         whole = data >> 7
         decimal = data & 0x7F
@@ -47,7 +40,8 @@ def decode_command(self_obj, header, line):
         heading = whole + decimal
         print("HEADING", str(heading))
         self_obj.out_q.put("set_heading(" + str(heading) + ")")
-    elif header == COMBINATION_DATA:
+
+    elif header == constants.MISC_DATA:
         data = remain & 0xFFFFF
         battery = data >> 14  # bits 14-20
         temp_sign = (data >> 13) & 0x1  # bit 13
@@ -69,7 +63,7 @@ def decode_command(self_obj, header, line):
         self_obj.out_q.put("set_movement(" + str(mvmt) + ")")
         self_obj.out_q.put("set_mission_status(" + str(battery) + ")")
 
-    elif header == DEPTH_DATA:
+    elif header == constants.DEPTH_DATA:
         data = remain & 0x7FF
         whole = data >> 4
         decimal = float(data & 0xF)
