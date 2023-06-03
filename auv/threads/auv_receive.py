@@ -301,16 +301,16 @@ class AUV_Receive(threading.Thread):
 
     def read_motor_test_command(self, message):
         d = message & 0b111
-        if d == 0:  # front
-            self.mc.update_motor_speeds([10, 0, 0, 0])
-        elif d == 1:  # back
-            self.mc.update_motor_speeds([-10, 0, 0, 0])
+        if d == 0:  # forward
+            self.mc.update_motor_speeds([30, 0, 0, 0])
+        elif d == 1:  # reverse
+            self.mc.update_motor_speeds([-30, 0, 0, 0])
         elif d == 2:  # down
-            self.mc.update_motor_speeds([0, 0, 10, 10])
+            self.mc.update_motor_speeds([0, 0, 30, 30])
         elif d == 3:  # left
-            self.mc.update_motor_speeds([0, -10, 0, 0])
+            self.mc.update_motor_speeds([0, -30, 0, 0])
         elif d == 4:  # right
-            self.mc.update_motor_speeds([0, 10, 0, 0])
+            self.mc.update_motor_speeds([0, 30, 0, 0])
 
     def read_xbox_command(self, message):
         # xbox command
