@@ -187,7 +187,7 @@ class BaseStation_Send(threading.Thread):
             print(front_motor_speed_sign, front_motor_speed, rear_motor_speed_sign, rear_motor_speed, seconds)
             constants.radio_lock.acquire()
 
-            self.radio.write(M(constants.MANUAL_DIVE_COMMAND << constants.HEADER_SHIFT) | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
+            self.radio.write((constants.MANUAL_DIVE_COMMAND << constants.HEADER_SHIFT) | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds)
             print(bin((constants.MANUAL_DIVE_COMMAND << constants.HEADER_SHIFT) | front_motor_speed_sign | front_motor_speed | rear_motor_speed_sign | rear_motor_speed | seconds))
 
             constants.radio_lock.release()
