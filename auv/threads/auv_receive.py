@@ -270,7 +270,8 @@ class AUV_Receive(threading.Thread):
         depth = self.get_depth()
         # Turn upwards motors on until surface reached (if we haven't reconnected yet)
         if depth is None or depth > 0:  # TODO: Decide on acceptable depth range
-            self.mc.update_motor_speeds([0, 0, -25, -25])
+            #self.mc.update_motor_speeds([0, 0, -25, -25])
+            self.mc.update_motor_speeds([0, 0, 0, 0]) #TODO change this back, only done to avoid motor damage
         else:
             self.mc.update_motor_speeds([0, 0, 0, 0])
         constants.LOCK.release()
