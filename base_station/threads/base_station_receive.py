@@ -65,7 +65,8 @@ class BaseStation_Receive(threading.Thread):
             except Exception as e:
                 continue
         global_vars.log(self.out_q, "Xbox controller is connected.")
-
+    
+    '''
     def auv_data(
         self,
         heading,
@@ -133,6 +134,7 @@ class BaseStation_Receive(threading.Thread):
             global_vars.log(
                 self.out_q, "The AUV did not report its latitude and longitude."
             )
+        '''
 
     def mission_failed(self):
         """Mission return failure from AUV."""

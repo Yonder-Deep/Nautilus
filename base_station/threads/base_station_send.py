@@ -69,27 +69,17 @@ class BaseStation_Send(threading.Thread):
         else:
             constants.lock.release()
             constants.radio_lock.acquire()
-            # if (motor == 'Forward'):
-            #     self.radio.write((NAV_ENCODE | (10 << 9) | (0 << 8) | (0)) & 0xFFFFFF)
-            # elif (motor == 'Backward'):
-            #     self.radio.write((NAV_ENCODE | (10 << 9) | (1 << 8) | (0)) & 0xFFFFFF)
-            # elif (motor == 'Left'):
-            #     self.radio.write((NAV_ENCODE | (0 << 9) | (1 << 8) | 90) & 0xFFFFFF)
-            # elif (motor == 'Right'):
-            #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 90) & 0xFFFFFF)
-            # elif (motor == 'Down'):
-            #     self.radio.write((NAV_ENCODE | (0 << 9) | (0 << 8) | 0) & 0xFFFFFF)
 
             if (motor == 'Forward'):
                 self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b000)
             elif (motor == 'Backward'):
                 self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b001)
+            elif (motor == 'Down'):
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b010)
             elif (motor == 'Left'):
                 self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b011)
             elif (motor == 'Right'):
                 self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b100)
-            elif (motor == 'Down'):
-                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b010)
 
             constants.radio_lock.release()
 
@@ -312,7 +302,7 @@ class BaseStation_Send(threading.Thread):
                             self.radio.write((constants.XBOX_COMMAND << constants.HEADER_SHIFT))
                             constants.radio_lock.release()
                             print("[XBOX] NO LONGER A\t")
-                            self.out_q.put("set_xbox_status(0,0)")
+                            self.out_q.put("set_xbox_status(0,0)") #updates gui that xbox controller no longer sending commands
                             xbox_input = False
                             
                     elif global_vars.connected and global_vars.downloading_file:
@@ -331,13 +321,6 @@ class BaseStation_Send(threading.Thread):
                     continue
             time.sleep(constants.THREAD_SLEEP_DELAY)
 
-    def close(self):
-        """ Function that is executed upon the closure of the GUI (passed from input-queue). """
-        # close the xbox controller
-        if (self.joy is not None):
-            self.joy.close()
-        os._exit(1)  # => Force-exit the process immediately.
-
     def mission_started(self, index):
         """ When AUV sends mission started, switch to mission mode """
         if index == 0:  # Echo location mission.
@@ -347,5 +330,9 @@ class BaseStation_Send(threading.Thread):
 
         global_vars.log(self.out_q, "Successfully started mission " + str(index))
 
-# Responsibilites:
-#   - send ping
+    def close(self):
+        """ Function that is executed upon the closure of the GUI (passed from input-queue). """
+        # close the xbox controller
+        if (self.joy is not None):
+            self.joy.close()
+        os._exit(1)  # => Force-exit the process immediately.
