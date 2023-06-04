@@ -7,7 +7,7 @@ from datetime import datetime
 class IMU(super_imu):
     """ Utilize inheritance of the low-level parent class """
 
-    def __init__(self, serial_port, rst):
+    def __init__(self):
         """ Simply call our superclass constructor """
         super().__init__()
         sw, bl, accel, mag, gyro = super().get_revision()

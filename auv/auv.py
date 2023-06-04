@@ -81,10 +81,9 @@ def start_threads(ts, queue, halt):
     except:
         depth_cam = None
         print("Depth cam could not be found.")
-
     
     try:
-        imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
+        imu = IMU()
         global_vars.log("IMU has been found.")
     except Exception as e:
         print(e)
