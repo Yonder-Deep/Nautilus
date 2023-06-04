@@ -52,7 +52,7 @@ GPS_PATH_2 = (
 
 # encode sizes and generalizations
 GPS_PATHS = [GPS_PATH, GPS_PATH_2]
-IMU_PATH = "/dev/serial0"
+IMU_PATH = "/dev/serial1"
 IMU_RESET_PIN = 8
 PAYLOAD_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
 HEADER_SIZE = 5
