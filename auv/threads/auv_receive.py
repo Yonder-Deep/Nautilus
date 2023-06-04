@@ -302,9 +302,9 @@ class AUV_Receive(threading.Thread):
     def read_motor_test_command(self, message):
         d = message & 0b111
         if d == 0:  # forward
-            self.mc.update_motor_speeds([30, 0, 0, 0])
+            self.mc.update_motor_speeds([50, 0, 0, 0])
         elif d == 1:  # reverse
-            self.mc.update_motor_speeds([-30, 0, 0, 0])
+            self.mc.update_motor_speeds([-50, 0, 0, 0])
         elif d == 2:  # down
             self.mc.update_motor_speeds([0, 0, 30, 30])
         elif d == 3:  # left
