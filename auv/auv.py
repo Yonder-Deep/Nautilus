@@ -82,7 +82,7 @@ def start_threads(ts, queue, halt):
         depth_cam = None
         print("Depth cam could not be found.")
 
-    '''
+    
     try:
         imu = IMU(serial_port=constants.IMU_PATH, rst=constants.IMU_RESET_PIN)
         global_vars.log("IMU has been found.")
@@ -90,11 +90,8 @@ def start_threads(ts, queue, halt):
         print(e)
         imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
-    '''
-    imu = None
+        
     depth_cam = None
-
-    imu = None
 
     global_vars.connect_to_radio()
 

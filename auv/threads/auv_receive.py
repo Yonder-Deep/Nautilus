@@ -496,7 +496,6 @@ class AUV_Receive(threading.Thread):
         # resurface
         self.dive_controller.start_dive()
 
-        """
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
         while time.time() < end_time:
@@ -517,7 +516,6 @@ class AUV_Receive(threading.Thread):
                 print("Succeeded on way up. Depth is", depth)
             except:
                 print("Failed to read pressure going up")
-        """
         self.diving = False
         log_file.close()
 
