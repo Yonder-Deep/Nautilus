@@ -1,10 +1,16 @@
+from Adafruit_BNO055 import BNO055
 import logging
 import sys
 import time
+import RPi.GPIO as GPIO
 
-from Adafruit_BNO055 import BNO055
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(14, GPIO.IN)
 
-bno = BNO055.BNO055(serial_port="/dev/serial0", rst=8)
+
+# bno = BNO055.BNO055(serial_port="/dev/ttyAMA0", rst=8)
+bno = BNO055.BNO055()
 
 if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
     logging.basicConfig(level=logging.DEBUG)
