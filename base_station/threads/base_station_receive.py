@@ -234,6 +234,7 @@ class BaseStation_Receive(threading.Thread):
 
                                 else:
                                     decode_command(self, header, intline)
+                                    self.radio.flush()
 
                             line = self.radio.read(constants.COMM_BUFFER_WIDTH)
 
@@ -260,8 +261,11 @@ class BaseStation_Receive(threading.Thread):
                                 global_vars.file_packets_received = 0
                                 line = self.radio.read(constants.COMM_BUFFER_WIDTH)
 
+                    self.radio.flush()
+
                 except Exception as e:
                     print(str(e))
+                    self.radio.flush()
                     self.radio.close()
                     self.radio = None
                     global_vars.log(self.out_q, "Radio device has been disconnected.")

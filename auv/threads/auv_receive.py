@@ -216,6 +216,8 @@ class AUV_Receive(threading.Thread):
                                     constants.D_DEPTH = value
                                     self.dive_controller.update_depth_pid()
 
+                            global_vars.radio.flush()
+
                             line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
                             continue
 

@@ -165,13 +165,6 @@ class AUV_Send_Data(threading.Thread):
                 else:
                     long_s = 0
 
-                '''
-                print(str(x) + ", " + str(y))
-                print(str(float.hex(x)) + ", " + str(float.hex(y)))
-                print(xBytes)
-                print(yBytes)
-                '''
-
                 lat_bits = (lat_s << 28) | (lat_wi << 20) | lat_di
                 long_bits = (long_s << 28) | (long_wi << 20) | long_di
 
@@ -180,21 +173,17 @@ class AUV_Send_Data(threading.Thread):
                 print(bin(position_encode))
                 global_vars.radio.write(position_encode)
                 constants.RADIO_LOCK.release()
-                #self.out_q.put("set_gps_status(\"Recieving data\")")
                 print(lat + "," + long)
                 print("Sending GPS data")
 
             else:
                 self.latitude = 0
                 self.longitude = 0
-
                 position_encode = (constants.POSITION_ENCODE | (1 << 58))
                 constants.RADIO_LOCK.acquire()
                 print(bin(position_encode))
                 global_vars.radio.write(position_encode)
                 constants.RADIO_LOCK.release()
-
-                #self.out_q.put("set_gps_status(\"No fix\")")
                 print("No fix")
 
         else:
