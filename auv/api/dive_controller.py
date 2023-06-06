@@ -91,7 +91,7 @@ class DiveController:
             # NOTE: check side_motor_value to see if the sign is correct
             #self.mc.update_motor_speeds([min(side_motor_value,100), max(-side_motor_value,-100), min(back_motor_value,100), min(front_motor_value,100)])
             try:
-                self.mc.update_motor_speeds([side_motor_value, -side_motor_value, back_motor_value, front_motor_value])
+                self.mc.update_motor_speeds([0, side_motor_value, front_motor_value, back_motor_value])
             except:
                 print("Could not update motor speeds, argument out of range")
 
