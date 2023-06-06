@@ -2,18 +2,21 @@
 # Begin imports for MatplotLib
 from tkinter import *
 from matplotlib.pyplot import scatter
+from matplotlib.pyplot import plot
 from matplotlib.lines import Line2D
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from tkinter.ttk import Combobox
 import matplotlib
 import matplotlib.axes
+from static import global_vars
 matplotlib.use('TkAgg')
 
 # Begin imports for tkinter
 
 # Object & Map Constants
 DEFAULT_FIGURE_SIZE = 30  # Window Size
-DEFAULT_GRID_SIZE = 1000  # Grid Size in Meters
+DEFAULT_GRID_SIZE = 550  # Grid Size in Meters
 
 # String Constants
 KILOMETERS = "Kilometers (km)"
@@ -22,24 +25,25 @@ MILES = "Miles (mi)"
 
 # Color Constants
 BACKGROUND_COLOR = 'darkturquoise'
-AUV_PATH_COLOR = 'red'
+AUV_PATH_COLOR = 'orange'
 WAYPOINT_COLOR = 'red'
 MINOR_TICK_COLOR = 'black'
 
 # Conversion Multiplier Constants
-KM_TO_M = 1000.000000000
+M_TO_M = 1000.000000000
 MI_TO_M = 1609.340000000
 KM_TO_MI = 0000.621371000
 M_TO_MI = 0000.000621371
 MI_TO_KM = 0001.609340000
 M_TO_KM = 0000.001000000
+KM_TO_M = 1/M_TO_KM
 
 # Other Debug Constants
 ZOOM_SCALAR = 1.15
 CLOSE_ENOUGH = 0.25
 
 # Popup Window Contstants
-PROMPT_WINDOW_WIDTH = 600
+PROMPT_WINDOW_WIDTH = 620
 PROMPT_WINDOW_HEIGHT = 400
 
 # Font Constants
@@ -74,7 +78,6 @@ class Map:
         self.fig = self.init_fig()
         self.map = self.init_map()
         self.canvas = self.init_canvas()
-
         # Start listening for mouse-clicks
         self.fig.canvas.mpl_connect('button_press_event',   self.on_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_release)
@@ -92,19 +95,8 @@ class Map:
         PROMPT_WINDOW_HEIGHT = int(PROMPT_WINDOW_HEIGHT * self.main.multiplier_y)
         FONT_SIZE = int(FONT_SIZE * self.main.multiplier_x)
 
-        # Add random data to test line/path functionality.
-        """self.add_auv_data(100, 100)
-        self.add_auv_data(110, 105)
-        self.add_auv_data(130, 109)
-        self.add_auv_data(200, 225)
-        self.add_auv_data(240, 250)
-        self.add_auv_data(350, 330)
-        self.add_auv_data(360, 200)
-        self.add_auv_data(370, 260)
-        self.add_auv_data(360, 230)
-        self.add_auv_data(350, 200)
-        # self.clear()
-        self.draw_canvas()"""
+        self.draw_canvas()
+        #self.add_waypoint(0, 0)
 
     def clear(self):
         """ Clears the map data """
@@ -263,17 +255,21 @@ class Map:
         self.main.log("Waypoint \"" + waypoint[2] + "\" removed!")
         return
 
+    def toggle_auto_nav():
+        global_vars.in_autonomous_nav = True
+        pass
+
     def new_waypoint_prompt(self, x=0, y=0):
         print("[MAP] Opening new-waypoint prompt.")
         prompt_window = Toplevel(self.window)
         # Change position of waypoint prompt to cursor position.
         center_x = ((self.main.root.winfo_x() +
-                     self.main.root.winfo_width()) / 2.5)
+                     self.main.root.winfo_width()) / 1)
         center_y = ((self.main.root.winfo_y() +
                      self.main.root.winfo_height()) / 2.5)
         prompt_window.geometry("+%d+%d" % (center_x, center_y))
 
-        prompt_window.resizable(False, False)
+        prompt_window.resizable(True, False)
         prompt_window.title("New Waypoint")
         prompt_window.wm_attributes('-topmost')
         Label(prompt_window, text="Name", font=(FONT, FONT_SIZE)).grid(row=0)
@@ -286,15 +282,14 @@ class Map:
         prompt_input_y = Entry(prompt_window, bd=5, font=(FONT, FONT_SIZE))
         prompt_input_y.grid(row=2, column=1)
 
-        prompt_input_name.insert(0, "My waypoint")  # Placeholder for input
+        prompt_input_name.insert(0, "Input Name")  # Placeholder for input
         prompt_input_x.insert(0, x)
         prompt_input_y.insert(0, y)
-        prompt_submit = Button(prompt_window, text="Save", font=(FONT, FONT_SIZE),
+        prompt_submit = Button(prompt_window, text="Create Waypoint", font=(FONT, FONT_SIZE),
                                command=lambda:  # Runs multiple functions.
                                [
                                    self.add_waypoint(float(prompt_input_x.get()),
-                                                     float(
-                                                         prompt_input_y.get()),
+                                                     float(prompt_input_y.get()),
                                                      str(prompt_input_name.get())),
                                    prompt_window.destroy()
         ])
@@ -309,6 +304,11 @@ class Map:
         self.auv_data[1].append(y)
         self.draw_auv_path()
 
+    def blinking_dot(self, i=0):
+        colors = (AUV_PATH_COLOR, "red")
+        self.canvas.itemconfigure(self.auv_path_obj, fill=colors[i])
+        self.canvas.after(250, self.auv_path_obj, 1-i)
+
     def draw_auv_path(self):
         print("[MAP] Drawing (really re-drawing) AUV path.")
 
@@ -322,6 +322,12 @@ class Map:
 
         # Re-draw the canvas.
         self.draw_canvas()
+
+    # need to see where to put this and what its parameters are
+    # def blinking_dot(i=0):
+    #     colors = (AUV_PATH_COLOR, "red")
+    #     self.canvas.itemconfigure(self.auv_path_obj, fill=colors[i])
+    #     self.canvas.after(250, self.auv_path_obj, 1-i)
 
     def draw_canvas(self):
         return self.canvas.draw()
@@ -376,18 +382,60 @@ class Map:
 
         return graph
 
-    def add_waypoint(self, x=0, y=0, label="My Waypoint"):
-        self.main.log("Added waypoint \"" + label + "\" at map-position (" + str(int(x)) + ", " + str(int(y)) + ") " +
-                      "with utm-coordinates (" + str(int(float(x)+self.zero_offset_x)) + ", " + str(int(float(y)+self.zero_offset_y)) + ").")
+    def nav_to_waypoint(self):
+        print("[MAP] Opening nav-to-waypoint prompt.")
+        prompt_window = Toplevel(self.window)
+        # Change position of waypoint prompt to cursor position.
+        center_x = ((self.main.root.winfo_x() +
+                     self.main.root.winfo_width()) / 2.5)
+        center_y = ((self.main.root.winfo_y() +
+                     self.main.root.winfo_height()) / 2.5)
+        prompt_window.geometry("+%d+%d" % (center_x, center_y))
 
+        prompt_window.resizable(False, False)
+        prompt_window.title("Select Waypoint")
+        prompt_window.wm_attributes('-topmost')
+        Label(prompt_window, text="Waypoint", font=(FONT, FONT_SIZE)).grid(row=1)
+
+        buttonList = list()
+
+        # creates combo box of waypoints
+        self.waypoint_list = Combobox(prompt_window, state="readonly", values=self.waypoints, font=(FONT, 20))
+        self.waypoint_list.set("Select Waypoint...")
+
+        self.waypoint_list.grid(row=2, column=0, padx=5, pady=5)
+
+        # saves the selected waypoint when save is pressed
+
+        def set_waypoint():
+            self.nav_x = self.waypoints[self.waypoint_list.current()][0]
+            self.nav_y = self.waypoints[self.waypoint_list.current()][1]
+            self.main.log("Selected waypoint: " + str(self.nav_x) + " " + str(self.nav_y))
+
+            # implment code for sending gps data over radio here
+
+        # save button that calls set_waypoint()
+        prompt_submit = Button(prompt_window, text="Save", font=(FONT, FONT_SIZE),
+                               command=lambda:  # Runs multiple functions.
+                               [
+                                   set_waypoint(),
+                                   prompt_window.destroy()
+        ])
+
+        prompt_submit.grid(row=3, column=0, padx=5, pady=5)
+
+    def add_waypoint(self, x=0, y=0, label="Input Name"):
         # The code below should never fail (that would be a big problem).
+        if (label != "Input Name"):
+            waypoint_text = label
+        else:
+            waypoint_text = "(" + str(x) + ", " + str(y) + ")"
         self.waypoints.append([
             x, y,
             label,
             self.map.plot(x, y, marker='o', markersize=5,
                           color=WAYPOINT_COLOR, label=label),
-            self.map.annotate(xy=(x, y), text=label + ", UTM: ("+str(round(float(
-                x)+self.zero_offset_x, 5))+","+str(round(float(y)+self.zero_offset_y, 5))+")")
+            self.map.annotate(xy=(x, y), text=waypoint_text)
         ])
 
         self.draw_canvas()

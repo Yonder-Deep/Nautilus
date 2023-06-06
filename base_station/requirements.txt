@@ -1,7 +1,7 @@
-cython
-matplotlib
-pyserial
-gps3
-screeninfo
-autopep8
-utm
+adafruit_circuitpython_gps==3.10.6
+matplotlib==3.6.1
+pyserial==3.5
+screeninfo==0.8.1
+tkintermapview==1.17
+pyproj==3.4.1
+pyrealsense2==2.53.1

@@ -2,7 +2,10 @@
     "python.linting.enabled": false,
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Args": [
-        "--max-line-length=200"
+        "--max-line-length=150"
     ],
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "python.analysis.extraPaths": [
+        "./auv/api/Adafruit_Python_BNO055"
+    ]
 }

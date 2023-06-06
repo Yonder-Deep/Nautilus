@@ -3,8 +3,11 @@ The radio class enables communication over wireless serial radios.
 """
 import serial
 import os
-TIMEOUT_DURATION = 2
-DEFAULT_BAUDRATE = 115200
+from .crc32 import Crc32
+from static import constants
+
+TIMEOUT_DURATION = 0
+DEFAULT_BAUDRATE = 57600  # 115200
 
 
 class Radio:
@@ -16,11 +19,14 @@ class Radio:
         """
 
         # Establish connection to the serial radio.
-        self.ser = serial.Serial(serial_path,
-                                 baudrate=baudrate, parity=serial.PARITY_NONE,
-                                 stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
-                                 timeout=TIMEOUT_DURATION
-                                 )
+        self.ser = serial.Serial(
+            serial_path,
+            baudrate=baudrate,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+            timeout=TIMEOUT_DURATION,
+        )
 
     def write(self, message):
         """
@@ -28,7 +34,24 @@ class Radio:
 
         message: A string message that is sent over serial connection.
         """
-        self.ser.write(message)
+        # Process different types of messages
+        if isinstance(message, str):
+            print("MSG BIG WRITE")
+            encoded = str.encode(message + "\n")
+            self.ser.write(encoded)
+
+        elif isinstance(message, int):
+            # print("bytes written")
+            # message = Crc32.generate(message)
+            message_double = Crc32.generate(message)
+            byte_arr = message_double.to_bytes((constants.COMM_BUFFER_WIDTH), "big")
+            self.ser.write(byte_arr)
+
+    def read(self, n_bytes=1):
+        """
+        Returns array of bytes
+        """
+        return self.ser.read(n_bytes)
 
     def readlines(self):
         """

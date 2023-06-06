@@ -1,7 +1,34 @@
+""" Xbox 360 controller support for Python
+11/9/13 - Steven Jacobs
+
+This class module supports reading a connected Xbox controller under Python 2 and 3.
+
+You'll need to first install xboxdrv:
+
+    sudo apt-get install xboxdrv
+
+See http://pingus.seul.org/~grumbel/xboxdrv/ for details on xboxdrv
+
+Example usage:
+
+    import xbox
+    joy = xbox.Joystick()         #Initialize joystick
+    
+    if joy.A():                   #Test state of the A button (1=pressed, 0=not pressed)
+        print 'A button pressed'
+    x_axis   = joy.leftX()        #X-axis of the left stick (values -1.0 to 1.0)
+    (x,y)    = joy.leftStick()    #Returns tuple containing left X and Y axes (values -1.0 to 1.0)
+    trigger  = joy.rightTrigger() #Right trigger position (values 0 to 1.0)
+    
+    joy.close()                   #Cleanup before exit
+
+All controller buttons are supported.  See code for all functions.
+"""
+
 import subprocess
-import os
 import select
 import time
+
 
 class Joystick:
 
@@ -10,34 +37,34 @@ class Joystick:
     The refreshRate determines the maximnum rate at which events are polled from xboxdrv.
     Calling any of the Joystick methods will cause a refresh to occur, if refreshTime has elapsed.
     Routinely call a Joystick method, at least once per second, to avoid overfilling the event buffer.
- 
+
     Usage:
         joy = xbox.Joystick()
     """
-    def __init__(self,refreshRate = 30):
-        self.proc = subprocess.Popen(['xboxdrv','--no-uinput','--detach-kernel-driver'], stdout=subprocess.PIPE)
-        self.pipe = self.proc.stdout
-        
-        time.sleep(1)
-		#
-        self.connectStatus = False  #will be set to True once controller is detected and stays on
-        self.reading = '0' * 140    #initialize stick readings to all zeros
+
+    def __init__(self, refreshRate=10):
+        self.proc = subprocess.Popen(['xboxdrv', '--no-uinput', '--detach-kernel-driver'], stdout=subprocess.PIPE,
+                                     bufsize=0)  # connects to xbox controller hardware with driver
+        self.pipe = self.proc.stdout  # pipeline of button press data coming out from the xbox controller into the base station
         #
-        self.refreshTime = 0    #absolute time when next refresh (read results from xboxdrv stdout pipe) is to occur
-        self.refreshDelay = 1.0 / refreshRate   #joystick refresh is to be performed 30 times per sec by default
+        self.connectStatus = False  # will be set to True once controller is detected and stays on
+        self.reading = '0' * 140  # initialize stick readings to all zeros --> creates a super long bytestring of all 0s that is 140 bytes long
+        #
+        self.refreshTime = 2  # absolute time when next refresh (read results from xboxdrv stdout pipe) is to occur
+        self.refreshDelay = 1.0 / refreshRate  # joystick refresh is to be performed 30 times per sec by default
         #
         # Read responses from 'xboxdrv' for upto 2 seconds, looking for controller/receiver to respond
         found = False
         waitTime = time.time() + 2
         while waitTime > time.time() and not found:
-            readable, writeable, exception = select.select([self.pipe],[],[],0)
+            readable, writeable, exception = select.select([self.pipe], [], [], 0)
             if readable:
-                response = self.pipe.readline()
+                response = self.pipe.readline()  # if there is nothing coming out from the controller we fail
                 # Hard fail if we see this, so force an error
-                if response[0:7] == 'No Xbox':
+                if response[0:7] == b'No Xbox':  # the b in front converts this string to binary
                     raise IOError('No Xbox controller/receiver found')
                 # Success if we see the following
-                if response[0:12].lower() == 'press ctrl-c':
+                if response[0:12].lower() == b'press ctrl-c':
                     found = True
                 # If we see 140 char line, we are seeing valid input
                 if len(response) == 140:
@@ -53,12 +80,14 @@ class Joystick:
     The refreshRate determines the maximum frequency with which events are checked.
     If a valid event response is found, then the controller is flagged as 'connected'.
     """
+
     def refresh(self):
         # Refresh the joystick readings based on regular defined freq
         if self.refreshTime < time.time():
-            self.refreshTime = time.time() + self.refreshDelay  #set next refresh time
+            self.refreshTime = time.time() + self.refreshDelay  # set next refresh time
             # If there is text available to read from xboxdrv, then read it.
-            readable, writeable, exception = select.select([self.pipe],[],[],0)
+            # splits general output into readable, writeable and executable programs
+            readable, writeable, exception = select.select([self.pipe], [], [], 0)
             if readable:
                 # Read every line that is availabe.  We only need to decode the last one.
                 while readable:
@@ -66,12 +95,12 @@ class Joystick:
                     # A zero length response means controller has been unplugged.
                     if len(response) == 0:
                         raise IOError('Xbox controller disconnected from USB')
-                    readable, writeable, exception = select.select([self.pipe],[],[],0)
-                # Valid controller response will be 140 chars.  
+                    readable, writeable, exception = select.select([self.pipe], [], [], 0)
+                # Valid controller response will be 140 chars.
                 if len(response) == 140:
                     self.connectStatus = True
                     self.reading = response
-                else:  #Any other response means we have lost wireless or controller battery
+                else:  # Any other response means we have lost wireless or controller battery
                     self.connectStatus = False
 
     """Return a status of True, when the controller is actively connected.
@@ -84,37 +113,39 @@ class Joystick:
     status goes True.  If a connection is lost, the connection will resume automatically when the
     fault is corrected.
     """
+
     def connected(self):
         self.refresh()
         return self.connectStatus
 
     # Left stick X axis value scaled between -1.0 (left) and 1.0 (right) with deadzone tolerance correction
-    def leftX(self,deadzone=4000):
+    def leftX(self, deadzone=4000):
         self.refresh()
         raw = int(self.reading[3:9])
-        return self.axisScale(raw,deadzone)
+        return self.axisScale(raw, deadzone)
 
     # Left stick Y axis value scaled between -1.0 (down) and 1.0 (up)
-    def leftY(self,deadzone=4000):
+    def leftY(self, deadzone=4000):
         self.refresh()
         raw = int(self.reading[13:19])
-        return self.axisScale(raw,deadzone)
+        return self.axisScale(raw, deadzone)
 
     # Right stick X axis value scaled between -1.0 (left) and 1.0 (right)
-    def rightX(self,deadzone=4000):
+    def rightX(self, deadzone=4000):
         self.refresh()
         raw = int(self.reading[24:30])
-        return self.axisScale(raw,deadzone)
+        return self.axisScale(raw, deadzone)
 
     # Right stick Y axis value scaled between -1.0 (down) and 1.0 (up)
-    def rightY(self,deadzone=4000):
+    def rightY(self, deadzone=4000):
         self.refresh()
-        raw = int(self.reading[34:40])
-        return self.axisScale(raw,deadzone)
+        raw = int(self.reading[34:40])  # reading a range of bytes in the total super long bytestring (aka reading)
+        return self.axisScale(raw, deadzone)
 
     # Scale raw (-32768 to +32767) axis with deadzone correcion
     # Deadzone is +/- range of values to consider to be center stick (ie. 0.0)
-    def axisScale(self,raw,deadzone):
+    # Basically lowering the sensitivity of the joystick so that it has to be moved further to do something
+    def axisScale(self, raw, deadzone):
         if abs(raw) < deadzone:
             return 0.0
         else:
@@ -127,22 +158,22 @@ class Joystick:
     def dpadUp(self):
         self.refresh()
         return int(self.reading[45:46])
-        
+
     # Dpad Down status - returns 1 (pressed) or 0 (not pressed)
     def dpadDown(self):
         self.refresh()
         return int(self.reading[50:51])
-        
+
     # Dpad Left status - returns 1 (pressed) or 0 (not pressed)
     def dpadLeft(self):
         self.refresh()
         return int(self.reading[55:56])
-        
+
     # Dpad Right status - returns 1 (pressed) or 0 (not pressed)
     def dpadRight(self):
         self.refresh()
         return int(self.reading[60:61])
-        
+
     # Back button status - returns 1 (pressed) or 0 (not pressed)
     def Back(self):
         self.refresh()
@@ -172,7 +203,7 @@ class Joystick:
     def A(self):
         self.refresh()
         return int(self.reading[100:101])
-        
+
     # B button status - returns 1 (pressed) or 0 (not pressed)
     def B(self):
         self.refresh()
@@ -202,7 +233,7 @@ class Joystick:
     def leftTrigger(self):
         self.refresh()
         return int(self.reading[129:132]) / 255.0
-        
+
     # Right trigger value scaled between 0.0 to 1.0
     def rightTrigger(self):
         self.refresh()
@@ -211,17 +242,17 @@ class Joystick:
     # Returns tuple containing X and Y axis values for Left stick scaled between -1.0 to 1.0
     # Usage:
     #     x,y = joy.leftStick()
-    def leftStick(self,deadzone=4000):
+    def leftStick(self, deadzone=4000):
         self.refresh()
-        return (self.leftX(deadzone),self.leftY(deadzone))
+        return (self.leftX(deadzone), self.leftY(deadzone))
 
     # Returns tuple containing X and Y axis values for Right stick scaled between -1.0 to 1.0
     # Usage:
-    #     x,y = joy.rightStick() 
-    def rightStick(self,deadzone=4000):
+    #     x,y = joy.rightStick()
+    def rightStick(self, deadzone=4000):
         self.refresh()
-        return (self.rightX(deadzone),self.rightY(deadzone))
+        return (self.rightX(deadzone), self.rightY(deadzone))
 
     # Cleanup by ending the xboxdrv subprocess
     def close(self):
-        os.system('pkill xboxdrv')
+        self.proc.kill()
