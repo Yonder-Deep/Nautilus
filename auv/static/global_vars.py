@@ -14,6 +14,7 @@ stop_all_threads = False
 restart_threads = False
 
 depth_offset = 0
+movement_status = 0
 
 radio = None
 

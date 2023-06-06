@@ -61,7 +61,7 @@ class AUV_Receive(threading.Thread):
         """Method to test all 4 motors on the AUV"""
         print("TESTING MOTOR 1")
         # Update motion type for display on gui
-        self.mc.motion_type = 4
+        global_vars.movement_status = 4
         print(motor)
         if (
             motor == "FORWARD"
