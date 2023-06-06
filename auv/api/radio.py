@@ -28,14 +28,6 @@ class Radio:
             timeout=TIMEOUT_DURATION,
         )
 
-    # def write(self, message):
-    #     """
-    #     Sends provided message over serial connection.
-
-    #     message: A string message that is sent over serial connection.
-    #     """
-    #     self.ser.write(message)
-
     def write(self, message):
         """
         Sends provided message over serial connection.

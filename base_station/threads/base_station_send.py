@@ -59,7 +59,7 @@ class BaseStation_Send(threading.Thread):
                 print("Failed to evaluate in_q task: ", task)
                 print("\t Error received was: ", str(e))
 
-    def test_motor(self, motor):
+    def test_motor(self, motor, speed, duration):
         """ Attempts to send the AUV a signal to test a given motor. """
         constants.lock.acquire()
         if not global_vars.connected:
@@ -71,15 +71,15 @@ class BaseStation_Send(threading.Thread):
             constants.radio_lock.acquire()
 
             if (motor == 'Forward'):
-                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b000)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | (0b000 << 13) | (speed << 6) | duration)
             elif (motor == 'Backward'):
-                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b001)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | (0b001 << 13) | (speed << 6) | duration)
             elif (motor == 'Down'):
-                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b010)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | (0b010 << 13) | (speed << 6) | duration)
             elif (motor == 'Left'):
-                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b011)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | (0b011 << 13) | (speed << 6) | duration)
             elif (motor == 'Right'):
-                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | 0b100)
+                self.radio.write((constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT) | (0b100 << 13) | (speed << 6) | duration)
 
             constants.radio_lock.release()
 

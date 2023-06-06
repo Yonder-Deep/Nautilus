@@ -303,17 +303,19 @@ class AUV_Receive(threading.Thread):
         self.motor_queue.put((x, y, 0))
 
     def read_motor_test_command(self, message):
-        d = message & 0b111
-        if d == 0:  # forward
-            self.mc.update_motor_speeds([50, 0, 0, 0])
-        elif d == 1:  # reverse
-            self.mc.update_motor_speeds([-50, 0, 0, 0])
-        elif d == 2:  # down
-            self.mc.update_motor_speeds([0, 0, 30, 30])
-        elif d == 3:  # left
-            self.mc.update_motor_speeds([0, -30, 0, 0])
-        elif d == 4:  # right
-            self.mc.update_motor_speeds([0, 30, 0, 0])
+        test = (message >> 13) & 0b111
+        speed = (message >> 6) & 0b1111111
+        duration = message & 0b111111
+        if test == 0:  # forward
+            self.mc.update_motor_speeds([speed, 0, 0, 0])
+        elif test == 1:  # reverse
+            self.mc.update_motor_speeds([(-1 * speed), 0, 0, 0])
+        elif test == 2:  # down
+            self.mc.update_motor_speeds([0, 0, speed, speed])
+        elif test == 3:  # left
+            self.mc.update_motor_speeds([0, (-1 * speed), 0, 0])
+        elif test == 4:  # right
+            self.mc.update_motor_speeds([0, speed, 0, 0])
 
     def read_xbox_command(self, message):
         # xbox command
