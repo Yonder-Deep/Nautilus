@@ -125,6 +125,9 @@ class BaseStation_Send(threading.Thread):
     def send_calibrate_depth(self):
         self.start_mission(constants.CAL_DEPTH_COMMAND, 0, 0)
 
+    def send_calibrate_heading(self):
+        self.start_mission(constants.CAL_HEADING_COMMAND, 0, 0)
+
     def send_abort(self):
         self.start_mission(constants.ABORT_COMMAND, 0, 0)
 

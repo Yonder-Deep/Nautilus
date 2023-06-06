@@ -12,15 +12,11 @@ import os
 import threading
 import sys
 import struct
+import bz2
 sys.path.append('..')
-
-
-def get_heading_encode(data):
-    pass
 
 # Responsibilites:
 #   - send data
-
 
 class AUV_Send_Data(threading.Thread):
     """ Class for the AUV object. Acts as the main file for the AUV. """
@@ -76,12 +72,7 @@ class AUV_Send_Data(threading.Thread):
                     raise Exception("Error occured : " + str(e))
 
     def send_heading(self):
-        try:
-            heading, _, _ = self.imu.read_euler()
-            print('HEADING=', heading)
-        except:
-            # TODO print statement, something went wrong!
-            heading = 0
+        heading = self.get_heading()
 
         split_heading = math.modf(heading)
         decimal_heading = int(round(split_heading[0], 2) * 100)
@@ -234,3 +225,23 @@ class AUV_Send_Data(threading.Thread):
         else:
             global_vars.log("No pressure sensor found.")
             return None
+        
+    def get_heading_encode(data):
+        pass
+
+    def get_heading(self):
+        try:
+            heading, _, _ = self.imu.read_euler()
+            print('HEADING=', heading)
+            heading = heading - global_vars.heading_offset
+            return heading
+        except:
+            # TODO print statement, something went wrong!
+            global_vars.log("No IMU found.")
+            return None
+
+    def compress_file(self,file):
+        f = open(file,"rb")
+        input = f.read()
+        compressed = bz2.compress(input)
+        return compressed
