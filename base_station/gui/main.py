@@ -27,6 +27,7 @@ from tkinter import font
 
 from static import constants
 from .map import Map
+
 from .viewmap import ViewMap
 from screeninfo import get_monitors, Enumerator
 
@@ -872,3 +873,9 @@ class Main():
         self.out_q.put("close()")  # TODO
         self.root.destroy()
         sys.exit()
+
+    def start_recording(self):
+        self.out_q.put("method()")
+
+    def stop_recording(self):
+        self.out_q.put("method()")

@@ -2,7 +2,12 @@ import threading
 import time
 import serial
 import adafruit_gps
-from static.constants import GPS_PATH
+import queue
+#from static.constants import GPS_PATH
+
+# GPS PATH FOR WINDOWS
+# GPS_PATH = 'COM7'
+GPS_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
 
 class GPS(threading.Thread):
     """ Class for basic GPS functionality """
@@ -24,26 +29,43 @@ class GPS(threading.Thread):
 
     def run(self):
 
-        # Make sure to call gps.update() every loop iteration and at least twice
-        # as fast as data comes from the GPS unit (usually every second).
-        # This returns a bool that's true if it parsed new data (you can ignore it
-        # though if you don't care and instead look at the has_fix property).
+        while True:
 
-        self.gps.update()
-        # Every second print out current location details if there's a fix.
-        
-        if not self.gps.has_fix:
-            self.out_q.put({
-                'has fix':'No',
-                'speed': 'Unknown',
-                'latitude': 'Unknown',
-                'longitude': 'Unknown'
-            })
+            # Make sure to call gps.update() every loop iteration and at least twice
+            # as fast as data comes from the GPS unit (usually every second).
+            # This returns a bool that's true if it parsed new data (you can ignore it
+            # though if you don't care and instead look at the has_fix property).
 
-        else:
-            self.out_q.put({
-                'has fix':'Yes',
-                'speed': self.gps.speed_knots,
-                'latitude': self.gps.latitude,
-                'longitude': self.gps.longitude
-            })
+            self.gps.update()
+            # Every second print out current location details if there's a fix.
+
+            if not self.gps.has_fix:
+                self.out_q.put({
+                    'has fix': 'No',
+                    'speed': 'Unknown',
+                    'latitude': 'Unknown',
+                    'longitude': 'Unknown'
+                })
+
+            else:
+                self.out_q.put({
+                    'has fix': 'Yes',
+                    'speed': self.gps.speed_knots,
+                    'latitude': self.gps.latitude,
+                    'longitude': self.gps.longitude
+                })
+
+            # Every second print out current location details if there's a fix.
+            if self.gps.has_fix:
+                print("=" * 40)  # Print a separator line.
+                print(self.gps.latitude, self.gps.longitude)
+
+            time.sleep(1)
+
+
+if __name__ == "__main__":
+
+    # Create a queue for the GPS data
+    out_q = queue.Queue()
+
+    GPS(out_q)
