@@ -20,7 +20,7 @@ from api import Radio
 from api import Joystick
 from api import xbox
 #from api import NavController
-# from api import GPS
+from api import GPS
 from api import decode_command
 #from api import checksum
 from gui import Main
@@ -31,8 +31,6 @@ from threads.base_station_send_ping import BaseStation_Send_Ping
 # Constants
 THREAD_SLEEP_DELAY = 0.1  # Since we are the slave to AUV, we must run faster.
 PING_SLEEP_DELAY = 3
-RADIO_PATH = '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
-GPS_PATH = '/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00'
 
 
 if __name__ == '__main__':
@@ -71,5 +69,10 @@ if __name__ == '__main__':
         gui.root.mainloop()
     except KeyboardInterrupt:
         print("CLOSING")
-        gui.root.destroy()
-        sys.exit()
+        gui.on_closing()
+        # gui.root.destroy()
+        # bs_r_thread.join()
+        # bs_s_thread.join()
+        # bs_ping_thread.join()
+        # global_vars.radio.close()
+        # sys.exit()

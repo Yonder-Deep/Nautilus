@@ -45,9 +45,9 @@ class Motor:
         """
         Test the motor by setting speed values between time intervals.
         """
-
-        self.set_speed(MAX_SPEED / 6)
-        time.sleep(0.1)
+        print("TESTING MOTOR 2")
+        self.set_speed(MAX_SPEED / 3)
+        time.sleep(5)
         self.set_speed(0)
 
 
@@ -65,5 +65,5 @@ def main():
 
 if __name__ == '__main__':
     #motor = Motor(23, pigpio.pi())
-    #time.sleep(3)
+    # time.sleep(3)
     main()

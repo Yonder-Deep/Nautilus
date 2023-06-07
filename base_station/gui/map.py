@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.ttk import Combobox
 import matplotlib
 import matplotlib.axes
+from static import global_vars
 matplotlib.use('TkAgg')
 
 # Begin imports for tkinter
@@ -35,6 +36,7 @@ KM_TO_MI = 0000.621371000
 M_TO_MI = 0000.000621371
 MI_TO_KM = 0001.609340000
 M_TO_KM = 0000.001000000
+KM_TO_M = 1/M_TO_KM
 
 # Other Debug Constants
 ZOOM_SCALAR = 1.15
@@ -253,6 +255,10 @@ class Map:
         self.main.log("Waypoint \"" + waypoint[2] + "\" removed!")
         return
 
+    def toggle_auto_nav():
+        global_vars.in_autonomous_nav = True
+        pass
+
     def new_waypoint_prompt(self, x=0, y=0):
         print("[MAP] Opening new-waypoint prompt.")
         prompt_window = Toplevel(self.window)
@@ -405,6 +411,8 @@ class Map:
             self.nav_x = self.waypoints[self.waypoint_list.current()][0]
             self.nav_y = self.waypoints[self.waypoint_list.current()][1]
             self.main.log("Selected waypoint: " + str(self.nav_x) + " " + str(self.nav_y))
+
+            # implment code for sending gps data over radio here
 
         # save button that calls set_waypoint()
         prompt_submit = Button(prompt_window, text="Save", font=(FONT, FONT_SIZE),

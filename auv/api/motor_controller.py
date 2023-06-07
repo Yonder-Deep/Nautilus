@@ -3,19 +3,23 @@ The motor_controller class calibrates and sets the speed of all of the motors
 """
 
 # System imports
-import time
-
-# Custom Imports
-import pigpio
-import RPi.GPIO as io
-from api import Motor
 from static import global_vars
+from api import Motor
+import RPi.GPIO as io
+import pigpio
+import time
+import sys
+sys.path.append('../')
+sys.path.append('/home/pi-2/dev/Nautilus/auv')
+sys.path.append('/home/pi-2/dev/Nautilus/auv/api')
+sys.path.append('/home/pi-2/dev/Nautilus/auv/static')
+# Custom Imports
 
 # GPIO Pin numbers for Motors
-FORWARD_GPIO_PIN = 4  # 18
-TURN_GPIO_PIN = 11  # 24
-FRONT_GPIO_PIN = 18  # 4
-BACK_GPIO_PIN = 24  # 11
+FORWARD_GPIO_PIN = 4
+TURN_GPIO_PIN = 11
+FRONT_GPIO_PIN = 18
+BACK_GPIO_PIN = 24
 
 
 # Define pin numbers for PI (Not the same as GPIO?)
@@ -94,9 +98,16 @@ class MotorController:
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
+        print("Forward motor speed: ", self.forward_speed)
         self.motors[TURN_MOTOR_INDEX].set_speed(self.turn_speed)
+        print("Turning motor speed: ", self.turn_speed)
         self.motors[FRONT_MOTOR_INDEX].set_speed(self.front_speed)
+        print("Dive (front) motor speed: ", self.front_speed)
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
+        print("Dive (back) motor speed: ", self.back_speed)
+
+        if all([speed == 0 for speed in data]):
+            global_vars.movement_status = 0
 
     def pid_motor(self, pid_feedback):
         """
@@ -104,7 +115,7 @@ class MotorController:
 
         feedback: Feedback value from pid class.
         """
-        if(not pid_feedback):
+        if (not pid_feedback):
             self.turn_speed = 0
         else:
             self.turn_speed = self.calculate_pid_new_speed(pid_feedback)
@@ -120,7 +131,7 @@ class MotorController:
 
         feedback: Feedback value from pid class.
         """
-        if(not pid_feedback):
+        if (not pid_feedback):
             self.front_speed = 0
             self.back_speed = 0
         elif abs(current_value) > 30:
@@ -174,11 +185,11 @@ class MotorController:
             motor.test_motor()
             time.sleep(1)
 
-    def test_forward(self):  # Used to be left motor
+    def test_forward(self):  
         log('Testing forward motor...')
         self.motors[FORWARD_MOTOR_INDEX].test_motor()
 
-    def test_turn(self):  # used to be right motor
+    def test_turn(self): 
         log('Testing turn motor...')
         self.motors[TURN_MOTOR_INDEX].test_motor()
 

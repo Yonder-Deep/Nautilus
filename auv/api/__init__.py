@@ -3,8 +3,11 @@ from .motor import Motor
 from .motor_controller import MotorController
 from .pid import PID
 from .ms5837 import MS5837_30BA as PressureSensor  # Pressure Sensor
-from .Adafruit_Python_BNO055 import BNO055 as IMU
+from .imu import IMU
 from .radio import Radio
 from .crc32 import Crc32
 from .motor_queue import MotorQueue
 from .dive_controller import DiveController
+from .indicator import Indicator
+from .gps import GPS
+from .depth_cam import RealSenseCamera
