@@ -7,6 +7,7 @@ from api import IMU
 from api import Radio
 from api import DiveController
 from queue import Queue
+from datetime import datetime
 from static import global_vars
 from static import constants
 import math
@@ -48,6 +49,12 @@ class AUV_Receive(threading.Thread):
         self._ev = threading.Event()
         threading.Thread.__init__(self)
 
+        curr_time = datetime.now()
+        self.log_filename = constants.LOG_PATH + curr_time.strftime("%Y-%M-%D_%H-%M-%S") + ".txt"
+        sensor_log = open(constants.LOG_PATH + self.log_filename, "w")
+        sensor_log.write("File created: " + curr_time.strftime("%Y-%M-%D_%H:%M:%S"))
+        sensor_log.close()
+
     def run(self):
         """Constructor for the AUV"""
 
@@ -85,6 +92,7 @@ class AUV_Receive(threading.Thread):
 
         count = 0
         global_vars.log("Starting main connection loop.")
+
         while not self._ev.wait(timeout=constants.RECEIVE_SLEEP_DELAY):
             # time.sleep(RECEIVE_SLEEP_DELAY)
 
@@ -99,6 +107,8 @@ class AUV_Receive(threading.Thread):
                     line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)   #reads bytestring of desired packet size from the serial interface of the radio (radio recieves bytes over airwaves)
 
                     while line != b"":  # while bytes are still being read from the radio (radio is recieving information)
+                        self.sensor_log()
+                      
                         if not global_vars.sending_dive_log and len(line) == (
                             constants.COMM_BUFFER_WIDTH
                         ):
@@ -542,6 +552,23 @@ class AUV_Receive(threading.Thread):
             heading, roll, pitch = self.get_euler()
             file.write("Heading=" + str(heading))
             file.write("Pitch=" + str(pitch))
+
+    def sensor_log(self):
+        sensor_log = open(constants.LOG_PATH + self.log_filename, "a")
+        curr_time = datetime.now()
+        sensor_log.write("---------------------------------------------------------------------------------------")
+        sensor_log.write("Time: " + time.time())
+        sensor_log.write("Readable Time: " + curr_time.strftime("%Y-%M-%D_%H-%M-%S"))
+        try:
+            sensor_log.write("Heading, Roll, Pitch: " + str(self.imu.read_euler()))
+        except:
+            sensor_log.write("Heading, Roll, Pitch: " + "Failed to read IMU")
+        try:
+            self.pressure_sensor.read()
+            sensor_log.write("Pressure, Depth: " + str(self.pressure_sensor.pressure() + ", " + self.get_depth()))
+        except:
+            sensor_log.write("Pressure, Depth: " + "Failed to read pressure sensor")
+        sensor_log.close()
 
     # Does not include calibration offset
     def get_depth(self):
