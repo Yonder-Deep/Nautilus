@@ -1,6 +1,7 @@
 from glob import glob
 import sys
 import os
+import bz2
 
 # System imports
 import serial
@@ -114,6 +115,14 @@ class BaseStation_Receive(threading.Thread):
         global_vars.log(self.out_q, "Enforced switch to manual mode.")
 
         global_vars.log(self.out_q, "The current mission has failed.")
+
+    def decompress(self,file_path,file_decomp_path): # TODO: Test 
+        f = open(file_path,"rb")
+        f_decomp = open(file_decomp_path,"wb")
+        input = f.read()
+        decomp_output = bz2.decompress(input)
+        f_decomp.write(decomp_output)
+        return decomp_output
 
     def run(self):
         """ Main threaded loop for the base station. """

@@ -10,6 +10,7 @@ import os
 import time
 import threading
 import sys
+import bz2
 sys.path.append('..')
 
 
@@ -267,3 +268,9 @@ class AUV_Send_Data(threading.Thread):
         else:
             global_vars.log("No pressure sensor found.")
             return None
+    
+    def compress_file(self,file):
+        f = open(file,"rb")
+        input = f.read()
+        compressed = bz2.compress(input)
+        return compressed
