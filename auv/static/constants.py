@@ -69,6 +69,5 @@ LOG_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/logs/"
 AUDIO_FOLDER_PATH = os.path.dirname(os.path.dirname(__file__)) + "/hydrophone_audio/"
 
 
-
 def log(val):
     print("[AUV]\t" + val)

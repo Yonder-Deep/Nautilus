@@ -27,8 +27,9 @@ class AUV_Send_Ping(threading.Thread):
                 global_vars.connect_to_radio()
             else:
                 try:
-                    if not global_vars.sending_data:
+                    if global_vars.sending_data is False:
                         # Send a connection verification packet if not currently sending data
+                        print("sent ping from AUV to BS")
                         constants.RADIO_LOCK.acquire()
                         global_vars.radio.write(constants.PING, 3)
                         constants.RADIO_LOCK.release()
