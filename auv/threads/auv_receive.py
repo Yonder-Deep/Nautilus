@@ -200,8 +200,7 @@ class AUV_Receive(threading.Thread):
                             line = global_vars.radio.read(7)
                         elif global_vars.sending_data:
 
-                            # line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
-                            line = global_vars.radio.read(7)
+                            line = global_vars.radio.read(constants.FILE_SEND_PACKET_SIZE)
                             print(line)
                             print("Length of line read", len(line))
                             if len(line) != 0:
@@ -481,7 +480,6 @@ class AUV_Receive(threading.Thread):
         # self.motor_queue.queue.clear()
 
         # begin dive
-        self.dive_controller.start_dive(to_depth=to_depth, dive_length=3)
         '''
         # Wait 10 sec
         end_time = time.time() + 10  # 10 sec
@@ -511,7 +509,7 @@ class AUV_Receive(threading.Thread):
         # self.hydrophone.stop_recording()
 
         # TODO: current commit is theoretically working code for pool test, need to update with sending files to BS
-        # global_vars.sending_data = True
+        global_vars.sending_data = True
         # resurface
         self.dive_controller.start_dive()
         #self.hydrophone.start_recording_for(5)

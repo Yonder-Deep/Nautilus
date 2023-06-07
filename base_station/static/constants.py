@@ -26,6 +26,8 @@ RADIO_PATH_5 = {
 }
 RADIO_PATH_6 = {"radioNum": 6, "path": "COM5"}
 RADIO_PATH_7 = {"radioNum": 7, "path": "COM7"}
+RADIO_PATH_8 = {'radioNum': 8, 'path': '/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30EZJIT-if00-port0'}
+RADIO_PATH_9 = {'radioNum': 9, 'path': '/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30EZV09-if00-port0'}
 RADIO_PATHS = [
     RADIO_PATH,
     RADIO_PATH_2,
@@ -34,6 +36,8 @@ RADIO_PATHS = [
     RADIO_PATH_5,
     RADIO_PATH_6,
     RADIO_PATH_7,
+    RADIO_PATH_8,
+    RADIO_PATH_9,
 ]
 GPS_PATH = (
     "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"

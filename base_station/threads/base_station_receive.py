@@ -194,9 +194,10 @@ class BaseStation_Receive(threading.Thread):
                             line = self.radio.read(7)
                         elif global_vars.downloading_file:
                             # Handles receiving an entire file from the AUV
-                            line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
-                            if line == b'':
-                                continue
+                            line = b''
+                            while line == b'':
+                                line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
+
                             intline = int.from_bytes(line, "big")
                             print(f"intline: {intline}")
 
@@ -224,6 +225,7 @@ class BaseStation_Receive(threading.Thread):
                             file.seek(0, os.SEEK_END)
                             curr_file_size = file.tell()
                             # Return to normal operations when correct file size reached
+                            print(curr_file_size, global_vars.file_size)
                             if curr_file_size >= global_vars.file_size:
                                 print("[BS] CLOSING THE LOG FILE")
                                 file.close()
