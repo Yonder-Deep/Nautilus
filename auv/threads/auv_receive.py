@@ -61,7 +61,7 @@ class AUV_Receive(threading.Thread):
         """Method to test all 4 motors on the AUV"""
         print("TESTING MOTOR 1")
         # Update motion type for display on gui
-        self.mc.motion_type = 4
+        global_vars.movement_status = 4
         print(motor)
         if (
             motor == "FORWARD"
@@ -363,7 +363,7 @@ class AUV_Receive(threading.Thread):
             self.halt[0] = True
 
         if x == 3:
-            print("CALIBRATE")
+            print("CALIBRATE DEPTH")
 
             depth = self.get_depth()
             global_vars.depth_offset = global_vars.depth_offset + depth
@@ -372,6 +372,12 @@ class AUV_Receive(threading.Thread):
             print("DOWNLOAD DATA")
             global_vars.sending_dive_log = True
             pass
+
+        if (x == 6):
+            print("CALIBRATE HEADING")
+
+            heading = self.get_heading()
+            global_vars.heading_offset = (global_vars.heading_offset + heading) % 360
 
     def start_mission(self, mission):
         """Method that uses the mission selected and begin that mission"""
@@ -549,9 +555,20 @@ class AUV_Receive(threading.Thread):
 
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure - 1013.25) / 1000 * 10.2
-            return depth
+            return depth - global_vars.depth_offset()
         else:
             global_vars.log("No pressure sensor found.")
+            return None
+        
+    def get_heading(self):
+        if self.imu is not None:
+            try:
+                heading, _, _ = self.imu.read_euler()
+            except:
+                print("Failed to read IMU")
+            return heading - global_vars.heading_offset
+        else:
+            global_vars.log("No IMU found.")
             return None
 
     # Does not include calibration offset

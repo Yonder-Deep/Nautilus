@@ -106,6 +106,9 @@ class MotorController:
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
         print("Dive (back) motor speed: ", self.back_speed)
 
+        if all([speed == 0 for speed in data]):
+            global_vars.movement_status = 0
+
     def pid_motor(self, pid_feedback):
         """
         Updates the TURN motor based on the PID feedback. 
@@ -182,11 +185,11 @@ class MotorController:
             motor.test_motor()
             time.sleep(1)
 
-    def test_forward(self):  # Used to be left motor
+    def test_forward(self):  
         log('Testing forward motor...')
         self.motors[FORWARD_MOTOR_INDEX].test_motor()
 
-    def test_turn(self):  # used to be right motor
+    def test_turn(self): 
         log('Testing turn motor...')
         self.motors[TURN_MOTOR_INDEX].test_motor()
 
