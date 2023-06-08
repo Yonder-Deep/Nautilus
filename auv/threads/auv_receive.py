@@ -555,7 +555,8 @@ class AUV_Receive(threading.Thread):
 
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure - 1013.25) / 1000 * 10.2
-            return depth - global_vars.depth_offset()
+            #return depth - global_vars.depth_offset()
+            return depth
         else:
             global_vars.log("No pressure sensor found.")
             return None
