@@ -1196,7 +1196,7 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Forward')"),
+            command=lambda: self.out_q.put("test_motor('Forward'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
         )
         # NAV X S Y
         self.forward_calibrate_button.grid(row=1, column=1, pady=CALIBRATE_PAD_Y)
@@ -1208,7 +1208,7 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Backward')"),
+            command=lambda: self.out_q.put("test_motor('Backward'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
         )
 
         self.backward_calibrate_button.grid(row=2, column=1, pady=CALIBRATE_PAD_Y)
@@ -1228,7 +1228,7 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Down')"),
+            command=lambda: self.out_q.put("test_motor('Down'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
         )
 
         self.vertical_down_calibrate_button.grid(row=3, column=1, pady=CALIBRATE_PAD_Y)
@@ -1240,7 +1240,7 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Left')"),
+            command=lambda: self.out_q.put("test_motor('Left'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
         )
         # X = 10, Y = 90
         self.left_calibrate_button.grid(row=4, column=1, pady=CALIBRATE_PAD_Y)
@@ -1252,12 +1252,28 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Right')"),
+            command=lambda: self.out_q.put("test_motor('Right'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
         )
         # X = 10, Y = 90
         self.right_calibrate_button.grid(row=5, column=1, pady=CALIBRATE_PAD_Y)
 
+        self.motor_test_speed_label = Label(
+             self.calibrate_frame, text="Speed:", font=(FONT, FONT_SIZE)
+        )
+        self.motor_test_speed_label.grid(row=1, column=2, pady=CALIBRATE_PAD_Y)
 
+        self.input_motor_test_speed = Entry(self.calibrate_frame, bd=5, font=(FONT, FONT_SIZE))
+        self.input_motor_test_speed.grid(row=2, column=2, pady=CALIBRATE_PAD_Y)
+
+        self.motor_test_duration_label = Label(
+             self.calibrate_frame, text="Duration:", font=(FONT, FONT_SIZE)
+        )
+        self.motor_test_duration_label.grid(row=4, column=2, pady=CALIBRATE_PAD_Y)
+
+        self.input_motor_test_duration = Entry(self.calibrate_frame, bd=5, font=(FONT, FONT_SIZE))
+        self.input_motor_test_duration.grid(row=5, column=2, pady=CALIBRATE_PAD_Y)
+
+        '''
         # SPEED BUTTON
         self.speed_calibrate_button = Button(
             self.calibrate_frame,
@@ -1284,7 +1300,7 @@ class Main:
         )
         # X = 10, Y = 90
         self.duration_calibrate_button.grid(row=5, column=2, pady=CALIBRATE_PAD_Y)
-
+        '''
 
     def init_log_frame(self):
         """Initializes the log/console frame in the bottom-middle part of the GUI."""
