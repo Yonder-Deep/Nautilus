@@ -95,6 +95,7 @@ ICON_PATH = "gui/images/yonder_logo.png"
 class Main:
     """Main GUI object that handles all aspects of the User-Interface"""
 
+
     def __init__(self, in_q=None, out_q=None):
         """Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -189,7 +190,7 @@ class Main:
         self.init_buttons_frame()
         self.init_calibrate_frame()  # for bottom panel
         self.init_log_frame()
-        self.init_mission_frame()
+        # self.init_mission_frame() 
 
         # Save our last received BS coordinates
         self.bs_coordinates = None
@@ -367,6 +368,9 @@ class Main:
     # def rear_motor_slider_function(self, rear_slider_value):
     #    print(rear_slider_value)
     #    self.log("Left Slider")
+    '''
+    MOTOR CONTROL FRAME COMMENTED OUT FOR OPEN OCEAN TEST- REDUNDANT
+    '''
 
     def init_motor_control_frame(self):
         """Creates the frame for motor control."""
@@ -466,32 +470,32 @@ class Main:
         )
         self.dive_button_2.grid(row=8, columnspan=2)
 
-        self.header_label = Label(
-            self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE)
-        )
-        self.header_label.grid(row=9, columnspan=2)
+        # self.header_label = Label(
+        #     self.motor_control_frame, text="Motor Control", font=(FONT, HEADING_SIZE)
+        # )
+        # self.header_label.grid(row=9, columnspan=2)
 
-        self.distance_label = Label(
-            self.motor_control_frame, text="Distance\n(0-100m)", font=(FONT, FONT_SIZE)
-        )
-        self.distance_label.grid(row=10, column=0)
+        # self.distance_label = Label(
+        #     self.motor_control_frame, text="Distance\n(0-100m)", font=(FONT, FONT_SIZE)
+        # )
+        # self.distance_label.grid(row=10, column=0)
 
-        self.angle_label = Label(
-            self.motor_control_frame,
-            text="Angle\n(-180-180\N{DEGREE SIGN})",
-            font=(FONT, FONT_SIZE),
-        )
-        self.angle_label.grid(row=11, column=0)
+        # self.angle_label = Label(
+        #     self.motor_control_frame,
+        #     text="Angle\n(-180-180\N{DEGREE SIGN})",
+        #     font=(FONT, FONT_SIZE),
+        # )
+        # self.angle_label.grid(row=11, column=0)
 
-        self.prompt_input_distance = Entry(
-            self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE - 3)
-        )
-        self.prompt_input_distance.grid(row=10, column=1)
+        # self.prompt_input_distance = Entry(
+        #     self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE - 3)
+        # )
+        # self.prompt_input_distance.grid(row=10, column=1)
 
-        self.prompt_input_angle = Entry(
-            self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE - 3)
-        )
-        self.prompt_input_angle.grid(row=11, column=1)
+        # self.prompt_input_angle = Entry(
+        #     self.motor_control_frame, bd=5, font=(FONT, FONT_SIZE - 3)
+        # )
+        # self.prompt_input_angle.grid(row=11, column=1)
 
         # Add commands to halt and send buttons
         self.halt_button = Button(
@@ -508,23 +512,23 @@ class Main:
             font=(FONT, BUTTON_SIZE),
             command=lambda: self.send_halt(),
         )
-        self.halt_button.grid(row=12, column=0)
+        self.halt_button.grid(row=12, column=1)
 
-        self.send_button = Button(
-            self.motor_control_frame,
-            text="Send",
-            takefocus=False,
-            width=BUTTON_WIDTH - 15,
-            height=BUTTON_HEIGHT - 10,
-            padx=BUTTON_PAD_X,
-            pady=BUTTON_PAD_Y,
-            font=(FONT, BUTTON_SIZE),
-            command=lambda: self.send_controls(
-                str(self.prompt_input_distance.get()),
-                str(self.prompt_input_angle.get()),
-            ),
-        )
-        self.send_button.grid(row=12, column=1)
+        # self.send_button = Button(
+        #     self.motor_control_frame,
+        #     text="Send",
+        #     takefocus=False,
+        #     width=BUTTON_WIDTH - 15,
+        #     height=BUTTON_HEIGHT - 10,
+        #     padx=BUTTON_PAD_X,
+        #     pady=BUTTON_PAD_Y,
+        #     font=(FONT, BUTTON_SIZE),
+        #     command=lambda: self.send_controls(
+        #         str(self.prompt_input_distance.get()),
+        #         str(self.prompt_input_angle.get()),
+        #     ),
+        # )
+        # self.send_button.grid(row=12, column=1)
 
     def manual_dive(self, front_motor_speed, rear_motor_speed, seconds):
         self.log("Manual Dive")
@@ -1253,6 +1257,35 @@ class Main:
         # X = 10, Y = 90
         self.right_calibrate_button.grid(row=5, column=1, pady=CALIBRATE_PAD_Y)
 
+
+        # SPEED BUTTON
+        self.speed_calibrate_button = Button(
+            self.calibrate_frame,
+            text="Set Speed",
+            takefocus=False,  # width = 15, height = 3,
+            padx=BUTTON_PAD_X,
+            pady=BUTTON_PAD_Y,
+            font=(FONT, BUTTON_SIZE),
+             command=lambda: self.out_q.put("test_motor('Right')")
+        )
+        # X = 10, Y = 90
+        self.speed_calibrate_button.grid(row=3, column=2, pady=CALIBRATE_PAD_Y)    
+
+
+         # DURATION BUTTON
+        self.duration_calibrate_button = Button(
+            self.calibrate_frame,
+            text="Set Duration",
+            takefocus=False,  # width = 15, height = 3,
+            padx=BUTTON_PAD_X,
+            pady=BUTTON_PAD_Y,
+            font=(FONT, BUTTON_SIZE),
+            command=lambda: self.out_q.put("test_motor('Right')"),
+        )
+        # X = 10, Y = 90
+        self.duration_calibrate_button.grid(row=5, column=2, pady=CALIBRATE_PAD_Y)
+
+
     def init_log_frame(self):
         """Initializes the log/console frame in the bottom-middle part of the GUI."""
         self.log_frame = Frame(
@@ -1286,126 +1319,129 @@ class Main:
         self.console.insert(END, time + string + "\n")
         self.console.config(state=DISABLED)
 
-    def init_mission_frame(self):
-        self.mission_frame = Frame(
-            self.bot_frame,
-            height=BOT_FRAME_HEIGHT,
-            width=MISSION_FRAME_WIDTH,
-            bd=1,
-            relief=SUNKEN,
-        )
+    '''
+    MISSION CONTROL FRAME REMOVED FOR OPEN OCEAN TEST- REDUNDANT
+    '''
+    # def init_mission_frame(self):
+    #     self.mission_frame = Frame(
+    #         self.bot_frame,
+    #         height=BOT_FRAME_HEIGHT,
+    #         width=MISSION_FRAME_WIDTH,
+    #         bd=1,
+    #         relief=SUNKEN,
+    #     )
 
-        self.mission_frame.pack(fill=Y, padx=COMBO_PAD_X, pady=0, side=LEFT, expand=NO)
-        self.mission_frame.pack_propagate(0)
+    #     self.mission_frame.pack(fill=Y, padx=COMBO_PAD_X, pady=0, side=LEFT, expand=NO)
+    #     self.mission_frame.pack_propagate(0)
 
-        self.depth_label = Label(
-            self.mission_frame, text="Depth(m):", font=(FONT, FONT_SIZE)
-        )
-        self.depth_label.pack()
-        self.depth_label.place(relx=0.06, rely=0.41)
+    #     self.depth_label = Label(
+    #         self.mission_frame, text="Depth(m):", font=(FONT, FONT_SIZE)
+    #     )
+    #     self.depth_label.pack()
+    #     self.depth_label.place(relx=0.06, rely=0.41)
 
-        self.time_label = Label(
-            self.mission_frame, text="Time(s):", font=(FONT, FONT_SIZE)
-        )
-        self.time_label.pack()
-        self.time_label.place(relx=0.06, rely=0.535)
+    #     self.time_label = Label(
+    #         self.mission_frame, text="Time(s):", font=(FONT, FONT_SIZE)
+    #     )
+    #     self.time_label.pack()
+    #     self.time_label.place(relx=0.06, rely=0.535)
 
-        prompt_input_depth = Entry(self.mission_frame, bd=5, font=(FONT, FONT_SIZE))
-        prompt_input_depth.pack()
-        prompt_input_depth.place(relx=0.3, rely=0.4)
+    #     prompt_input_depth = Entry(self.mission_frame, bd=5, font=(FONT, FONT_SIZE))
+    #     prompt_input_depth.pack()
+    #     prompt_input_depth.place(relx=0.3, rely=0.4)
 
-        prompt_input_time = Entry(self.mission_frame, bd=5, font=(FONT, FONT_SIZE))
-        prompt_input_time.pack()
-        prompt_input_time.place(relx=0.3, rely=0.525)
+    #     prompt_input_time = Entry(self.mission_frame, bd=5, font=(FONT, FONT_SIZE))
+    #     prompt_input_time.pack()
+    #     prompt_input_time.place(relx=0.3, rely=0.525)
 
-        self.mission_label = Label(
-            self.mission_frame,
-            text="Mission Control",
-            takefocus=False,
-            font=(FONT, HEADING_SIZE),
-        )
-        self.mission_label.pack(expand=YES)
-        self.mission_label.place(relx=0.24, rely=0.1)
+    #     self.mission_label = Label(
+    #         self.mission_frame,
+    #         text="Mission Control",
+    #         takefocus=False,
+    #         font=(FONT, HEADING_SIZE),
+    #     )
+    #     self.mission_label.pack(expand=YES)
+    #     self.mission_label.place(relx=0.24, rely=0.1)
 
-        self.mission_list = Combobox(
-            self.mission_frame,
-            state="readonly",
-            values=MISSIONS,
-            font=(FONT, BUTTON_SIZE),
-        )
-        self.mission_list.set("Select Mission...")
-        self.mission_list.pack(expand=YES, fill=X, pady=COMBO_PAD_Y)
-        self.mission_list.place(relx=0.15, rely=0.25)
+    #     self.mission_list = Combobox(
+    #         self.mission_frame,
+    #         state="readonly",
+    #         values=MISSIONS,
+    #         font=(FONT, BUTTON_SIZE),
+    #     )
+    #     self.mission_list.set("Select Mission...")
+    #     self.mission_list.pack(expand=YES, fill=X, pady=COMBO_PAD_Y)
+    #     self.mission_list.place(relx=0.15, rely=0.25)
 
-        self.start_mission_button = Button(
-            self.mission_frame,
-            text="Start Mission",
-            takefocus=False,
-            width=BUTTON_WIDTH + 2,
-            height=BUTTON_HEIGHT - 10,
-            padx=BUTTON_PAD_X,
-            pady=BUTTON_PAD_Y,
-            font=(FONT, BUTTON_SIZE + 5),
-            command=lambda: self.confirm_mission(
-                int(prompt_input_depth.get()), int(prompt_input_time.get())
-            ),
-        )
-        self.start_mission_button.pack(expand=YES)
-        self.start_mission_button.place(relx=0.1, rely=0.65)
+    #     self.start_mission_button = Button(
+    #         self.mission_frame,
+    #         text="Start Mission",
+    #         takefocus=False,
+    #         width=BUTTON_WIDTH + 2,
+    #         height=BUTTON_HEIGHT - 10,
+    #         padx=BUTTON_PAD_X,
+    #         pady=BUTTON_PAD_Y,
+    #         font=(FONT, BUTTON_SIZE + 5),
+    #         command=lambda: self.confirm_mission(
+    #             int(prompt_input_depth.get()), int(prompt_input_time.get())
+    #         ),
+    #     )
+    #     self.start_mission_button.pack(expand=YES)
+    #     self.start_mission_button.place(relx=0.1, rely=0.65)
 
-        self.abort_button = Button(
-            self.mission_frame,
-            text="ABORT MISSION",
-            takefocus=False,
-            width=BUTTON_WIDTH + 4,
-            height=BUTTON_HEIGHT - 10,
-            padx=BUTTON_PAD_X,
-            pady=BUTTON_PAD_Y,
-            bg="dark red",
-            activebackground="red",
-            overrelief="sunken",
-            font=(FONT, BUTTON_SIZE),
-            command=self.abort_mission,
-        )
-        self.abort_button.pack(expand=YES)
-        self.abort_button.place(relx=0.18, rely=0.85)
+    #     self.abort_button = Button(
+    #         self.mission_frame,
+    #         text="ABORT MISSION",
+    #         takefocus=False,
+    #         width=BUTTON_WIDTH + 4,
+    #         height=BUTTON_HEIGHT - 10,
+    #         padx=BUTTON_PAD_X,
+    #         pady=BUTTON_PAD_Y,
+    #         bg="dark red",
+    #         activebackground="red",
+    #         overrelief="sunken",
+    #         font=(FONT, BUTTON_SIZE),
+    #         command=self.abort_mission,
+    #     )
+    #     self.abort_button.pack(expand=YES)
+    #     self.abort_button.place(relx=0.18, rely=0.85)
 
-    def confirm_mission(self, depth, time):
-        # TODO messages
-        mission = self.mission_list.get()
+    # def confirm_mission(self, depth, time):
+    #     # TODO messages
+    #     mission = self.mission_list.get()
 
-        if mission == "Select Mission...":
-            # Prevent mission from starting if a mission was not properly selected
-            self.log("Please select a mission before starting.")
-        else:
-            if (depth < 1 or depth > 50) or (time < 15 or time > 300):
-                messagebox.showerror(
-                    "ERROR",
-                    "Select a depth between 1 and 50 meters inclusive and select a time between 15 and 300 seconds. ",
-                )
-                return
+    #     if mission == "Select Mission...":
+    #         # Prevent mission from starting if a mission was not properly selected
+    #         self.log("Please select a mission before starting.")
+    #     else:
+    #         if (depth < 1 or depth > 50) or (time < 15 or time > 300):
+    #             messagebox.showerror(
+    #                 "ERROR",
+    #                 "Select a depth between 1 and 50 meters inclusive and select a time between 15 and 300 seconds. ",
+    #             )
+    #             return
 
-            # Prompt mission start
-            prompt = "Start mission: " + mission + "?"
-            ans = messagebox.askquestion("Mission Select", prompt)
+    #         # Prompt mission start
+    #         prompt = "Start mission: " + mission + "?"
+    #         ans = messagebox.askquestion("Mission Select", prompt)
 
-            if ans == "yes":  # Send index of mission (0, 1, 2, etc...)
-                self.out_q.put(
-                    "start_mission("
-                    + str(self.mission_list.current())
-                    + ","
-                    + str(depth)
-                    + ","
-                    + str(time)
-                    + ")"
-                )
+    #         if ans == "yes":  # Send index of mission (0, 1, 2, etc...)
+    #             self.out_q.put(
+    #                 "start_mission("
+    #                 + str(self.mission_list.current())
+    #                 + ","
+    #                 + str(depth)
+    #                 + ","
+    #                 + str(time)
+    #                 + ")"
+    #             )
 
-    def abort_mission(self):
-        ans = messagebox.askquestion(
-            "Abort Misssion", "Are you sure you want to abort the mission?"
-        )
-        if ans == "yes":
-            self.out_q.put("abort_mission()")
+    # def abort_mission(self):
+    #     ans = messagebox.askquestion(
+    #         "Abort Misssion", "Are you sure you want to abort the mission?"
+    #     )
+    #     if ans == "yes":
+    #         self.out_q.put("abort_mission()")
 
     def on_closing(self):
         #    self.map.on_close()
