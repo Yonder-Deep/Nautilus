@@ -59,7 +59,7 @@ class BaseStation_Send(threading.Thread):
                 print("Failed to evaluate in_q task: ", task)
                 print("\t Error received was: ", str(e))
 
-    def test_motor(self, motor, speed, duration):
+    def test_motor(self, motor, speed=10, duration=10):
         """ Attempts to send the AUV a signal to test a given motor. """
         constants.lock.acquire()
         if not global_vars.connected:
