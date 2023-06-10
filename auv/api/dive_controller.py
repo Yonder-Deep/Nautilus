@@ -31,14 +31,14 @@ class DiveController:
 
     # note: default arguments are to resurface
     def start_dive(self, to_depth=0, dive_length=0):
-        self.pid_depth.update_target(to_depth)
+        self.pid_depth.update_target(to_depth) # Set point value for the depth
 
-        self.mc.update_motor_speeds([0, 0, 0, 0])
+        self.mc.update_motor_speeds([0, 0, 0, 0]) # Initially, stop
         # wait until current motor commands finish running, will need global variable
         # Dive
 
-        depth = self.get_depth()
-        start_heading, _, _ = self.imu.read_euler()
+        depth = self.get_depth() # requires pressure sensor
+        start_heading, _, _ = self.imu.read_euler() # --> heading, roll, pitch is given
         start_time = time.time()
 
         target_met = False
@@ -54,7 +54,7 @@ class DiveController:
         # negative angles and angles > 360
         def turn_error(target, heading): return modulo(target - heading, 360)
 
-        # main PID loop?
+        # main PID loop
         # Time out and stop diving if > 1 min
         while time.time() < start_time + 60:
             try:
@@ -76,11 +76,15 @@ class DiveController:
             pitch_correction = self.pid_pitch.pid(pitch)
             heading_correction = self.pid_heading.pid(turn_error(start_heading, heading))
 
+            # Pranav asks: what the heck is this code?
+            #################################################
             if depth_correction - abs(pitch_correction) < -150:
                 depth_correction = -150 + abs(pitch_correction)
             if depth_correction + abs(pitch_correction) > 150:
                 depth_correction = 150 - abs(pitch_correction)
+            #################################################
 
+            # The plus and minus for pitch correction could be switched
             front_motor_value = depth_correction - pitch_correction
             back_motor_value = depth_correction + pitch_correction
             side_motor_value = heading_correction
@@ -94,6 +98,9 @@ class DiveController:
                 self.mc.update_motor_speeds([0, side_motor_value, front_motor_value, back_motor_value])
             except:
                 print("Could not update motor speeds, values out of range")
+                print("Side motor", side_motor_value)
+                print("Front motor", front_motor_value)
+                print("Back Motor", back_motor_value)
 
             if self.pid_depth.within_tolerance and not target_met:
                 # want to wait for dive_length seconds before stopping
