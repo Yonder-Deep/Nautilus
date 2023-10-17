@@ -1,5 +1,5 @@
 # Nautilus
-Repository for the [YonderDeep](https://www.yonderdeep.org/) 2020-2022 Nautilus AUV (Autonomous Underwater Vehicle) developed in the MESOM Laboratory at the Scripps Institution of Oceanography, UC San Diego for the research and study of global anthropogenic climate change.
+Repository for the [YonderDeep](https://www.yonderdeep.org/) 2020-2024 Nautilus AUV (Autonomous Underwater Vehicle) developed at Franklin Antonio Hall, UC San Diego for the research and study of global anthropogenic climate change.
 
 ## Basics
 The codebase is split among two machines: 
