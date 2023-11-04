@@ -6,7 +6,6 @@ import os
 import serial
 import time
 import threading
-import utm
 from queue import Queue
 
 # Custom imports
