@@ -32,8 +32,8 @@ plt.figure(dpi=150)
 cimgt.QuadtreeTiles.get_image = image_spoof  # reformat web request for street map spoofing
 img = cimgt.QuadtreeTiles()  # spoofed, downloaded street map
 
-#projection = ccrs.NorthPolarStereo(central_longitude=15)
-projection = img.crs
+projection = ccrs.NorthPolarStereo(central_longitude=15)
+#projection = img.crs
 
 ax = plt.axes(projection=projection, frameon=True)
 tile_image = ax.add_image(img, 3)
