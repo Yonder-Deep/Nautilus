@@ -341,9 +341,33 @@ class AUV_Receive(threading.Thread):
         speed = (message >> 6) & 0b1111111
         duration = message & 0b111111
 
-        self.motor_queue.queue.clear()
+        time_begin = time.time()
+
+        while time.time() - time_begin < duration:
+            if test == 0:  # forward
+                self.mc.update_motor_speeds([speed, 0, 0, 0])
+            elif test == 1:  # reverse
+                self.mc.update_motor_speeds([(-1 * speed), 0, 0, 0])
+            elif test == 2:  # down
+                self.mc.update_motor_speeds([0, 0, speed, speed])
+            elif test == 3:  # left
+                self.mc.update_motor_speeds([0, (-1 * speed), 0, 0])
+            elif test == 4:  # right
+                self.mc.update_motor_speeds([0, speed, 0, 0])
+            try:
+                depth = self.get_depth()
+                print("Succeeded on way down. Depth is", depth)
+            except:
+                print("Failed to read pressure going down")
+
         self.mc.update_motor_speeds([0, 0, 0, 0])
 
+        global_vars.radio.flush()
+
+        for i in range(0, 3):
+            global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
+
+        """
         if test == 0:  # forward
             self.mc.update_motor_speeds([speed, 0, 0, 0])
             time.sleep(duration)
@@ -364,6 +388,7 @@ class AUV_Receive(threading.Thread):
             self.mc.update_motor_speeds([0, speed, 0, 0])
             time.sleep(duration)
             self.mc.update_motor_speeds([0, 0, 0, 0])
+            """
 
     def read_xbox_command(self, message):
         # xbox command
