@@ -150,9 +150,14 @@ class AUV_Receive(threading.Thread):
                             header = message >> constants.HEADER_SHIFT
 
                             if header == constants.MOTOR_TEST_COMMAND:  # motor-testing
+                                global_vars.movement_status = 2
+                                test = (message >> 13) & 0b111
+                                speed = (message >> 6) & 0b1111111
+                                duration = message & 0b111111
+
                                 print("motor test command received")
                                 constants.LOCK.acquire()
-                                self.read_motor_test_command(message)
+                                self.read_motor_test_command(test, speed, duration)
                                 constants.LOCK.release()
 
                             elif header == constants.XBOX_COMMAND:  # xbox navigation
@@ -336,10 +341,7 @@ class AUV_Receive(threading.Thread):
         global_vars.log("Running motor command with (x, y): " + str(x) + "," + str(y))
         self.motor_queue.put((x, y, 0))
 
-    def read_motor_test_command(self, message):
-        test = (message >> 13) & 0b111
-        speed = (message >> 6) & 0b1111111
-        duration = message & 0b111111
+    def read_motor_test_command(self, test, speed, duration):
         forward_speed = 0
         turn_speed = 0
         down_speed = 0
