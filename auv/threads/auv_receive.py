@@ -381,29 +381,6 @@ class AUV_Receive(threading.Thread):
         for i in range(0, 3):
             global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
 
-        """
-        if test == 0:  # forward
-            self.mc.update_motor_speeds([speed, 0, 0, 0])
-            time.sleep(duration)
-            self.mc.update_motor_speeds([0, 0, 0, 0])
-        elif test == 1:  # reverse
-            self.mc.update_motor_speeds([(-1 * speed), 0, 0, 0])
-            time.sleep(duration)
-            self.mc.update_motor_speeds([0, 0, 0, 0])
-        elif test == 2:  # down
-            self.mc.update_motor_speeds([0, 0, speed, speed])
-            time.sleep(duration)
-            self.mc.update_motor_speeds([0, 0, 0, 0])
-        elif test == 3:  # left
-            self.mc.update_motor_speeds([0, (-1 * speed), 0, 0])
-            time.sleep(duration)
-            self.mc.update_motor_speeds([0, 0, 0, 0])
-        elif test == 4:  # right
-            self.mc.update_motor_speeds([0, speed, 0, 0])
-            time.sleep(duration)
-            self.mc.update_motor_speeds([0, 0, 0, 0])
-            """
-
     def read_xbox_command(self, message):
         # xbox command
         vertical = message & 0x10000
@@ -510,8 +487,8 @@ class AUV_Receive(threading.Thread):
         while time.time() - time_begin < time_dive:
             self.mc.update_motor_speeds(
                 [
-                    1.5 * front_speed,
-                    1.5 * front_speed,
+                    0,
+                    0,
                     1.5 * front_speed,
                     1.5 * back_speed,
                 ]
