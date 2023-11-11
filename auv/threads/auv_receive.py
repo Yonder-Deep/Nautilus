@@ -340,20 +340,32 @@ class AUV_Receive(threading.Thread):
         test = (message >> 13) & 0b111
         speed = (message >> 6) & 0b1111111
         duration = message & 0b111111
+        forward_speed = 0
+        turn_speed = 0
+        down_speed = 0
+
+        if test == 0:  # forward
+            forward_speed = speed
+        elif test == 1:  # reverse
+            forward_speed = -1 * speed
+        elif test == 2:  # down
+            down_speed = speed
+        elif test == 3:  # left
+            turn_speed = -1 * speed
+        elif test == 4:  # right
+            turn_speed = speed
 
         time_begin = time.time()
 
         while time.time() - time_begin < duration:
-            if test == 0:  # forward
-                self.mc.update_motor_speeds([speed, 0, 0, 0])
-            elif test == 1:  # reverse
-                self.mc.update_motor_speeds([(-1 * speed), 0, 0, 0])
-            elif test == 2:  # down
-                self.mc.update_motor_speeds([0, 0, speed, speed])
-            elif test == 3:  # left
-                self.mc.update_motor_speeds([0, (-1 * speed), 0, 0])
-            elif test == 4:  # right
-                self.mc.update_motor_speeds([0, speed, 0, 0])
+            self.mc.update_motor_speeds(
+                [
+                    forward_speed,
+                    turn_speed,
+                    down_speed,
+                    down_speed,
+                ]
+            )
             try:
                 depth = self.get_depth()
                 print("Succeeded on way down. Depth is", depth)
