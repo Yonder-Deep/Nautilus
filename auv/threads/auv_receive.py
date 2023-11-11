@@ -29,7 +29,19 @@ sys.path.append("..")
 class AUV_Receive(threading.Thread):
     """Class for the AUV object. Acts as the main file for the AUV."""
 
-    def __init__(self, queue, halt, pressure_sensor, imu, mc, gps, gps_q, in_q, out_q, auto_nav_thread):
+    def __init__(
+        self,
+        queue,
+        halt,
+        pressure_sensor,
+        imu,
+        mc,
+        gps,
+        gps_q,
+        in_q,
+        out_q,
+        auto_nav_thread,
+    ):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -96,34 +108,52 @@ class AUV_Receive(threading.Thread):
                 global_vars.connect_to_radio()
             else:
                 try:
-                    line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)   #reads bytestring of desired packet size from the serial interface of the radio (radio recieves bytes over airwaves)
+                    line = global_vars.radio.read(
+                        constants.COMM_BUFFER_WIDTH
+                    )  # reads bytestring of desired packet size from the serial interface of the radio (radio recieves bytes over airwaves)
 
-                    while line != b"":  # while bytes are still being read from the radio (radio is recieving information)
+                    while (
+                        line != b""
+                    ):  # while bytes are still being read from the radio (radio is recieving information)
                         if not global_vars.sending_dive_log and len(line) == (
                             constants.COMM_BUFFER_WIDTH
                         ):
-                            intline = int.from_bytes(line, "big")   #converts the bytes into a binary string (integer) using big endian format
-                            checksum = Crc32.confirm(intline)       #checks if the encapsulated packet is valid using cyclical redundacy check
-                            if not checksum:                          
-                                global_vars.log("invalid line***********************")  #the binary string is invalid
-                                print(bin(intline))                                     #prints the invalid line
+                            intline = int.from_bytes(
+                                line, "big"
+                            )  # converts the bytes into a binary string (integer) using big endian format
+                            checksum = Crc32.confirm(
+                                intline
+                            )  # checks if the encapsulated packet is valid using cyclical redundacy check
+                            if not checksum:
+                                global_vars.log(
+                                    "invalid line***********************"
+                                )  # the binary string is invalid
+                                print(bin(intline))  # prints the invalid line
                                 self.mc.update_motor_speeds([0, 0, 0, 0])
                                 break
 
-                            message = intline >> 32 #removes the CRC encoding from the message
+                            message = (
+                                intline >> 32
+                            )  # removes the CRC encoding from the message
                             if message == constants.PING:  # The message is a PING!
-                                self.ping_connected()  #sets connection status to True
-                                line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH) #reads a new line from the radio so that cycle can start again
+                                self.ping_connected()  # sets connection status to True
+                                line = global_vars.radio.read(
+                                    constants.COMM_BUFFER_WIDTH
+                                )  # reads a new line from the radio so that cycle can start again
                                 continue
 
-                            print("NON-PING LINE READ WAS", bin(message))   #if our message is not a ping
+                            print(
+                                "NON-PING LINE READ WAS", bin(message)
+                            )  # if our message is not a ping
 
                             # case block
                             header = message >> constants.HEADER_SHIFT
 
                             if header == constants.MOTOR_TEST_COMMAND:  # motor-testing
                                 print("motor test command received")
+                                constants.LOCK.acquire()
                                 self.read_motor_test_command(message)
+                                constants.LOCK.release()
 
                             elif header == constants.XBOX_COMMAND:  # xbox navigation
                                 # Update motion type for display on gui
@@ -151,7 +181,9 @@ class AUV_Receive(threading.Thread):
                                 back_speed = (message & 0b111111100000) >> 5
                                 back_speed_sign = (message & 0b1000000000000) >> 12
                                 front_speed = (message & 0b11111110000000000000) >> 13
-                                front_speed_sign = (message & 0b100000000000000000000) >> 20
+                                front_speed_sign = (
+                                    message & 0b100000000000000000000
+                                ) >> 20
 
                                 print(
                                     "We're calling the manual dive command:",
@@ -272,8 +304,10 @@ class AUV_Receive(threading.Thread):
         depth = self.get_depth()
         # Turn upwards motors on until surface reached (if we haven't reconnected yet)
         if depth is None or depth > 0:  # TODO: Decide on acceptable depth range
-            #self.mc.update_motor_speeds([0, 0, -25, -25])
-            self.mc.update_motor_speeds([0, 0, 0, 0]) #TODO change this back, only done to avoid motor damage
+            # self.mc.update_motor_speeds([0, 0, -25, -25])
+            self.mc.update_motor_speeds(
+                [0, 0, 0, 0]
+            )  # TODO change this back, only done to avoid motor damage
         else:
             self.mc.update_motor_speeds([0, 0, 0, 0])
         constants.LOCK.release()
@@ -286,7 +320,7 @@ class AUV_Receive(threading.Thread):
         if global_vars.connected is False:
             global_vars.log("Connection to BS verified.")
             global_vars.connected = True
-            
+
             # Halt disconnected resurfacing
             self.mc.update_motor_speeds([0, 0, 0, 0])
         constants.LOCK.release()
@@ -306,6 +340,10 @@ class AUV_Receive(threading.Thread):
         test = (message >> 13) & 0b111
         speed = (message >> 6) & 0b1111111
         duration = message & 0b111111
+
+        self.motor_queue.queue.clear()
+        self.mc.update_motor_speeds([0, 0, 0, 0])
+
         if test == 0:  # forward
             self.mc.update_motor_speeds([speed, 0, 0, 0])
             time.sleep(duration)
@@ -383,7 +421,7 @@ class AUV_Receive(threading.Thread):
             global_vars.sending_dive_log = True
             pass
 
-        if (x == 6):
+        if x == 6:
             print("CALIBRATE HEADING")
 
             heading = self.get_heading()
@@ -514,7 +552,7 @@ class AUV_Receive(threading.Thread):
         self.dive_controller.start_dive(to_depth=to_depth, dive_length=10)
 
         # resurface
-        
+
         self.dive_controller.start_dive()
 
         # Wait 10 sec
@@ -527,7 +565,9 @@ class AUV_Receive(threading.Thread):
             global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
 
         intline = 0
-        while math.floor(depth) > 0 and intline == 0:  # TODO: check what is a good surface condition
+        while (
+            math.floor(depth) > 0 and intline == 0
+        ):  # TODO: check what is a good surface condition
             line = global_vars.radio.read(constants.COMM_BUFFER_WIDTH)
             intline = int.from_bytes(line, "big") >> 32
 
@@ -565,12 +605,12 @@ class AUV_Receive(threading.Thread):
 
             # TODO: Check if this is accurate, mbars to m
             depth = (pressure - 1013.25) / 1000 * 10.2
-            #return depth - global_vars.depth_offset()
+            # return depth - global_vars.depth_offset()
             return depth
         else:
             global_vars.log("No pressure sensor found.")
             return None
-        
+
     def get_heading(self):
         if self.imu is not None:
             try:
