@@ -13,16 +13,18 @@ import threading
 import sys
 import struct
 import bz2
-sys.path.append('..')
+
+sys.path.append("..")
 
 # Responsibilites:
 #   - send data
 
+
 class AUV_Send_Data(threading.Thread):
-    """ Class for the AUV object. Acts as the main file for the AUV. """
+    """Class for the AUV object. Acts as the main file for the AUV."""
 
     def __init__(self, pressure_sensor, imu, mc, gps, gps_q):
-        """ Constructor for the AUV """
+        """Constructor for the AUV"""
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
@@ -40,7 +42,7 @@ class AUV_Send_Data(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        """ Main connection loop for the AUV. """
+        """Main connection loop for the AUV."""
 
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
@@ -78,18 +80,18 @@ class AUV_Send_Data(threading.Thread):
         decimal_heading = int(round(split_heading[0], 2) * 100)
         whole_heading = int(split_heading[1])
         whole_heading = whole_heading << 7
-        heading_encode = (constants.HEADING_ENCODE | whole_heading | decimal_heading)
+        heading_encode = constants.HEADING_ENCODE | whole_heading | decimal_heading
 
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(heading_encode)
         constants.RADIO_LOCK.release()
 
     def send_misc_data(self):
-        """ Encodes and sends miscellaneous data to the base station. Currently sends
-            temperature and movement status data to the base station. """
+        """Encodes and sends miscellaneous data to the base station. Currently sends
+        temperature and movement status data to the base station."""
         try:
             temperature = self.imu.read_temp()
-            print('TEMPERATURE=', temperature)
+            print("TEMPERATURE=", temperature)
         except:
             # TODO print statement, something went wrong!
             temperature = 0
@@ -107,7 +109,7 @@ class AUV_Send_Data(threading.Thread):
         print("Movement:", movement)
         movement = movement << 3
 
-        message_encode = (constants.MISC_ENCODE | sign | whole_temperature | movement)
+        message_encode = constants.MISC_ENCODE | sign | whole_temperature | movement
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(message_encode)
         constants.RADIO_LOCK.release()
@@ -122,25 +124,24 @@ class AUV_Send_Data(threading.Thread):
         decimal = int(round(for_depth[0], 1) * 10)
         whole = int(for_depth[1])
         whole = whole << 4
-        depth_encode = (constants.DEPTH_ENCODE | whole | decimal)
+        depth_encode = constants.DEPTH_ENCODE | whole | decimal
 
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(depth_encode)
         constants.RADIO_LOCK.release()
 
     def send_positioning(self):
-        if (self.gps_connected):
-            self.gps.run()
+        if self.gps_connected:
             gps_data = self.gps_q.get()
-            if gps_data['has fix'] == 'Yes':
-                self.latitude = gps_data['latitude']
-                self.longitude = gps_data['longitude']
+            if gps_data["has fix"] == "Yes":
+                self.latitude = gps_data["latitude"]
+                self.longitude = gps_data["longitude"]
                 self.latitude = round(self.latitude, 6)
                 self.longitude = round(self.longitude, 6)
 
                 lat, long = str(self.latitude), str(self.longitude)
-                lat_whole, lat_dec = lat.split('.')
-                long_whole, long_dec = long.split('.')
+                lat_whole, lat_dec = lat.split(".")
+                long_whole, long_dec = long.split(".")
                 lat_wi, long_wi = int(lat_whole), int(long_whole)
                 lat_di, long_di = int(lat_dec), int(long_dec)
 
@@ -159,7 +160,9 @@ class AUV_Send_Data(threading.Thread):
                 lat_bits = (lat_s << 28) | (lat_wi << 20) | lat_di
                 long_bits = (long_s << 28) | (long_wi << 20) | long_di
 
-                position_encode = (constants.POSITION_ENCODE | (lat_bits << 29) | long_bits)
+                position_encode = (
+                    constants.POSITION_ENCODE | (lat_bits << 29) | long_bits
+                )
                 constants.RADIO_LOCK.acquire()
                 print(bin(position_encode))
                 global_vars.radio.write(position_encode)
@@ -170,7 +173,7 @@ class AUV_Send_Data(threading.Thread):
             else:
                 self.latitude = 0
                 self.longitude = 0
-                position_encode = (constants.POSITION_ENCODE | (1 << 58))
+                position_encode = constants.POSITION_ENCODE | (1 << 58)
                 constants.RADIO_LOCK.acquire()
                 print(bin(position_encode))
                 global_vars.radio.write(position_encode)
@@ -185,7 +188,9 @@ class AUV_Send_Data(threading.Thread):
         filepath = os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG
         global_vars.radio.write(os.path.getsize(filepath))
         constants.RADIO_LOCK.release()
-        dive_log = open(os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb")
+        dive_log = open(
+            os.path.dirname(os.path.dirname(__file__)) + "logs/" + DIVE_LOG, "rb"
+        )
         file_bytes = dive_log.read(constants.FILE_SEND_PACKET_SIZE)
         while file_bytes:
             constants.RADIO_LOCK.acquire()
@@ -220,19 +225,19 @@ class AUV_Send_Data(threading.Thread):
                 print("Failed to read in pressure. Error:", e)
             pressure = self.pressure_sensor.pressure()
             # TODO: Check if this is accurate, mbars to m
-            depth = (pressure-1013.25)/1000 * 10.2
+            depth = (pressure - 1013.25) / 1000 * 10.2
             return depth - global_vars.depth_offset
         else:
             global_vars.log("No pressure sensor found.")
             return None
-        
+
     def get_heading_encode(data):
         pass
 
     def get_heading(self):
         try:
             heading, _, _ = self.imu.read_euler()
-            print('HEADING=', heading)
+            print("HEADING=", heading)
             heading = heading - global_vars.heading_offset
             return heading
         except:
@@ -240,8 +245,8 @@ class AUV_Send_Data(threading.Thread):
             global_vars.log("No IMU found.")
             return None
 
-    def compress_file(self,file):
-        f = open(file,"rb")
+    def compress_file(self, file):
+        f = open(file, "rb")
         input = f.read()
         compressed = bz2.compress(input)
         return compressed
