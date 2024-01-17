@@ -95,7 +95,6 @@ ICON_PATH = "gui/images/yonder_logo.png"
 class Main:
     """Main GUI object that handles all aspects of the User-Interface"""
 
-
     def __init__(self, in_q=None, out_q=None):
         """Constructor that handles the initialization of the GUI.
             in_q - An input queue that holds any tasks given to us
@@ -190,7 +189,7 @@ class Main:
         self.init_buttons_frame()
         self.init_calibrate_frame()  # for bottom panel
         self.init_log_frame()
-        # self.init_mission_frame() 
+        # self.init_mission_frame()
 
         # Save our last received BS coordinates
         self.bs_coordinates = None
@@ -368,9 +367,9 @@ class Main:
     # def rear_motor_slider_function(self, rear_slider_value):
     #    print(rear_slider_value)
     #    self.log("Left Slider")
-    '''
+    """
     MOTOR CONTROL FRAME COMMENTED OUT FOR OPEN OCEAN TEST- REDUNDANT
-    '''
+    """
 
     def init_motor_control_frame(self):
         """Creates the frame for motor control."""
@@ -1002,6 +1001,8 @@ class Main:
             self.position_label_string.set(
                 "GPS Position: Lat: " + str(latitude) + " Long: " + str(longitude)
             )
+            self.add_auv_coordinates(latitude, longitude)
+
         else:
             self.position_label_string.set("GPS Position: Lat: N/A Long: N/A")
 
@@ -1060,7 +1061,7 @@ class Main:
             pady=BUTTON_PAD_Y,
             font=(FONT_SIZE, BUTTON_SIZE),
             command=lambda: self.out_q.put("send_calibrate_heading()"),
-            )
+        )
 
         self.calibrate_origin_button = Button(
             self.buttons_frame,
@@ -1128,7 +1129,7 @@ class Main:
 
     def add_auv_coordinates(self, northing, easting):
         """Plots the AUV's current coordinates onto the map, given its UTM-relative northing and easting."""
-        self.map.add_auv_data(northing, easting)
+        # self.map.add_auv_data(northing, easting)
         self.viewmap.input_gps_coordinates(northing, easting, "AUV")
 
     def update_bs_coordinates(self, northing, easting):
@@ -1196,7 +1197,13 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Forward'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
+            command=lambda: self.out_q.put(
+                "test_motor('Forward',"
+                + str(self.input_motor_test_speed.get())
+                + ","
+                + str(self.input_motor_test_duration.get())
+                + ")"
+            ),
         )
         # NAV X S Y
         self.forward_calibrate_button.grid(row=1, column=1, pady=CALIBRATE_PAD_Y)
@@ -1208,7 +1215,13 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Backward'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
+            command=lambda: self.out_q.put(
+                "test_motor('Backward',"
+                + str(self.input_motor_test_speed.get())
+                + ","
+                + str(self.input_motor_test_duration.get())
+                + ")"
+            ),
         )
 
         self.backward_calibrate_button.grid(row=2, column=1, pady=CALIBRATE_PAD_Y)
@@ -1228,7 +1241,13 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Down'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
+            command=lambda: self.out_q.put(
+                "test_motor('Down',"
+                + str(self.input_motor_test_speed.get())
+                + ","
+                + str(self.input_motor_test_duration.get())
+                + ")"
+            ),
         )
 
         self.vertical_down_calibrate_button.grid(row=3, column=1, pady=CALIBRATE_PAD_Y)
@@ -1240,7 +1259,13 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Left'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
+            command=lambda: self.out_q.put(
+                "test_motor('Left',"
+                + str(self.input_motor_test_speed.get())
+                + ","
+                + str(self.input_motor_test_duration.get())
+                + ")"
+            ),
         )
         # X = 10, Y = 90
         self.left_calibrate_button.grid(row=4, column=1, pady=CALIBRATE_PAD_Y)
@@ -1252,28 +1277,38 @@ class Main:
             padx=BUTTON_PAD_X,
             pady=BUTTON_PAD_Y,
             font=(FONT, BUTTON_SIZE),
-            command=lambda: self.out_q.put("test_motor('Right'," + str(self.input_motor_test_speed.get()) + "," + str(self.input_motor_test_duration.get()) + ")"),
+            command=lambda: self.out_q.put(
+                "test_motor('Right',"
+                + str(self.input_motor_test_speed.get())
+                + ","
+                + str(self.input_motor_test_duration.get())
+                + ")"
+            ),
         )
         # X = 10, Y = 90
         self.right_calibrate_button.grid(row=5, column=1, pady=CALIBRATE_PAD_Y)
 
         self.motor_test_speed_label = Label(
-             self.calibrate_frame, text="Speed:", font=(FONT, FONT_SIZE)
+            self.calibrate_frame, text="Speed:", font=(FONT, FONT_SIZE)
         )
         self.motor_test_speed_label.grid(row=1, column=2, pady=CALIBRATE_PAD_Y)
 
-        self.input_motor_test_speed = Entry(self.calibrate_frame, bd=5, font=(FONT, FONT_SIZE))
+        self.input_motor_test_speed = Entry(
+            self.calibrate_frame, bd=5, font=(FONT, FONT_SIZE)
+        )
         self.input_motor_test_speed.grid(row=2, column=2, pady=CALIBRATE_PAD_Y)
 
         self.motor_test_duration_label = Label(
-             self.calibrate_frame, text="Duration:", font=(FONT, FONT_SIZE)
+            self.calibrate_frame, text="Duration:", font=(FONT, FONT_SIZE)
         )
         self.motor_test_duration_label.grid(row=4, column=2, pady=CALIBRATE_PAD_Y)
 
-        self.input_motor_test_duration = Entry(self.calibrate_frame, bd=5, font=(FONT, FONT_SIZE))
+        self.input_motor_test_duration = Entry(
+            self.calibrate_frame, bd=5, font=(FONT, FONT_SIZE)
+        )
         self.input_motor_test_duration.grid(row=5, column=2, pady=CALIBRATE_PAD_Y)
 
-        '''
+        """
         # SPEED BUTTON
         self.speed_calibrate_button = Button(
             self.calibrate_frame,
@@ -1300,7 +1335,7 @@ class Main:
         )
         # X = 10, Y = 90
         self.duration_calibrate_button.grid(row=5, column=2, pady=CALIBRATE_PAD_Y)
-        '''
+        """
 
     def init_log_frame(self):
         """Initializes the log/console frame in the bottom-middle part of the GUI."""
@@ -1335,9 +1370,9 @@ class Main:
         self.console.insert(END, time + string + "\n")
         self.console.config(state=DISABLED)
 
-    '''
+    """
     MISSION CONTROL FRAME REMOVED FOR OPEN OCEAN TEST- REDUNDANT
-    '''
+    """
     # def init_mission_frame(self):
     #     self.mission_frame = Frame(
     #         self.bot_frame,

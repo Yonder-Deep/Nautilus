@@ -9,5 +9,5 @@ from .crc32 import Crc32
 from .motor_queue import MotorQueue
 from .dive_controller import DiveController
 from .indicator import Indicator
-from .gps import GPS
+from ..threads.gps import GPS
 from .depth_cam import RealSenseCamera
