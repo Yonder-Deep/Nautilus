@@ -1,7 +1,7 @@
-'''
+"""
 This class acts as the main functionality file for
 the Nautilus AUV. The "mind and brain" of the mission.
-'''
+"""
 # System imports
 import os
 import sys
@@ -23,6 +23,7 @@ from api import MotorQueue
 from api import GPS
 from missions import *
 from api import Indicator
+
 # from api import RealSenseCamera
 
 from static import global_vars
@@ -30,7 +31,8 @@ from static import global_vars
 from threads.auv_send_data import AUV_Send_Data
 from threads.auv_send_ping import AUV_Send_Ping
 from threads.auv_receive import AUV_Receive
-#from threads.autonomous_nav import Autonomous_Nav
+
+# from threads.autonomous_nav import Autonomous_Nav
 
 from static import constants
 from static import global_vars
@@ -71,9 +73,8 @@ def start_threads(ts, queue, halt):
     try:
         gps = GPS(gps_q)
         print("Successfully connected to GPS socket service.")
-    except:
-        gps = None
-        print("Warning: Could not connect to a GPS socket service.")
+    except Exception as error:
+        print(error)
 
     try:
         # depth_cam = RealSenseCamera()
@@ -81,7 +82,7 @@ def start_threads(ts, queue, halt):
     except:
         depth_cam = None
         print("Depth cam could not be found.")
-    
+
     try:
         imu = IMU()
         global_vars.log("IMU has been found.")
@@ -89,7 +90,7 @@ def start_threads(ts, queue, halt):
         print(e)
         imu = None
         global_vars.log("IMU is not connected to the AUV on IMU_PATH.")
-        
+
     depth_cam = None
 
     global_vars.connect_to_radio()
@@ -97,9 +98,20 @@ def start_threads(ts, queue, halt):
     mc = MotorController()
 
     auv_motor_thread = MotorQueue(queue, halt)
-   # auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
+    # auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
     auv_auto_thread = None
-    auv_r_thread = AUV_Receive(queue, halt, pressure_sensor, imu, mc, gps, gps_q, autonav_to_receive, receive_to_autonav, auv_auto_thread)
+    auv_r_thread = AUV_Receive(
+        queue,
+        halt,
+        pressure_sensor,
+        imu,
+        mc,
+        gps,
+        gps_q,
+        autonav_to_receive,
+        receive_to_autonav,
+        auv_auto_thread,
+    )
 
     ts = []
 
@@ -116,13 +128,10 @@ def start_threads(ts, queue, halt):
     auv_r_thread.start()
     auv_s_thread.start()
     auv_ping_thread.start()
-
-    # TODO - #35 GPS
-    #gps_thread = GPS_Runner(None)
-    # gps_thread.start()
+    gps.start()
 
 
-if __name__ == '__main__':  # If we are executing this file as main
+if __name__ == "__main__":  # If we are executing this file as main
     queue = Queue()
     halt = [False]
 
@@ -157,4 +166,4 @@ if __name__ == '__main__':  # If we are executing this file as main
     print("waiting to stop")
     while threads_active(ts):
         time.sleep(0.1)
-    print('done')
+    print("done")
