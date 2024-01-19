@@ -1,5 +1,8 @@
-crc_divisor = 0x104c11db7
+"""
+Class that performs CRC checks for encoding and decoding data.
+"""
 
+crc_divisor = 0x104c11db7
 
 class Crc32():
 

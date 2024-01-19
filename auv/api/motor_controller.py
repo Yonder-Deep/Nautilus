@@ -21,8 +21,7 @@ TURN_GPIO_PIN = 11
 FRONT_GPIO_PIN = 18
 BACK_GPIO_PIN = 24
 
-
-# Define pin numbers for PI (Not the same as GPIO?)
+# Define pin numbers for PI (the number of the pins when counting them physically, different because some Pi pins are not GPIO pins)
 FORWARD_PI_PIN = 7          # Left pins
 TURN_PI_PIN = 23            # Right pins
 FRONT_PI_PIN = 12           # Back pins
@@ -71,9 +70,6 @@ class MotorController:
         self.turn_speed = 0
         self.front_speed = 0
         self.back_speed = 0
-        # self.check_gpio_pins()
-        # Stores the type of motion being performed
-        # 1: Xbox, 2: Dive, 3: Navigation, 4: motor test
 
     def update_motor_speeds(self, data):
         """

@@ -4,6 +4,7 @@ except:
     print('Try sudo apt-get install python3-smbus')
 
 from time import sleep
+from static import constants
 
 # Models
 MODEL_02BA = 0
@@ -16,10 +17,6 @@ OSR_1024 = 2
 OSR_2048 = 3
 OSR_4096 = 4
 OSR_8192 = 5
-
-# kg/m^3 convenience
-DENSITY_FRESHWATER = 997
-DENSITY_SALTWATER = 1029
 
 # Conversion factors (from native unit, mbar)
 UNITS_Pa = 100.0
@@ -57,7 +54,7 @@ class MS5837(object):
             print("Available busses are listed as /dev/i2c*")
             self._bus = None
 
-        self._fluidDensity = DENSITY_FRESHWATER
+        self._fluidDensity = constants.FLUID_DENSITY
         self._pressure = 0
         self._temperature = 0
         self._D1 = 0

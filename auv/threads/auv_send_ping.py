@@ -22,8 +22,6 @@ class AUV_Send_Ping(threading.Thread):
 
         global_vars.log("Starting main ping sending connection loop.")
         while not self._ev.wait(timeout=constants.PING_SLEEP_DELAY):
-            # time.sleep(PING_SLEEP_DELAY)
-
             if global_vars.radio is None or global_vars.radio.is_open() is False:
                 global_vars.connect_to_radio()
             else:

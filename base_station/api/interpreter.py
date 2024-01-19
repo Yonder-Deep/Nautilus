@@ -71,5 +71,3 @@ def decode_command(self_obj, header, line):
         print("Depth: ", depth)
 
         self_obj.out_q.put("set_depth(" + str(depth) + ")")
-
-        #         self.in_q.put(message)

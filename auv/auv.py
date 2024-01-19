@@ -9,9 +9,6 @@ import threading
 import time
 import math
 
-# TODO - #35 GPS
-# TEMP import gps
-
 # Custom imports
 from queue import Queue
 from api import Radio
@@ -20,7 +17,7 @@ from api import Crc32
 from api import PressureSensor
 from api import MotorController
 from api import MotorQueue
-from api import GPS
+from threads import GPS
 from missions import *
 from api import Indicator
 

@@ -16,10 +16,6 @@ import bz2
 
 sys.path.append("..")
 
-# Responsibilites:
-#   - send data
-
-
 class AUV_Send_Data(threading.Thread):
     """Class for the AUV object. Acts as the main file for the AUV."""
 
@@ -93,7 +89,6 @@ class AUV_Send_Data(threading.Thread):
             temperature = self.imu.read_temp()
             print("TEMPERATURE=", temperature)
         except:
-            # TODO print statement, something went wrong!
             temperature = 0
         # Temperature radio
         whole_temperature = int(temperature)
@@ -230,9 +225,6 @@ class AUV_Send_Data(threading.Thread):
         else:
             global_vars.log("No pressure sensor found.")
             return None
-
-    def get_heading_encode(data):
-        pass
 
     def get_heading(self):
         try:

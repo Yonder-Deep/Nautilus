@@ -25,7 +25,6 @@ class IMU(super_imu):
             raise RuntimeError("Failed to initialize BNO055! Is the sensor connected correctly?")
 
     def read_euler(self):
-
         # Read the Euler angles for heading, roll, pitch (all in degrees).
         heading, roll, pitch = super().read_euler()
         sys, gyro, accel, mag = super().get_calibration_status()
