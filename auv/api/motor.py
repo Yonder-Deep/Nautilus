@@ -51,7 +51,7 @@ class Motor:
         self.set_speed(0)
 
 
-def main():
+if __name__ == "__main__":
     pi = pigpio.pi()
     while True:
         for i in range(50):
@@ -61,9 +61,3 @@ def main():
                 print("Motor: {}".format(str(i)))
             except:
                 print("Skipped: {}".format(str(i)))
-
-
-if __name__ == '__main__':
-    #motor = Motor(23, pigpio.pi())
-    # time.sleep(3)
-    main()
