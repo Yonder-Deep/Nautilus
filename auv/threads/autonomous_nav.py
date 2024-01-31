@@ -49,7 +49,6 @@ class Autonomous_Nav(threading.Thread):
 
     def retrieve_curr_position(self):
         # We are assuming gps is already connected
-        self.gps.run()
         gps_data = self.gps_q.get()
         if gps_data["has fix"] == "Yes":
             latitude = gps_data["latitude"]
@@ -62,7 +61,7 @@ class Autonomous_Nav(threading.Thread):
             self.curr_longitude = longitude
             self.curr_gps_speed = speed
         else:
-            pass  # TODO we need to figure out what to do when the GPS does not have a fix
+            self.stop_motors()
 
     def distance_calc(self, lat1, lon1, lat2, lon2):
         # Set up the pyproj Geod object using the WGS-84 ellipsoid
@@ -81,7 +80,8 @@ class Autonomous_Nav(threading.Thread):
 
         # Print the geodetic distance, horizontal distance, and vertical distance
         print(f"Geodetic distance: {geodetic_dist:.6f} meters")
-        print(f"Horizontal distance: {horiz_dist:.6f} meters")
+        print(f"Horizontal distance: 
+              {horiz_dist:.6f} meters")
         print(f"Vertical distance: {vert_dist:.6f} meters")
 
         return geodetic_dist, vert_dist, horiz_dist
@@ -166,3 +166,5 @@ class Autonomous_Nav(threading.Thread):
         else:
             # Add a print statement? or a message to the console?
             exit()
+
+    

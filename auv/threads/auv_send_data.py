@@ -16,6 +16,7 @@ import bz2
 
 sys.path.append("..")
 
+
 class AUV_Send_Data(threading.Thread):
     """Class for the AUV object. Acts as the main file for the AUV."""
 
@@ -42,8 +43,6 @@ class AUV_Send_Data(threading.Thread):
 
         global_vars.log("Starting main sending connection loop.")
         while not self._ev.wait(timeout=constants.SEND_SLEEP_DELAY):
-            # time.sleep(SEND_SLEEP_DELAY)
-
             if global_vars.radio is None or global_vars.radio.is_open() is False:
                 global_vars.connect_to_radio()
             else:
