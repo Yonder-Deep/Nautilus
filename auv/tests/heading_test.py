@@ -5,6 +5,7 @@ from api import PID
 from api import Motor
 from static import constants
 from queue import LifoQueue
+import time
 
 # Constants
 # Indices for motor array
@@ -76,13 +77,24 @@ class Heading_Test(threading.Thread):
         # start the motor at some speed (maybe MAX_SPEED constant)
         self.motors[TURN_MOTOR_IDX] = 1
 
-        while current_heading != 0:
-            
-            #update_motor()
-            # update current_heading
+        if current_heading != 0:
+            north = False
 
+        while not north:
+            #update_motor()
+            #update current_heading
+            self.update_motor()
+            curr_heading, roll, pitch = self.imu.read_euler() # read current heading
             # check if current_heading is north/0 for 5 seconds. If so, break
-            break
+            if curr_heading == 0:
+                end_time = time.time() + 5
+                while time.time() < end_time:
+                    self.update_motor()
+                new_current_heading, roll, pitch = self.imu.read_euler() 
+                if new_current_heading == 0:   
+                    north = True 
+                    break
         
         # stop motors
+        self.motors[TURN_MOTOR_IDX] = 0
         
