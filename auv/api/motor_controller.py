@@ -71,7 +71,7 @@ class MotorController:
         self.front_speed = 0
         self.back_speed = 0
 
-    def update_motor_speeds(self, data):
+    def update_motor_speeds(self, data) -> None:
         """
         Sets motor speeds to each individual motor. This is for manual (xbox) control when the
         radio sends a data packet of size 4.
