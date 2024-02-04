@@ -32,11 +32,12 @@ class Heading_Test(threading.Thread):
     """
 
     def __init__(self):
+        threading.Thread.__init__(self)
         self.imu = IMU(),
         self.pi = pigpio.pi()
-        self.mc = MotorController(), 
+        self.mc = MotorController(),
         self.motor_pins = [FORWARD_GPIO_PIN, TURN_GPIO_PIN,
-        FRONT_GPIO_PIN, BACK_GPIO_PIN]
+                           FRONT_GPIO_PIN, BACK_GPIO_PIN]
         self.motors = [Motor(gpio_pin=pin, pi=self.pi) for pin in self.motor_pins]
         self.heading_pid = PID(
             self.mc,
@@ -55,10 +56,10 @@ class Heading_Test(threading.Thread):
         curr_heading, roll, pitch = self.imu.read_euler()
         pid_input = self.heading_pid.pid_heading(curr_heading)
 
-        self.mc.update_motor_speeds([0,last_speed + pid_input,0,0])
+        self.mc.update_motor_speeds([0, last_speed + pid_input, 0, 0])
 
         return last_speed + pid_input
-        #self.motors[TURN_MOTOR_IDX] += pid_input
+        # self.motors[TURN_MOTOR_IDX] += pid_input
 
     def run(self, target_heading: float = 0) -> None:
         "Function that conducts the test"
@@ -89,7 +90,7 @@ class Heading_Test(threading.Thread):
                 self.motors[TURN_MOTOR_IDX].set_speed(0)
                 self.motors[BACK_MOTOR_IDX].set_speed(0)
                 self.motors[FRONT_MOTOR_IDX].set_speed(0)
-                break 
+                break
 
             # update_motor()
             # update current_heading
