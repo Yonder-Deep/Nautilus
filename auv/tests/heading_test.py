@@ -7,6 +7,8 @@ from api import IMU
 from static import constants
 import time
 from api import MotorController
+import pigpio
+
 
 # Constants
 # Indices for motor array
@@ -30,7 +32,8 @@ class Heading_Test(threading.Thread):
     """
 
     def __init__(self):
-        self.imu = IMU()
+        self.imu = IMU(),
+        self.pi = pigpio.pi()
         self.mc = MotorController(), 
         self.motor_pins = [FORWARD_GPIO_PIN, TURN_GPIO_PIN,
         FRONT_GPIO_PIN, BACK_GPIO_PIN]
