@@ -1189,6 +1189,23 @@ class Main:
         )
         self.calibrate_label.grid(row=0, columnspan=4, sticky=W + E)
 
+        # ----------------HEADING test-------------------
+        self.heading_test_button = Button(
+            self.calibrate_frame,
+            text = "Heading Test",
+            #takefocus = False,
+            padx = BUTTON_PAD_X,
+            pady = BUTTON_PAD_Y,
+            font = (FONT, BUTTON_SIZE),
+            command = lambda: self.out_q.put(
+                "test_heading()"
+            )
+        )
+
+        self.heading_test_button.grid(row=2, column=1, pady=CALIBRATE_PAD_Y)
+
+        #----------------------------------------------
+
         # test move forward
         self.forward_calibrate_button = Button(
             self.calibrate_frame,
