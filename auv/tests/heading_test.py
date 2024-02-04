@@ -45,6 +45,8 @@ class Heading_Test(threading.Thread):
         pid_input = self.heading_pid.pid_heading(curr_heading)
 
         self.mc.update_motor_speeds([0,last_speed + pid_input,0,0])
+
+        return last_speed + pid_input
         #self.motors[TURN_MOTOR_IDX] += pid_input
 
     def run(self, target_heading: float = 0) -> None:
