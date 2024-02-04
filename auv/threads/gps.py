@@ -30,7 +30,7 @@ class GPS(threading.Thread):
 
     def run(self):
         while self.running is True:
-            print(self.has_fix)
+            print(self.gps.has_fix)
             if not self.gps.has_fix:
                 self.out_q.put(
                     {
@@ -41,6 +41,7 @@ class GPS(threading.Thread):
                     }
                 )
             else:
+
                 self.out_q.put(
                     {
                         "has fix": "Yes",
