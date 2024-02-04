@@ -25,7 +25,7 @@ class GPS(threading.Thread):
             self.gps.send_command(b"PMTK220,1000")
             self.out_q = out_queue
             self.running = True
-            self.run()
+            self.start()
         else:
             raise ("No gps path found.")
 
