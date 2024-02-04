@@ -60,7 +60,7 @@ class Heading_Test(threading.Thread):
         curr_heading, roll, pitch = self.imu.read_euler()  # read current heading
 
         # start the motor at some speed (maybe MAX_SPEED constant)
-        self.motors[TURN_MOTOR_IDX] = 1
+        self.motors[TURN_MOTOR_IDX].set_speed(1)
         last_speed = 1
 
         if curr_heading != target_heading:
