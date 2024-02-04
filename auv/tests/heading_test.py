@@ -3,6 +3,7 @@
 import threading
 from api import PID
 from api import Motor
+from api import IMU
 from static import constants
 from queue import LifoQueue
 import time
@@ -25,14 +26,14 @@ class Heading_Test(threading.Thread):
         motor_q,
         halt,
         pressure_sensor,
-        imu,
-        motors,
+        imu : IMU,
+        motors : list[Motor],
         gps,
         gps_q,
         depth_cam,
         in_q,
         out_q,
-        heading_pid
+        heading_pid : PID
     ):
         self.dest_longitude = None
         self.dest_latitude = None
@@ -62,37 +63,38 @@ class Heading_Test(threading.Thread):
         pid_input = self.heading_pid.pid_heading(curr_heading)
         self.motors[TURN_MOTOR_IDX] += pid_input
     
-    def run(self, set_heading=0) -> None:
+    def run(self, target_heading:float=0) -> None:
         "Function that conducts the test"
 
-        self.heading_pid.update_target(set_heading) # set target heading 
+        self.heading_pid.update_target(target_heading) # set target heading 
 
         self.motors[FORWARD_MOTOR_IDX] = 0 # reset all motors to 0 speed
         self.motors[TURN_MOTOR_IDX] = 0
         self.motors[BACK_MOTOR_IDX] = 0
         self.motors[FRONT_MOTOR_IDX] = 0
 
-        current_heading, roll, pitch = self.imu.read_euler() # read current heading
+        curr_heading, roll, pitch = self.imu.read_euler() # read current heading
 
         # start the motor at some speed (maybe MAX_SPEED constant)
         self.motors[TURN_MOTOR_IDX] = 1
 
-        if current_heading != 0:
-            north = False
+        if curr_heading != target_heading:
+            reached_target = False
 
-        while not north:
+        while not reached_target:
             #update_motor()
             #update current_heading
             self.update_motor()
             curr_heading, roll, pitch = self.imu.read_euler() # read current heading
             # check if current_heading is north/0 for 5 seconds. If so, break
-            if curr_heading == 0:
+
+            if curr_heading == target_heading:
                 end_time = time.time() + 5
                 while time.time() < end_time:
                     self.update_motor()
                 new_current_heading, roll, pitch = self.imu.read_euler() 
                 if new_current_heading == 0:   
-                    north = True 
+                    reached_target = True 
                     break
         
         # stop motors
