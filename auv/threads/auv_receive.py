@@ -697,4 +697,4 @@ class AUV_Receive(threading.Thread):
         )
 
         # Call run from heading_test
-        heading_test_instance.run(set_heading=0)
+        heading_test_instance.run(set_heading)

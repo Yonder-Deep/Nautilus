@@ -52,6 +52,10 @@ class Heading_Test(threading.Thread):
     def run(self, target_heading: float = 0) -> None:
         "Function that conducts the test"
 
+        start_time = time.time()
+
+        print(f"Entering run with target_heading = {target_heading}")
+
         self.heading_pid.update_target(target_heading)  # set target heading
 
         self.motors[FORWARD_MOTOR_IDX].set_speed(0)  # reset all motors to 0 speed
@@ -69,6 +73,13 @@ class Heading_Test(threading.Thread):
             reached_target = False
 
         while not reached_target:
+            if time.time() - start_time > 10:
+                self.motors[FORWARD_MOTOR_IDX].set_speed(0)  # reset all motors to 0 speed
+                self.motors[TURN_MOTOR_IDX].set_speed(0)
+                self.motors[BACK_MOTOR_IDX].set_speed(0)
+                self.motors[FRONT_MOTOR_IDX].set_speed(0)
+                break 
+
             # update_motor()
             # update current_heading
             last_speed = self.update_motor(last_speed)
