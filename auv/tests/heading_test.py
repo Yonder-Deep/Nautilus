@@ -33,9 +33,9 @@ class Heading_Test(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.imu = IMU(),
+        self.imu = IMU()
         self.pi = pigpio.pi()
-        self.mc = MotorController(),
+        self.mc = MotorController()
         self.motor_pins = [FORWARD_GPIO_PIN, TURN_GPIO_PIN,
                            FRONT_GPIO_PIN, BACK_GPIO_PIN]
         self.motors = [Motor(gpio_pin=pin, pi=self.pi) for pin in self.motor_pins]
