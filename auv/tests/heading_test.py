@@ -56,9 +56,16 @@ class Heading_Test(threading.Thread):
         curr_heading, roll, pitch = self.imu.read_euler()
         pid_input = self.heading_pid.pid_heading(curr_heading)
 
-        self.mc.update_motor_speeds([0, last_speed + pid_input, 0, 0])
+        if last_speed + pid_input > 300: 
+            set_speed = 300
+        elif last_speed + pid_input < -300: 
+            set_speed = -300
+        else:
+            set_speed = last_speed + pid_input
+        
+        self.mc.update_motor_speeds([0, set_speed, 0, 0])
 
-        return last_speed + pid_input
+        return set_speed
         # self.motors[TURN_MOTOR_IDX] += pid_input
 
     def run(self, target_heading: float = 0) -> None:
