@@ -179,7 +179,6 @@ class AUV_Receive(threading.Thread):
                             ):  # testing heading
                                 print("testing heading command read")
                                 heading_test = ht.Heading_Test()
-                                heading_test.init()
                                 global_vars.log("Starting heading test")
                                 heading_test.start()
 
