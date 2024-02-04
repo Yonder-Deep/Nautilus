@@ -70,7 +70,7 @@ class AUV_Send_Data(threading.Thread):
 
     def send_heading(self):
         heading = self.get_heading()
-        print("sending heading: " + heading)
+        print("sending heading: " + str(heading))
 
         split_heading = math.modf(heading)
         decimal_heading = int(round(split_heading[0], 2) * 100)
