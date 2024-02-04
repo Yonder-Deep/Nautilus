@@ -8,4 +8,3 @@ from .radio import Radio
 from .crc32 import Crc32
 from .dive_controller import DiveController
 from .indicator import Indicator
-from .depth_cam import RealSenseCamera
