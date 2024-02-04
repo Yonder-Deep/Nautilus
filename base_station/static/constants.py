@@ -24,7 +24,7 @@ RADIO_PATH_5 = {
     "path": "/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AF7PZ-if00-port0",
 }
 RADIO_PATH_6 = {"radioNum": 6, "path": "COM5"}
-#RADIO_PATH_7 = {"radioNum": 7, "path": "COM4"}
+# RADIO_PATH_7 = {"radioNum": 7, "path": "COM4"}
 RADIO_PATH_8 = {"radioNum": 8, "path": "COM7"}
 RADIO_PATH_9 = {"radioNum": 9, "path": "COM8"}
 RADIO_PATH_10 = {
@@ -91,12 +91,13 @@ MANUAL_DIVE_COMMAND = 0b00101
 DIVE_COMMAND = 0b00110
 CAL_DEPTH_COMMAND = 0b00111
 CAL_HEADING_COMMAND = 0b01000
-PID_COMMAND = 0b01001 
-NAV_COMMAND = 0b01010           
-MISSION_COMMAND = 0b01011      
+PID_COMMAND = 0b01001
+NAV_COMMAND = 0b01010
+MISSION_COMMAND = 0b01011
 ABORT_COMMAND = 0b01100
 DL_DATA_COMMAND = 0b01101
 GET_VIDEO_COMMAND = 0b01110
+TEST_HEADING_COMMAND = 0b01111
 
 # AUV Constants (these are also in auv.py)
 MAX_AUV_SPEED = 100
