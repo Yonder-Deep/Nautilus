@@ -15,7 +15,8 @@ import os
 import threading
 import sys
 
-from tests.heading_test import Heading_Test
+from tests import heading_test as ht
+
 
 sys.path.append("..")
 
@@ -175,7 +176,7 @@ class AUV_Receive(threading.Thread):
 
                             elif header == constants.TEST_HEADING:  # testing heading
                                 print("testing heading command read")
-                                heading_test = Heading_Test()
+                                heading_test = ht.Heading_Test()
                                 heading_test.init()
                                 global_vars.log("Starting heading test")
                                 heading_test.start()
