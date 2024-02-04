@@ -11,7 +11,7 @@ from queue import Queue
 # Custom imports
 from api import Crc32
 from api import Radio
-from api import GPS
+from threads import GPS
 from api import decode_command
 from api import xbox
 from static import constants
@@ -64,7 +64,7 @@ class BaseStation_Receive(threading.Thread):
             except Exception as e:
                 continue
         global_vars.log(self.out_q, "Xbox controller is connected.")
-    
+
     '''
     def auv_data(
         self,

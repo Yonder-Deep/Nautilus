@@ -2,6 +2,7 @@
 This class acts as the main functionality file for
 the Nautilus AUV. The "mind and brain" of the mission.
 """
+
 # System imports
 import os
 import sys
@@ -16,7 +17,6 @@ from api import IMU
 from api import Crc32
 from api import PressureSensor
 from api import MotorController
-from api import MotorQueue
 from threads import GPS
 from missions import *
 from api import Indicator
@@ -94,7 +94,6 @@ def start_threads(ts, queue, halt):
 
     mc = MotorController()
 
-    auv_motor_thread = MotorQueue(queue, halt)
     # auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
     auv_auto_thread = None
     auv_r_thread = AUV_Receive(
@@ -115,13 +114,11 @@ def start_threads(ts, queue, halt):
     auv_s_thread = AUV_Send_Data(pressure_sensor, imu, mc, gps, gps_q)
     auv_ping_thread = AUV_Send_Ping()
 
-    ts.append(auv_motor_thread)
     ts.append(auv_auto_thread)
     ts.append(auv_r_thread)
     ts.append(auv_s_thread)
     ts.append(auv_ping_thread)
 
-    auv_motor_thread.start()
     auv_r_thread.start()
     auv_s_thread.start()
     auv_ping_thread.start()
