@@ -56,10 +56,10 @@ class Heading_Test(threading.Thread):
         curr_heading, roll, pitch = self.imu.read_euler()
         pid_input = self.heading_pid.pid_heading(curr_heading)
 
-        if last_speed + pid_input > 300: 
-            set_speed = 300
-        elif last_speed + pid_input < -300: 
-            set_speed = -300
+        if last_speed + pid_input > 100: 
+            set_speed = 100
+        elif last_speed + pid_input < -100: 
+            set_speed = -100
         else:
             set_speed = last_speed + pid_input
         
