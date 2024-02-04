@@ -49,6 +49,7 @@ class GPS(threading.Thread):
                         "longitude": self.gps.longitude,
                     }
                 )
+            time.sleep(1)
 
     def stop(self):
         self.running = False
