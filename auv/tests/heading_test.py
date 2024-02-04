@@ -15,6 +15,12 @@ TURN_MOTOR_IDX = 1  # in the front
 FRONT_MOTOR_IDX = 2  # goes up/down
 BACK_MOTOR_IDX = 3  # goes up/down
 
+# GPIO Pin numbers for Motors
+FORWARD_GPIO_PIN = 4
+TURN_GPIO_PIN = 11
+FRONT_GPIO_PIN = 18
+BACK_GPIO_PIN = 24
+
 
 class Heading_Test(threading.Thread):
     """
@@ -25,7 +31,9 @@ class Heading_Test(threading.Thread):
 
     def __init__(self):
         self.imu = IMU()
-        self.mc = MotorController()
+        self.mc = MotorController(), 
+        self.motor_pins = [FORWARD_GPIO_PIN, TURN_GPIO_PIN,
+        FRONT_GPIO_PIN, BACK_GPIO_PIN]
         self.motors = [Motor(gpio_pin=pin, pi=self.pi) for pin in self.motor_pins]
         self.heading_pid = PID(
             self.mc,
