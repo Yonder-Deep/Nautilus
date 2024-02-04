@@ -88,8 +88,9 @@ class Heading_Test(threading.Thread):
         self.motors[TURN_MOTOR_IDX].set_speed(1)
         last_speed = 1
 
-        if curr_heading != target_heading:
-            reached_target = False
+        reached_target = False
+        # if curr_heading != target_heading:
+        #     reached_target = False
 
         while not reached_target:
             if time.time() - start_time > 10:
