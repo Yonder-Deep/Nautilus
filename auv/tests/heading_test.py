@@ -85,4 +85,4 @@ class Heading_Test(threading.Thread):
                     break
 
         # stop motors
-        self.motors[TURN_MOTOR_IDX] = 0
+        self.motors[TURN_MOTOR_IDX].set_speed(0)
