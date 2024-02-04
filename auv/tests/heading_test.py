@@ -80,7 +80,8 @@ class Heading_Test(threading.Thread):
                 while time.time() < end_time:
                     last_speed = self.update_motor(last_speed)
                 new_current_heading, roll, pitch = self.imu.read_euler()
-                if new_current_heading == 0:
+
+                if abs(new_current_heading - target_heading) < 0.001:
                     reached_target = True
                     break
 
