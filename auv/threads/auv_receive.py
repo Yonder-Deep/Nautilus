@@ -5,7 +5,6 @@ from api import Crc32
 from api import IMU
 from api import Radio
 from api import DiveController
-from api import Heading_Test
 from queue import LifoQueue
 from queue import Queue
 from static import global_vars
@@ -16,7 +15,8 @@ import os
 import threading
 import sys
 
-from tests.heading_test import Heading_Test
+from tests import heading_test as ht
+
 
 sys.path.append("..")
 
@@ -176,7 +176,7 @@ class AUV_Receive(threading.Thread):
 
                             elif header == constants.TEST_HEADING:  # testing heading
                                 print("testing heading command read")
-                                heading_test = Heading_Test()
+                                heading_test = ht.Heading_Test()
                                 heading_test.init()
                                 global_vars.log("Starting heading test")
                                 heading_test.start()
@@ -665,7 +665,6 @@ class AUV_Receive(threading.Thread):
             heading, roll, pitch = None, None, None
         return heading, roll, pitch
 
-
     def start_heading_test(self, set_heading=0):
         """Method to start the heading test"""
         motor_q = LifoQueue()
@@ -682,8 +681,18 @@ class AUV_Receive(threading.Thread):
 
         # Create an instance of Heading_Test
         heading_test_instance = Heading_Test(
-            motor_q, halt, pressure_sensor, imu, motors, gps, 
-            gps_q, depth_cam, in_q, out_q, heading_pid)
-        
-        #Call run from heading_test
+            motor_q,
+            halt,
+            pressure_sensor,
+            imu,
+            motors,
+            gps,
+            gps_q,
+            depth_cam,
+            in_q,
+            out_q,
+            heading_pid,
+        )
+
+        # Call run from heading_test
         heading_test_instance.run(set_heading=0)
