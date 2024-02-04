@@ -126,6 +126,7 @@ class BaseStation_Send(threading.Thread):
             )
         else:
             constants.lock.release()
+            global_vars.log(self.out_q, "Sending heading test")
             constants.radio_lock.acquire()
             self.radio.write(constants.TEST_HEADING_COMMAND << constants.HEADER_SHIFT)
             constants.radio_lock.release()

@@ -14,6 +14,8 @@ import os
 import threading
 import sys
 
+from tests.heading_test import Heading_Test
+
 sys.path.append("..")
 
 # System imports
@@ -169,6 +171,13 @@ class AUV_Receive(threading.Thread):
                                 # Update motion type for display on gui
                                 global_vars.movement_status = 2
                                 self.read_nav_command(message)
+
+                            elif header == constants.TEST_HEADING:  # testing heading
+                                print("testing heading command read")
+                                heading_test = Heading_Test()
+                                heading_test.init()
+                                global_vars.log("Starting heading test")
+                                heading_test.start()
 
                             elif header == constants.DIVE_COMMAND:  # dive
                                 # Update motion type for display on gui
