@@ -1,4 +1,5 @@
 from __future__ import print_function
+from api import MotorController
 import time
 
 PITCH_CONTROL_TOLERANCE = 4.0
@@ -10,7 +11,7 @@ class PID:
 
     def __init__(
         self,
-        motor_controller,
+        motor_controller : MotorController,
         target,
         control_tolerance,
         target_tolerance,
