@@ -6,7 +6,7 @@ from api import MotorController
 from api import PressureSensor
 from api import IMU
 from api import Radio
-from api import GPS
+from threads import GPS
 import math
 import os
 import threading
