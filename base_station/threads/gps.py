@@ -2,7 +2,7 @@ import threading
 import time
 import serial
 import adafruit_gps
-from static.constants import GPS_PATHS
+from static.constants import GPS_PATH
 
 
 class GPS(threading.Thread):
@@ -11,7 +11,7 @@ class GPS(threading.Thread):
     def __init__(self, out_queue):
         threading.Thread.__init__(self)
         path_found = False
-        for gps_path in GPS_PATHS:
+        for gps_path in GPS_PATH:
             try:
                 uart = serial.Serial(gps_path, baudrate=9600, timeout=10)
                 path_found = True
