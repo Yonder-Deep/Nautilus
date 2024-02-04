@@ -2,6 +2,7 @@
 This class acts as the main functionality file for
 the Nautilus AUV. The "mind and brain" of the mission.
 """
+
 # System imports
 import os
 import sys
@@ -16,7 +17,6 @@ from api import IMU
 from api import Crc32
 from api import PressureSensor
 from api import MotorController
-from api import MotorQueue
 from threads import GPS
 from missions import *
 from api import Indicator
