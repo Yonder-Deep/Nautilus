@@ -174,7 +174,9 @@ class AUV_Receive(threading.Thread):
                                 global_vars.movement_status = 2
                                 self.read_nav_command(message)
 
-                            elif header == constants.TEST_HEADING:  # testing heading
+                            elif (
+                                header == constants.TEST_HEADING_COMMAND
+                            ):  # testing heading
                                 print("testing heading command read")
                                 heading_test = ht.Heading_Test()
                                 heading_test.init()
