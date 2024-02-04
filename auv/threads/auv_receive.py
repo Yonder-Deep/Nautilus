@@ -1,5 +1,4 @@
 from missions import *
-from api import MotorQueue
 from api import MotorController
 from api import PressureSensor
 from api import Crc32
