@@ -68,7 +68,7 @@ class Heading_Test(threading.Thread):
         return set_speed
         # self.motors[TURN_MOTOR_IDX] += pid_input
 
-    def run(self, target_heading: float = 0) -> None:
+    def run(self, target_heading: float = 45) -> None:
         "Function that conducts the test"
 
         start_time = time.time()
