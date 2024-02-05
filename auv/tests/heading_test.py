@@ -33,9 +33,9 @@ class Heading_Test(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.imu = IMU(),
+        self.imu = IMU()
         self.pi = pigpio.pi()
-        self.mc = MotorController(),
+        self.mc = MotorController()
         self.motor_pins = [FORWARD_GPIO_PIN, TURN_GPIO_PIN,
                            FRONT_GPIO_PIN, BACK_GPIO_PIN]
         self.motors = [Motor(gpio_pin=pin, pi=self.pi) for pin in self.motor_pins]
@@ -56,12 +56,19 @@ class Heading_Test(threading.Thread):
         curr_heading, roll, pitch = self.imu.read_euler()
         pid_input = self.heading_pid.pid_heading(curr_heading)
 
-        self.mc.update_motor_speeds([0, last_speed + pid_input, 0, 0])
+        if last_speed + pid_input > 100: 
+            set_speed = 100
+        elif last_speed + pid_input < -100: 
+            set_speed = -100
+        else:
+            set_speed = last_speed + pid_input
+        
+        self.mc.update_motor_speeds([0, set_speed, 0, 0])
 
-        return last_speed + pid_input
+        return set_speed
         # self.motors[TURN_MOTOR_IDX] += pid_input
 
-    def run(self, target_heading: float = 0) -> None:
+    def run(self, target_heading: float = 45) -> None:
         "Function that conducts the test"
 
         start_time = time.time()
@@ -81,8 +88,9 @@ class Heading_Test(threading.Thread):
         self.motors[TURN_MOTOR_IDX].set_speed(1)
         last_speed = 1
 
-        if curr_heading != target_heading:
-            reached_target = False
+        reached_target = False
+        # if curr_heading != target_heading:
+        #     reached_target = False
 
         while not reached_target:
             if time.time() - start_time > 10:
