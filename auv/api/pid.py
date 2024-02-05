@@ -11,7 +11,7 @@ class PID:
 
     def __init__(
         self,
-        motor_controller : MotorController,
+        motor_controller: MotorController,
         target,
         control_tolerance,
         target_tolerance,
@@ -42,13 +42,15 @@ class PID:
         """PID Calculation"""
         # Calculate error
         # error = self.set_point - current_value
-        if current_value > 360:
-            current_value -=s 360
+        if current_value >= 360:
+            current_value -= 360
         abs_error = self.set_point - current_value
-        if abs_error < 180:
+        if abs(abs_error) < 180:
             error = abs_error
-        else:
+        elif abs_error >= 180:
             error = abs_error - 360
+        else:
+            error = abs_error + 360
 
         # Figure out state
         if self.within_tolerance and abs(error) > self.control_tolerance:
