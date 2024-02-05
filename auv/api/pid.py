@@ -42,6 +42,8 @@ class PID:
         """PID Calculation"""
         # Calculate error
         # error = self.set_point - current_value
+        if current_value > 360:
+            current_value -=s 360
         abs_error = self.set_point - current_value
         if abs_error < 180:
             error = abs_error
@@ -141,6 +143,7 @@ class PID:
             if abs(self.sum_error) < self.windup
             else (self.windup if self.sum_error >= 0 else -self.windup)
         )
+
         i_term = self.i * i_change
         # Calculate D term
         d_term = self.d * (error - self.last_error)
