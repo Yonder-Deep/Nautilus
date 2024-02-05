@@ -48,7 +48,8 @@ class Heading_Test(threading.Thread):
             name="Heading",
             p=constants.P_HEADING,
             i=constants.I_HEADING,
-            d=constants.D_HEADING,
+            d= 0.1
+            #d=constants.D_HEADING,
         )
 
     def update_motor(self, last_speed: float) -> None:
