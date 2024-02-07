@@ -38,76 +38,19 @@ class PID:
         self.last_time = time.time()
         self.within_tolerance = False
 
-    def pid_heading(self, current_value):
+    def pid(self, current_value, heading=False):
         """PID Calculation"""
         # Calculate error
-        if current_value < 0 or current_value >= 360:
-            current_value %= 360
-        error = self.set_point - current_value
-        if error > 180:
-            error -= 360
-        elif error < -180:
-            error += 360
-
-        # Figure out state
-        if self.within_tolerance and abs(error) > self.control_tolerance:
-            self.within_tolerance = False
-        elif not self.within_tolerance and abs(error) < self.target_tolerance:
-            self.within_tolerance = True
-
-        current_time = time.time()
-
-        # PID
-        if self.within_tolerance:
-            if self.is_debug:
-                # print("PID inside tolerance")
-                print(
-                    "[PID]In Target %7.2f Current %7.2f Error %7.2f"
-                    % (self.set_point, current_value, error),
-                    end="\r",
-                )
-
-            return 0
-
-        dt = current_time - self.last_time
-
-        # Calculate P term
-        p_term = self.p * error
-        # Calculate I term
-        self.sum_error += error * dt
-        i_change = (
-            self.sum_error
-            if abs(self.sum_error) < self.windup
-            else (self.windup if self.sum_error >= 0 else -self.windup)
-        )
-        i_term = self.i * i_change
-        # Calculate D term
-        d_term = self.d * (error - self.last_error)
-        d_term /= dt
-
-        # Update values for next iteration
-        self.last_time = current_time
-        self.last_error = error
-        if self.is_debug:
-            print(
-                "[PID]SetPoint %7.2f Current %7.2f Error %7.2f P %7.2f I %7.2f D %7.2f Feedback %7.2f"
-                % (
-                    self.set_point,
-                    current_value,
-                    error,
-                    p_term,
-                    i_term,
-                    d_term,
-                    p_term + i_term + d_term,
-                ),
-                end="\t",
-            )
-        return p_term + i_term + d_term  # pid
-
-    def pid(self, current_value):
-        """PID Calculation"""
-        # Calculate error
-        error = self.set_point - current_value
+        if heading:
+            if current_value < 0 or current_value >= 360:
+                current_value %= 360
+            error = self.set_point - current_value
+            if error > 180:
+                error -= 360
+            elif error < -180:
+                error += 360
+        else:
+            error = self.set_point - current_value
         # Figure out state
 
         if self.within_tolerance and abs(error) > self.control_tolerance:

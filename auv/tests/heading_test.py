@@ -48,22 +48,22 @@ class Heading_Test(threading.Thread):
             name="Heading",
             p=constants.P_HEADING,
             i=constants.I_HEADING,
-            d= 0.1
-            #d=constants.D_HEADING,
+            d=0.1
+            # d=constants.D_HEADING,
         )
 
     def update_motor(self, last_speed: float) -> None:
         "Update motor speed with PID control input"
         curr_heading, roll, pitch = self.imu.read_euler()
-        pid_input = self.heading_pid.pid_heading(curr_heading)
+        pid_input = self.heading_pid.pid(curr_heading, heading=True)
 
-        if last_speed + pid_input > 100: 
+        if last_speed + pid_input > 100:
             set_speed = 100
-        elif last_speed + pid_input < -100: 
+        elif last_speed + pid_input < -100:
             set_speed = -100
         else:
             set_speed = last_speed + pid_input
-        
+
         self.mc.update_motor_speeds([0, set_speed, 0, 0])
 
         return set_speed
