@@ -40,12 +40,13 @@ class PID:
 
     def pid_heading(self, current_value):
         """PID Calculation"""
-        if current_value >= 360:
-            current_value -= 360
+        # Calculate error
+        if current_value < 0 or current_value >= 360:
+            current_value %= 360
         error = self.set_point - current_value
-        if error >= 180:
+        if error > 180:
             error -= 360
-        else:
+        elif error < -180:
             error += 360
 
         # Figure out state
