@@ -33,6 +33,21 @@ RADIO_PATH_8 = {
     "radioNum": 8,
     "path": "/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30AF7PZ-if00-port0",
 }
+RADIO_PATH_9 = {
+    "radioNum": 9,
+    "path": "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.3:1.0-port0",
+}
+
+RADIO_PATH_10 = {
+    "radioNum": 10,
+    "path": "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0-port0",
+}
+RADIO_PATH_11 = {
+    "radioNum": 11,
+    "path": "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-port0",
+}
+
+
 RADIO_PATHS = [
     RADIO_PATH,
     RADIO_PATH_2,
@@ -42,6 +57,9 @@ RADIO_PATHS = [
     RADIO_PATH_6,
     RADIO_PATH_7,
     RADIO_PATH_8,
+    RADIO_PATH_9,
+    RADIO_PATH_10,
+    RADIO_PATH_11,
 ]
 GPS_PATH = (
     "/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0"
