@@ -67,9 +67,13 @@ GPS_PATH = (
 GPS_PATH_2 = (
     "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
 )
+GPS_PATH_3 = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0"
+GPS_PATH_4 = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.3:1.0"
+GPS_PATH_5 = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0"
+GPS_PATH_6 = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0"
 
 # encode sizes and generalizations
-GPS_PATHS = [GPS_PATH, GPS_PATH_2]
+GPS_PATHS = [GPS_PATH, GPS_PATH_2, GPS_PATH_3, GPS_PATH_4, GPS_PATH_5, GPS_PATH_6]
 IMU_PATH = "/dev/serial0"
 IMU_RESET_PIN = 8
 PAYLOAD_BUFFER_WIDTH = 8  # the length in bytes of a single bytestring used to communicate over radio, change as needed
