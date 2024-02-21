@@ -20,24 +20,29 @@ class GPS(threading.Thread):
 
     def parse_gps_data(self, sentence):
         try:
-            msg = pynmea2.parse(sentence.decode("utf-8"))
-            self.gps_data["has_fix"] = "Yes" if hasattr(msg, "has_fix") else "No"
+            sentence = sentence.decode("utf-8")
+            msg_fields = sentence.split(",")
+            msg = pynmea2.parse(sentence)
+            print(msg)
+            self.gps_data["has_fix"] = "Yes" if msg_fields[2] == "A" else "No"
             self.gps_data["speed"] = (
-                msg.speed_knots if hasattr(msg, "speed_knots") else "Unknown"
+                msg_fields[7] if msg_fields[7] != "0.0" else "Unknown"
             )
             self.gps_data["latitude"] = (
-                msg.latitude if hasattr(msg, "latitude") else "Unknown"
+                str(msg.latitude) if hasattr(msg, "latitude") else "Unknown"
             )
             self.gps_data["longitude"] = (
-                msg.longitude if hasattr(msg, "longitude") else "Unknown"
+                str(msg.longitude) if hasattr(msg, "longitude") else "Unknown"
             )
         except pynmea2.ParseError as e:
             print(f"Error parsing GPS data: {e}")
+        except UnicodeDecodeError as e:
+            print(f"Error decoding GPS data: {e}")
 
     def run(self):
         while self.running:
             newdata = self.ser.readline()
-            if "$GPRMC" in str(newdata):
+            if b"$GPRMC" in newdata:
                 self.parse_gps_data(newdata)
                 print(self.gps_data)
             time.sleep(1)
