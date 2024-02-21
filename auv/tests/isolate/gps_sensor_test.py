@@ -3,13 +3,15 @@ import time
 import serial
 import pynmea2
 
+GPS_PATH = "COM9"
+
 
 class GPS(threading.Thread):
     """Class for basic GPS functionality"""
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.ser = serial.Serial("COM9", baudrate=9600, timeout=10)
+        self.ser = serial.Serial(GPS_PATH, baudrate=9600, timeout=10)
         self.running = True
         self.gps_data = {
             "has_fix": "Unknown",
