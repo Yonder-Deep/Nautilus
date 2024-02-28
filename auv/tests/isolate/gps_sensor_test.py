@@ -3,7 +3,7 @@ import time
 import serial
 import pynmea2
 
-GPS_PATH = "COM9"
+GPS_PATH = "/dev/ttys025"
 
 
 class GPS(threading.Thread):
@@ -25,7 +25,7 @@ class GPS(threading.Thread):
             sentence = sentence.decode("utf-8")
             msg_fields = sentence.split(",")
             msg = pynmea2.parse(sentence)
-            print(msg)
+            # print(msg)
             self.gps_data["has_fix"] = "Yes" if msg_fields[2] == "A" else "No"
             self.gps_data["speed"] = (
                 msg_fields[7] if msg_fields[7] != "0.0" else "Unknown"
