@@ -6,8 +6,12 @@ import uvicorn
 import os
 import json
 
+from static import constants
+import backend
+
 app = FastAPI()  # initialize the web app
 app.mount("/js", StaticFiles(directory="js"), name="js")
+app.mount("/css", StaticFiles(directory="css"), name="css")
 
 
 @app.get("/testing", response_class=HTMLResponse)
@@ -19,6 +23,15 @@ def get_testing() -> HTMLResponse:
 @app.post("/test_motors")
 async def test_motors(command: str = Form(...)):
     print("Received command:", command)
+    """
+    self.out_q.put(
+                "test_motor('Down',"
+                + "50"
+                + ","
+                + "10"
+                + ")"
+            )
+            """
     return {"message": f"Command '{command}' received and processed"}
 
 
