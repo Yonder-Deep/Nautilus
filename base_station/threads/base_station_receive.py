@@ -23,6 +23,8 @@ class BaseStation_Receive(threading.Thread):
         """Initialize Serial Port and Class Variables
         debug: debugging flag"""
 
+        self._stop_event = threading.Event()
+
         # Call super-class constructor
         # Instance variables
         self.gps = None
@@ -147,7 +149,7 @@ class BaseStation_Receive(threading.Thread):
         """Main threaded loop for the base station."""
         # Begin our main loop for this thread.
 
-        while True:
+        while not self._stop_event.is_set():
             time.sleep(0.5)
 
             # Always try to update connection status
@@ -289,3 +291,10 @@ class BaseStation_Receive(threading.Thread):
                     self.out_q.put('set_bs_gps_status("No fix")')
 
             time.sleep(constants.THREAD_SLEEP_DELAY)
+
+    def stop(self):
+        self._stop_event.set()
+
+    def join(self, timeout=None):
+        self.stop()
+        super(BaseStation_Receive, self).join(timeout)

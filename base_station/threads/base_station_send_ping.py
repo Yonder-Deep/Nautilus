@@ -13,21 +13,16 @@ class BaseStation_Send_Ping(threading.Thread):
     def __init__(self, radio, out_q=None):
         self.radio = radio
         self.out_q = out_q
+        self._stop_event = threading.Event()
         threading.Thread.__init__(self)
 
     def run(self):
-        """ Constructor for the AUV """
-        # Try to assign us a new Radio object
-        self.main_loop()
-
-    def main_loop(self):
-        """ Main connection loop for the AUV. """
         print("Starting main ping sending connection loop.")
-        while True:
+        while not self._stop_event.is_set():
             time.sleep(constants.PING_SLEEP_DELAY)
             print("[BS] Trying to send ping")
             # will break if global_vars.radio is ever None please add check for that at some point
-            if (global_vars.radio is not None):
+            if global_vars.radio is not None:
                 is_radio_open = global_vars.radio.is_open()
             if global_vars.radio is None or is_radio_open is False:
                 print("TEST radio not connected")
@@ -42,3 +37,10 @@ class BaseStation_Send_Ping(threading.Thread):
 
                 except Exception as e:
                     print("[BS] Exception thrown in bs send ping")
+
+    def stop(self):
+        self._stop_event.set()
+
+    def join(self, timeout=None):
+        self.stop()
+        super(BaseStation_Send_Ping, self).join(timeout)
