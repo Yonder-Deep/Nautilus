@@ -6,24 +6,50 @@ import uvicorn
 import os
 import json
 
-# Read Database connection variables
-db_host = "localhost"
-db_user = "root"
-db_pass = os.environ["MYSQL_ROOT_PASSWORD"]
-db_name = "TechAssignment6"
-
 app = FastAPI()  # initialize the web app
-app.mount(
-    "/js", StaticFiles(directory="js"), name="js"
-)  # mounts the js folder to the app
+app.mount("/js", StaticFiles(directory="js"), name="js")
 
 
-@app.get(
-    "/testing", response_class=HTMLResponse
-)  # returns the order HTML page when order is specified for the URL path
+@app.get("/testing", response_class=HTMLResponse)
 def get_testing() -> HTMLResponse:
     with open("testing.html") as html:
         return HTMLResponse(content=html.read())
+
+
+@app.post("/test_motors")
+async def test_motors(command: str = Form(...)):
+    print("Received command:", command)
+    return {"message": f"Command '{command}' received and processed"}
+
+
+@app.post("/calibrate_heading")
+async def calibrate_heading(command: str = Form(...)):
+    print("Received command:", command)
+    return {"message": f"Command '{command}' received and processed"}
+
+
+@app.post("/calibrate_depth")
+async def calibrate_depth(command: str = Form(...)):
+    print("Received command:", command)
+    return {"message": f"Command '{command}' received and processed"}
+
+
+@app.post("/tune_turn_pid")
+async def tune_turn_pid(command: str = Form(...)):
+    print("Received command:", command)
+    return {"message": f"Command '{command}' received and processed"}
+
+
+@app.post("/tune_dive_pid")
+async def tune_dive_pid(command: str = Form(...)):
+    print("Received command:", command)
+    return {"message": f"Command '{command}' received and processed"}
+
+
+@app.post("/commence_auto_nav")
+async def commence_auto_nav(command: str = Form(...)):
+    print("Received command:", command)
+    return {"message": f"Command '{command}' received and processed"}
 
 
 if __name__ == "__main__":
