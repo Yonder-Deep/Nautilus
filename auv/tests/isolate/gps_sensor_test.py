@@ -3,7 +3,7 @@ import time
 import serial
 import pynmea2
 
-GPS_PATH = "/dev/ttys025"
+GPS_PATH = "COM4"
 
 
 class GPS(threading.Thread):
