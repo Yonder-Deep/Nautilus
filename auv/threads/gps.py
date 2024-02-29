@@ -2,34 +2,23 @@ import threading
 import time
 import serial
 import pynmea2
-from static.constants import GPS_PATHS
+
+GPS_PATH = "COM4"
 
 
 class GPS(threading.Thread):
     """Class for basic GPS functionality"""
 
-    def __init__(self, out_queue):
+    def __init__(self):
         threading.Thread.__init__(self)
-        path_found = False
+        self.ser = serial.Serial(GPS_PATH, baudrate=9600, timeout=10)
+        self.running = True
         self.gps_data = {
             "has_fix": "Unknown",
             "speed": "Unknown",
             "latitude": "Unknown",
             "longitude": "Unknown",
         }
-        for gps_path in GPS_PATHS:
-            try:
-                uart = serial.Serial(gps_path, baudrate=9600, timeout=10)
-                path_found = True
-                break
-            except:
-                pass
-
-        if path_found is True:
-            self.out_q = out_queue
-            self.running = True
-        else:
-            raise ("No gps path found.")
         
     def parse_gps_data(self, sentence):
         try:
