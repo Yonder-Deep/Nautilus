@@ -58,4 +58,4 @@ class IMU(super_imu):
         # IMU is giving incorrect values. Pitch and roll are swapped. 
         # Roll is off by a factor of -1. Heading is offset by -90. 
         # This accounts for those errors. 
-        return heading + 90, -1 * pitch, roll
+        return (heading + 90) % 360, -1 * pitch, roll

@@ -17,8 +17,6 @@ class IMU_Calibration_Test(threading.Thread):
             system, gyro, accel, mag = self.imu.get_calibration_status()
 
             # software correction of readings
-            heading, roll, pitch = (heading + 90) % 360, -pitch, roll
-
             self.data = (heading, roll, pitch, system, gyro, accel, mag)
 
     def stop(self):
