@@ -16,6 +16,7 @@ import threading
 import sys
 
 from tests import Heading_Test
+from tests import IMU_Calibration_Test
 
 
 sys.path.append("..")
@@ -181,6 +182,14 @@ class AUV_Receive(threading.Thread):
                                 heading_test = Heading_Test()
                                 global_vars.log("Starting heading test")
                                 heading_test.start()
+
+                            elif (
+                                header == constants.TEST_IMU_CALIBRATION
+                            ):  # testing heading
+                                print("Entering IMU calibration mode...")
+                                imu_calibration = IMU_Calibration_Test()
+                                global_vars.log("Entering IMU Calibration mode...")
+                                imu_calibration.start()
 
                             elif header == constants.DIVE_COMMAND:  # dive
                                 # Update motion type for display on gui

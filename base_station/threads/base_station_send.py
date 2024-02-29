@@ -131,6 +131,23 @@ class BaseStation_Send(threading.Thread):
             self.radio.write(constants.TEST_HEADING_COMMAND << constants.HEADER_SHIFT)
             constants.radio_lock.release()
 
+    def test_imu_calibration(self):
+        """Sends AUV a signal to start imu calibration"""
+        constants.lock.acquire()
+        if not global_vars.connected:
+            constants.lock.release()
+            global_vars.log(
+                self.out_q,
+                "Cannot start imu calibration because there is no connection to the AUV.",
+            )
+        else:
+            constants.lock.release()
+            global_vars.log(self.out_q, "Sending imu calibration test...")
+            constants.radio_lock.acquire()
+            self.radio.write(constants.TEST_IMU_CALIBRATION << constants.HEADER_SHIFT)
+            constants.radio_lock.release()
+
+
     def abort_mission(self):
         """Attempts to abort the mission for the AUV."""
         constants.lock.acquire()
