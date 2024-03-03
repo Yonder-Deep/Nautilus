@@ -73,7 +73,6 @@ def start_threads(ts, queue, halt):
     except Exception as error:
         gps = None
         print(error)
-        
 
     """
     try:
@@ -82,7 +81,7 @@ def start_threads(ts, queue, halt):
     except:
         depth_cam = None
         print("Depth cam could not be found.")
-    """"
+    """
 
     try:
         imu = IMU()
