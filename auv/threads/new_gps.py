@@ -21,7 +21,7 @@ class GPS(threading.Thread):
         }
         for gps_path in GPS_PATHS:
             try:
-                ser = serial.Serial(gps_path, baudrate=9600, timeout=10)
+                self.ser = serial.Serial(gps_path, baudrate=9600, timeout=10)
                 self.running = True
                 break
             except:
