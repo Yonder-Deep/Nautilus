@@ -11,55 +11,49 @@ class GPS(threading.Thread):
 
     def __init__(self, out_queue):
         threading.Thread.__init__(self)
-        path_found = False
+        self.out_q = out_queue
+        self.running = False
+        self.gps_data = {
+            "has_fix": "Unknown",
+            "speed": "Unknown",
+            "latitude": "Unknown",
+            "longitude": "Unknown",
+        }
         for gps_path in GPS_PATHS:
             try:
                 ser = serial.Serial(gps_path, baudrate=9600, timeout=10)
-                path_found = True
+                self.running = True
                 break
             except:
-                pass
+                raise ("No gps found.")
 
-        if path_found is True:
-            dataout = pynmea2.NMEAStreamReader()
-            newdata = ser.readline()
-            if '$GPRMC' in str(newdata):
-                print(newdata.decode('utf-8'))
-                newmsg = pynmea2.parse(newdata.decode('utf-8'))
-                lat = newmsg.latitude
-                lng = newmsg.longitude
-                gps = "Latitude" + str(lat) + "and Longitude=" + str(lng)
-
-                self.gps = gps
-                self.out_q = out_queue
-
-                self.running = True
-        else:
-            self.running = False
-            raise ("No gps path found.")
+    def parse_gps_data(self, sentence):
+        try:
+            sentence = sentence.decode("utf-8")
+            msg_fields = sentence.split(",")
+            msg = pynmea2.parse(sentence)
+            print(msg)
+            self.gps_data["has_fix"] = "Yes" if msg_fields[2] == "A" else "No"
+            self.gps_data["speed"] = (
+                msg_fields[7] if msg_fields[7] != "0.0" else "Unknown"
+            )
+            self.gps_data["latitude"] = (
+                str(msg.latitude) if hasattr(msg, "latitude") else "Unknown"
+            )
+            self.gps_data["longitude"] = (
+                str(msg.longitude) if hasattr(msg, "longitude") else "Unknown"
+            )
+        except pynmea2.ParseError as e:
+            print(f"Error parsing GPS data: {e}")
+        except UnicodeDecodeError as e:
+            print(f"Error decoding GPS data: {e}")
 
     def run(self):
-        while self.running is True:
-            print(self.gps.has_fix)
-            if not self.gps.has_fix:
-                self.out_q.put(
-                    {
-                        "has fix": "No",
-                        "speed": "Unknown",
-                        "latitude": "Unknown",
-                        "longitude": "Unknown",
-                    }
-                )
-            else:
-
-                self.out_q.put(
-                    {
-                        "has fix": "Yes",
-                        "speed": self.gps.speed_knots,
-                        "latitude": self.gps.latitude,
-                        "longitude": self.gps.longitude,
-                    }
-                )
+        while self.running:
+            newdata = self.ser.readline()
+            if b"$GPRMC" in newdata:
+                self.parse_gps_data(newdata)
+                self.put(self.gps_data)
             time.sleep(1)
 
     def stop(self):
