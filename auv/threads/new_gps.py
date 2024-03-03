@@ -25,7 +25,7 @@ class GPS(threading.Thread):
                 self.running = True
                 break
             except:
-                raise ("No gps found.")
+                print("No gps found.")
 
     def parse_gps_data(self, sentence):
         try:
