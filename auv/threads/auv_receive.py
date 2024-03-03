@@ -16,7 +16,6 @@ import threading
 import sys
 
 from tests import Heading_Test
-from tests import IMU_Calibration_Test
 
 
 sys.path.append("..")
@@ -45,6 +44,7 @@ class AUV_Receive(threading.Thread):
         in_q,
         out_q,
         auto_nav_thread,
+        imu_calibration_test,
     ):
         self.pressure_sensor = pressure_sensor
         self.imu = imu
@@ -60,6 +60,7 @@ class AUV_Receive(threading.Thread):
         self.in_q = in_q
         self.out_q = out_q
         self.auto_nav_thread = auto_nav_thread
+        self.imu_calibration_test = imu_calibration_test
         self.dive_controller = DiveController(self.mc, self.pressure_sensor, self.imu)
         self._ev = threading.Event()
         threading.Thread.__init__(self)
@@ -187,9 +188,8 @@ class AUV_Receive(threading.Thread):
                                 header == constants.TEST_IMU_CALIBRATION
                             ):  # testing heading
                                 print("Entering IMU calibration mode...")
-                                imu_calibration = IMU_Calibration_Test()
                                 global_vars.log("Entering IMU Calibration mode...")
-                                imu_calibration.start()
+                                self.imu_calibration_test.start()
 
                             elif header == constants.DIVE_COMMAND:  # dive
                                 # Update motion type for display on gui

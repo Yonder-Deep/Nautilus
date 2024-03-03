@@ -20,13 +20,14 @@ sys.path.append("..")
 class AUV_Send_Data(threading.Thread):
     """Class for the AUV object. Acts as the main file for the AUV."""
 
-    def __init__(self, pressure_sensor, imu, mc, gps, gps_q):
+    def __init__(self, pressure_sensor, imu, mc, gps, gps_q, imu_calibration_test):
         """Constructor for the AUV"""
         self.pressure_sensor = pressure_sensor
         self.imu = imu
         self.mc = mc
         self.gps = gps
         self.gps_q = gps_q
+        self.imu_calibration_test = imu_calibration_test
         self.gps_connected = True if gps is not None else False
         self.latitude = 0
         self.longitude = 0
@@ -51,7 +52,9 @@ class AUV_Send_Data(threading.Thread):
                     if global_vars.connected is True:  # Send our AUV packet as well.
                         constants.LOCK.release()
                         # IMU
-                        if self.imu is not None:
+                        if self.imu_calibration_test.is_alive():
+                            self.send_calibration()
+                        elif self.imu is not None:
                             self.send_heading()
                             self.send_misc_data()
                         # Pressure
@@ -67,6 +70,31 @@ class AUV_Send_Data(threading.Thread):
                     global_vars.radio.close()
                     print("send data exception")
                     raise Exception("Error occured : " + str(e))
+
+    def send_calibration(self):
+        heading, roll, pitch, system, gyro, accel, mag = self.imu_calibration_test.data
+        print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(
+            heading, roll, pitch, system, gyro, accel, mag))
+
+        def split_decimal(num, digits=2):
+            sign = num < 0
+            split_decimal = math.modf(abs(num))
+            decimal = int(round(split_decimal[0], digits) * 10 ** digits)
+            whole = int(split_decimal[1])
+            return sign, whole, decimal
+
+        sign_heading, whole_heading, decimal_heading = split_decimal(heading)
+        heading_encode = sign_heading << 16 | whole_heading << 7 | decimal_heading
+        sign_roll, whole_roll, decimal_roll = split_decimal(roll)
+        roll_encode = sign_roll << 16 | whole_roll << 7 | decimal_roll
+        sign_pitch, whole_pitch, decimal_pitch = split_decimal(pitch)
+        pitch_encode = sign_pitch << 16 | whole_pitch << 7 | decimal_pitch
+        calibration_encode = (constants.CALIBRATION_ENCODE | heading_encode << 42 | roll_encode << 25 | pitch_encode << 8
+                              | system << 6 | gyro << 4 | accel << 2 | mag)
+
+        constants.RADIO_LOCK.acquire()
+        global_vars.radio.write(calibration_encode)
+        constants.RADIO_LOCK.release()
 
     def send_heading(self):
         heading = self.get_heading()
