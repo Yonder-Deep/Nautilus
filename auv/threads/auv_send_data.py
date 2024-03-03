@@ -91,7 +91,9 @@ class AUV_Send_Data(threading.Thread):
         pitch_encode = sign_pitch << 16 | whole_pitch << 7 | decimal_pitch
         calibration_encode = (constants.CALIBRATION_ENCODE | heading_encode << 42 | roll_encode << 25 | pitch_encode << 8
                               | system << 6 | gyro << 4 | accel << 2 | mag)
-
+        
+        print("Sending...")
+        print(calibration_encode)
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(calibration_encode)
         constants.RADIO_LOCK.release()
