@@ -53,7 +53,7 @@ class GPS(threading.Thread):
             newdata = self.ser.readline()
             if b"$GPRMC" in newdata:
                 self.parse_gps_data(newdata)
-                self.put(self.gps_data)
+                self.out_q.put(self.gps_data)
             time.sleep(1)
 
     def stop(self):
