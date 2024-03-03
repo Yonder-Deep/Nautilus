@@ -93,7 +93,7 @@ class AUV_Send_Data(threading.Thread):
                               | system << 6 | gyro << 4 | accel << 2 | mag)
         
         print("Sending...")
-        print(calibration_encode)
+        print(bin(calibration_encode))
         constants.RADIO_LOCK.acquire()
         global_vars.radio.write(calibration_encode)
         constants.RADIO_LOCK.release()
