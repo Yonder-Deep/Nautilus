@@ -156,7 +156,7 @@ class AUV_Send_Data(threading.Thread):
     def send_positioning(self):
         if self.gps_connected:
             gps_data = self.gps_q.get()
-            if gps_data["has fix"] == "Yes":
+            if gps_data["has_fix"] == "Yes":
                 self.latitude = gps_data["latitude"]
                 self.longitude = gps_data["longitude"]
                 self.latitude = round(self.latitude, 6)

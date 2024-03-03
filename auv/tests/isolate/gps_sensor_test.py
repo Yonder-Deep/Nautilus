@@ -19,12 +19,13 @@ class GPS(threading.Thread):
             "latitude": "Unknown",
             "longitude": "Unknown",
         }
-        
+
     def parse_gps_data(self, sentence):
         try:
             sentence = sentence.decode("utf-8")
             msg_fields = sentence.split(",")
             msg = pynmea2.parse(sentence)
+            # print(msg)
             self.gps_data["has_fix"] = "Yes" if msg_fields[2] == "A" else "No"
             self.gps_data["speed"] = (
                 msg_fields[7] if msg_fields[7] != "0.0" else "Unknown"
@@ -45,7 +46,7 @@ class GPS(threading.Thread):
             newdata = self.ser.readline()
             if b"$GPRMC" in newdata:
                 self.parse_gps_data(newdata)
-                self.out_q.put(self.gps_data)
+                print(self.gps_data)
             time.sleep(1)
 
     def stop(self):

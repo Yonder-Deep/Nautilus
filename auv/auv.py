@@ -73,14 +73,17 @@ def start_threads(ts, queue, halt):
         gps = GPS(gps_q)
         print("Successfully connected to GPS socket service.")
     except Exception as error:
+        gps = None
         print(error)
 
+    """
     try:
         # depth_cam = RealSenseCamera()
         print("Depth cam has been found.")
     except:
         depth_cam = None
         print("Depth cam could not be found.")
+    """
 
     try:
         imu = IMU()
@@ -129,8 +132,8 @@ def start_threads(ts, queue, halt):
     auv_r_thread.start()
     auv_s_thread.start()
     auv_ping_thread.start()
-    gps.start()
-    # imu_calibration_test not started, delay until command called
+    if gps is not None:
+        gps.start()
 
 
 if __name__ == "__main__":  # If we are executing this file as main
