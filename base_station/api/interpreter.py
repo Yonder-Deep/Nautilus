@@ -86,7 +86,7 @@ def decode_command(self_obj, header, line):
         (sign_heading, whole_heading, decimal_heading,
          sign_roll, whole_roll, decimal_roll,
          sign_pitch, whole_pitch, decimal_pitch,
-         system, gyro, accel, mag) = decode_data(1, 9, 7, 1, 9, 7, 1, 9, 7, 2, 2, 2, 2)
+         system, gyro, accel, mag) = decode_data(data, 1, 9, 7, 1, 9, 7, 1, 9, 7, 2, 2, 2, 2)
 
         def join_decimal(sign, whole, decimal, digits=2):
             sign_multiplier = -1 if sign else 1
