@@ -1,2 +1,2 @@
 # Allows to import entire folder 'import threads'
-from .gps import GPS
+from .new_gps import GPS
