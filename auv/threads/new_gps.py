@@ -38,10 +38,10 @@ class GPS(threading.Thread):
                 msg_fields[7] if msg_fields[7] != "0.0" else "Unknown"
             )
             self.gps_data["latitude"] = (
-                str(msg.latitude) if hasattr(msg, "latitude") else "Unknown"
+                float(msg.latitude) if hasattr(msg, "latitude") else "Unknown"
             )
             self.gps_data["longitude"] = (
-                str(msg.longitude) if hasattr(msg, "longitude") else "Unknown"
+                float(msg.longitude) if hasattr(msg, "longitude") else "Unknown"
             )
         except pynmea2.ParseError as e:
             print(f"Error parsing GPS data: {e}")
