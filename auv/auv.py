@@ -72,13 +72,16 @@ def start_threads(ts, queue, halt):
         print("Successfully connected to GPS socket service.")
     except Exception as error:
         print(error)
+        gps = None
 
+    """
     try:
         # depth_cam = RealSenseCamera()
         print("Depth cam has been found.")
     except:
         depth_cam = None
         print("Depth cam could not be found.")
+    """"
 
     try:
         imu = IMU()
