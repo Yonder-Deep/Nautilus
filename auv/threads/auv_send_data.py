@@ -52,11 +52,11 @@ class AUV_Send_Data(threading.Thread):
                     if global_vars.connected is True:  # Send our AUV packet as well.
                         constants.LOCK.release()
                         # IMU
-                        if self.imu_calibration_test.is_alive():
-                            self.send_calibration()
-                        elif self.imu is not None:
+                        if self.imu is not None:
                             self.send_heading()
                             self.send_misc_data()
+                            if global_vars.send_calibration_data:
+                                self.send_calibration()
                         # Pressure
                         if self.pressure_sensor is not None:
                             self.send_depth()
@@ -91,7 +91,7 @@ class AUV_Send_Data(threading.Thread):
         pitch_encode = sign_pitch << 16 | whole_pitch << 7 | decimal_pitch
         calibration_encode = (constants.CALIBRATION_ENCODE | heading_encode << 42 | roll_encode << 25 | pitch_encode << 8
                               | system << 6 | gyro << 4 | accel << 2 | mag)
-        
+
         print("Sending...")
         print(bin(calibration_encode))
         constants.RADIO_LOCK.acquire()

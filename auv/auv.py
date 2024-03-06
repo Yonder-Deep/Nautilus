@@ -132,6 +132,7 @@ def start_threads(ts, queue, halt):
     auv_r_thread.start()
     auv_s_thread.start()
     auv_ping_thread.start()
+    imu_calibration_test.start()
     if gps is not None:
         gps.start()
 

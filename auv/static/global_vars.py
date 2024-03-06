@@ -23,6 +23,7 @@ sending_dive_log = False
 file_packets_sent = 0
 file_packets_received = 0
 bs_response_sent = False
+send_calibration_data = False
 
 
 def path_existance(radioPaths):

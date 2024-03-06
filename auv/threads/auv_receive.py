@@ -187,9 +187,8 @@ class AUV_Receive(threading.Thread):
                             elif (
                                 header == constants.TEST_IMU_CALIBRATION
                             ):  # testing heading
-                                print("Entering IMU calibration mode...")
-                                global_vars.log("Entering IMU Calibration mode...")
-                                self.imu_calibration_test.start()
+                                global_vars.log(f"{"Entering" if not global_vars.send_calibration_data else "Exiting"} IMU Calibration mode...")
+                                global_vars.send_calibration_data = not global_vars.send_calibration_data
 
                             elif header == constants.DIVE_COMMAND:  # dive
                                 # Update motion type for display on gui
