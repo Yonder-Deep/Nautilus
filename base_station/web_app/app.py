@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -15,7 +16,21 @@ from threads.base_station_receive import BaseStation_Receive
 from threads.base_station_send_ping import BaseStation_Send_Ping
 
 app = FastAPI()  # initialize the web app
-app.mount("/React", StaticFiles(directory="React"), name="React")
+# app.mount("/js", StaticFiles(directory="js"), name="js")
+# app.mount("/css", StaticFiles(directory="css"), name="css")
+
+
+# defines origin for react app
+origins = ["http://localhost:3000", "localhost:3000"]
+
+# Adds middleware to handle cross-origin requests (different protocol, IP address, domain name, or port)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 to_GUI = Queue()
 to_Backend = Queue()
@@ -33,6 +48,29 @@ except Exception as e:
     print("Err: ", str(e))
     print("[MAIN] Base Station initialization failed. Closing...")
     sys.exit()
+
+
+# Testing Lines start
+@app.get("/", tags=["root"])
+async def read_root() -> dict:
+    return {"message": "This is the root path"}
+
+
+tests = [{"id": "1", "item": "Cordinates: "}, {"id": "2", "item": "Heading:"}]
+
+
+@app.get("/test", tags=["tests"])
+async def get_tests() -> dict:
+    return {"data": tests}
+
+
+@app.post("/test", tags=["tests"])
+async def add_test(test: dict) -> dict:
+    tests.append(test)
+    return {"data": {"test added."}}
+
+
+# Testing Lines End
 
 
 @app.on_event("shutdown")
@@ -87,4 +125,4 @@ async def commence_auto_nav(command: str = Form(...)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=6543)  # starts the app
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # starts the app
