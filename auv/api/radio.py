@@ -59,25 +59,25 @@ class Radio:
         """
         return self.ser.readlines()
 
-    def readline(self):
+    def readline(self) -> str:
         """
         Returns a string from the serial connection.
         """
         return self.ser.readline()
 
-    def is_open(self):
+    def is_open(self) -> bool:
         """
         Returns a boolean if the serial connection is open.
         """
         return self.ser.is_open
 
-    def flush(self):
+    def flush(self) -> None:
         """
         Clears the buffer of the serial connection.
         """
         self.ser.flush()
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the serial connection
         """
