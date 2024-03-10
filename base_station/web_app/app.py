@@ -15,8 +15,7 @@ from threads.base_station_receive import BaseStation_Receive
 from threads.base_station_send_ping import BaseStation_Send_Ping
 
 app = FastAPI()  # initialize the web app
-app.mount("/js", StaticFiles(directory="js"), name="js")
-app.mount("/css", StaticFiles(directory="css"), name="css")
+app.mount("/React", StaticFiles(directory="React"), name="React")
 
 to_GUI = Queue()
 to_Backend = Queue()
