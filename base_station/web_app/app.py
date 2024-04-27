@@ -71,8 +71,6 @@ async def add_test(test: dict) -> dict:
 
 
 # Testing Lines End
-
-
 @app.on_event("shutdown")
 def shutdown_event():
     print("Shutting down threads...")
@@ -88,16 +86,20 @@ def get_testing() -> HTMLResponse:
 
 
 @app.post("/test_motors")
-async def test_motors(command: str = Form(...)):
-    print("Received command:", command)
-    out_q.put(lambda: backend.test_motor("Forward", 50, 10))
-    return {"message": f"Command '{command}' received and processed"}
+async def test_motors(motor_params: dict):
+    motor_type = motor_params["motor_type"]
+    speed = motor_params["speed"]
+    duration = motor_params["duration"]
+    out_q.put(lambda: backend.test_motor(motor_type, speed, duration))
+    return {
+        "message": f"Test motor {motor_type} at speed {speed} for duration {duration} seconds received and processed"
+    }
 
 
-@app.post("/calibrate_heading")
-async def calibrate_heading(command: str = Form(...)):
-    print("Received command:", command)
-    return {"message": f"Command '{command}' received and processed"}
+@app.post("/test_heading")
+async def test_heading():
+    out_q.put(lambda: backend.test_heading())
+    return {"message": f"Test heading received and processed"}
 
 
 @app.post("/calibrate_depth")
