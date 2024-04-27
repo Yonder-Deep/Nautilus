@@ -187,7 +187,7 @@ class AUV_Receive(threading.Thread):
                             elif (
                                 header == constants.TEST_IMU_CALIBRATION
                             ):  # testing heading
-                                global_vars.log(f"{"Entering" if not global_vars.send_calibration_data else "Exiting"} IMU Calibration mode...")
+                                global_vars.log(f"{'Entering' if not global_vars.send_calibration_data else 'Exiting'} IMU Calibration mode...")
                                 global_vars.send_calibration_data = not global_vars.send_calibration_data
 
                             elif header == constants.DIVE_COMMAND:  # dive
