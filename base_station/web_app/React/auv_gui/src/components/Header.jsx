@@ -1,5 +1,6 @@
 import React from "react";
-import { Heading, Flex, Divider } from "@chakra-ui/react";
+import { Heading, Flex, Divider, Center, Text, Square, Box } from "@chakra-ui/react";
+
 
 const Header = () => {
   return (
@@ -15,7 +16,12 @@ const Header = () => {
         <Heading as="h1" size="sm">Header</Heading>
         <Divider />
       </Flex>
+
     </Flex>
+
+
+
+
   );
 };
 
