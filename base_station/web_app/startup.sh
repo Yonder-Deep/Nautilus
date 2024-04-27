@@ -1,5 +1,7 @@
 #!/bin/bash
 python app.py &
 
+
 cd React/auv_gui
-npm start 
+npm build  &
+npm run start 
