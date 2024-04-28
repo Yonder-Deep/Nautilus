@@ -5,10 +5,10 @@ mc = MotorController()
 
 mc.update_motor_speeds(
     [
-        20,
-        20,
-        20,
-        20,
+        50,
+        50,
+        50,
+        50,
     ]
 )
 time.sleep(5)
