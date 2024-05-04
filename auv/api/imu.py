@@ -11,10 +11,14 @@ class IMU(super_imu):
         """ Simply call our superclass constructor """
         super().__init__()
         sw, bl, accel, mag, gyro = super().get_revision()
+
+        # super_imu.set_mode(0X09) # set mode to fusion
         error_count = 0
         while error_count < 20:
             try:
                 begun = super().begin()
+                self.set_mode(0X09)
+                print("IMU started successfully \n")
                 break
             except:
                 print("BNO didn't initialize. Retrying...")
