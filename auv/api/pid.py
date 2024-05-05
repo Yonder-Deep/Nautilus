@@ -39,20 +39,25 @@ class PID:
         self.within_tolerance = False
 
     def pid(self, current_value, heading=False):
-        """PID Calculation"""
+        """ PID Calculation """
         # Calculate error
         if heading:
-            if current_value < 0 or current_value >= 360:
-                current_value %= 360
+            if current_value > 180: 
+                current_value = (current_value - 360)
+            
             error = self.set_point - current_value
-            if error > 180:
-                error -= 360
-            elif error < -180:
-                error += 360
+            
+            # if current_value < 0 or current_value >= 360:
+            #     current_value %= 360
+            # error = self.set_point - current_value
+            # if error > 180:
+            #     error -= 360
+            # elif error < -180:
+            #     error += 360
         else:
             error = self.set_point - current_value
+        
         # Figure out state
-
         if self.within_tolerance and abs(error) > self.control_tolerance:
             print("Not within tolerance")
             self.within_tolerance = False
