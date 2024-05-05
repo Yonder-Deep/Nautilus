@@ -17,7 +17,7 @@ class IMU(super_imu):
         while error_count < 20:
             try:
                 begun = super().begin()
-                self.set_mode(0X09)
+                self.set_mode(0X0C)
                 print("IMU started successfully \n")
                 break
             except:
