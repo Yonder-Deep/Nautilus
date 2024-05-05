@@ -36,6 +36,7 @@ RADIO_PATH_12 = {"radioNum": 12, "path": "COM10"}
 RADIO_PATH_13 = {"radioNum": 13, "path": "COM12"}
 RADIO_PATH_14 = {"radioNum": 14, "path": "COM13"}
 RADIO_PATH_15 = {"radioNum": 15, "path": "COM14"}
+RADIO_PATH_16 = {"radioNum": 16, "path": "COM20"}
 RADIO_PATHS = [
     RADIO_PATH,
     RADIO_PATH_2,
@@ -51,6 +52,7 @@ RADIO_PATHS = [
     RADIO_PATH_13,
     RADIO_PATH_14,
     RADIO_PATH_15,
+    RADIO_PATH_16,
 ]
 GPS_PATH = (
     "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
