@@ -8,8 +8,10 @@ python app.py &
 # Change directory to the React/auv_gui folder.
 cd React/auv_gui
 
+npm install
+
 # Build the React application in the background.
-npm build &
+npm run build &
 
 # Start the React development server.
 npm run start
