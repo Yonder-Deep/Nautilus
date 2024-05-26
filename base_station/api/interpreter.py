@@ -1,5 +1,6 @@
 from static import constants
 
+
 def decode_command(self_obj, header, line):
     remain = line & constants.INTERPRETER_TRUNC
     if header == constants.POSITION_DATA:
@@ -71,3 +72,32 @@ def decode_command(self_obj, header, line):
         print("Depth: ", depth)
 
         self_obj.out_q.put("set_depth(" + str(depth) + ")")
+
+    elif header == constants.CALIBRATION_DATA:
+        data = line & ((1 << 59) - 1)
+
+        def decode_data(data, lengths):
+            decoded = []
+            for length in reversed(lengths):
+                decoded.append(data & (1 << length) - 1)
+                data >>= length
+            return tuple(reversed(decoded))
+
+        (sign_heading, whole_heading, decimal_heading,
+         sign_roll, whole_roll, decimal_roll,
+         sign_pitch, whole_pitch, decimal_pitch,
+         system, gyro, accel, mag) = decode_data(data, [1, 9, 7, 1, 9, 7, 1, 9, 7, 2, 2, 2, 2])
+
+        def join_decimal(sign, whole, decimal, digits=2):
+            sign_multiplier = -1 if sign else 1
+            num = sign_multiplier * whole + decimal / (10 ** digits)
+            return num
+
+        heading = join_decimal(sign_heading, whole_heading, decimal_heading)
+        roll = join_decimal(sign_roll, whole_roll, decimal_roll)
+        pitch = join_decimal(sign_pitch, whole_pitch, decimal_pitch)
+
+        output = 'Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(
+            heading, roll, pitch, system, gyro, accel, mag)
+
+        self_obj.out_q.put("log('" + output + "')")

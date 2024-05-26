@@ -36,6 +36,7 @@ RADIO_PATH_12 = {"radioNum": 12, "path": "COM10"}
 RADIO_PATH_13 = {"radioNum": 13, "path": "COM12"}
 RADIO_PATH_14 = {"radioNum": 14, "path": "COM13"}
 RADIO_PATH_15 = {"radioNum": 15, "path": "COM14"}
+RADIO_PATH_16 = {"radioNum": 16, "path": "COM20"}
 RADIO_PATHS = [
     RADIO_PATH,
     RADIO_PATH_2,
@@ -51,6 +52,7 @@ RADIO_PATHS = [
     RADIO_PATH_13,
     RADIO_PATH_14,
     RADIO_PATH_15,
+    RADIO_PATH_16,
 ]
 GPS_PATH = (
     "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
@@ -81,8 +83,9 @@ MISC_DATA = 0b10010
 DEPTH_DATA = 0b10011
 POSITION_DATA = 0b10100
 FILE_DATA = 0b10101
+CALIBRATION_DATA = 0b10110
 
-# BS Command Data Encoding headers
+# Base Station Command Data Encoding headers
 MOTOR_TEST_COMMAND = 0b00001
 HALT_COMMAND = 0b00010
 XBOX_COMMAND = 0b00011
@@ -97,7 +100,10 @@ MISSION_COMMAND = 0b01011
 ABORT_COMMAND = 0b01100
 DL_DATA_COMMAND = 0b01101
 GET_VIDEO_COMMAND = 0b01110
+
+# Added 2024
 TEST_HEADING_COMMAND = 0b01111
+TEST_IMU_CALIBRATION = 0b11001
 
 # AUV Constants (these are also in auv.py)
 MAX_AUV_SPEED = 100

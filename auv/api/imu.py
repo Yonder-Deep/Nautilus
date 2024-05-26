@@ -11,10 +11,14 @@ class IMU(super_imu):
         """ Simply call our superclass constructor """
         super().__init__()
         sw, bl, accel, mag, gyro = super().get_revision()
+
+        # super_imu.set_mode(0X09) # set mode to fusion
         error_count = 0
         while error_count < 20:
             try:
                 begun = super().begin()
+                self.set_mode(0X0C)
+                print("IMU started successfully \n")
                 break
             except:
                 print("BNO didn't initialize. Retrying...")
@@ -24,7 +28,7 @@ class IMU(super_imu):
         if error_count == 20:
             raise RuntimeError("Failed to initialize BNO055! Is the sensor connected correctly?")
 
-    def read_euler(self):
+    def read_euler(self) -> tuple[int, int, int]:
         # Read the Euler angles for heading, roll, pitch (all in degrees).
         heading, roll, pitch = super().read_euler()
         sys, gyro, accel, mag = super().get_calibration_status()
@@ -53,5 +57,9 @@ class IMU(super_imu):
           # f.write('Quarternion\n')
           # f.write(str(q1) + ',' + str(q2) + ',' + str(q3) + ',' + str(q4))
            f.close()
-
-        return heading, roll, pitch
+        
+        # return heading, pitch, roll
+        # IMU is giving incorrect values. Pitch and roll are swapped. 
+        # Roll is off by a factor of -1. Heading is offset by -90. 
+        # This accounts for those errors. 
+        return (heading + 90) % 360, -1 * pitch, roll
