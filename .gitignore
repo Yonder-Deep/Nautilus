@@ -3,3 +3,4 @@
 .DS_Store
 test/
 base_station/lib/
+node_modules/
