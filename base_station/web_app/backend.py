@@ -21,6 +21,16 @@ class Backend(threading.Thread):
 
     def test_motor(self, motor, speed=10, duration=10):
         """Attempts to send the AUV a signal to test a given motor."""
+        speed = int(speed)
+        duration = int(duration)
+        print(
+            "test motor: "
+            + motor
+            + " speed: "
+            + str(speed)
+            + " duration: "
+            + str(duration)
+        )
         constants.lock.acquire()
         if not global_vars.connected:
             constants.lock.release()
@@ -35,12 +45,14 @@ class Backend(threading.Thread):
             constants.radio_lock.acquire()
 
             if motor == "Forward":
+                print("Forward")
                 self.radio.write(
                     (constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT)
                     | (0b000 << 13)
                     | (speed << 6)
                     | duration
                 )
+                print("done sending")
             elif motor == "Backward":
                 self.radio.write(
                     (constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT)
