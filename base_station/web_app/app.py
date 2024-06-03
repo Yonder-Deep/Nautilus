@@ -50,12 +50,11 @@ out_q = to_Backend
 in_q = to_GUI
 
 try:
+    global_vars.connect_to_radio(to_GUI)
     bs_r_thread = BaseStation_Receive(global_vars.radio, in_q=None, out_q=to_GUI)
-    # bs_s_thread = BaseStation_Send(global_vars.radio,in_q=to_Backend, out_q=None)
     backend = Backend(global_vars.radio, to_Backend)
     bs_ping_thread = BaseStation_Send_Ping(global_vars.radio, to_GUI)
     bs_r_thread.start()
-    # bs_s_thread.start()
     backend.start()
     bs_ping_thread.start()
 except Exception as e:
@@ -75,7 +74,6 @@ def shutdown_event():
     bs_ping_thread.join()
     bs_r_thread.join()
     backend.join()
-    # bs_s_thread.join()
 
 
 @app.get("/imu_calibration_data")
@@ -120,36 +118,6 @@ async def heading_test(data: HeadingTest):
 async def set_pid_constants(axis: str, data: PIDConstants):
     # Process PID constants
     return {"status": f"{axis.capitalize()} PID constants set"}
-
-
-@app.post("/test_heading")
-async def test_heading():
-    out_q.put(lambda: backend.test_heading())
-    return {"message": f"Test heading received and processed"}
-
-
-@app.post("/calibrate_depth")
-async def calibrate_depth(command: str = Form(...)):
-    print("Received command:", command)
-    return {"message": f"Command '{command}' received and processed"}
-
-
-@app.post("/tune_turn_pid")
-async def tune_turn_pid(command: str = Form(...)):
-    print("Received command:", command)
-    return {"message": f"Command '{command}' received and processed"}
-
-
-@app.post("/tune_dive_pid")
-async def tune_dive_pid(command: str = Form(...)):
-    print("Received command:", command)
-    return {"message": f"Command '{command}' received and processed"}
-
-
-@app.post("/commence_auto_nav")
-async def commence_auto_nav(command: str = Form(...)):
-    print("Received command:", command)
-    return {"message": f"Command '{command}' received and processed"}
 
 
 if __name__ == "__main__":

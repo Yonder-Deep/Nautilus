@@ -6,7 +6,6 @@ from queue import Queue
 
 # Custom imports
 from api import Radio
-from api import xbox
 
 from static import constants
 from static import global_vars
@@ -23,29 +22,11 @@ class Backend(threading.Thread):
         """Attempts to send the AUV a signal to test a given motor."""
         speed = int(speed)
         duration = int(duration)
-        print(
-            "test motor: "
-            + motor
-            + " speed: "
-            + str(speed)
-            + " duration: "
-            + str(duration)
-        )
-        constants.lock.acquire()
         if not global_vars.connected:
-            constants.lock.release()
-            global_vars.log(
-                self.out_q,
-                "Cannot test "
-                + motor
-                + " motor(s) because there is no connection to the AUV.",
-            )
+            print("Cannot run motor because no connection to AUV")
         else:
-            constants.lock.release()
             constants.radio_lock.acquire()
-
             if motor == "Forward":
-                print("Forward")
                 self.radio.write(
                     (constants.MOTOR_TEST_COMMAND << constants.HEADER_SHIFT)
                     | (0b000 << 13)
@@ -84,22 +65,13 @@ class Backend(threading.Thread):
 
             constants.radio_lock.release()
 
-            global_vars.log(
-                self.out_q, 'Sending encoded task: test_motor("' + motor + '")'
-            )
-
-    def test_heading(self):
+    def test_heading(self, target, duration):
         """Attempts to send the AUV a signal to test heading PID."""
         constants.lock.acquire()
         if not global_vars.connected:
-            constants.lock.release()
-            global_vars.log(
-                self.out_q,
-                "Cannot test heading because there is no connection to the AUV.",
-            )
+            print("Cannot test heading because there is no connection to the AUV.")
         else:
-            constants.lock.release()
-            global_vars.log(self.out_q, "Sending heading test")
+            print("Sending heading test")
             constants.radio_lock.acquire()
             self.radio.write(constants.TEST_HEADING_COMMAND << constants.HEADER_SHIFT)
             constants.radio_lock.release()
@@ -305,6 +277,7 @@ class Backend(threading.Thread):
                     command()
             except:
                 pass
+            time.sleep(constants.THREAD_SLEEP_DELAY)
 
     def stop(self):
         self._stop_event.set()
