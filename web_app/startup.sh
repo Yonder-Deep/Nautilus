@@ -1,18 +1,16 @@
-#!/bin/bash
 
-# This script is used to start the web application for the Nautilus base station.
+# !/bin/bash
 
-# Start the Python Flask server by running the app.py script in the background.
-python app.py &
+# Run Backend 
+echo "Running app.py..."
+python3 app.py &
+# opens on http://localhost:6543
 
-# Change directory to the React/auv_gui folder.
-cd React/auv_gui
+cd auv_gui
 
-npm install
 
-# Build the React application in the background.
-npm run build &
-
-# Start the React development server.
+echo "Running React Frontend"
 npm run start
+# opens on http://localhost:3000
+
 
