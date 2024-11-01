@@ -16,12 +16,12 @@ import {
 } from "@chakra-ui/react";
 
 export default function Tests() {
-  const [selectedOption, setSelectedOption] = useState('');
   const [imuData, setImuData] = useState({ magnetometer: '', accelerometer: '', gyroscope: '' });
   const [insData, setInsData] = useState({ heading: '', roll: '', pitch: '' });
   const [motorTest, setMotorTest] = useState({ motor: '', speed: '', duration: '' });
   const [targetHeading, setTargetHeading] = useState('');
   const [pidConstants, setPidConstants] = useState({ heading: { p: '', i: '', d: '' }, pitch: { p: '', i: '', d: '' }, roll: { p: '', i: '', d: '' } });
+  const [displayedPidConstants, setDisplayedPidConstants] = useState({ heading: { p: '', i: '', d: '' }, pitch: { p: '', i: '', d: '' }, roll: { p: '', i: '', d: '' } });
 
   // Input handlers for forms
   const handleInputChange = (e, form, field) => {
@@ -33,7 +33,11 @@ export default function Tests() {
       case pidConstants.heading:
       case pidConstants.pitch:
       case pidConstants.roll:
-        setPidConstants({ ...pidConstants, [field.split('.')[0]]: { ...pidConstants[field.split('.')[0]], [field.split('.')[1]]: e.target.value } });
+        const [axis, constant] = field.split('.');
+        setPidConstants({
+          ...pidConstants,
+          [axis]: { ...pidConstants[axis], [constant]: e.target.value }
+        });
         break;
       case targetHeading:
         setTargetHeading(e.target.value);
@@ -43,7 +47,17 @@ export default function Tests() {
     }
   };
 
-  // POST requests
+  const handleSetConstants = (axis) => {
+    // Update the displayed constants
+    setDisplayedPidConstants(prev => ({
+      ...prev,
+      [axis]: { ...pidConstants[axis] }
+    }));
+
+    // Post request to save the constants
+    handlePostRequest(`${axis}_pid_constants`, pidConstants[axis]);
+  };
+
   const handlePostRequest = async (url, data) => {
     try {
       const response = await axios.post(`http://localhost:6543/${url}`, data);
@@ -132,11 +146,25 @@ export default function Tests() {
                 <Input placeholder="P" onChange={e => handleInputChange(e, pidConstants[axis], `${axis}.p`)} />
                 <Input placeholder="I" onChange={e => handleInputChange(e, pidConstants[axis], `${axis}.i`)} />
                 <Input placeholder="D" onChange={e => handleInputChange(e, pidConstants[axis], `${axis}.d`)} />
-                <Button colorScheme="blue" onClick={() => handlePostRequest(`${axis}_pid_constants`, pidConstants[axis])}>Set Constants</Button>
+                <Button colorScheme="blue" onClick={() => handleSetConstants(axis)}>Set Constants</Button>
               </VStack>
             </FormControl>
           ))}
         </Flex>
+      </Center>
+
+      <Center>
+        <Text fontSize="2xl">Entered PID Constants:</Text>
+      </Center>
+      <Center>
+        <Box width="90%">
+          {Object.keys(displayedPidConstants).map(axis => (
+            <Box key={axis} mb={4}>
+              <Text fontSize="lg" fontWeight="bold">{axis.charAt(0).toUpperCase() + axis.slice(1)}:</Text>
+              <Text>P: {displayedPidConstants[axis].p} | I: {displayedPidConstants[axis].i} | D: {displayedPidConstants[axis].d}</Text>
+            </Box>
+          ))}
+        </Box>
       </Center>
     </Stack>
   );
