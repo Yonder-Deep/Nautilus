@@ -1,5 +1,6 @@
 Adafruit_BBIO==1.2.0
 Adafruit_PureIO==1.1.11
+Adafruit_PureIO==1.1.11
 Flask==3.0.3
 mock==5.1.0
 numpy==2.1.2
@@ -12,4 +13,4 @@ pyserial==3.5
 setuptools==59.6.0
 smbus==1.1.post2
 spidev==3.6
-torch==2.5.1 used in depth cam but also 1GB so install when needed
+# torch==2.5.1 used in depth cam but also 1GB so add as needed
