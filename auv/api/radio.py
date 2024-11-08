@@ -28,7 +28,7 @@ class Radio:
             timeout=TIMEOUT_DURATION,
         )
 
-    def write(self, message):
+    def write(self, message) -> None:
         """
         Sends provided message over serial connection.
 
@@ -47,37 +47,37 @@ class Radio:
             byte_arr = message_double.to_bytes((constants.COMM_BUFFER_WIDTH), "big")
             self.ser.write(byte_arr)
 
-    def read(self, n_bytes=1):
+    def read(self, n_bytes=1) -> bytes:
         """
         Returns array of bytes
         """
         return self.ser.read(n_bytes)
 
-    def readlines(self):
+    def readlines(self) -> list[bytes]:
         """
         Returns a list of lines from buffer.
         """
         return self.ser.readlines()
 
-    def readline(self):
+    def readline(self) -> str:
         """
         Returns a string from the serial connection.
         """
         return self.ser.readline()
 
-    def is_open(self):
+    def is_open(self) -> bool:
         """
         Returns a boolean if the serial connection is open.
         """
         return self.ser.is_open
 
-    def flush(self):
+    def flush(self) -> None:
         """
         Clears the buffer of the serial connection.
         """
         self.ser.flush()
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the serial connection
         """
