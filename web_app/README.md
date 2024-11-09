@@ -1,6 +1,7 @@
-# React Frontend
+# Nautilus Web App
 
-This frontend is built with a react framework and FastAPI backend. 
+FastAPI Backend interfacing with AUV
+React Frontend bundled and served with Vite
 
 ## How to Contribute 
 
@@ -10,7 +11,6 @@ This frontend is built with a react framework and FastAPI backend.
     - npm
     - git
     - python (3.x.x)
-    - TODO: update
 
 To install node dependencies, run:
 ```bash
@@ -18,11 +18,14 @@ cd web_app/auv_gui
 npm install
 ```
 
-To startup the GUI:
+To startup both the FastAPI Backend and React GUI:
 ```bash
 sh startup.sh
 ```
 (Depending on what python version you have, you may have to edit startup.sh to be python or python3.)
 
-
-
+To start the React GUI alone:
+```bash
+cd web_app/auv_gui
+npm start
+```

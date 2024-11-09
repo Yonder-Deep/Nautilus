@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Form, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from queue import Queue
 import uvicorn
 import sys
@@ -31,6 +32,9 @@ class PIDConstants(BaseModel):
 
 
 app = FastAPI()
+
+# Serve the static react frontend
+app.mount("/static", StaticFiles(directory="public"), name="public")
 
 # defines origin for react app
 origins = ["http://localhost:3000", "localhost:3000"]
