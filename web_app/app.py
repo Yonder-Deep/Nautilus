@@ -33,7 +33,7 @@ class PIDConstants(BaseModel):
 app = FastAPI()
 
 # Mount the api calls
-api = FastAPI(openapi_prefix="/api")
+api = FastAPI(root_path="/api")
 app.mount("/api", api)
 
 # Mount the static react frontend
