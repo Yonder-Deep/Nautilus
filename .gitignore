@@ -4,3 +4,4 @@
 test/
 base_station/lib/
 node_modules/
+*.venv
