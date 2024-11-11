@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Form, Depends
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from queue import Queue

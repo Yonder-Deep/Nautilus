@@ -13,3 +13,6 @@ python3 -m pip install -r requirements.txt
 cd auv_gui
 npm install
 npm run build
+
+# Return to original directory
+cd ..
