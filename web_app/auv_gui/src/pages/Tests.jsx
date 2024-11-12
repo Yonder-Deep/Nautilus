@@ -1,19 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from 'axios';
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  Spacer,
-  Stack,
-  Text,
-  VStack
-} from "@chakra-ui/react";
+import React from "react";
 
 export default function Tests() {
   const [selectedOption, setSelectedOption] = useState('');

@@ -1,5 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import Tests from "./components/Test";  // new
+import Tests from "./pages/Tests.jsx";  // new
 
 export default function App() {
   return (
