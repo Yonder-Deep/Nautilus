@@ -7,7 +7,7 @@ from static.constants import GPS_PATHS
 
 
 class GPS(threading.Thread):
-    """Class for basic GPS functionality"""
+    """Class for basic GPS functionality for the GT-U7 sensor"""
 
     def __init__(self, out_queue):
         threading.Thread.__init__(self)
