@@ -36,7 +36,7 @@ api = FastAPI(root_path="/api")
 app.mount("/api", api)
 
 # Mount the static react frontend
-app.mount("/", StaticFiles(directory="./auv_gui/dist"), name="public")
+app.mount("/", StaticFiles(directory="./frontend_gui/dist"), name="public")
 
 to_GUI = Queue()
 to_Backend = Queue()
