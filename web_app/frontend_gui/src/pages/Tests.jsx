@@ -23,6 +23,7 @@ const StatusItem = ({ statusType, statusData }) => {
 }
 
 export default function Tests() {
+    // These are the only state variables that need full scope
     const [imuData, setImuData] = useState([
         { title: 'Magnetometer', value: '', id: 1 },
         { title: 'Accelerometer', value: '', id: 2 },
@@ -34,7 +35,7 @@ export default function Tests() {
         { title: 'Pitch', value: '', id: 3 }
     ]);
 
-    // POST requests
+    // Handle all POST requests
     const handlePostRequest = async (url, data) => {
         console.log("Attempting post of data: " + JSON.stringify(data));
         try {
@@ -47,26 +48,31 @@ export default function Tests() {
         }
     };
 
-    // Fetch data from server
+    // Poll data from server once per second
     useEffect(() => {
-        const fetchData = async () => {
-            const imuResponse = await fetch("http://localhost:6543/api/imu_calibration_data");
-            const imuBody = await imuResponse.json();
-            setImuData([
-                { title: 'Magnetometer', value: imuBody.magnetometer, id: 1 },
-                { title: 'Accelerometer', value: imuBody.accelerometer, id: 2 },
-                { title: 'Gyroscope', value: imuBody.gyroscope, id: 3 }
-            ]);
-            const insResponse = await fetch("http://localhost:6543/api/ins_data");
-            const insBody = await insResponse.json();
-            setInsData([
-                { title: 'Heading', value: insBody.heading, id: 1 },
-                { title: 'Roll', value: insBody.roll, id: 2 },
-                { title: 'Pitch', value: insBody.pitch, id: 3 }
-            ]);
-        }
-        fetchData();
-    }, []);
+        const pollInterval = 1000;
+        const dataPoll = setInterval(() => {
+            const fetchData = async () => {
+                const imuResponse = await fetch("http://localhost:6543/api/imu_calibration_data");
+                const imuBody = await imuResponse.json();
+                setImuData([
+                    { title: 'Magnetometer', value: imuBody.magnetometer, id: 1 },
+                    { title: 'Accelerometer', value: imuBody.accelerometer, id: 2 },
+                    { title: 'Gyroscope', value: imuBody.gyroscope, id: 3 }
+                ]);
+                const insResponse = await fetch("http://localhost:6543/api/ins_data");
+                const insBody = await insResponse.json();
+                setInsData([
+                    { title: 'Heading', value: insBody.heading, id: 1 },
+                    { title: 'Roll', value: insBody.roll, id: 2 },
+                    { title: 'Pitch', value: insBody.pitch, id: 3 }
+                ]);
+            }
+            fetchData();
+        }, pollInterval);
+
+        return () => clearInterval(dataPoll);
+    }, [useState]);
 
     return (
         <>
