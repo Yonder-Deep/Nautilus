@@ -35,13 +35,17 @@ export default function Tests() {
         { title: 'Pitch', value: '', id: 3 }
     ]);
 
-    // Handle all POST requests
+    // Handle all POST requests to set PID or run tests
     const handlePostRequest = async (url, data) => {
         console.log("Attempting post of data: " + JSON.stringify(data));
         try {
-            const response = await fetch(`http://localhost:6543/api/${url}`, {
-                method: 'POST'
-            });
+            const response = await fetch("http://localhost:6543/api/" + url, {
+    			method: 'POST',
+    			headers: {
+    			"Content-Type": "application/json",
+  				},
+    			body: JSON.stringify(data),
+			});
             console.log(response.data);
         } catch (error) {
             console.error('Error posting data:', error);

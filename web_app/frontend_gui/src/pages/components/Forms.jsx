@@ -7,11 +7,11 @@ export const ParametersForm = ({ handlePostRequest }) => {
     const [constantD, setConstantD] = useState('');
     const createPIDRequest = () => {
         const pidConstants = {
-            P: constantP.target.value,
-            I: constantI.target.value,
-            D: constantD.target.value
+            p: '' + constantP.target.value,
+            i: '' + constantI.target.value,
+            d: '' + constantD.target.value
         };
-        handlePostRequest(axis.target.value + '_pid_constants', pidConstants);
+        handlePostRequest(axis.target.value.toLowerCase() + '_pid_constants', pidConstants);
     }
 
     return (
@@ -34,14 +34,14 @@ export const ParametersForm = ({ handlePostRequest }) => {
 }
 
 export const MotorTestForm = ({ handlePostRequest }) => {
-    const [motorType, setMotorType] = useState('Forward');
+    const [motorType, setMotorType] = useState('');
     const [motorSpeed, setMotorSpeed] = useState('');
     const [motorDuration, setMotorDuration] = useState('');
     const createMotorTest = () => {
         const motorTest = {
-            motor: motorType.target.value,
-            speed: motorSpeed.target.value,
-            duration: motorDuration.target.value
+            motor: '' + motorType.target.value,
+            speed: '' + motorSpeed.target.value,
+            duration: '' + motorDuration.target.value
         };
         handlePostRequest('motor_test', motorTest);
     }
