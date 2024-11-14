@@ -33,7 +33,7 @@ class PIDConstants(BaseModel):
 app = FastAPI()
 
 # defines origin for react app
-origins = ["http://localhost:3000", "localhost:3000"]
+origins = ["http://localhost:5173", "localhost:5173"]
 
 # Adds middleware to handle cross-origin requests (different protocol, IP address, domain name, or port)
 app.add_middleware(
