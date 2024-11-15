@@ -40,12 +40,12 @@ export default function Tests() {
         console.log("Attempting post of data: " + JSON.stringify(data));
         try {
             const response = await fetch("http://localhost:6543/api/" + url, {
-    			method: 'POST',
-    			headers: {
-    			"Content-Type": "application/json",
-  				},
-    			body: JSON.stringify(data),
-			});
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
             console.log(response.data);
         } catch (error) {
             console.error('Error posting data:', error);
