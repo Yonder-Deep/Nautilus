@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, Depends
+from fastapi import FastAPI, Form, Depends, WebSocket, APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from queue import Queue
@@ -13,22 +13,6 @@ from threads.base_station_receive import BaseStation_Receive
 from threads.base_station_send_ping import BaseStation_Send_Ping
 from threads.base_station_send import BaseStation_Send
 
-
-class MotorTest(BaseModel):
-    motor: str
-    speed: str
-    duration: str
-
-
-class HeadingTest(BaseModel):
-    heading: str
-
-
-class PIDConstants(BaseModel):
-    p: str
-    i: str
-    d: str
-
 app = FastAPI()
 
 # Mount the api calls
@@ -37,6 +21,11 @@ app.mount("/api", api)
 
 # Mount the static react frontend
 app.mount("/", StaticFiles(directory="./frontend_gui/dist"), name="public")
+
+# Create the websocket router
+socket_router = APIRouter(
+    prefix="/ws"
+)
 
 to_GUI = Queue()
 to_Backend = Queue()
@@ -57,13 +46,16 @@ except Exception as e:
     sys.exit()
 
 
-@api.on_event("shutdown")
+@app.on_event("shutdown")
 def shutdown_event():
     print("Shutting down threads...")
     bs_ping_thread.join()
     bs_r_thread.join()
     backend.join()
 
+@socket_router.websocket("/imu_calibration_data")
+async def ws_imu_calibration_data():
+    return
 
 @api.get("/imu_calibration_data")
 async def get_imu_calibration_data() -> dict:
@@ -82,6 +74,10 @@ async def get_ins_data() -> dict:
         "pitch": "Value from backend",
     }
 
+class MotorTest(BaseModel):
+    motor: str
+    speed: str
+    duration: str
 
 @api.post("/motor_test")
 async def motor_test(data: MotorTest):
@@ -96,12 +92,19 @@ async def motor_test(data: MotorTest):
         "status": "Motor test initiated",
     }
 
+class HeadingTest(BaseModel):
+    heading: str
 
 @api.post("/heading_test")
 async def heading_test(data: HeadingTest):
     # Process heading test data
     return {"status": "Heading test initiated"}
 
+
+class PIDConstants(BaseModel):
+    p: str
+    i: str
+    d: str
 
 @api.post("/{axis}_pid_constants")
 async def set_pid_constants(axis: str, data: PIDConstants):

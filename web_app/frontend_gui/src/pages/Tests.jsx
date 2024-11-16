@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ParametersForm, MotorTestForm, HeadingTestForm } from "./components/Forms.jsx";
 
 const Graph = () => {
@@ -52,8 +52,19 @@ export default function Tests() {
         }
     };
 
-    // Poll data from server once per second
+    // Register socket handlers for server-sent data
+    const connection = useRef(null);
     useEffect(() => {
+        /*const socket = new WebSocket(window.location.host + "/api/");
+
+        socket.addEventListener("imuData", handleImuData);
+        socket.addEventListener("insData", handleInsData);
+
+        connection.current = socket;
+
+        return () => connection.close();*/
+
+        // Fetch polling with http requests every second
         const pollInterval = 1000;
         const dataPoll = setInterval(() => {
             const fetchData = async () => {
