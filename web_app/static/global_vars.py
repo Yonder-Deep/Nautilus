@@ -12,13 +12,11 @@ file_packets_received = 0
 packet_received = False
 in_autonomous_nav = False
 
-
 def path_existance(radioPaths):
     for rp in radioPaths:
         if os.path.exists(rp['path']):
             return True
     return False
-
 
 def connect_to_radio(queue):
     global radio
@@ -39,7 +37,6 @@ def connect_to_radio(queue):
         log(queue, warning_msg)
     else:
         log(queue, success_msg)
-
 
 def log(queue, msg):
     queue.put("log('" + msg + "')")

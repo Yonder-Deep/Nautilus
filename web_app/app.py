@@ -1,17 +1,17 @@
 from fastapi import FastAPI, Form, Depends, WebSocket, APIRouter
-from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from queue import Queue
 import uvicorn
 import sys
 from pydantic import BaseModel
 
-sys.path.append("..")
+sys.path.append(".")
 from static import global_vars
+
+# Backend is not a thread since always driven by route handlers in this file
+# Receive and ping are threads since they are driven by radio buffer
 from backend import Backend
-from threads.base_station_receive import BaseStation_Receive
-from threads.base_station_send_ping import BaseStation_Send_Ping
-from threads.base_station_send import BaseStation_Send
+from threads import Receive_Thread, Ping_Thread
 
 app = FastAPI()
 
@@ -28,30 +28,25 @@ socket_router = APIRouter(
 )
 
 to_GUI = Queue()
-to_Backend = Queue()
-out_q = to_Backend
 in_q = to_GUI
+backend = Backend(global_vars.radio)
 
 try:
     global_vars.connect_to_radio(to_GUI)
-    bs_r_thread = BaseStation_Receive(global_vars.radio, in_q=None, out_q=to_GUI)
-    backend = Backend(global_vars.radio, to_Backend)
-    bs_ping_thread = BaseStation_Send_Ping(global_vars.radio, to_GUI)
-    bs_r_thread.start()
-    backend.start()
-    bs_ping_thread.start()
+    receive_thread = Receive_Thread(global_vars.radio, out_q=to_GUI)
+    ping_thread = Ping_Thread(global_vars.radio, to_GUI)
+    receive_thread.start()
+    ping_thread.start()
 except Exception as e:
     print("Err: ", str(e))
     print("[MAIN] Base Station initialization failed. Closing...")
     sys.exit()
 
-
 @app.on_event("shutdown")
 def shutdown_event():
     print("Shutting down threads...")
-    bs_ping_thread.join()
-    bs_r_thread.join()
-    backend.join()
+    ping_thread.join()
+    receive_thread.join()
 
 @socket_router.websocket("/imu_calibration_data")
 async def ws_imu_calibration_data():
@@ -64,7 +59,6 @@ async def get_imu_calibration_data() -> dict:
         "accelerometer": "Value from backend",
         "gyroscope": "Value from backend",
     }
-
 
 @api.get("/ins_data")
 async def get_ins_data() -> dict:
@@ -85,8 +79,11 @@ async def motor_test(data: MotorTest):
     motor_type = data.motor
     speed = data.speed
     duration = data.duration
-    out_q.put(lambda: backend.test_motor(motor_type, speed, duration))
-    # out_q.put("test_motor(" + motor_type + "," + str(speed) + "," + str(duration) + ")")
+    print("FRONTEND: Motor Test: ")
+    print("     Type: " + motor_type)
+    print("     Speed: " + speed)
+    print("     Duration: " + duration)
+    backend.test_motor(motor_type, speed, duration)
     return {
         "message": f"Test motor {motor_type} at speed {speed} for duration {duration} seconds received and processed",
         "status": "Motor test initiated",
@@ -97,9 +94,11 @@ class HeadingTest(BaseModel):
 
 @api.post("/heading_test")
 async def heading_test(data: HeadingTest):
-    # Process heading test data
+    target_heading = data.heading
+    print("FRONTEND: Heading Test: ")
+    print("     Target Heading: " + target_heading)
+    backend.test_heading(target_heading)
     return {"status": "Heading test initiated"}
-
 
 class PIDConstants(BaseModel):
     p: str
@@ -108,9 +107,17 @@ class PIDConstants(BaseModel):
 
 @api.post("/{axis}_pid_constants")
 async def set_pid_constants(axis: str, data: PIDConstants):
-    # Process PID constants
+    pid_axis = axis
+    p_constant = data.p
+    i_constant = data.i
+    d_constant = data.d
+    print("FRONTEND: PID Constants: ")
+    print("     Axis: " + pid_axis)
+    print("     P: " + p_constant)
+    print("     I: " + i_constant)
+    print("     D: " + d_constant)
+    backend.send_pid_update(pid_axis, p_constant, i_constant, d_constant)
     return {"status": f"{axis.capitalize()} PID constants set"}
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=6543)

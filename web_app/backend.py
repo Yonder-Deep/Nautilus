@@ -1,29 +1,16 @@
-# System imports
-import serial
-import time
-import threading
-from queue import Queue
-
-# Custom imports
-from api import Radio
-
 from static import constants
 from static import global_vars
 
-
-class Backend(threading.Thread):
-    def __init__(self, radio, in_q=None):
-        super().__init__()
+class Backend():
+    def __init__(self, radio):
         self.radio = radio
-        self.in_q = in_q
-        self._stop_event = threading.Event()
 
     def test_motor(self, motor, speed=10, duration=10):
         """Attempts to send the AUV a signal to test a given motor."""
         speed = int(speed)
         duration = int(duration)
         if not global_vars.connected:
-            print("Cannot run motor because no connection to AUV")
+            print("BACKEND: Cannot run motor because no connection to AUV")
         else:
             constants.radio_lock.acquire()
             if motor == "Forward":
@@ -65,19 +52,39 @@ class Backend(threading.Thread):
 
             constants.radio_lock.release()
 
-    def test_heading(self, target, duration):
+    def test_heading(self, target):
         """Attempts to send the AUV a signal to test heading PID."""
+        print("BACKEND: Attempting to send heading test")
         constants.lock.acquire()
-        if not global_vars.connected:
-            print("Cannot test heading because there is no connection to the AUV.")
-        else:
-            print("Sending heading test")
+        if global_vars.connected:
+            constants.lock.release()
             constants.radio_lock.acquire()
             self.radio.write(constants.TEST_HEADING_COMMAND << constants.HEADER_SHIFT)
+            constants.radio_lock.release()
+            print("BACKEND: Heading test sent")
+        else:
+            constants.lock.release()
+            print("BACKEND: Cannot send heading test because no connection to AUV")
+    
+    def test_imu_calibration(self):
+        """Sends AUV a signal to start imu calibration"""
+        constants.lock.acquire()
+        if not global_vars.connected:
+            constants.lock.release()
+            global_vars.log(
+                self.out_q,
+                "Cannot start imu calibration because there is no connection to the AUV.",
+            )
+        else:
+            constants.lock.release()
+            global_vars.log(self.out_q, "Sending imu calibration test...")
+            constants.radio_lock.acquire()
+            self.radio.write(constants.TEST_IMU_CALIBRATION << constants.HEADER_SHIFT)
             constants.radio_lock.release()
 
     def abort_mission(self):
         """Attempts to abort the mission for the AUV."""
+        print("BACKEND.PY: Abort mission attempt");
         constants.lock.acquire()
         if not global_vars.connected:
             constants.lock.release()
@@ -91,6 +98,7 @@ class Backend(threading.Thread):
             self.manual_mode = True
 
     def start_mission(self, mission, depth, t):
+        print("BACKEND.PY: Start mission: " + mission + depth + t);
         """Attempts to start a mission and send to AUV."""
         constants.lock.acquire()
         if global_vars.connected is False:
@@ -120,7 +128,6 @@ class Backend(threading.Thread):
                     | mission
                 )
             )
-
             constants.radio_lock.release()
             global_vars.log(
                 self.out_q, "Sending task: start_mission(" + str(mission) + ")"
@@ -231,19 +238,19 @@ class Backend(threading.Thread):
         print(global_vars.file_packets_received, constants.FILE_DL_PACKET_SIZE)
         constants.radio_lock.release()
 
-    def send_pid_update(self, constant_select, value):
+    def send_pid_update(self, axis, p_constant, i_constant, d_constant):
+        print("BACKEND: Attempting to send PID update")
         # Update PID constants for the dive controller
         # constant_select: int storing which constant to update (0-2): pitch pid, (3-5): dive pid
         # value: what to update the constant to
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
-            global_vars.log(
-                self.out_q,
-                "Cannot update pid because there is no connection to the AUV.",
-            )
+            print("BACKEND: Cannot update pid because there is no connection to the AUV.")
         else:
             constants.lock.release()
+
+            # NEEDS TO BE FIXED
             constant_select = constant_select << 18
             constants.radio_lock.acquire()
             self.radio.write(
@@ -268,21 +275,3 @@ class Backend(threading.Thread):
             global_vars.log(self.out_q, "Switched to autonomous mode.")
 
         global_vars.log(self.out_q, "Successfully started mission " + str(index))
-
-    def run(self):
-        while not self._stop_event.is_set():
-            try:
-                command = self.in_q.get(timeout=1)
-                if command is not None:
-                    command()
-            except:
-                pass
-            time.sleep(constants.THREAD_SLEEP_DELAY)
-
-    def stop(self):
-        self._stop_event.set()
-        self.in_q.put(None)
-
-    def join(self, timeout=None):
-        self.stop()
-        super(Backend, self).join(timeout)
