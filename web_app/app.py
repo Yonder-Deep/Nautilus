@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Form, Depends
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from queue import Queue
 import uvicorn
@@ -29,20 +28,14 @@ class PIDConstants(BaseModel):
     i: str
     d: str
 
-
 app = FastAPI()
 
-# defines origin for react app
-origins = ["http://localhost:5173", "localhost:5173"]
+# Mount the api calls
+api = FastAPI(root_path="/api")
+app.mount("/api", api)
 
-# Adds middleware to handle cross-origin requests (different protocol, IP address, domain name, or port)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Mount the static react frontend
+app.mount("/", StaticFiles(directory="./auv_gui/dist"), name="public")
 
 to_GUI = Queue()
 to_Backend = Queue()
@@ -63,12 +56,7 @@ except Exception as e:
     sys.exit()
 
 
-@app.get("/", tags=["root"])
-async def read_root() -> dict:
-    return {"message": "This is the root path"}
-
-
-@app.on_event("shutdown")
+@api.on_event("shutdown")
 def shutdown_event():
     print("Shutting down threads...")
     bs_ping_thread.join()
@@ -76,7 +64,7 @@ def shutdown_event():
     backend.join()
 
 
-@app.get("/imu_calibration_data")
+@api.get("/imu_calibration_data")
 async def get_imu_calibration_data() -> dict:
     return {
         "magnetometer": "Value from backend",
@@ -85,7 +73,7 @@ async def get_imu_calibration_data() -> dict:
     }
 
 
-@app.get("/ins_data")
+@api.get("/ins_data")
 async def get_ins_data() -> dict:
     return {
         "heading": "Value from backend",
@@ -94,7 +82,7 @@ async def get_ins_data() -> dict:
     }
 
 
-@app.post("/motor_test")
+@api.post("/motor_test")
 async def motor_test(data: MotorTest):
     # Process motor test data
     motor_type = data.motor
@@ -108,13 +96,13 @@ async def motor_test(data: MotorTest):
     }
 
 
-@app.post("/heading_test")
+@api.post("/heading_test")
 async def heading_test(data: HeadingTest):
     # Process heading test data
     return {"status": "Heading test initiated"}
 
 
-@app.post("/{axis}_pid_constants")
+@api.post("/{axis}_pid_constants")
 async def set_pid_constants(axis: str, data: PIDConstants):
     # Process PID constants
     return {"status": f"{axis.capitalize()} PID constants set"}

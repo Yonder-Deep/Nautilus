@@ -46,7 +46,7 @@ export default function Tests() {
   // POST requests
   const handlePostRequest = async (url, data) => {
     try {
-      const response = await axios.post(`http://localhost:6543/${url}`, data);
+      const response = await axios.post(`http://localhost:6543/api/${url}`, data);
       console.log(response.data);
     } catch (error) {
       console.error('Error posting data:', error);
@@ -56,9 +56,9 @@ export default function Tests() {
   // Fetch data from server
   useEffect(() => {
     const fetchData = async () => {
-      const imuResponse = await axios.get("http://localhost:6543/imu_calibration_data");
+      const imuResponse = await axios.get("http://localhost:6543/api/imu_calibration_data");
       setImuData(imuResponse.data);
-      const insResponse = await axios.get("http://localhost:6543/ins_data");
+      const insResponse = await axios.get("http://localhost:6543/api/ins_data");
       setInsData(insResponse.data);
     };
     fetchData();
