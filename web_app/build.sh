@@ -4,10 +4,10 @@
 # If in a double (.venv), enter 'deactivate' to get out
 
 # Create virtual environment, activate it, and install python requirements
-python -m venv .venv
+python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
 
 # Run npm script to build react-vite app & generate static bundle
 cd auv_gui
