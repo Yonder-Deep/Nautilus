@@ -133,7 +133,7 @@ class Receive_Thread(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                global_vars.connect_to_radio(self.out_q)
+                global_vars.connect_to_radio(self.out_q, verbose=False)
                 self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV

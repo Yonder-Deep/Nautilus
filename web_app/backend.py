@@ -243,6 +243,7 @@ class Backend():
         # Update PID constants for the dive controller
         # constant_select: int storing which constant to update (0-2): pitch pid, (3-5): dive pid
         # value: what to update the constant to
+        constant_value = [p_constant, i_constant, d_constant]
         constants.lock.acquire()
         if global_vars.connected is False:
             constants.lock.release()
@@ -257,13 +258,6 @@ class Backend():
                 (constants.PID_COMMAND << constants.HEADER_SHIFT)
                 | constant_select
                 | value
-            )
-            print(
-                bin(
-                    (constants.PID_COMMAND << constants.HEADER_SHIFT)
-                    | constant_select
-                    | value
-                )
             )
             constants.radio_lock.release()
 

@@ -5,7 +5,6 @@ import pynmea2
 
 GPS_PATH = "COM4"
 
-
 class GPS(threading.Thread):
     """Class for basic GPS functionality"""
 
@@ -19,6 +18,7 @@ class GPS(threading.Thread):
             "latitude": "Unknown",
             "longitude": "Unknown",
         }
+        print("GPS thread initialized.")
         
     def parse_gps_data(self, sentence):
         try:

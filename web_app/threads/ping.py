@@ -10,6 +10,7 @@ class Ping_Thread(threading.Thread):
         self.out_q = out_q
         self._stop_event = threading.Event()
         threading.Thread.__init__(self)
+        print("PING: Ping thread initialized.")
 
     def run(self):
         print("PING: Starting main ping sending connection loop.")
@@ -21,7 +22,7 @@ class Ping_Thread(threading.Thread):
                 is_radio_open = global_vars.radio.is_open()
             if global_vars.radio is None or is_radio_open is False:
                 print("PING: TEST radio not connected")
-                global_vars.connect_to_radio(self.out_q)
+                global_vars.connect_to_radio(self.out_q, verbose=True)
             else:
                 try:
                     # Always send a connection verification packet

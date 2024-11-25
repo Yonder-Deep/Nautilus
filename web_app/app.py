@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Form, Depends, WebSocket, APIRouter
+from fastapi import BackgroundTasks, FastAPI, WebSocket, APIRouter
 from fastapi.staticfiles import StaticFiles
+import asyncio
 from queue import Queue
+from contextlib import asynccontextmanager
 import uvicorn
-import sys
 from pydantic import BaseModel
 
+import sys
 sys.path.append(".")
 from static import global_vars
 
@@ -13,7 +15,41 @@ from static import global_vars
 from backend import Backend
 from threads import Receive_Thread, Ping_Thread
 
-app = FastAPI()
+queue_to_frontend = Queue()
+backend = Backend(global_vars.radio)
+
+print("FRONTEND: Initializing receive & ping threads")
+global_vars.connect_to_radio(queue_to_frontend, verbose=False)
+receive_thread = Receive_Thread(global_vars.radio, out_q=queue_to_frontend)
+ping_thread = Ping_Thread(global_vars.radio, out_q=queue_to_frontend)
+receive_thread.start()
+ping_thread.start()
+
+# This function is this high up the in the file because
+# it must be declared before the FastAPI object
+# 
+# Checking the queue from receive.py for messages from AUV
+async def check_queue_from_receive():
+    while True:
+        print("FRONTEND: Queue being checked")
+        await asyncio.sleep(1)
+        auv_message = queue_to_frontend.get()
+        print("FRONTEND: Message from AUV in queue: \n" + "     " + auv_message)
+        # Send message to frontend via websocket
+
+# This function is this high up the in the file because
+# it must be declared before the FastAPI object
+# to be passed as a lifespan function
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("FRONTEND: Creating background task to check queue")
+    asyncio.create_task(check_queue_from_receive())
+    yield
+    print("FRONTEND: Shutting down threads...")
+    ping_thread.join()
+    receive_thread.join()
+
+app = FastAPI(lifespan=lifespan)
 
 # Mount the api calls
 api = FastAPI(root_path="/api")
@@ -27,46 +63,26 @@ socket_router = APIRouter(
     prefix="/ws"
 )
 
-to_GUI = Queue()
-in_q = to_GUI
-backend = Backend(global_vars.radio)
+@socket_router.websocket("/websocket")
+async def websocket_handler(websocket: WebSocket):
+    await websocket.accept()
+    while 
 
-try:
-    global_vars.connect_to_radio(to_GUI)
-    receive_thread = Receive_Thread(global_vars.radio, out_q=to_GUI)
-    ping_thread = Ping_Thread(global_vars.radio, to_GUI)
-    receive_thread.start()
-    ping_thread.start()
-except Exception as e:
-    print("Err: ", str(e))
-    print("[MAIN] Base Station initialization failed. Closing...")
-    sys.exit()
+# @api.get("/imu_calibration_data")
+# async def get_imu_calibration_data() -> dict:
+#     return {
+#         "magnetometer": "Value from backend",
+#         "accelerometer": "Value from backend",
+#         "gyroscope": "Value from backend",
+#     }
 
-@app.on_event("shutdown")
-def shutdown_event():
-    print("Shutting down threads...")
-    ping_thread.join()
-    receive_thread.join()
-
-@socket_router.websocket("/imu_calibration_data")
-async def ws_imu_calibration_data():
-    return
-
-@api.get("/imu_calibration_data")
-async def get_imu_calibration_data() -> dict:
-    return {
-        "magnetometer": "Value from backend",
-        "accelerometer": "Value from backend",
-        "gyroscope": "Value from backend",
-    }
-
-@api.get("/ins_data")
-async def get_ins_data() -> dict:
-    return {
-        "heading": "Value from backend",
-        "roll": "Value from backend",
-        "pitch": "Value from backend",
-    }
+# @api.get("/ins_data")
+# async def get_ins_data() -> dict:
+#     return {
+#         "heading": "Value from backend",
+#         "roll": "Value from backend",
+#         "pitch": "Value from backend",
+#     }
 
 class MotorTest(BaseModel):
     motor: str
