@@ -5,7 +5,7 @@
 
 # Create virtual environment, activate it, and install python requirements
 python -m venv .venv
-. .venv/bin/activate
+source .venv/Scripts/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
