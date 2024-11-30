@@ -23,7 +23,7 @@ RADIO_PATH_5 = {
     "radioNum": 5,
     "path": "/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_D30AF7PZ-if00-port0",
 }
-RADIO_PATH_6 = {"radioNum": 6, "path": "COM5"}
+# RADIO_PATH_6 = {"radioNum": 6, "path": "COM5"}
 # RADIO_PATH_7 = {"radioNum": 7, "path": "COM4"}
 RADIO_PATH_8 = {"radioNum": 8, "path": "COM7"}
 RADIO_PATH_9 = {"radioNum": 9, "path": "COM8"}
@@ -32,7 +32,7 @@ RADIO_PATH_10 = {
     "path": "/dev/serial/by-id/usb-FTDI_FT231X_USB_UART_D30EZV09-if00-port0",
 }
 RADIO_PATH_11 = {"radioNum": 11, "path": "COM9"}
-RADIO_PATH_12 = {"radioNum": 12, "path": "COM10"}
+# RADIO_PATH_12 = {"radioNum": 12, "path": "COM10"}
 RADIO_PATH_13 = {"radioNum": 13, "path": "COM12"}
 RADIO_PATH_14 = {"radioNum": 14, "path": "COM13"}
 RADIO_PATH_15 = {"radioNum": 15, "path": "COM14"}
@@ -43,12 +43,12 @@ RADIO_PATHS = [
     RADIO_PATH_3,
     RADIO_PATH_4,
     RADIO_PATH_5,
-    RADIO_PATH_6,
+    # RADIO_PATH_6,
     RADIO_PATH_8,
     RADIO_PATH_9,
     RADIO_PATH_10,
     RADIO_PATH_11,
-    RADIO_PATH_12,
+    # RADIO_PATH_12,
     RADIO_PATH_13,
     RADIO_PATH_14,
     RADIO_PATH_15,

@@ -349,6 +349,7 @@ class Map:
         fig = Figure(figsize=(DEFAULT_FIGURE_SIZE, DEFAULT_FIGURE_SIZE))
         return fig
 
+    '''
     def init_map(self):
         print("[MAP] Initializing map...")
         graph = self.fig.add_subplot(111, xmargin=-0.49, ymargin=-0.49)
@@ -381,6 +382,48 @@ class Map:
         graph.tick_params(axis='y', colors=MINOR_TICK_COLOR)
 
         return graph
+    '''
+    def init_map(self):
+        print("[MAP] Initializing map...")
+
+        # Create a subplot with proper margins
+        graph = self.fig.add_subplot(111, xmargin=-0.49, ymargin=-0.49)
+
+        # Configure the grid (updated for matplotlib 3.8+)
+        graph.grid(True, which='major', axis='both', color='gray', linestyle='--', linewidth=0.5)
+
+        # Configure the left spine to align with the y-axis
+        graph.spines['left'].set_position(('data', 0))
+        graph.spines['left'].set_color('black')  # Optional: ensure visibility
+
+        # Remove the right spine and its ticks
+        graph.spines['right'].set_visible(False)
+        graph.yaxis.tick_left()  # Ensure ticks remain only on the left
+
+        # Configure the bottom spine to align with the x-axis
+        graph.spines['bottom'].set_position(('data', 0))
+        graph.spines['bottom'].set_color('black')  # Optional: ensure visibility
+
+        # Remove the top spine and its ticks
+        graph.spines['top'].set_visible(False)
+        graph.xaxis.tick_bottom()  # Ensure ticks remain only on the bottom
+
+        # Set the background color for the plot
+        graph.set_facecolor(BACKGROUND_COLOR)
+
+        # Setup the legend with proper handles and labels
+        legend_elements = [
+            Line2D([0], [0], color=AUV_PATH_COLOR, lw=2, label='AUV Path'),
+            Line2D([0], [0], marker='o', color=WAYPOINT_COLOR, label='Waypoint', linestyle='None')
+        ]
+        graph.legend(handles=legend_elements, loc='lower right', title="Legend", frameon=True)
+
+        # Adjust tick parameters for the minor axis
+        graph.tick_params(axis='x', colors=MINOR_TICK_COLOR, direction='out')
+        graph.tick_params(axis='y', colors=MINOR_TICK_COLOR, direction='out')
+
+        return graph
+
 
     def nav_to_waypoint(self):
         print("[MAP] Opening nav-to-waypoint prompt.")
