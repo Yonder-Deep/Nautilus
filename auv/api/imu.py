@@ -1,65 +1,69 @@
 # Custom imports
-from Adafruit_BNO055.BNO055 import BNO055 as super_imu
 import time
-from datetime import datetime
+import board
+from adafruit_lsm6ds import Rate, AccelRange, GyroRange
+from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
+from adafruit_lis3mdl import LIS3MDL
+import imufusion
 
-
-class IMU(super_imu):
+class IMU:
     """ Utilize inheritance of the low-level parent class """
 
     def __init__(self):
         """ Simply call our superclass constructor """
         super().__init__()
-        sw, bl, accel, mag, gyro = super().get_revision()
+        i2c = board.I2C()  # uses board.SCL and board.SDA
+        self.ag_sensor = LSM6DS(i2c)
+        self.m_sensor = LIS3MDL(i2c)
 
-        # super_imu.set_mode(0X09) # set mode to fusion
-        error_count = 0
-        while error_count < 20:
-            try:
-                begun = super().begin()
-                self.set_mode(0X0C)
-                print("IMU started successfully \n")
-                break
-            except:
-                print("BNO didn't initialize. Retrying...")
-                error_count += 1
-                time.sleep(0.2)
+        self.ag_sensor.accelerometer_range = AccelRange.RANGE_8G
+        print(
+            "Accelerometer range set to: %d G" % AccelRange.string[self.ag_sensor.accelerometer_range]
+        )
 
-        if error_count == 20:
-            raise RuntimeError("Failed to initialize BNO055! Is the sensor connected correctly?")
+        self.ag_sensor.gyro_range = GyroRange.RANGE_2000_DPS
+        print("Gyro range set to: %d DPS" % GyroRange.string[self.ag_sensor.gyro_range])
 
-    def read_euler(self) -> tuple[int, int, int]:
-        # Read the Euler angles for heading, roll, pitch (all in degrees).
-        heading, roll, pitch = super().read_euler()
-        sys, gyro, accel, mag = super().get_calibration_status()
-        x, y, z = super().read_accelerometer()
-        lx, ly, lz = super().read_linear_acceleration()
-       # q1, q2, q3, q4 = super().read_quarternion()
-        with open("imu_data.txt","a") as f:
-           f.write("Time \n")
-           f.write(str(datetime.now()))
-           f.write("\n")
-           f.write('Heading \n')
-           f.write(str(heading))
-           f.write("\n")
-           f.write('Roll\n')
-           f.write(str(roll))
-           f.write("\n")
-           f.write('Pitch\n')
-           f.write(str(pitch))
-           f.write("\n")
-           f.write('Acceleration\n')
-           f.write(str(x) + ',' + str(y) + ',' + str(z))
-           f.write("\n")
-           f.write('Linear acceleration\n')
-           f.write(str(lx) + ',' + str(ly) + ',' + str(lz))
-           f.write("\n")
-          # f.write('Quarternion\n')
-          # f.write(str(q1) + ',' + str(q2) + ',' + str(q3) + ',' + str(q4))
-           f.close()
-        
-        # return heading, pitch, roll
-        # IMU is giving incorrect values. Pitch and roll are swapped. 
-        # Roll is off by a factor of -1. Heading is offset by -90. 
-        # This accounts for those errors. 
-        return (heading + 90) % 360, -1 * pitch, roll
+        self.ag_sensor.accelerometer_data_rate = Rate.RATE_1_66K_HZ
+        print("Accelerometer rate set to: %d HZ" % Rate.string[self.ag_sensor.accelerometer_data_rate])
+
+        self.ag_sensor.gyro_data_rate = Rate.RATE_1_66K_HZ
+        print("Gyro rate set to: %d HZ" % Rate.string[self.ag_sensor.gyro_data_rate])
+
+        offset = imufusion.Offset(Rate.RATE_1_66K_HZ)
+        ahrs = imufusion.Ahrs()
+
+        ahrs.settings = imufusion.Settings(
+            imufusion.CONVENTION_NWU,  # convention
+            0.5,  # gain
+            2000,  # gyroscope range
+            10,  # acceleration rejection
+            10,  # magnetic rejection
+            5 * Rate.RATE_1_66K_HZ,  # recovery trigger period = 5 seconds
+        )
+
+    def read_euler(self) -> tuple[float, float, float]:
+        # Read sensor data
+        accel_x, accel_y, accel_z = self.ag_sensor.acceleration
+        gyro_x, gyro_y, gyro_z = self.ag_sensor.gyro
+        mag_x, mag_y, mag_z = self.m_sensor.magnetic
+
+        # Update the offset for sensor drift correction
+        self.offset.update((gyro_x, gyro_y, gyro_z))
+
+        # Apply offset to gyroscope data
+        corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.correct((gyro_x, gyro_y, gyro_z))
+
+        # Update the AHRS algorithm with the sensor data
+        self.ahrs.update(
+            (corrected_gyro_x, corrected_gyro_y, corrected_gyro_z),
+            (accel_x, accel_y, accel_z),
+            (mag_x, mag_y, mag_z),
+        )
+
+        # Get the Euler angles from the AHRS algorithm
+        euler_angles = self.ahrs.euler
+
+        # Return heading, pitch, and roll
+        heading, pitch, roll = euler_angles
+        return heading, pitch, roll
