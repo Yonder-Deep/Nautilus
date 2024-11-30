@@ -25,6 +25,8 @@ file_packets_received = 0
 bs_response_sent = False
 send_calibration_data = False
 
+mag_offset_vector = (0, 0, 0)
+gyro_offset_vector = (0, 0, 0)
 
 def path_existance(radioPaths):
     for rp in radioPaths:

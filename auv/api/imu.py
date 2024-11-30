@@ -6,6 +6,7 @@ from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 import imufusion
 import numpy as np
+from static import global_vars
 
 class IMU:
     """ Utilize inheritance of the low-level parent class """
@@ -46,8 +47,8 @@ class IMU:
     def read_euler(self) -> tuple[float, float, float]:
         # Read sensor data
         accel_x, accel_y, accel_z = self.ag_sensor.acceleration
-        gyro_x, gyro_y, gyro_z = self.ag_sensor.gyro
-        mag_x, mag_y, mag_z = self.m_sensor.magnetic
+        gyro_x, gyro_y, gyro_z = self.ag_sensor.gyro - global_vars.gyro_offset_vector
+        mag_x, mag_y, mag_z = self.m_sensor.magnetic - global_vars.mag_offset_vector
 
         # Update the offset for sensor drift correction
         corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(np.array([gyro_x, gyro_y, gyro_z]))
@@ -57,6 +58,7 @@ class IMU:
             (corrected_gyro_x, corrected_gyro_y, corrected_gyro_z),
             (accel_x, accel_y, accel_z),
             (mag_x, mag_y, mag_z),
+            20.0
         )
 
         # Get the Euler angles from the AHRS algorithm
