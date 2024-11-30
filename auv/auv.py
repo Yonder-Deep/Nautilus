@@ -18,7 +18,7 @@ from api import Crc32
 from api import PressureSensor
 from api import MotorController
 from threads import GPS
-from missions import *
+# from missions import *
 from api import Indicator
 
 # from api import RealSenseCamera
