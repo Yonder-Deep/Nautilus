@@ -54,13 +54,14 @@ class IMU:
 
         # Update the AHRS algorithm with the sensor data
         self.ahrs.update(
-            (corrected_gyro_x, corrected_gyro_y, corrected_gyro_z),
-            (accel_x, accel_y, accel_z),
-            (mag_x, mag_y, mag_z),
+            np.array([corrected_gyro_x, corrected_gyro_y, corrected_gyro_z]),
+            np.array([accel_x, accel_y, accel_z]),
+            np.array([mag_x, mag_y, mag_z]),
+            20.0
         )
 
         # Get the Euler angles from the AHRS algorithm
-        euler_angles = self.ahrs.euler
+        euler_angles = self.ahrs.quaternion.to_euler()
 
         # Return heading, pitch, and roll
         heading, pitch, roll = euler_angles
