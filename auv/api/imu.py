@@ -5,6 +5,7 @@ from adafruit_lsm6ds import Rate, AccelRange, GyroRange
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 import imufusion
+import numpy as np
 
 class IMU:
     """ Utilize inheritance of the low-level parent class """
@@ -30,10 +31,10 @@ class IMU:
         self.ag_sensor.gyro_data_rate = Rate.RATE_1_66K_HZ
         print("Gyro rate set to: %d HZ" % Rate.string[self.ag_sensor.gyro_data_rate])
 
-        offset = imufusion.Offset(Rate.RATE_1_66K_HZ)
-        ahrs = imufusion.Ahrs()
+        self.offset = imufusion.Offset(Rate.RATE_1_66K_HZ)
+        self.ahrs = imufusion.Ahrs()
 
-        ahrs.settings = imufusion.Settings(
+        self.ahrs.settings = imufusion.Settings(
             imufusion.CONVENTION_ENU,  # convention
             0.5,  # gain
             2000,  # gyroscope range
@@ -49,10 +50,7 @@ class IMU:
         mag_x, mag_y, mag_z = self.m_sensor.magnetic
 
         # Update the offset for sensor drift correction
-        self.offset.update((gyro_x, gyro_y, gyro_z))
-
-        # Apply offset to gyroscope data
-        corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.correct((gyro_x, gyro_y, gyro_z))
+        corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(np.array([gyro_x, gyro_y, gyro_z]))
 
         # Update the AHRS algorithm with the sensor data
         self.ahrs.update(
