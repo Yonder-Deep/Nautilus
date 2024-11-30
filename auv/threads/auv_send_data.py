@@ -1,7 +1,7 @@
 from queue import Queue
 from static import global_vars
 from static import constants
-from missions import *
+# from missions import *
 from api import MotorController
 from api import PressureSensor
 from api import IMU
