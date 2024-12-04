@@ -13,7 +13,7 @@ class Receive_Thread(threading.Thread):
     def __init__(self, radio, out_q=None):
         """Initialize Serial Port and Class Variables
         debug: debugging flag"""
-        print("RECEIVE: Radio receiving thread initialized.")
+        custom_log(": Radio receiving thread initialized.")
 
         self._stop_event = threading.Event()
 
@@ -108,7 +108,7 @@ class Receive_Thread(threading.Thread):
         """Main threaded loop for the base station."""
 
         while not self._stop_event.is_set():
-            print("RECEIVE: Thread alive")
+            custom_log(": Thread alive")
             time.sleep(0.5)
 
             # Always try to update connection status
@@ -147,15 +147,15 @@ class Receive_Thread(threading.Thread):
                         if not global_vars.downloading_file and len(line) == (
                             constants.COMM_BUFFER_WIDTH
                         ):
-                            print("read line")
+                            custom_log("read line")
                             intline = int.from_bytes(line, "big")
 
                             checksum = Crc32.confirm(intline)
 
                             if not checksum:
-                                print("invalid line*************")
-                                print(bin(intline))
-                                print(bin(intline >> 32))
+                                custom_log("invalid line*************")
+                                custom_log(bin(intline))
+                                custom_log(bin(intline >> 32))
                                 self.radio.flush()
                                 self.radio.close()
                                 self.radio, output_msg = global_vars.connect_to_radio(
@@ -181,7 +181,7 @@ class Receive_Thread(threading.Thread):
                             # Data cases
                             else:
                                 header = intline >> (constants.HEADER_SHIFT)
-                                print("HEADER_STR", header)
+                                custom_log("HEADER_STR", header)
 
                                 if header == constants.FILE_DATA:
                                     global_vars.downloading_file = True
@@ -201,7 +201,7 @@ class Receive_Thread(threading.Thread):
                     self.radio.flush()
 
                 except Exception as e:
-                    print(str(e))
+                    custom_log(str(e))
                     self.radio.flush()
                     self.radio.close()
                     self.radio = None
@@ -234,3 +234,6 @@ class Receive_Thread(threading.Thread):
     def join(self, timeout=None):
         self.stop()
         super(Receive_Thread, self).join(timeout)
+
+def custom_log(message: str):
+    print("\033[95mRECEIVE:\033[0m " + message)

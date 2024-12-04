@@ -46,47 +46,28 @@ export default function Tests() {
                 },
                 body: JSON.stringify(data),
             });
-            console.log(response.data);
+            console.log("Response: " + response.data);
         } catch (error) {
             console.error('Error posting data:', error);
         }
     };
 
+    const handleSocketData = (event) => {
+        console.log("Socket data arrived: " + event.data)
+        // TODO: Append server logs to some state & display to user
+        // TODO: Unpack IMU & INS state & update the state
+    }
+
     // Register socket handlers for server-sent data
     const connection = useRef(null);
     useEffect(() => {
-        /*const socket = new WebSocket(window.location.host + "/api/");
+        const socket = new WebSocket("/api/websocket");
 
-        socket.addEventListener("imuData", handleImuData);
-        socket.addEventListener("insData", handleInsData);
+        socket.addEventListener("message", handleSocketData);
 
         connection.current = socket;
 
-        return () => connection.close();*/
-
-        // Fetch polling with http requests every second
-        const pollInterval = 1000;
-        const dataPoll = setInterval(() => {
-            const fetchData = async () => {
-                const imuResponse = await fetch("http://localhost:6543/api/imu_calibration_data");
-                const imuBody = await imuResponse.json();
-                setImuData([
-                    { title: 'Magnetometer', value: imuBody.magnetometer, id: 1 },
-                    { title: 'Accelerometer', value: imuBody.accelerometer, id: 2 },
-                    { title: 'Gyroscope', value: imuBody.gyroscope, id: 3 }
-                ]);
-                const insResponse = await fetch("http://localhost:6543/api/ins_data");
-                const insBody = await insResponse.json();
-                setInsData([
-                    { title: 'Heading', value: insBody.heading, id: 1 },
-                    { title: 'Roll', value: insBody.roll, id: 2 },
-                    { title: 'Pitch', value: insBody.pitch, id: 3 }
-                ]);
-            }
-            fetchData();
-        }, pollInterval);
-
-        return () => clearInterval(dataPoll);
+        return () => connection.current.close();
     }, [useState]);
 
     return (
