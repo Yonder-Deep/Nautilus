@@ -1,5 +1,12 @@
-html {
+html, body {
     font-family: system-ui;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 h1 {
@@ -32,6 +39,17 @@ ul>li {
     margin-bottom: 1rem;
 }
 
+.parent-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+}
+
+.main-section {
+    height: 100vh;
+    padding: 1rem;
+    padding-right: 0;
+}
+
 .upper-section {
     display: flex;
     justify-content: space-around;
@@ -44,23 +62,19 @@ ul>li {
     border-radius: 1rem;
 }
 
-.parameters-form {
-    height: 10rem;
-}
-
 .lower-section {
     display: flex;
 }
 
 .status-section {
-    padding-left: 5rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding-inline: 1rem;
 }
 
 .status-item {
-    width: 30ch;
+    width: 20ch;
 }
 
 .testing-section {
@@ -68,7 +82,10 @@ ul>li {
     display: flex;
     justify-content: space-evenly;
     align-items: flex-start;
-    padding-right: 5rem;
+}
+
+.testing-section > div {
+    padding-inline: 1rem;
 }
 
 .form-body {
@@ -84,4 +101,31 @@ button {
     margin-bottom: 0.5rem;
     padding: 0.3rem;
     padding-inline: 1rem;
+}
+
+.status-messages-container {
+    height: calc(100vh - 2rem); /* 2rem for margin*/
+    min-width: 20ch;
+    margin: 1rem;
+    border: clamp(2px, 0.3rem, 5px) solid black;
+    border-radius: 1rem;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.status-messages-container > h2 {
+    margin: 0;
+    border-bottom: clamp(2px, 0.3rem, 5px) solid black;
+    padding: 1rem;
+    text-align: center;
+}
+
+.status-messages-container > ul {
+    flex-grow: 1;
+    margin: 0;
+    padding: 1rem;
+    background-color: black;
+    color: white;
+    overflow-y: scroll;
 }

@@ -51,7 +51,7 @@ async def websocket_handler(websocket: WebSocket):
         # This sleep allows keyboard interrupts to kill the application
         await asyncio.sleep(0.01)
         auv_message = queue_to_frontend.get()
-        print("\033[34mFRONTEND:\033[0m Message from AUV in queue: \n" + "     " + auv_message)
+        print("\033[34mFRONTEND:\033[0m Message to frontend in queue: \n" + "     " + auv_message)
         await websocket.send_text(str(auv_message))
 
 class MotorTest(BaseModel):
@@ -65,10 +65,10 @@ async def motor_test(data: MotorTest):
     motor_type = data.motor
     speed = data.speed
     duration = data.duration
-    custom_log("Motor Test: ")
-    custom_log("     Type: " + motor_type)
-    custom_log("     Speed: " + speed)
-    custom_log("     Duration: " + duration)
+    custom_log(f"Motor Test: \n \
+         Type: {motor_type} \n \
+         Speed: {speed} \n \
+         Duration: {duration}")
     backend.test_motor(motor_type, speed, duration)
     return {
         "message": f"Test motor {motor_type} at speed {speed} for duration {duration} seconds received and processed",
@@ -97,11 +97,11 @@ async def set_pid_constants(axis: str, data: PIDConstants):
     p_constant = data.p
     i_constant = data.i
     d_constant = data.d
-    custom_log("PID Constants: \n \
-            Axis: + ${pid_axis} \
-            P: + ${p_constant} \
-            I: + ${i_constant} \
-            D: + ${d_constant}")
+    custom_log(f"PID Constants: \n \
+            Axis: {pid_axis} \n \
+            P: {p_constant} \n \
+            I: {i_constant} \n \
+            D: {d_constant}")
     backend.send_pid_update(pid_axis, p_constant, i_constant, d_constant)
     return {"status": f"{axis.capitalize()} PID constants set"}
 

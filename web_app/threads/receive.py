@@ -108,7 +108,7 @@ class Receive_Thread(threading.Thread):
         """Main threaded loop for the base station."""
 
         while not self._stop_event.is_set():
-            custom_log(": Thread alive")
+            #custom_log("Thread alive")
             time.sleep(0.5)
 
             # Always try to update connection status
