@@ -129,3 +129,11 @@ button {
     color: white;
     overflow-y: scroll;
 }
+
+.status-messages-bottom-bar {
+	border-top: clamp(2px, 0.3rem, 5px) solid black;
+	padding: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

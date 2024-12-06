@@ -22,12 +22,15 @@ const StatusItem = ({ statusType, statusData }) => {
     )
 }
 
-const StatusMessages = ({ statusMessages }) => {
+const StatusMessages = ({ statusMessages, setStatusMessages }) => {
     const messagesBottomRef = useRef(null);
 
     const scrollToMessagesBottom = () => {
         messagesBottomRef.current?.scrollIntoView({ behavior: "smooth" });
     };
+	const clearMessages = () => {
+		setStatusMessages([]);
+	};
 
     useEffect(() => {
         scrollToMessagesBottom()
@@ -42,6 +45,9 @@ const StatusMessages = ({ statusMessages }) => {
 			    ))}
                 <div ref={messagesBottomRef}></div>
 			</ul>
+			<div className="status-messages-bottom-bar">
+				<button onClick={() => clearMessages()}>Clear Output</button>
+			</div>
 		</div>
 	)
 }
@@ -121,7 +127,7 @@ export default function Tests() {
 					</div>
 				</div>
 			</div>
-			<StatusMessages statusMessages={statusMessages}></StatusMessages>
+			<StatusMessages statusMessages={statusMessages} setStatusMessages={ setStatusMessages}></StatusMessages>
         </div>
     );
 }
