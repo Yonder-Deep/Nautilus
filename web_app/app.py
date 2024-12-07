@@ -52,7 +52,11 @@ async def websocket_handler(websocket: WebSocket):
         await asyncio.sleep(0.01)
         auv_message = queue_to_frontend.get()
         print("\033[34mFRONTEND:\033[0m Message to frontend in queue: \n" + "     " + auv_message)
-        await websocket.send_text(str(auv_message))
+        try:
+            await websocket.send_text(str(auv_message))
+        except:
+            custom_log("Websocket send exception, assuming GUI disconnect")
+            return
 
 class MotorTest(BaseModel):
     motor: str
@@ -70,10 +74,6 @@ async def motor_test(data: MotorTest):
          Speed: {speed} \n \
          Duration: {duration}")
     backend.test_motor(motor_type, speed, duration)
-    return {
-        "message": f"Test motor {motor_type} at speed {speed} for duration {duration} seconds received and processed",
-        "status": "Motor test initiated",
-    }
 
 class HeadingTest(BaseModel):
     heading: str
@@ -84,7 +84,6 @@ async def heading_test(data: HeadingTest):
     custom_log("Heading Test: ")
     custom_log("     Target Heading: " + target_heading)
     backend.test_heading(target_heading)
-    return {"status": "Heading test initiated"}
 
 class PIDConstants(BaseModel):
     p: str
@@ -103,7 +102,6 @@ async def set_pid_constants(axis: str, data: PIDConstants):
             I: {i_constant} \n \
             D: {d_constant}")
     backend.send_pid_update(pid_axis, p_constant, i_constant, d_constant)
-    return {"status": f"{axis.capitalize()} PID constants set"}
 
 def custom_log(message: str):
     queue_to_frontend.put(message)
