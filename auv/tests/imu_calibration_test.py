@@ -13,7 +13,7 @@ class IMU_Calibration_Test(threading.Thread):
 
     def run(self):
         while not self.stop_event.is_set():
-            heading, roll, pitch = self.imu.read_euler()
+            #heading, roll, pitch = self.imu.read_euler()
             #system, gyro, accel, mag = self.imu.get_calibration_status()
 
             #self.data = (heading, roll, pitch, system, gyro, accel, mag)

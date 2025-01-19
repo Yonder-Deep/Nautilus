@@ -47,8 +47,11 @@ class IMU:
     def read_euler(self) -> tuple[float, float, float]:
         # Read sensor data
         accel_x, accel_y, accel_z = self.ag_sensor.acceleration
-        gyro_x, gyro_y, gyro_z = self.ag_sensor.gyro - global_vars.gyro_offset_vector
-        mag_x, mag_y, mag_z = self.m_sensor.magnetic - global_vars.mag_offset_vector
+        print(self.ag_sensor.gyro)
+        print(global_vars.gyro_offset_vector)
+
+        gyro_x, gyro_y, gyro_z = np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
+        mag_x, mag_y, mag_z = np.array(self.m_sensor.magnetic) - np.array(global_vars.mag_offset_vector)
 
         # Update the offset for sensor drift correction
         corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(np.array([gyro_x, gyro_y, gyro_z]))
