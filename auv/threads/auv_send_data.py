@@ -1,7 +1,7 @@
 from queue import Queue
 from static import global_vars
 from static import constants
-from missions import *
+# from missions import *
 from api import MotorController
 from api import PressureSensor
 from api import IMU
@@ -261,9 +261,16 @@ class AUV_Send_Data(threading.Thread):
             heading, _, _ = self.imu.read_euler()
             print("HEADING=", heading)
             heading = heading - global_vars.heading_offset
+            if heading < 0: 
+                heading += 360 
+            elif heading > 360: 
+                heading -= 360
+
             return heading
-        except:
+
+        except Exception as e:
             # TODO print statement, something went wrong!
+            print("THIS IS E: ", e)
             global_vars.log("No IMU found.")
             return None
 

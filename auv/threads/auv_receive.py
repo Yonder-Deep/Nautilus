@@ -1,4 +1,4 @@
-from missions import *
+# from missions import *
 from api import MotorController
 from api import PressureSensor
 from api import Crc32
@@ -705,3 +705,5 @@ class AUV_Receive(threading.Thread):
 
         # Call run from heading_test
         heading_test_instance.run(set_heading)
+
+
