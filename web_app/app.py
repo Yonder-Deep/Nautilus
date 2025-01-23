@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Form, Depends, WebSocket, APIRouter
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from queue import Queue
 import uvicorn
 import sys
