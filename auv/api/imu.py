@@ -43,6 +43,7 @@ class IMU:
             10,  # magnetic rejection
             5 * Rate.RATE_1_66K_HZ,  # recovery trigger period = 5 seconds
         )
+        self.prev_time = time.time() 
 
     def read_euler(self) -> tuple[float, float, float]:
         # Read sensor data
@@ -57,11 +58,14 @@ class IMU:
         corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(np.array([gyro_x, gyro_y, gyro_z]))
 
         # Update the AHRS algorithm with the sensor data
+        dt = time.time() - self.prev_time
+        print("dt = ", dt)
+        
         self.ahrs.update(
             np.array([corrected_gyro_x, corrected_gyro_y, corrected_gyro_z]),
             np.array([accel_x, accel_y, accel_z]),
             np.array([mag_x, mag_y, mag_z]),
-            20.0
+            dt
         )
 
         # Get the Euler angles from the AHRS algorithm
@@ -69,4 +73,6 @@ class IMU:
 
         # Return heading, pitch, and roll
         heading, pitch, roll = euler_angles
+
+        self.prev_time = time.time()
         return heading, pitch, roll
