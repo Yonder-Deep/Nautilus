@@ -1,4 +1,4 @@
-# Custom imports
+import threading
 import time
 import board
 from adafruit_lsm6ds import Rate, AccelRange, GyroRange
@@ -6,8 +6,8 @@ from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 import imufusion
 import numpy as np
-import threading
 from static import global_vars
+
 
 class IMU:
     """ Utilize inheritance of the low-level parent class """
@@ -47,20 +47,26 @@ class IMU:
             5 * Rate.RATE_1_66K_HZ,  # recovery trigger period = 5 seconds
         )
 
+        # Shared variables with thread safety
         self.heading = 0.0
         self.pitch = 0.0
         self.roll = 0.0
+        self.lock = threading.Lock()
+
         self.stop_event = threading.Event()
         self.thread = None
 
     def read_euler(self) -> tuple[float, float, float]:
-        """ Return the current heading, pitch, and roll """
-        return self.heading, self.pitch, self.roll
+        """ Return the current heading, pitch, and roll in a thread-safe manner """
+        with self.lock:
+            return self.heading, self.pitch, self.roll
 
     def update_imu_reading(self):
         """ Update IMU readings and compute Euler angles """
         try:
             accel_x, accel_y, accel_z = self.ag_sensor.acceleration
+            print(self.ag_sensor.gyro)
+            print(global_vars.gyro_offset_vector)
 
             gyro_x, gyro_y, gyro_z = (
                 np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
@@ -76,7 +82,6 @@ class IMU:
 
             new_time = time.time()
             dt = new_time - self.prev_time
-            # print("Dt: ", dt)
 
             # Update the AHRS algorithm with the sensor data
             self.ahrs.update(
@@ -89,8 +94,10 @@ class IMU:
             # Get the Euler angles from the AHRS algorithm
             euler_angles = self.ahrs.quaternion.to_euler()
 
-            # Update heading, pitch, and roll
-            self.heading, self.pitch, self.roll = euler_angles
+            # Update heading, pitch, and roll in a thread-safe manner
+            with self.lock:
+                self.heading, self.pitch, self.roll = euler_angles
+
             self.prev_time = new_time
 
         except Exception as e:
