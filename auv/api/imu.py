@@ -76,7 +76,7 @@ class IMU:
 
             new_time = time.time()
             dt = new_time - self.prev_time
-            print("Dt: ", dt)
+            # print("Dt: ", dt)
 
             # Update the AHRS algorithm with the sensor data
             self.ahrs.update(
