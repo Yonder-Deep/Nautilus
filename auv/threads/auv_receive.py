@@ -372,9 +372,9 @@ class AUV_Receive(threading.Thread):
         elif test == 2:  # down
             down_speed = speed
         elif test == 3:  # left
-            turn_speed = speed
-        elif test == 4:  # right
             turn_speed = -1 * speed
+        elif test == 4:  # right
+            turn_speed = speed
 
         time_begin = time.time()
 
