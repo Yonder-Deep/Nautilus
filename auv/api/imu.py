@@ -61,8 +61,6 @@ class IMU:
         """ Update IMU readings and compute Euler angles """
         try:
             accel_x, accel_y, accel_z = self.ag_sensor.acceleration
-            print(self.ag_sensor.gyro)
-            print(global_vars.gyro_offset_vector)
 
             gyro_x, gyro_y, gyro_z = (
                 np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
