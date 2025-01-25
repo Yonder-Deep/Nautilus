@@ -59,7 +59,7 @@ class IMU:
     def read_euler(self) -> tuple[float, float, float]:
         """ Return the current heading, pitch, and roll in a thread-safe manner """
         with self.lock:
-            return self.heading, self.pitch, self.roll
+            return self.roll, self.pitch, self.heading
 
     def update_imu_reading(self):
         """ Update IMU readings and compute Euler angles """
@@ -96,7 +96,7 @@ class IMU:
 
             # Update heading, pitch, and roll in a thread-safe manner
             with self.lock:
-                self.heading, self.pitch, self.roll = euler_angles
+                self.roll, self.pitch, self.heading = euler_angles
 
             self.prev_time = new_time
 
