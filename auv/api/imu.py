@@ -39,7 +39,7 @@ class IMU:
         self.ahrs = imufusion.Ahrs()
 
         self.ahrs.settings = imufusion.Settings(
-            imufusion.CONVENTION_ENU,  # convention
+            imufusion.CONVENTION_NWU,  # convention
             0.5,  # gain
             2000,  # gyroscope range
             10,  # acceleration rejection
