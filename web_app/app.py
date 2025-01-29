@@ -5,12 +5,10 @@ from contextlib import asynccontextmanager
 import uvicorn
 from pydantic import BaseModel
 
-from static import global_vars
-
 # Backend is not a thread since always driven by route handlers in this file
 # Receive and ping are threads since they are driven by radio buffer
 from backend import Backend
-backend = Backend(global_vars.radio)
+backend = Backend()
 
 from threads import Receive_Thread, Ping_Thread
 from queue import Queue

@@ -1,10 +1,11 @@
 # Custom imports
-from Adafruit_BNO055.BNO055 import BNO055 as super_imu
+from static import constants
+import adafruit_bno055 as super_imu
 import time
 from datetime import datetime
 
 
-class IMU(super_imu):
+class IMU():
     """ Utilize inheritance of the low-level parent class """
 
     def __init__(self):

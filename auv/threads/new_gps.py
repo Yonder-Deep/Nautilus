@@ -1,9 +1,7 @@
 import threading
 import time
 import serial
-import string
 import pynmea2
-from static.constants import GPS_PATHS
 
 
 class GPS(threading.Thread):
@@ -19,13 +17,11 @@ class GPS(threading.Thread):
             "latitude": "Unknown",
             "longitude": "Unknown",
         }
-        for gps_path in GPS_PATHS:
-            try:
-                self.ser = serial.Serial(gps_path, baudrate=9600, timeout=10)
-                self.running = True
-                break
-            except:
-                print("No gps found.")
+        try:
+            self.ser = serial.Serial("/dev/tty0", baudrate=9600, timeout=10)
+            self.running = True
+        except:
+            print("No gps found.")
 
     def parse_gps_data(self, sentence):
         try:
