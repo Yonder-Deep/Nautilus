@@ -1,2 +1,2 @@
-import constants
-import global_vars
+from . import constants
+from . import global_vars

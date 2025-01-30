@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from queue import Queue
 import threading
+import json
 
 from config import AUV_IP_ADDRESS, AUV_PING_INTERVAL # The AUV ip address, ping interval, etc.
 from backend import auv_socket_handler
@@ -29,14 +30,22 @@ app.mount("/api", api)
 # Mount the static react frontend
 app.mount("/", StaticFiles(directory="./frontend_gui/dist", html=True), name="public")
 
+async def eatSocket(websocket=WebSocket, socket_status_queue=asyncio.Queue):
+    frontend_message = await websocket.receive_json()
+    await websocket.send_text(str(frontend_message)) 
+    await socket_status_queue.put(True)
+    queue_to_auv.put(frontend_message)
+
 @api.websocket("/websocket")
 async def frontend_websocket(websocket: WebSocket):
     await websocket.accept()
     custom_log("Websocket created")
     await websocket.send_text("I'm alive")
+    socket_status_queue = asyncio.Queue()
+    await socket_status_queue.put(True)
     while True:
         # Sleep so that the async function yields to event loop
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.01)
         # Check queue_to_frontend & send to frontend
         try:
             message_to_frontend = queue_to_frontend.get(block=False)
@@ -44,8 +53,13 @@ async def frontend_websocket(websocket: WebSocket):
                 await websocket.send_text(str(message_to_frontend))
         finally:
             # Check websocket & send to queue_to_auv
-            frontend_message = await websocket.receive_text()
-            queue_to_auv.put(frontend_message)
+            try:
+                socket_available = socket_status_queue.get_nowait()
+                if socket_available:
+                    asyncio.create_task(eatSocket(websocket=websocket, socket_status_queue=socket_status_queue))
+            except asyncio.queues.QueueEmpty:
+                pass
+            continue
 
 def custom_log(message: str):
     queue_to_frontend.put(message)
