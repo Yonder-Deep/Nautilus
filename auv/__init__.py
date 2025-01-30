@@ -1,26 +1,17 @@
-"""
-This class acthreads as the main functionality file for
-the Nautilus AUV. The "mind and brain" of the mission.
-"""
-
-# System importhreads
 import time
+import threading
+from queue import Queue, Empty
 
-# Custom importhreads
-from queue import Queue
 from api import IMU
 from api import PressureSensor
 from api import MotorController
 from threads import GPS
 from api import Indicator
 
-from static import global_vars
 
 from tests import IMU_Calibration_Test
 
-from static import constants
-from static import global_vars
-
+from static import constants, global_vars
 
 def threads_active(threads):
     for t in threads:
@@ -95,38 +86,23 @@ def start_threads(threads, queue, halt):
 
 
 if __name__ == "__main__":  # If we are executing this file as main
-    queue = Queue()
-    halt = [False]
+    queue_to_base = Queue()
+    queue_to_auv = Queue()
 
-    threads = []
-
-    start_threads(threads, queue, halt)
+    websocket_thread = threading.Thread(target="websocket_handler", args=[constants.BASE_IP_ADDRESS, constants.PING_INTERVAL, queue_to_base, queue_to_auv])
 
     try:
-        while threads_active(threads):
-            if global_vars.stop_all_threads:
-                global_vars.stop_all_threads = False
-                stop_threads(threads)
-
-            if global_vars.restart_threads:
-                global_vars.restart_threads = False
-                stop_threads(threads)
-
-                # Reinitialize and restart all threads
-                queue = Queue()
-                halt = [False]
-                threads = []
-
-                start_threads(threads, queue, halt)
-
-            time.sleep(1)
+        while True:
+            time.sleep(0.01)
+            try:
+                queue_to_auv.get(block=False)
+            # Based on commands, execute functions and/or subroutines
+            except Empty:
+                pass
     except KeyboardInterrupt:
-        # kill threads
-        for t in threads:
-            if t.is_alive():
-                t.stop()
+        websocket_thread.join()
 
-    print("waiting to stop")
+    print("Waiting for threads to stop")
     while threads_active(threads):
         time.sleep(0.1)
-    print("done")
+    print("Shutdown done")

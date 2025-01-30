@@ -4,9 +4,8 @@ import threading
 THREAD_SLEEP_DELAY = 0.2  # Since we are the slave to AUV, we must run faster.
 PING_SLEEP_DELAY = 3
 
-CONNECTION_TIMEOUT = (
-    6  # Seconds before BS is determined to have lost radio connection to AUV
-)
+AUV_IP_ADDRESS = 'ws://192.168.100.11'
+AUV_PING_INTERVAL = 6
 
 radio_lock = threading.Lock()  # lock for writing to radio
 

@@ -1,37 +1,47 @@
-class Backend():
-    def test_motor(self, motor, speed=10, duration=10):
-        """Attempts to send the AUV a signal to test a given motor."""
+from websockets.sync.client import connect
+import json
+from queue import Queue
 
-    def test_heading(self, target):
-        """Attempts to send the AUV a signal to test heading PID."""
+# TODO: Ping/Pong heartbeat
+
+def auv_socket_handler(ip_address=str, ping_interval=int, queue_to_frontend=Queue, queue_to_auv=Queue):
+    with connect(uri=ip_address, ping_interval=ping_interval) as websocket:
+        while True:
+            try:
+                message_to_frontend = websocket.recv(timeout=0) # Doesn't block since timeout=0
+                if message_to_frontend:
+                    queue_to_frontend.put(json.load(message_to_frontend))
+            finally:
+                continue
+            try:
+                message_to_auv = queue_to_auv.get(block=False)
+                if message_to_auv:
+                    websocket.send(json.dumps(message_to_auv))
+            finally: continue
     
-    def test_imu_calibration(self):
-        return
+# Async Implementation Experiment: 
 
-    def abort_mission(self):
-        """Attempts to abort the mission for the AUV."""
-
-    def start_mission(self, mission, depth, t):
-        """Attempts to start a mission and send to AUV."""
-
-    def send_halt(self):
-        return
-
-    def send_calibrate_depth(self):
-        return
-
-    def send_calibrate_heading(self):
-        return
-
-    def send_abort(self):
-        return
-    
-    def send_dive(self, depth):
-        return
-
-    def send_pid_update(self, axis, p_constant, i_constant, d_constant):
-        return
-
-    def mission_started(self, index):
-        """When AUV sends mission started, switch to mission mode"""
-        return
+#async def receive_messages(websocket=ClientConnection, queue_to_frontend=Queue):
+#    async for message in websocket:
+#        queue_to_frontend.put(json.loads(message))
+#
+#async def send_messages(websocket=ClientConnection, queue_to_auv=Queue):
+#    while True:
+#        data = queue_to_auv.get()
+#        await websocket.send(json.dumps(data))
+#
+#async def handle_websocket(websocket=ClientConnection, queue_to_frontend=Queue, queue_to_auv=Queue):
+#    return await asyncio.gather(
+#        receive_messages(websocket, queue_to_frontend),
+#        send_messages(websocket, queue_to_auv)
+#    )
+#
+#async def backend_routine(ip_address=str, ping_interval=int, queue_to_frontend=Queue, queue_to_auv=Queue):
+#    async for websocket in connect(ip_address, ping_interval=ping_interval):
+#        try:
+#            handlers = handle_websocket(websocket, queue_to_frontend, queue_to_auv)
+#            while True:
+#                message = queue_to_auv.get();
+#
+#        except ConnectionClosed:
+#            continue

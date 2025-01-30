@@ -1,3 +1,7 @@
+# Communication with base
+BASE_IP_ADDRESS="192.168.100.10"
+PING_INTERVAL=6 
+
 # Constants for the AUV
 # encode sizes and generalizations
 IMU_PATH = "/dev/serial0"
