@@ -1,73 +1,41 @@
-from glob import glob
-import sys
 import os
-
-# System imports
-import serial
 import time
 import threading
 from queue import Queue
 
-# Custom imports
 from api import Crc32
-from api import Radio
 from threads import GPS
 from api import decode_command
-from api import xbox
 from static import constants
 from static import global_vars
 
-
-class BaseStation_Receive(threading.Thread):
-    def __init__(self, radio, in_q=None, out_q=None):
+class Receive_Thread(threading.Thread):
+    def __init__(self, radio, out_q=None):
         """Initialize Serial Port and Class Variables
         debug: debugging flag"""
+        custom_log(": Radio receiving thread initialized.")
 
         self._stop_event = threading.Event()
 
-        # Call super-class constructor
-        # Instance variables
         self.gps = None
         self.gps_connected = False
         self.latitude = 0
         self.longitude = 0
-
-        self.in_q = in_q
         self.out_q = out_q
         self.gps_q = Queue()
         self.manual_mode = True
         self.time_since_last_ping = 0.0
-
-        # Call super-class constructor
-        threading.Thread.__init__(self)
-
-        # Try to assign our radio object
         self.radio = radio
-
+        
         try:
             self.gps = GPS(self.gps_q)
             global_vars.log(self.out_q, "Successfully connected to GPS socket service.")
             self.gps_connected = True
         except:
-            global_vars.log(
-                self.out_q, "Warning: Could not connect to a GPS socket service."
-            )
+            global_vars.log(self.out_q, "Warning: Could not connect to a GPS socket service.")
 
-    def calibrate_controller(self):
-        """Instantiates a new Xbox Controller Instance"""
-        # Construct joystick and check that the driver/controller are working.
-        self.joy = None
-        global_vars.log(self.out_q, "Attempting to connect xbox controller")
-        while self.joy is None:
-            self.main.update()
-            try:
-                # self.joy = xbox.Joystick() TODO
-                raise Exception()
-            except Exception as e:
-                continue
-        global_vars.log(self.out_q, "Xbox controller is connected.")
-
-    '''
+        threading.Thread.__init__(self)
+    
     def auv_data(
         self,
         heading,
@@ -135,21 +103,12 @@ class BaseStation_Receive(threading.Thread):
             global_vars.log(
                 self.out_q, "The AUV did not report its latitude and longitude."
             )
-        '''
-
-    def mission_failed(self):
-        """Mission return failure from AUV."""
-        self.manual_mode = True
-        self.out_q.put("set_vehicle(True)")
-        global_vars.log(self.out_q, "Enforced switch to manual mode.")
-
-        global_vars.log(self.out_q, "The current mission has failed.")
 
     def run(self):
         """Main threaded loop for the base station."""
-        # Begin our main loop for this thread.
 
         while not self._stop_event.is_set():
+            #custom_log("Thread alive")
             time.sleep(0.5)
 
             # Always try to update connection status
@@ -174,7 +133,7 @@ class BaseStation_Receive(threading.Thread):
                     self.radio.close()
 
                 # Try to assign us a new Radio object
-                global_vars.connect_to_radio(self.out_q)
+                global_vars.connect_to_radio(self.out_q, verbose=False)
                 self.radio = global_vars.radio
 
             # If we have a Radio object device, but we aren't connected to the AUV
@@ -188,15 +147,15 @@ class BaseStation_Receive(threading.Thread):
                         if not global_vars.downloading_file and len(line) == (
                             constants.COMM_BUFFER_WIDTH
                         ):
-                            print("read line")
+                            custom_log("read line")
                             intline = int.from_bytes(line, "big")
 
                             checksum = Crc32.confirm(intline)
 
                             if not checksum:
-                                print("invalid line*************")
-                                print(bin(intline))
-                                print(bin(intline >> 32))
+                                custom_log("invalid line*************")
+                                custom_log(bin(intline))
+                                custom_log(bin(intline >> 32))
                                 self.radio.flush()
                                 self.radio.close()
                                 self.radio, output_msg = global_vars.connect_to_radio(
@@ -222,7 +181,7 @@ class BaseStation_Receive(threading.Thread):
                             # Data cases
                             else:
                                 header = intline >> (constants.HEADER_SHIFT)
-                                print("HEADER_STR", header)
+                                custom_log("HEADER_STR", header)
 
                                 if header == constants.FILE_DATA:
                                     global_vars.downloading_file = True
@@ -239,33 +198,10 @@ class BaseStation_Receive(threading.Thread):
 
                             line = self.radio.read(constants.COMM_BUFFER_WIDTH)
 
-                        elif global_vars.downloading_file:
-                            line = self.radio.read(constants.FILE_DL_PACKET_SIZE)
-                            intline = int.from_bytes(line, "big")
-                            # Get first packet containing final file size
-                            if global_vars.file_size == 0:
-                                global_vars.file_size = intline
-                                continue
-                            global_vars.file_packets_received += 1
-                            global_vars.packet_received = True
-                            # Write to file
-                            file.write(line)
-                            # Get current file size
-                            file.seek(0, os.SEEK_END)
-                            curr_file_size = file.tell()
-                            # Return to normal operations when correct file size reached
-                            if curr_file_size >= global_vars.file_size:
-                                file.close()
-                                global_vars.downloading_file = False
-                                global_vars.file_size = 0
-                                global_vars.packet_received = False
-                                global_vars.file_packets_received = 0
-                                line = self.radio.read(constants.COMM_BUFFER_WIDTH)
-
                     self.radio.flush()
 
                 except Exception as e:
-                    print(str(e))
+                    custom_log(str(e))
                     self.radio.flush()
                     self.radio.close()
                     self.radio = None
@@ -297,4 +233,7 @@ class BaseStation_Receive(threading.Thread):
 
     def join(self, timeout=None):
         self.stop()
-        super(BaseStation_Receive, self).join(timeout)
+        super(Receive_Thread, self).join(timeout)
+
+def custom_log(message: str):
+    print("\033[95mRECEIVE:\033[0m " + message)
