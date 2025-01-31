@@ -5,25 +5,11 @@ from queue import Queue, Empty
 from api import IMU
 from api import PressureSensor
 from api import MotorController
-from threads import GPS
 from api import Indicator
 
-
-from tests import IMU_Calibration_Test
-
+from threads import server as websocket_thread
 from static import constants, global_vars
-
-def threads_active(threads):
-    for t in threads:
-        if t.is_alive():
-            return True
-    return False
-
-
-def stop_threads(threads):
-    for t in threads:
-        t.stop()
-
+from tests import IMU_Calibration_Test, Heading_Test, motor_test
 
 def start_threads(threads, queue, halt):
     gps_q = Queue()
@@ -68,17 +54,12 @@ def start_threads(threads, queue, halt):
         imu = None
         print("IMU is not connected to the AUV on IMU_PATH.")
 
-    mc = MotorController()
+    motor_controller = MotorController()
 
     # auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
     auv_auto_thread = None
 
     imu_calibration_test = IMU_Calibration_Test(imu)
-
-    threads = []
-
-    threads.append(auv_auto_thread)
-    threads.append(imu_calibration_test)
 
     imu_calibration_test.start()
     if gps is not None:
@@ -88,21 +69,47 @@ def start_threads(threads, queue, halt):
 if __name__ == "__main__":  # If we are executing this file as main
     queue_to_base = Queue()
     queue_to_auv = Queue()
+    logging_queue = Queue()
 
-    websocket_thread = threading.Thread(target="websocket_handler", args=[constants.BASE_IP_ADDRESS, constants.PING_INTERVAL, queue_to_base, queue_to_auv])
+    stop_event = threading.Event()
+    websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, constants.SOCKET_IP, constants.SOCKET_PORT, constants.PING_INTERVAL, queue_to_base, queue_to_auv, True])
+    websocket_thread.start()
 
+    print("Beginning main loop")
     try:
         while True:
             time.sleep(0.01)
+
             try:
-                queue_to_auv.get(block=False)
-            # Based on commands, execute functions and/or subroutines
+                log_message = logging_queue.get_nowait()
+                if log_message:
+                    print(log_message)
             except Empty:
                 pass
-    except KeyboardInterrupt:
-        websocket_thread.join()
 
-    print("Waiting for threads to stop")
-    while threads_active(threads):
-        time.sleep(0.1)
-    print("Shutdown done")
+            try:
+                message_from_base = queue_to_auv.get_nowait()
+                # Based on commands, execute functions and/or subroutines
+                if message_from_base :
+                    print("Message from base: " + str(message_from_base))
+                    command = message_from_base["command"]
+                    if command == "pidConstants":
+                        print("Setting PID Constants")
+                    elif command == "motorTest":
+                        print("Starting motor test")
+                        motor_test = threading.Thread(motor_test)
+                        motor_test.start()
+                    elif command == "headingTest":
+                        print("Starting heading test")
+                        # TODO: Make heading test a function w/ args
+                        heading_test = Heading_Test()
+                        heading_test.start()
+
+            except Empty:
+                pass
+
+    except KeyboardInterrupt:
+        stop_event.set()
+        print("Joining threads")
+        websocket_thread.join()
+        print("All threads joined, process exiting")

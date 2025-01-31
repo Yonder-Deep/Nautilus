@@ -15,11 +15,14 @@ queue_to_auv = Queue()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    custom_log("Initializing backend routine")
-    backend_thread = threading.Thread(target=auv_socket_handler, args=[AUV_IP_ADDRESS, AUV_PING_INTERVAL, queue_to_frontend, queue_to_auv])
+    custom_log("Initializing auv socket handler")
+    stop_event = threading.Event()
+    backend_thread = threading.Thread(target=auv_socket_handler, args=[stop_event, AUV_IP_ADDRESS, AUV_PING_INTERVAL, queue_to_frontend, queue_to_auv])
+    backend_thread.start()
     yield
+    custom_log("Waiting for websocket thread to join")
+    stop_event.set()
     backend_thread.join()
-    custom_log("Shutting down backend websocket thread")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -50,6 +53,7 @@ async def frontend_websocket(websocket: WebSocket):
         try:
             message_to_frontend = queue_to_frontend.get(block=False)
             if message_to_frontend:
+                print("Message to frontend: " + message_to_frontend)
                 await websocket.send_text(str(message_to_frontend))
         finally:
             # Check websocket & send to queue_to_auv

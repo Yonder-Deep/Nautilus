@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
 export const ParametersForm = ({ websocket }) => {
-    const [axis, setAxis] = useState('');
+    const [pidAxis, setPidAxis] = useState('');
     const [constantP, setConstantP] = useState('');
     const [constantI, setConstantI] = useState('');
     const [constantD, setConstantD] = useState('');
     const makePidRequest = () => {
-        if (!axis || !constantP || !constantI || !constantD) { return; }
+        if (!pidAxis || !constantP || !constantI || !constantD) { return; }
         const pidConstants = {
-            axis: '' + axis,
+            axis: '' + pidAxis,
             p: '' + constantP.target.value,
             i: '' + constantI.target.value,
             d: '' + constantD.target.value
@@ -24,7 +24,7 @@ export const ParametersForm = ({ websocket }) => {
         <div className="parameters-form">
             <h2>Set PID Constants</h2>
             <div className="form-body">
-                <select defaultValue={"Default"} onChange={e => setAxis(e)}>
+                <select defaultValue={"Default"} onChange={e => setPidAxis(e)}>
                     <option value="Default" disabled>Select Axis</option>
                     <option value="Pitch">Pitch</option>
                     <option value="Yaw">Yaw</option>
@@ -81,12 +81,9 @@ export const HeadingTestForm = ({ websocket }) => {
     const [targetHeading, setTargetHeading] = useState('');
     const headingRequest = () => {
         console.log("Making heading request.")
-        const headingTest = {
-            heading: targetHeading
-        }
         const request = {
             command: "headingTest",
-            content: headingTest
+            content: targetHeading.target.value 
         };
         websocket.send(JSON.stringify(request));
     }

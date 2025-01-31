@@ -1,5 +1,6 @@
 # Communication with base
-BASE_IP_ADDRESS="192.168.100.10"
+SOCKET_IP= "localhost"#"192.168.100.10"
+SOCKET_PORT=8080
 PING_INTERVAL=6 
 
 # Constants for the AUV
