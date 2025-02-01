@@ -45,7 +45,7 @@ class Pitch_Test(threading.Thread):
         print(f"current pitch = {curr_pitch}\n")
         pid_output = self.pitch_pid.pid(curr_pitch, pitch=True)
 
-        self.mc.update_motor_speeds([0, 0, pid_output, pid_output])
+        self.mc.update_motor_speeds([0, 0, pid_output, -pid_output])
 
         return pid_output
 
