@@ -19,15 +19,24 @@ Important notes:
 
 To start, just run:
 ```bash
+# On Linux/Mac Systems:
+cd web_app
 . build.sh
+
+# On Windows:
+cd web_app
+./build_win.bat
 ```
 It will create a python virtual environment, activate it, install the required python scripts, then install the npm dependencies and build the static files for the React frontend with vite.
-If you run into problems with build.sh, open it and troubleshoot with the comments in there.
+If you run into problems with the build script, open it and troubleshoot with the comments in there.
 You can rerun build.sh without breaking stuff.
 
 To start the app, you can do either:
 ```bash
+# Mac/Linux
 . startup.sh
+# Windows
+./startup_win.bat
 ```
 or
 ```bash
@@ -36,7 +45,10 @@ python3 app.py
 Depending on what python version you have, you may have to edit startup.sh to be python or python3.
 If you get errors about python modules not being loaded, ensure the virtual environment is activated via:
 ```bash
+# Mac/Linux
 . .venv/bin/activate
+# Windows
+.\.venv\Scripts\activate
 ```
 For other runtime dependency issues, open build.sh and troubleshoot from there.
 
