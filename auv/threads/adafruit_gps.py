@@ -2,11 +2,9 @@ import threading
 import time
 import serial
 import adafruit_gps
-from static.constants import GPS_PATHS
-
 
 class GPS(threading.Thread):
-    """Class for basic GPS functionality for the Adafruit GPS sensor"""
+    """Class for basic GPS functionality"""
 
     def __init__(self, out_queue):
         threading.Thread.__init__(self)

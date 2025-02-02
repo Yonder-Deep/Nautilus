@@ -22,6 +22,36 @@ const StatusItem = ({ statusType, statusData }) => {
     )
 }
 
+const StatusMessages = ({ statusMessages, setStatusMessages }) => {
+    const messagesBottomRef = useRef(null);
+
+    const scrollToMessagesBottom = () => {
+        messagesBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+	const clearMessages = () => {
+		setStatusMessages([]);
+	};
+
+    useEffect(() => {
+        scrollToMessagesBottom()
+    }, [statusMessages]);
+
+	return (
+		<div className="status-messages-container">
+			<h2>Status Messages</h2>
+			<ul className="status-messages">
+				{statusMessages.map((message, index) => (
+				<li key={index}>{message}</li>
+			    ))}
+                <div ref={messagesBottomRef}></div>
+			</ul>
+			<div className="status-messages-bottom-bar">
+				<button onClick={() => clearMessages()}>Clear Output</button>
+			</div>
+		</div>
+	)
+}
+
 export default function Tests() {
     // These are the only state variables that need full scope
     const [imuData, setImuData] = useState([
@@ -34,86 +64,55 @@ export default function Tests() {
         { title: 'Roll', value: '', id: 2 },
         { title: 'Pitch', value: '', id: 3 }
     ]);
+    const [websocket, setWebsocket] = useState(null);
+	const [statusMessages, setStatusMessages] = useState([]);
 
-    // Handle all POST requests to set PID or run tests
-    const handlePostRequest = async (url, data) => {
-        console.log("Attempting post of data: " + JSON.stringify(data));
-        try {
-            const response = await fetch("http://localhost:6543/api/" + url, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-            console.log(response.data);
-        } catch (error) {
-            console.error('Error posting data:', error);
-        }
-    };
+    const handleSocketData = (event) => {
+        console.log("Socket data arrived: " + event.data)
+        setStatusMessages(statusMessages => [...statusMessages, event.data]);
+    }
 
-    // Register socket handlers for server-sent data
+    // Register socket handler for server-sent data
     const connection = useRef(null);
     useEffect(() => {
-        /*const socket = new WebSocket(window.location.host + "/api/");
+        const socket = new WebSocket("/api/websocket");
 
-        socket.addEventListener("imuData", handleImuData);
-        socket.addEventListener("insData", handleInsData);
+        socket.addEventListener("open", () => setWebsocket(socket));
+        socket.addEventListener("message", handleSocketData);
 
         connection.current = socket;
 
-        return () => connection.close();*/
-
-        // Fetch polling with http requests every second
-        const pollInterval = 1000;
-        const dataPoll = setInterval(() => {
-            const fetchData = async () => {
-                const imuResponse = await fetch("http://localhost:6543/api/imu_calibration_data");
-                const imuBody = await imuResponse.json();
-                setImuData([
-                    { title: 'Magnetometer', value: imuBody.magnetometer, id: 1 },
-                    { title: 'Accelerometer', value: imuBody.accelerometer, id: 2 },
-                    { title: 'Gyroscope', value: imuBody.gyroscope, id: 3 }
-                ]);
-                const insResponse = await fetch("http://localhost:6543/api/ins_data");
-                const insBody = await insResponse.json();
-                setInsData([
-                    { title: 'Heading', value: insBody.heading, id: 1 },
-                    { title: 'Roll', value: insBody.roll, id: 2 },
-                    { title: 'Pitch', value: insBody.pitch, id: 3 }
-                ]);
-            }
-            fetchData();
-        }, pollInterval);
-
-        return () => clearInterval(dataPoll);
+        return () => connection.current.close();
     }, [useState]);
 
     return (
-        <>
-            <h1>Testing and Calibration</h1>
-            <div className="upper-section">
-                <div>
-                    <Graph></Graph>
-                </div>
-                <div>
-                    <Graph></Graph>
-                </div>
-                <div>
-                    <Graph></Graph>
-                </div>
-            </div>
-            <div className="lower-section">
-                <div className="status-section">
-                    <StatusItem statusType="IMU Status" statusData={imuData}></StatusItem>
-                    <StatusItem statusType="INS Status" statusData={insData}></StatusItem>
-                </div>
-                <div className="testing-section">
-                    <ParametersForm handlePostRequest={handlePostRequest}></ParametersForm>
-                    <MotorTestForm handlePostRequest={handlePostRequest}></MotorTestForm>
-                    <HeadingTestForm handlePostRequest={handlePostRequest}></HeadingTestForm>
-                </div>
-            </div>
-        </>
+        <div className = "parent-container">
+			<div className="main-section">
+				<h1>Testing and Calibration</h1>
+				<div className="upper-section">
+					<div>
+						<Graph></Graph>
+					</div>
+					<div>
+						<Graph></Graph>
+					</div>
+					<div>
+						<Graph></Graph>
+					</div>
+				</div>
+				<div className="lower-section">
+					<div className="status-section">							
+						<StatusItem statusType="IMU Status" statusData={imuData}></StatusItem>
+						<StatusItem statusType="INS Status" statusData={insData}></StatusItem>
+					</div>
+					<div className="testing-section">
+						<ParametersForm websocket={websocket}></ParametersForm>
+						<MotorTestForm websocket={websocket}></MotorTestForm>
+						<HeadingTestForm websocket={websocket}></HeadingTestForm>
+					</div>
+				</div>
+			</div>
+			<StatusMessages statusMessages={statusMessages} setStatusMessages={ setStatusMessages}></StatusMessages>
+        </div>
     );
 }
