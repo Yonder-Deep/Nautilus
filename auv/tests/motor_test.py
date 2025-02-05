@@ -1,9 +1,9 @@
 from api import MotorController
 import time
 
-mc = MotorController()
-
-def motor_test():
+def motor_test(mc=MotorController):
+    """Blocking test than runs motors for 5 seconds each
+    """
     mc.update_motor_speeds(
         [
             0,

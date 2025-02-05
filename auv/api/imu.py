@@ -3,7 +3,7 @@ from static import constants
 import adafruit_bno055 as super_imu
 import threading
 import time
-import board
+# import board
 from adafruit_lsm6ds import Rate, AccelRange, GyroRange
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL

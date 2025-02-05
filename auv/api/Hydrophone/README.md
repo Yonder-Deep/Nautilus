@@ -1,2 +1,0 @@
-# Hydrophone API
-This folder contains all relevant python code/tester code to interact with the HTI-MIN-96 Hydrophone. It will eventually interact with the Teensy 4.1 through some sort of connection (Probably some Serial connection on /dev/ttyACM0)

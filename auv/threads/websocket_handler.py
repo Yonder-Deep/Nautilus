@@ -62,6 +62,12 @@ def custom_log(message=str, verbose=bool, queue=Queue):
         queue.put("Websocket Handler: " + message)
 
 def server(stop_event=threading.Event, logging_event=threading.Event, websocket_interface=str, websocket_port=int, ping_interval=int, queue_to_base=Queue, queue_to_auv=Queue, verbose=bool):
+    """ Websocket server that binds to the given network interface & port.
+        Anything in queue_to_base will be forwarded into the websocket.
+        Anything that shows up in the websocket will be forwarded to queue_to_auv.
+        Before joining thread, be sure to: stop_event.set()
+    """
+
     print("AUV websocket server is alive")
     """ Partially initialize these functions so that the socket handler
         be passed as a single callable to the serve() function

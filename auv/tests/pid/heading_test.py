@@ -2,13 +2,10 @@
 
 import threading
 from api import PID
-from api import Motor
 from api import IMU
 from static import constants
 import time
 from api import MotorController
-import pigpio
-
 
 # Constants
 # Indices for motor array
@@ -22,7 +19,6 @@ FORWARD_GPIO_PIN = 4
 TURN_GPIO_PIN = 11
 FRONT_GPIO_PIN = 18
 BACK_GPIO_PIN = 24
-
 
 class Heading_Test(threading.Thread):
     """
@@ -93,11 +89,7 @@ class Heading_Test(threading.Thread):
         while not reached_target:
             # end test after 20 seconds
             if time.time() - start_time > 20:
-                #self.mc.update_motor_speeds([0, 0, 0, 0])
-                # self.motors[FORWARD_MOTOR_IDX].set_speed(0)  # reset all motors to 0 speed
-                # self.motors[TURN_MOTOR_IDX].set_speed(0)
-                # self.motors[BACK_MOTOR_IDX].set_speed(0)
-                # self.motors[FRONT_MOTOR_IDX].set_speed(0)
+                self.mc.update_motor_speeds([0, 0, 0, 0])
                 break
 
             # update_motor()
@@ -116,7 +108,4 @@ class Heading_Test(threading.Thread):
             #         reached_target = True
             #         break
 
-        # stop motors
         self.mc.update_motor_speeds([0, 0, 0, 0])
-
-        #self.motors[TURN_MOTOR_IDX].set_speed(0)

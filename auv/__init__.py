@@ -7,14 +7,12 @@ from api import PressureSensor
 from api import MotorController
 from api import Indicator
 
-from threads import server as websocket_thread
+from threads import websocket_thread
 from static import constants, global_vars
 from tests import IMU_Calibration_Test, Heading_Test, motor_test
 
 def start_threads(threads, queue, halt):
     gps_q = Queue()
-    autonav_to_receive = Queue()
-    receive_to_autonav = Queue()
 
     # Initialize hardware
     try:
@@ -66,12 +64,18 @@ def start_threads(threads, queue, halt):
         gps.start()
 
 
-if __name__ == "__main__":  # If we are executing this file as main
+if __name__ == "__main__":
     queue_to_base = Queue()
     queue_to_auv = Queue()
     logging_queue = Queue()
 
     stop_event = threading.Event()
+
+    indicator = Indicator()
+    motor_controller = MotorController()
+    imu = IMU
+    imu_calibration_test = IMU_Calibration_Test(imu)
+
     websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, constants.SOCKET_IP, constants.SOCKET_PORT, constants.PING_INTERVAL, queue_to_base, queue_to_auv, True])
     websocket_thread.start()
 
