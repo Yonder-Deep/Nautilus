@@ -310,8 +310,14 @@ class AUV_Receive(threading.Thread):
     def timeout(self):
         constants.LOCK.acquire()
         # Line read was EMPTY, but 'before' connection status was successful? Connection verification failed.
+        
+        curr_heading = self.get_heading()
+        print("Heading:", curr_heading)
         if global_vars.connected is True:
             global_vars.log("Lost connection to BS.")
+                
+            #curr_heading = self.get_heading()
+            #print("Heading:", curr_heading)
 
             # reset motor speed to 0 immediately and flush buffer
             self.mc.update_motor_speeds([0, 0, 0, 0])

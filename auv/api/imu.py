@@ -69,4 +69,5 @@ class IMU:
 
         # Return heading, pitch, and roll
         heading, pitch, roll = euler_angles
+        print("Heading", heading)
         return heading, pitch, roll
