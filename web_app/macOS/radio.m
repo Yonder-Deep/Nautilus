@@ -78,6 +78,7 @@ char* find_radio() {
             NSLog(@"Device file path: %s", deviceFilePath);
             char* finalResult = malloc(strlen(deviceFilePath));
             strcpy(finalResult, deviceFilePath);
+            NSLog(@"Pointer address: %p", finalResult);
             return finalResult;
         } else {
             NSLog(@"Radio device not found.");
@@ -87,7 +88,13 @@ char* find_radio() {
     }
     char* notFound = malloc(21);
     strcpy(notFound, "Radio device not found");
+    NSLog(@"Pointer address: %p", notFound);
     return notFound;
+}
+
+void free_ptr(char* ptr) {
+    NSLog(@"Freeing %p", ptr);
+    free(ptr);
 }
 
 int main() {
