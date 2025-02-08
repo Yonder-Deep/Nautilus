@@ -4,7 +4,7 @@ import threading
 THREAD_SLEEP_DELAY = 0.2  # Since we are the slave to AUV, we must run faster.
 PING_SLEEP_DELAY = 3
 
-AUV_IP_ADDRESS = 'ws://localhost:8080'#'192.168.100.11'
+AUV_IP_ADDRESS = 'ws://192.168.100.10:8080'#'192.168.100.11'
 
 AUV_PING_INTERVAL = 6
 

@@ -2,11 +2,12 @@
 #import <IOKit/IOTypes.h>
 #import <IOKit/IOKitKeys.h>
 #import <IOKit/usb/IOUSBLib.h>
+#import <IOKit/IOBSD.h>
 #import <sys/param.h>
 #import <paths.h>
 
-int main() {
-    NSLog(@"Hello World");
+char* find_radio() {
+    NSLog(@"Finding path to radio device...");
 
     // Create subdictionary key-pair to match radio USB UART
     CFMutableDictionaryRef subDict;
@@ -37,9 +38,11 @@ int main() {
     io_string_t servicePath;
     IORegistryEntryGetPath(matchedService, kIOServicePlane, servicePath);
     NSLog(@"Service Path: %s", servicePath);
+    NSLog(@"USB Path: %d", IORegistryEntryGetPath(matchedService, kIOPowerPlane, servicePath));
 
-    // This is the name appended to the filepath: /dev/tty.usbserial-[BSDName]
-    CFStringRef deviceBSDName_cf = (CFStringRef) IORegistryEntrySearchCFProperty(matchedService,
+    // This is the [BSDName] appended to the filepath: /dev/tty.usbserial-[BSDName]
+    CFStringRef deviceBSDName_cf = (CFStringRef) IORegistryEntrySearchCFProperty(
+            matchedService,
             kIOServicePlane,
             CFSTR (kUSBSerialNumberString),
             kCFAllocatorDefault,
@@ -50,19 +53,22 @@ int main() {
     size_t devPathLength;
     Boolean gotString = false;
 
-    /*CFTypeRef deviceNameAsCFString;
-    deviceNameAsCFString = IORegistryEntryCreateCFProperty (
+    /* This commented part is from the Apple docs but always comes up null    
+    CFTypeRef deviceNameAsCFString;
+    deviceNameAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty (
             matchedService,
+            kIOServicePlane,
             CFSTR(kIOBSDNameKey),
-            kCFAllocatorDefault, 0);
+            kCFAllocatorDefault,
+            kIORegistryIterateRecursively);
     NSLog(@"hi");
     NSLog(@"%@", deviceNameAsCFString);*/
     if (deviceBSDName_cf) {
-        NSLog(@"Hello World 4");
+        NSLog(@"BSDName found, finding path...");
         char deviceFilePath[MAXPATHLEN];
         devPathLength = strlen(_PATH_DEV); //_PATH_DEV defined in paths.h
         strcpy(deviceFilePath, _PATH_DEV);
-        strcat(deviceFilePath, "r");
+        strcat(deviceFilePath, "tty.usbserial-");
         gotString = CFStringGetCString(deviceBSDName_cf,
                 deviceFilePath + strlen(deviceFilePath),
                 MAXPATHLEN - strlen(deviceFilePath),
@@ -70,8 +76,23 @@ int main() {
         
         if (gotString) {
             NSLog(@"Device file path: %s", deviceFilePath);
+            char* finalResult = malloc(strlen(deviceFilePath));
+            strcpy(finalResult, deviceFilePath);
+            return finalResult;
+        } else {
+            NSLog(@"Radio device not found.");
         }
+    } else {
+        NSLog(@"Radio device not found.");
     }
+    char* notFound = malloc(21);
+    strcpy(notFound, "Radio device not found");
+    return notFound;
+}
 
-	return 0;
+int main() {
+    char* result = find_radio();
+    NSLog(@"Result: %s", result);
+    free(result);
+    return 0;
 }

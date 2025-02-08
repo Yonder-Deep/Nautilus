@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 import asyncio
 from contextlib import asynccontextmanager
 import uvicorn
-from queue import Queue
+from queue import Queue, Empty
 import threading
 import json
 
@@ -55,15 +55,16 @@ async def frontend_websocket(websocket: WebSocket):
             if message_to_frontend:
                 print("Message to frontend: " + message_to_frontend)
                 await websocket.send_text(str(message_to_frontend))
-        finally:
-            # Check websocket & send to queue_to_auv
-            try:
-                socket_available = socket_status_queue.get_nowait()
-                if socket_available:
-                    asyncio.create_task(eatSocket(websocket=websocket, socket_status_queue=socket_status_queue))
-            except asyncio.queues.QueueEmpty:
-                pass
-            continue
+        except Empty:
+            pass
+        # Check websocket & send to queue_to_auv
+        try:
+            socket_available = socket_status_queue.get_nowait()
+            if socket_available:
+                asyncio.create_task(eatSocket(websocket=websocket, socket_status_queue=socket_status_queue))
+        except asyncio.queues.QueueEmpty:
+            pass
+        continue
 
 def custom_log(message: str):
     queue_to_frontend.put(message)
