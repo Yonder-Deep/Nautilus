@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="ocean">
+  <static>true</static>
+  <link name="ocean_link">
+
+    <!-- Water Surface (Transparent Blue) -->
+    <visual name="ocean_surface">
+      <pose>0 0 0 0 0 0</pose>  <!-- Water at Z=0 -->
+      <cast_shadows>false</cast_shadows>
+      <geometry>
+        <plane>
+          <size>2000 2000</size>
+        </plane>
+      </geometry>
+      <material>
+        <ambient>0.0 0.3 0.7 0.3</ambient>   <!-- Light blue tint -->
+        <diffuse>0.0 0.3 1.0 0.4</diffuse>   <!-- Transparent water -->
+        <specular>0.5 0.5 0.5 0.3</specular> <!-- Soft shine -->
+        <emissive>0.0 0.0 0.0 1</emissive>   <!-- No glow -->
+        <!-- <two_sided>true</two_sided> --> <!-- Makes the plane two-sided -->
+      </material>
+    </visual>
+
+    <!-- Underwater Visual Effect -->
+    <!-- TODO Underwater effect does not work -->
+    <visual name="underwater_color_effect">
+      <pose>0 0 -1 0 0 0</pose>  <!-- Slightly below surface -->
+      <cast_shadows>false</cast_shadows>
+      <geometry>
+        <box>
+          <size>2000 2000 500</size>  <!-- Large box under water -->
+        </box>
+      </geometry>
+      <material>
+        <ambient>0.0 0.1 0.5 0.6</ambient>   <!-- Darker blue underwater -->
+        <diffuse>0.0 0.3 0.8 0.5</diffuse>   <!-- Transparent underwater -->
+        <specular>0.2 0.2 0.3 0.1</specular> <!-- Low reflection -->
+        <emissive>0.0 0.1 0.2 0.1</emissive> <!-- Soft glow underwater -->
+      </material>
+    </visual>
+  </link>
+</model>
+</sdf>

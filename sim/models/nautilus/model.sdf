@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="AUV">
+    <link name="base_link">
+      <inertial>
+        <mass>28.3</mass>
+        <inertia>
+          <ixx>7.265351</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>7.265351</iyy>
+          <iyz>0</iyz>
+          <izz>0.096425</izz>
+        </inertia>
+      </inertial>
+
+      <collision name="main_body_buoyancy">
+        <!-- Allow the buoyancy to be slightly above COG -->
+        <pose>0 0 0.007 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.75 0.1651 0.1651</size>
+          </box>
+        </geometry>
+      </collision> 
+
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>meshes/main_body.stl</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.5 0.5 0.5 1</ambient>
+          <diffuse>0.7 0.3 0.2 1</diffuse>
+          <specular>0.2 0.2 0.2 1</specular>
+        </material>
+      </visual>
+
+      <sensor name="imu_sensor" type="imu">
+        <always_on>1</always_on>
+        <update_rate>1</update_rate>
+        <visualize>true</visualize>
+        <topic>imu</topic>
+      </sensor>
+
+      <sensor name="navsat" type="navsat">
+        <always_on>1</always_on>
+        <update_rate>1</update_rate>
+        <topic>navsat</topic>
+      </sensor>
+    </link>
+  </model>
+</sdf>

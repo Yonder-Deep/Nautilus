@@ -3,7 +3,7 @@
 
   The following plugins are used:
 
-  * Buoyancy: applies buoyancy forces
+  * Buoyancy: applies graded buoyancy forces
   * Thruster: propels the vehicle
   * Hydrodynamics: applies forces such as added mass, drag and coriolis
 
@@ -15,17 +15,54 @@
 -->
 <sdf version="1.6">
   <world name="auv_world">
-    <scene>
-      <!-- For turquoise ambient -->
-      <ambient>0.0 1.0 1.0</ambient>
-      <background>0.0 0.7 0.8</background>
-    </scene>
 
     <!-- For world physics -->
-    <physics name="1ms" type="ode">
-      <max_step_size>0.001</max_step_size>
+    <physics name="default_physics" default="true" type="ode">
+      <max_step_size>0.01</max_step_size>
       <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>100</real_time_update_rate>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>50</iters>
+          <sor>1.2</sor>
+        </solver>
+      </ode>
     </physics>
+
+    <!-- Ocean Bounding Box -->
+    <include>
+      <uri>file://models/ocean</uri>
+    </include>
+
+    <!--
+      Origin close to Scripps Institution of Oceanography in San Diego
+    -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>32.8681</latitude_deg>
+      <longitude_deg>117.2503</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+
+    <!-- Global light source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <!-- Should be about 10 above water surface -->
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
     <plugin
       filename="gz-sim-physics-system"
       name="gz::sim::systems::Physics">
@@ -41,7 +78,14 @@
     <plugin
       filename="gz-sim-buoyancy-system"
       name="gz::sim::systems::Buoyancy">
-      <uniform_fluid_density>1025</uniform_fluid_density>
+      <graded_buoyancy>
+        <default_density>1025</default_density>
+        <density_change>
+          <!-- Set the water surface level -->
+          <above_depth>0</above_depth>
+          <density>1.225</density>
+        </density_change>
+      </graded_buoyancy>
     </plugin>
 
     <!-- For AUV sensors -->
@@ -53,32 +97,10 @@
     <plugin filename="gz-sim-navsat-system"
       name="gz::sim::systems::NavSat">
     </plugin>
-    <spherical_coordinates>
-      <surface_model>EARTH_WGS84</surface_model>
-      <world_frame_orientation>ENU</world_frame_orientation>
-      <latitude_deg>32.8681</latitude_deg>
-      <longitude_deg>117.2503</longitude_deg>
-      <elevation>0</elevation>
-      <heading_deg>0</heading_deg>
-    </spherical_coordinates>
-
-    <light type="directional" name="sun">
-      <cast_shadows>true</cast_shadows>
-      <pose>0 0 10 0 0 0</pose>
-      <diffuse>1 1 1 1</diffuse>
-      <specular>0.5 0.5 0.5 1</specular>
-      <attenuation>
-        <range>1000</range>
-        <constant>0.9</constant>
-        <linear>0.01</linear>
-        <quadratic>0.001</quadratic>
-      </attenuation>
-      <direction>-0.5 0.1 -0.9</direction>
-    </light>
 
     <include>
       <pose>0 0 1 0 0 1.57</pose>
-      <uri>file://MBARITethysLRAUV</uri>
+      <uri>file://models/MBARITethysLRAUV</uri>
 
       <plugin
         filename="gz-sim-thruster-system"
@@ -89,7 +111,6 @@
         <fluid_density>1025</fluid_density>
         <propeller_diameter>0.2</propeller_diameter>
       </plugin>
-      <!-- Lift and drag -->
 
       <!-- hydrodynamics plugin-->
       <plugin
