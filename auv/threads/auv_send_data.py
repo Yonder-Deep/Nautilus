@@ -258,8 +258,10 @@ class AUV_Send_Data(threading.Thread):
 
     def get_heading(self):
         try:
-            heading, _, _ = self.imu.read_euler()
+            roll, pitch, heading = self.imu.read_euler()
             print("HEADING=", heading)
+            print("ROLL=", roll)
+            print("PITCH=", pitch)
             heading = heading - global_vars.heading_offset
             if heading < 0: 
                 heading += 360 

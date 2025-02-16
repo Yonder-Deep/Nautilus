@@ -372,9 +372,9 @@ class AUV_Receive(threading.Thread):
         elif test == 2:  # down
             down_speed = speed
         elif test == 3:  # left
-            turn_speed = speed
-        elif test == 4:  # right
             turn_speed = -1 * speed
+        elif test == 4:  # right
+            turn_speed = speed
 
         time_begin = time.time()
 
@@ -656,7 +656,7 @@ class AUV_Receive(threading.Thread):
     def get_heading(self):
         if self.imu is not None:
             try:
-                heading, _, _ = self.imu.read_euler()
+                roll, pitch, heading = self.imu.read_euler()
             except:
                 print("Failed to read IMU")
             return heading - global_vars.heading_offset
@@ -667,11 +667,11 @@ class AUV_Receive(threading.Thread):
     # Does not include calibration offset
     def get_euler(self):
         try:
-            heading, roll, pitch = self.imu.read_euler()
+            roll, pitch, heading = self.imu.read_euler()
             # print('HEADING=', heading)
         except:
             # TODO print statement, something went wrong!
-            heading, roll, pitch = None, None, None
+            roll, pitch, heading = None, None, None
         return heading, roll, pitch
 
     def start_heading_test(self, set_heading=0):

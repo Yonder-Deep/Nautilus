@@ -53,7 +53,7 @@ class Heading_Test(threading.Thread):
 
     def update_motor(self, last_speed: float) -> None:
         "Update motor speed with PID control input"
-        curr_heading, roll, pitch = self.imu.read_euler()
+        roll, pitch, curr_heading = self.imu.read_euler()
         print(f"current heading = {curr_heading}\n")
         pid_output = self.heading_pid.pid(curr_heading, heading=True)
 

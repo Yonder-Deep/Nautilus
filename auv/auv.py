@@ -36,6 +36,7 @@ from tests import IMU_Calibration_Test
 from static import constants
 from static import global_vars
 
+imu = None
 
 def threads_active(ts):
     for t in ts:
@@ -135,6 +136,8 @@ def start_threads(ts, queue, halt):
     imu_calibration_test.start()
     if gps is not None:
         gps.start()
+    if imu is not None:
+        imu.start_reading()
 
 
 if __name__ == "__main__":  # If we are executing this file as main
@@ -149,10 +152,18 @@ if __name__ == "__main__":  # If we are executing this file as main
         while threads_active(ts):
             if global_vars.stop_all_threads:
                 global_vars.stop_all_threads = False
+
+                if imu is not None:
+                    imu.stop_reading();
+                
                 stop_threads(ts)
 
             if global_vars.restart_threads:
                 global_vars.restart_threads = False
+
+                if imu is not None:
+                    imu.stop_reading();
+                
                 stop_threads(ts)
 
                 # Reinitialize and restart all threads
@@ -165,6 +176,9 @@ if __name__ == "__main__":  # If we are executing this file as main
             time.sleep(1)
     except KeyboardInterrupt:
         # kill threads
+        if imu is not None:
+            imu.stop_reading();
+        
         for t in ts:
             if t.is_alive():
                 t.stop()

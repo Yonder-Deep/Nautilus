@@ -1,4 +1,4 @@
-# Custom imports
+import threading
 import time
 import board
 from adafruit_lsm6ds import Rate, AccelRange, GyroRange
@@ -8,11 +8,12 @@ import imufusion
 import numpy as np
 from static import global_vars
 
+
 class IMU:
     """ Utilize inheritance of the low-level parent class """
 
     def __init__(self):
-        """ Simply call our superclass constructor """
+        """ Initialize the IMU sensors and AHRS algorithm """
         super().__init__()
         i2c = board.I2C()  # uses board.SCL and board.SDA
         self.ag_sensor = LSM6DS(i2c)
@@ -33,10 +34,12 @@ class IMU:
         print("Gyro rate set to: %d HZ" % Rate.string[self.ag_sensor.gyro_data_rate])
 
         self.offset = imufusion.Offset(Rate.RATE_1_66K_HZ)
+        self.prev_time = time.time()
+
         self.ahrs = imufusion.Ahrs()
 
         self.ahrs.settings = imufusion.Settings(
-            imufusion.CONVENTION_ENU,  # convention
+            imufusion.CONVENTION_NWU,  # convention
             0.5,  # gain
             2000,  # gyroscope range
             10,  # acceleration rejection
@@ -44,29 +47,82 @@ class IMU:
             5 * Rate.RATE_1_66K_HZ,  # recovery trigger period = 5 seconds
         )
 
+        # Shared variables with thread safety
+        self.heading = 0.0
+        self.pitch = 0.0
+        self.roll = 0.0
+        self.lock = threading.Lock()
+
+        self.stop_event = threading.Event()
+        self.thread = None
+
     def read_euler(self) -> tuple[float, float, float]:
-        # Read sensor data
-        accel_x, accel_y, accel_z = self.ag_sensor.acceleration
-        print(self.ag_sensor.gyro)
-        print(global_vars.gyro_offset_vector)
+        """ Return the current heading, pitch, and roll in a thread-safe manner """
+        with self.lock:
+            return self.roll, self.pitch, self.heading
 
-        gyro_x, gyro_y, gyro_z = np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
-        mag_x, mag_y, mag_z = np.array(self.m_sensor.magnetic) - np.array(global_vars.mag_offset_vector)
+    def update_imu_reading(self):
+        """ Update IMU readings and compute Euler angles """
+        try:
+            accel_x, accel_y, accel_z = self.ag_sensor.acceleration
+            # print(self.ag_sensor.gyro)
+            # print(global_vars.gyro_offset_vector)
 
-        # Update the offset for sensor drift correction
-        corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(np.array([gyro_x, gyro_y, gyro_z]))
+            gyro_x, gyro_y, gyro_z = (
+                np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
+            )
+            mag_x, mag_y, mag_z = (
+                np.array(self.m_sensor.magnetic) - np.array(global_vars.mag_offset_vector)
+            )
 
-        # Update the AHRS algorithm with the sensor data
-        self.ahrs.update(
-            np.array([corrected_gyro_x, corrected_gyro_y, corrected_gyro_z]),
-            np.array([accel_x, accel_y, accel_z]),
-            np.array([mag_x, mag_y, mag_z]),
-            20.0
-        )
+            # Update the offset for sensor drift correction
+            corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(
+                np.array([gyro_x, gyro_y, gyro_z])
+            )
 
-        # Get the Euler angles from the AHRS algorithm
-        euler_angles = self.ahrs.quaternion.to_euler()
+            new_time = time.time()
+            dt = new_time - self.prev_time
 
-        # Return heading, pitch, and roll
-        heading, pitch, roll = euler_angles
-        return heading, pitch, roll
+            # Update the AHRS algorithm with the sensor data
+            self.ahrs.update(
+                np.array([corrected_gyro_x, corrected_gyro_y, corrected_gyro_z]),
+                np.array([accel_x, accel_y, accel_z]),
+                np.array([mag_x, mag_y, mag_z]),
+                dt,
+            )
+
+            # Get the Euler angles from the AHRS algorithm
+            euler_angles = self.ahrs.quaternion.to_euler()
+
+            # Update heading, pitch, and roll in a thread-safe manner
+            with self.lock:
+                self.roll, self.pitch, self.heading = euler_angles
+
+            self.prev_time = new_time
+
+        except Exception as e:
+            print(f"Error updating IMU readings: {e}")
+
+    def start_reading(self):
+        """ Start the sensor reading in a separate thread """
+        if self.thread and self.thread.is_alive():
+            print("Sensor reading thread is already running.")
+            return
+
+        self.thread = threading.Thread(target=self._sensor_reading_loop, daemon=True)
+        self.stop_event.clear()
+        self.thread.start()
+        print("Sensor reading thread started.")
+
+    def stop_reading(self):
+        """ Stop the sensor reading thread """
+        if self.thread:
+            self.stop_event.set()
+            self.thread.join()
+            print("Sensor reading thread stopped.")
+
+    def _sensor_reading_loop(self):
+        """ Continuously update IMU readings """
+        while not self.stop_event.is_set():
+            self.update_imu_reading()
+            time.sleep(0.01)  # Adjust sleep duration as needed
