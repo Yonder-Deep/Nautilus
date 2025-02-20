@@ -5,6 +5,7 @@
 #import <IOKit/IOBSD.h>
 #import <sys/param.h>
 #import <paths.h>
+#import <stdlib.h>
 
 char* find_radio() {
     NSLog(@"Finding path to radio device...");
@@ -100,6 +101,29 @@ void free_ptr(char* ptr) {
 int main() {
     char* result = find_radio();
     NSLog(@"Result: %s", result);
+    setenv("USB_RADIO_PATH", result, 1); // Integer 1 to overwrite if already set
+    NSString *radioPath = [NSString stringWithUTF8String:result];
     free(result);
+
+    if (radioPath && ![radioPath isEqual: @"Radio device not found"]) {
+        NSLog(@"Calling pppd for device at %@", radioPath);
+        NSTask *task = [[NSTask alloc] init];
+        task.launchPath = @"/usr/sbin/pppd";
+        task.arguments = @[
+                radioPath,
+                @"57600",
+                @"nodetach",
+                @"lock",
+                @"local",
+                @"192.168.100.10:192.168.100.11"
+                ];
+        [task launch];
+
+        NSPipe *pipe = [NSPipe pipe];
+        [task setStandardOutput:pipe];
+        [task setStandardError:pipe];
+    } else {
+        NSLog(@"Exiting without calling pppd.");
+    }
     return 0;
 }

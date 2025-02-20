@@ -5,7 +5,7 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
 :: Run npm script to build react-vite app & generate static bundle
-cd auv_gui
+cd frontend_gui 
 call npm install
 call npm run build
 
