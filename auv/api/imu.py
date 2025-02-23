@@ -1,6 +1,7 @@
 import threading
 import time
 import board
+from math import atan2, sqrt, cos, sin, degrees 
 from adafruit_lsm6ds import Rate, AccelRange, GyroRange
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
@@ -11,6 +12,13 @@ from static import global_vars
 
 class IMU:
     """ Utilize inheritance of the low-level parent class """
+    
+    # Hard iron offset vector
+    B = np.array([  -18.49,   46.32,   29.76])
+    # Soft iron offset matrix
+    Ainv = np.array([[ 32.71410,  0.43184,  0.13793],
+             [  0.43184, 38.04931,  0.83862],
+             [  0.13793,  0.83862, 29.27600]])
 
     def __init__(self):
         """ Initialize the IMU sensors and AHRS algorithm """
@@ -51,8 +59,10 @@ class IMU:
         self.heading = 0.0
         self.pitch = 0.0
         self.roll = 0.0
+        self.mag_x = self.mag_y = self.mag_z = 0
+        self.accel_x = self.accel_y = self.accel_z = 0
+        
         self.lock = threading.Lock()
-
         self.stop_event = threading.Event()
         self.thread = None
 
@@ -61,6 +71,20 @@ class IMU:
         with self.lock:
             return self.roll, self.pitch, self.heading
 
+    def read_compass(self):
+        with self.lock:
+            ax, ay, az = self.accel_x, self.accel_y, self.accel_z
+            mx, my, mz = self.mag_x, self.mag_y, self.mag_z
+
+        theta = atan2(-ax, sqrt(ay * ay + az * az))
+        phi = atan2(ay, az)
+        x = mx * cos(theta) + my * sin(phi) * sin(theta) + mz * cos(phi) * sin(theta)
+        y = my * cos(phi) - mz * sin(phi)
+
+        angle = degrees(atan2(y, x))
+        return angle if angle >= 0 else angle + 360
+
+        
     def update_imu_reading(self):
         """ Update IMU readings and compute Euler angles """
         try:
@@ -71,9 +95,8 @@ class IMU:
             gyro_x, gyro_y, gyro_z = (
                 np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
             )
-            mag_x, mag_y, mag_z = (
-                np.array(self.m_sensor.magnetic) - np.array(global_vars.mag_offset_vector)
-            )
+            
+            mag_x, mag_y, mag_z = np.dot(IMU.Ainv, (np.array(self.m_sensor.magnetic) - IMU.B))
 
             # Update the offset for sensor drift correction
             corrected_gyro_x, corrected_gyro_y, corrected_gyro_z = self.offset.update(
@@ -97,7 +120,9 @@ class IMU:
             # Update heading, pitch, and roll in a thread-safe manner
             with self.lock:
                 self.roll, self.pitch, self.heading = euler_angles
-
+                self.mag_x, self.mag_y, self.mag_z = mag_x, mag_y, mag_z
+                self.accel_x, self.accel_y, self.accel_z = accel_x, accel_y, accel_z
+                
             self.prev_time = new_time
 
         except Exception as e:
