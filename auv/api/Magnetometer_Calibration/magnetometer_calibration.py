@@ -1,7 +1,7 @@
 """
 magnetometer_calibration.py
 
-This module provides functionality to calibrate a magnetometer by recording 
+This file provides functionality to calibrate a magnetometer by recording 
 magnetic field strength in the x, y, and z directions. 
 
 Calibration Process:

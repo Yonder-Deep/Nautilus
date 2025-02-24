@@ -1,11 +1,18 @@
+"""
+data_visualizer.py
+
+This file provides a way to visualize both raw and corrected sensor data with 
+an interactive 3D scatter plot.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load data with error handling
 try:
-    df = pd.read_csv("mag_raw.csv.csv", names=["x", "y", "z"])
+    df = pd.read_csv("mag_raw.csv", names=["x", "y", "z"])
 except FileNotFoundError:
-    print("Error: mag_raw.csv.csv not found!")
+    print("Error: mag_raw.csv not found!")
     exit()
 
 # Create figure and 3D axis
