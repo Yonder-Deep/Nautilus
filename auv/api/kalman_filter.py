@@ -36,22 +36,8 @@ class IMU:
     def read_euler(self) -> tuple[float, float, float]:
         """ Return the current heading, pitch, and roll in a thread-safe manner """
         with self.lock:
-            yaw, pitch, roll = Rotation.from_quat(self.x).as_euler("zyx", degrees=True)
-            return roll, pitch, yaw
-
-    # def read_compass(self):
-    #     with self.lock:
-    #         ax, ay, az = self.accel_x, self.accel_y, self.accel_z
-    #         mx, my, mz = self.mag_x, self.mag_y, self.mag_z
-    
-    
-
-    #     x = mx * cos(theta) + my * sin(phi) * sin(theta) + mz * cos(phi) * sin(theta)
-    #     y = my * cos(phi) - mz * sin(phi)
-
-    #     angle = degrees(atan2(y, x))
-    #     return angle if angle >= 0 else angle + 360
-
+            yaw, pitch, roll = Rotation.from_quat(self.x).as_euler("ZYX", degrees=True)
+            return yaw, pitch, roll
 
     def update_imu_reading(self):
         """ Update IMU readings and compute Euler angles """
@@ -62,11 +48,11 @@ class IMU:
             # Read data from sensor(s)
             ax, ay, az = self.ag_sensor.acceleration
             wx, wy, wz = self.ag_sensor.gyro
-            mag_x, mag_y, mag_z = IMU.Ainv @ (np.array(self.m_sensor.magnetic) - IMU.B)
+            mx, my, mz = IMU.Ainv @ (np.array(self.m_sensor.magnetic) - IMU.B)
 
             """Predict"""
             # Process noise
-            Q = 0.0001 * np.eye(4)
+            Q = 0.005 * np.eye(4)
 
             # State transition matrix
             O = np.array([
@@ -87,13 +73,15 @@ class IMU:
             H = np.eye(4)
 
             # Measurement noise
-            R = 10 * np.eye(4)
+            R = 1 * np.eye(4)
             
-                        # Calculate measurement
+            # Calculate measurement
             phi = atan2(ay, az)
             theta = atan2(-ax, sqrt(ay * ay + az * az))
-            psi = 0
-            z = Rotation.from_euler('zyx', [psi, theta, phi]).as_quat()
+            x = mx * cos(theta) + my * sin(phi) * sin(theta) + mz * cos(phi) * sin(theta)
+            y = my * cos(phi) - mz * sin(phi)
+            psi = atan2(y, x)
+            z = Rotation.from_euler('ZYX', [psi, theta, phi]).as_quat()
 
             # Calculate residual
             y = (z - H @ x_p)
