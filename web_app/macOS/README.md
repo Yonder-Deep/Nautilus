@@ -3,6 +3,9 @@
 ### Conceptually:
 - `radio.m` is an Objective-C script that uses IOKit from macOS to obtain the path (as in `/dev/tty.usbserial-MY_RADIO`)
 - This is compiled with clang into a dynamic library (`.dylib`) or into an executable (`.exe`)
+- We then run the `pppd` command to start ppp on the device at the `/dev/..` path we just found
+- On macOS the `pppd` command is found at `/usr/sbin/pppd`. Man page can also be found here: `https://linux.die.net/man/8/pppd`
+- The full command is `pppd [path-to-radio] 57600 nodetach lock local 192.168.100.10:192.168.100.11`
 
 I don't recommend the following implementation, as it would require giving the python script sudo privilege. Just use `radio.exe`.
 - This makes it accessible to `radio.py`, which can load the library and call the functions inside using the built-in python module `ctypes`
