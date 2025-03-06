@@ -3,7 +3,6 @@ The motor_controller class calibrates and sets the speed of all of the motors
 """
 
 # System imports
-from static import global_vars
 from api import Motor
 import pigpio
 import time
@@ -83,9 +82,6 @@ class MotorController:
         self.turn_speed = data[TURN_MOTOR_INDEX]
         self.front_speed = data[FRONT_MOTOR_INDEX]
         self.back_speed = data[BACK_MOTOR_INDEX]
-
-        if all([speed == 0 for speed in data]):
-            global_vars.movement_status = 0
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)

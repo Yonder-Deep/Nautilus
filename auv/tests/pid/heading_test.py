@@ -3,7 +3,7 @@
 import threading
 from api import PID
 from api import IMU
-from static import constants
+import config
 import time
 from api import MotorController
 
@@ -42,9 +42,9 @@ class Heading_Test(threading.Thread):
             5, # target tolerance
             debug=True,
             name="Heading",
-            p=constants.P_HEADING,
-            i=constants.I_HEADING,
-            d=constants.D_HEADING,
+            p=config.P_HEADING,
+            i=config.I_HEADING,
+            d=config.D_HEADING,
         )
 
     def update_motor(self, last_speed: float) -> None:

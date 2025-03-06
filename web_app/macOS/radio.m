@@ -117,13 +117,22 @@ int main() {
                 @"local",
                 @"192.168.100.10:192.168.100.11"
                 ];
-        [task launch];
 
-        NSPipe *pipe = [NSPipe pipe];
-        [task setStandardOutput:pipe];
-        [task setStandardError:pipe];
+        NSPipe *outputPipe = [NSPipe pipe];
+        [task setStandardInput:[NSPipe pipe]];
+        [task setStandardOutput:outputPipe];
+
+        [task launch];
+        [task waitUntilExit];
+        [task release];
+
+        NSData *outputData = [[outputPipe fileHandleForReading] readDataToEndOfFile];
+        NSString *outputString = [[[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding] autorelease];
+        NSLog(@"Output: ");
+        NSLog(@"%@", outputString);
     } else {
-        NSLog(@"Exiting without calling pppd.");
+        NSLog(@"Not calling pppd.");
     }
+    NSLog(@"Exiting.");
     return 0;
 }

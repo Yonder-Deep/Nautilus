@@ -1,7 +1,13 @@
+# Whether or not to mock the submarine with the model
+TESTING_MODE=True
+
 # Communication with base
 SOCKET_IP= "localhost"#"192.168.100.10"
 SOCKET_PORT=8080
 PING_INTERVAL=6 
+
+gyro_offset_vector = (0, 0, 0)
+mag_offset_vector = (0, 0, 0)
 
 # Constants for the AUV
 # encode sizes and generalizations

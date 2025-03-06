@@ -1,5 +1,3 @@
-# ignore python byte-code files (if there are any... hopefully not)
-**/.pyc
 **/.DS_Store
 test/
 base_station/lib/

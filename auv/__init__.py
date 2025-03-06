@@ -7,8 +7,8 @@ from api import PressureSensor
 from api import MotorController
 from api import Indicator
 
-from threads import websocket_thread
-from static import constants, global_vars
+import config
+from core import websocket_thread
 from tests import IMU_Calibration_Test, Heading_Test, motor_test
 
 def start_threads(threads, queue, halt):
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     imu = IMU
     imu_calibration_test = IMU_Calibration_Test(imu)
 
-    websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, constants.SOCKET_IP, constants.SOCKET_PORT, constants.PING_INTERVAL, queue_to_base, queue_to_auv, True])
+    websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, config.SOCKET_IP, config.SOCKET_PORT, config.PING_INTERVAL, queue_to_base, queue_to_auv, True])
     websocket_thread.start()
 
     print("Beginning main loop")
