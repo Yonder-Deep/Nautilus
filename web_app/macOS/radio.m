@@ -8,7 +8,7 @@
 #import <stdlib.h>
 
 char* find_radio() {
-    NSLog(@"Finding path to radio device...");
+    //NSLog(@"Finding path to radio device...");
 
     // Create subdictionary key-pair to match radio USB UART
     CFMutableDictionaryRef subDict;
@@ -26,20 +26,20 @@ char* find_radio() {
     CFDictionarySetValue(matchingUSBDict, CFSTR(kIOPropertyMatchKey),
             subDict);
     
-    NSLog(@"Matching Dict:");
-    NSLog(@"%@", matchingUSBDict);
+    //NSLog(@"Matching Dict:");
+    //NSLog(@"%@", matchingUSBDict);
 
     // Find the first service in the I/O Registry that matches our dictionary
     io_service_t matchedService;
     matchedService = IOServiceGetMatchingService(kIOMainPortDefault, matchingUSBDict);
 
-    NSLog(@"Service: %u", matchedService);
+    //NSLog(@"Service: %u", matchedService);
     
     // Service path, not really that useful for our purposes
     io_string_t servicePath;
     IORegistryEntryGetPath(matchedService, kIOServicePlane, servicePath);
-    NSLog(@"Service Path: %s", servicePath);
-    NSLog(@"USB Path: %d", IORegistryEntryGetPath(matchedService, kIOPowerPlane, servicePath));
+    //NSLog(@"Service Path: %s", servicePath);
+    //NSLog(@"USB Path: %d", IORegistryEntryGetPath(matchedService, kIOPowerPlane, servicePath));
 
     // This is the [BSDName] appended to the filepath: /dev/tty.usbserial-[BSDName]
     CFStringRef deviceBSDName_cf = (CFStringRef) IORegistryEntrySearchCFProperty(
@@ -48,7 +48,7 @@ char* find_radio() {
             CFSTR (kUSBSerialNumberString),
             kCFAllocatorDefault,
             kIORegistryIterateRecursively );
-    NSLog(@"BSD Name: %@", deviceBSDName_cf);
+    //NSLog(@"BSD Name: %@", deviceBSDName_cf);
 
     char deviceFilePath[MAXPATHLEN]; // MAXPATHLEN is defined in sys/param.h
     size_t devPathLength;
@@ -65,7 +65,7 @@ char* find_radio() {
     NSLog(@"hi");
     NSLog(@"%@", deviceNameAsCFString);*/
     if (deviceBSDName_cf) {
-        NSLog(@"BSDName found, finding path...");
+        //NSLog(@"BSDName found, finding path...");
         char deviceFilePath[MAXPATHLEN];
         devPathLength = strlen(_PATH_DEV); //_PATH_DEV defined in paths.h
         strcpy(deviceFilePath, _PATH_DEV);
@@ -76,20 +76,20 @@ char* find_radio() {
                 kCFStringEncodingASCII);
         
         if (gotString) {
-            NSLog(@"Device file path: %s", deviceFilePath);
+            //NSLog(@"Device file path: %s", deviceFilePath);
             char* finalResult = malloc(strlen(deviceFilePath));
             strcpy(finalResult, deviceFilePath);
-            NSLog(@"Pointer address: %p", finalResult);
+            //NSLog(@"Pointer address: %p", finalResult);
             return finalResult;
-        } else {
+        } /*else {
             NSLog(@"Radio device not found.");
         }
     } else {
         NSLog(@"Radio device not found.");
-    }
+    }*/
     char* notFound = malloc(21);
     strcpy(notFound, "Radio device not found");
-    NSLog(@"Pointer address: %p", notFound);
+    //NSLog(@"Pointer address: %p", notFound);
     return notFound;
 }
 
@@ -100,11 +100,17 @@ void free_ptr(char* ptr) {
 
 int main() {
     char* result = find_radio();
+    printf("%s", result);
+    free(result);
+
+    /*
+    char* result = find_radio();
     NSLog(@"Result: %s", result);
     setenv("USB_RADIO_PATH", result, 1); // Integer 1 to overwrite if already set
     NSString *radioPath = [NSString stringWithUTF8String:result];
     free(result);
 
+    
     if (radioPath && ![radioPath isEqual: @"Radio device not found"]) {
         NSLog(@"Calling pppd for device at %@", radioPath);
         NSTask *task = [[NSTask alloc] init];
@@ -134,5 +140,6 @@ int main() {
         NSLog(@"Not calling pppd.");
     }
     NSLog(@"Exiting.");
+    */
     return 0;
 }

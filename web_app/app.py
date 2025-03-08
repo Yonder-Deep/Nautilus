@@ -48,7 +48,7 @@ async def frontend_websocket(websocket: WebSocket):
     await socket_status_queue.put(True)
     while True:
         # Sleep so that the async function yields to event loop
-        await asyncio.sleep(0.01)
+        await asyncio.sleep(0.001)
         # Check queue_to_frontend & send to frontend
         try:
             message_to_frontend = queue_to_frontend.get(block=False)

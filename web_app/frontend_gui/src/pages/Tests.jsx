@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ParametersForm, MotorTestForm, HeadingTestForm } from "./components/Forms.jsx";
+import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./components/Forms.jsx";
 
 const Graph = () => {
     return (
@@ -108,7 +108,10 @@ export default function Tests() {
 					<div className="testing-section">
 						<ParametersForm websocket={websocket}></ParametersForm>
 						<MotorTestForm websocket={websocket}></MotorTestForm>
-						<HeadingTestForm websocket={websocket}></HeadingTestForm>
+                        <div>
+                            <HeadingTestForm websocket={websocket}></HeadingTestForm>
+                            <StartMission websocket={websocket}></StartMission>
+                        </div>
 					</div>
 				</div>
 			</div>

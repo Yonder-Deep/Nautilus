@@ -17,7 +17,7 @@ def auv_socket_handler(stop_event = threading.Event, ip_address=str, ping_interv
         if stop_event.is_set():
             websocket.close()
             return
-        time.sleep(1)
+        time.sleep(0.01)
 
         try:
             message_to_frontend = json.loads(websocket.recv(timeout=0.001)) # Doesn't block since timeout=0

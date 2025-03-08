@@ -9,7 +9,7 @@ from api import Indicator
 
 import config
 from core import websocket_thread
-from tests import IMU_Calibration_Test, Heading_Test, motor_test
+from core import Navigation
 
 def start_threads(threads, queue, halt):
     gps_q = Queue()
@@ -63,51 +63,64 @@ def start_threads(threads, queue, halt):
     if gps is not None:
         gps.start()
 
+def main_log(logging_queue=Queue, base_queue=Queue):
+    thing = 0
+    while(logging_queue.qsize() > 0):
+        try:
+            thing += 1
+            log_message = logging_queue.get_nowait()
+            if log_message:
+                print(log_message)
+                base_queue.put(log_message)
+        except Empty:
+            return  
 
 if __name__ == "__main__":
-    queue_to_base = Queue()
-    queue_to_auv = Queue()
-    logging_queue = Queue()
-
+    # This event is set so that all the threads know to end
     stop_event = threading.Event()
 
-    indicator = Indicator()
-    motor_controller = MotorController()
-    imu = IMU
-    imu_calibration_test = IMU_Calibration_Test(imu)
+    # Anything put into this queue will be printed
+    # to stdout & forwarded to frontend
+    logging_queue = Queue()
 
+    queue_to_base = Queue()
+    queue_to_auv = Queue()
     websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, config.SOCKET_IP, config.SOCKET_PORT, config.PING_INTERVAL, queue_to_base, queue_to_auv, True])
     websocket_thread.start()
+
+    motor_controller = MotorController()
+    queue_input_nav = Queue()
+    queue_nav_to_control = Queue()
+    navigation_thread = Navigation(input_state_q=queue_input_nav, desired_state_q=queue_nav_to_control, logging_q=logging_queue, stop_event=stop_event)
 
     print("Beginning main loop")
     try:
         while True:
-            time.sleep(0.01)
-
-            try:
-                log_message = logging_queue.get_nowait()
-                if log_message:
-                    print(log_message)
-            except Empty:
-                pass
+            main_log(logging_queue, queue_to_base)
 
             try:
                 message_from_base = queue_to_auv.get_nowait()
                 # Based on commands, execute functions and/or subroutines
-                if message_from_base :
+                if message_from_base:
                     print("Message from base: " + str(message_from_base))
                     command = message_from_base["command"]
                     if command == "pidConstants":
                         print("Setting PID Constants")
                     elif command == "motorTest":
                         print("Starting motor test")
-                        motor_test = threading.Thread(motor_test)
-                        motor_test.start()
+                        # motor_test = threading.Thread(motor_test)
+                        # motor_test.start()
                     elif command == "headingTest":
                         print("Starting heading test")
                         # TODO: Make heading test a function w/ args
-                        heading_test = Heading_Test()
-                        heading_test.start()
+                        # heading_test = Heading_Test()
+                        # heading_test.start()
+                    elif command == "mission":
+                        print("Beginning mission")
+                        goal_coordinate = message_from_base["content"]
+                        print("Goal: " + str(goal_coordinate))
+                        if not navigation_thread.is_alive():
+                            navigation_thread.start()
 
             except Empty:
                 pass

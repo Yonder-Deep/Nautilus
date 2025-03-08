@@ -98,3 +98,23 @@ export const HeadingTestForm = ({ websocket }) => {
         </div>
     )
 }
+
+export const StartMission = ({ websocket }) => {
+    const [targetPoint, setTargetPoint] = useState('');
+    const missionRequest = () => {
+        websocket.send(JSON.stringify({
+            command: "mission",
+            content: targetPoint.target.value
+        }))
+    }
+
+    return (
+    <div className="testing-form">
+        <h2>Start Mission</h2>
+        <div className="form-body">
+            <input placeholder="Enter target point: (x,y,0)" onChange={e => (setTargetPoint(e))} />
+            <button onClick={() => missionRequest()}>Start Mission</button>
+        </div>
+    </div>
+    )
+}
