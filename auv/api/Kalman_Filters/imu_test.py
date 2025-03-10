@@ -1,13 +1,19 @@
+"""
+imu_test.py
+
+Code to test the IMU with different Kalman Filters
+"""
+
 import threading
 import time
-from math import atan2, sqrt, cos, sin, degrees
 
 import board
 import numpy as np
 from scipy.spatial.transform import Rotation
-
 from adafruit_lis3mdl import LIS3MDL
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
+
+from unscented_quaternion import MUKF
 
 class IMU:
     # Hard iron offset vector
@@ -22,84 +28,42 @@ class IMU:
         i2c = board.I2C()  # uses board.SCL and board.SDA
         self.ag_sensor = LSM6DS(i2c)
         self.m_sensor = LIS3MDL(i2c)
+        self.filter = MUKF()
 
         self.prev_time = time.time()
 
         # Shared variables with thread safety
-        self.x = np.array([1, 0, 0, 0])
-        self.P = 4 * np.eye(4)
+        self.q = np.array([1.0, 0.0, 0.0, 0.0])
 
         self.lock = threading.Lock()
         self.stop_event = threading.Event()
         self.thread = None
 
     def read_euler(self) -> tuple[float, float, float]:
-        """ Return the current heading, pitch, and roll in a thread-safe manner """
+        """ 
+        Return the current heading, pitch, and roll in a thread-safe manner 
+        """
         with self.lock:
-            yaw, pitch, roll = Rotation.from_quat(self.x).as_euler("ZYX", degrees=True)
+            yaw, pitch, roll = Rotation.from_quat(self.q).as_euler("ZYX", degrees=True)
             return yaw, pitch, roll
-
+    
     def update_imu_reading(self):
-        """ Update IMU readings and compute Euler angles """
+        """ Reads sensor data and updates estimated state """
         try:
             new_time = time.time()
             dt = new_time - self.prev_time
 
             # Read data from sensor(s)
             ax, ay, az = self.ag_sensor.acceleration
-            wx, wy, wz = self.ag_sensor.gyro
+            wx, wy, wz = self.apply_high_pass_filter(self.ag_sensor.gyro)
             mx, my, mz = IMU.Ainv @ (np.array(self.m_sensor.magnetic) - IMU.B)
-
-            """Predict"""
-            # Process noise
-            Q = 0.005 * np.eye(4)
-
-            # State transition matrix
-            O = np.array([
-                [0, -wx, -wy, -wz],
-                [wx, 0, wz, -wy],
-                [wy, -wz, 0, wx],
-                [wz, wy, -wx, 0]
-            ])
-            F = (np.eye(4) + dt * 0.5 * O)
-
-            # Predict state and covariance
-            with self.lock:
-                x_p = F @ self.x
-                P_p = F @ self.P @ F.T + Q
-
-            """Update"""
-            # State to measurement matrix
-            H = np.eye(4)
-
-            # Measurement noise
-            R = 1 * np.eye(4)
             
-            # Calculate measurement
-            phi = atan2(ay, az)
-            theta = atan2(-ax, sqrt(ay * ay + az * az))
-            x = mx * cos(theta) + my * sin(phi) * sin(theta) + mz * cos(phi) * sin(theta)
-            y = my * cos(phi) - mz * sin(phi)
-            psi = atan2(y, x)
-            z = Rotation.from_euler('ZYX', [psi, theta, phi]).as_quat()
-
-            # Calculate residual
-            y = (z - H @ x_p)
-
-            # Kalman gain
-            S = H @ P_p @ H.T + R
-            K = P_p @ H.T @ np.linalg.inv(S)
-
-            # Update state and covariance estimate
-            x = x_p + K @ y
-            P = (np.eye(4) - K @ H) @ P_p
-
-            # Update heading, pitch, and roll in a thread-safe manner
-            with self.lock:
-                self.x = x
-                self.P = P
+            self.filter.update_imu(np.array([ax, ay, az]), np.array([wx, wy, wz]), dt)
 
             self.prev_time = new_time
+            
+            with self.lock:
+                self.q = self.filter.get_current_orientation()
 
         except Exception as e:
             print(f"Error updating IMU readings: {e}")
