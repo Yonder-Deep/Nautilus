@@ -117,9 +117,6 @@ class MUKF:
         dX = np.zeros(6)
         dY = np.zeros(6)
 
-        dX = np.zeros(6)
-        dY = np.zeros(6)
-
         dX[:3] = MUKF.manifold_to_chart(xmean[:4], X[0, :4])
         dX[3:6] = X[0, 4:7] - xmean[4:7]
         dY[:] = Y[0, :6] - ymean[:6]
@@ -129,7 +126,7 @@ class MUKF:
         Pyy += self.W0 * np.outer(dY, dY)
 
         for k in range(1, 25):
-            dX[:3] = self.manifold_to_chart(xmean[:4], X[k, :4])
+            dX[:3] = MUKF.manifold_to_chart(xmean[:4], X[k, :4])
             dX[3:6] = X[k, 4:7] - xmean[4:7]
             dY[:] = Y[k, :6] - ymean[:6]
             Pxx += Wi * np.outer(dX, dX)
