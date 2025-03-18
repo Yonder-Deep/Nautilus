@@ -22,7 +22,7 @@ def socket_handler(base_websocket=ServerConnection, stop_event=threading.Event, 
         try:
             message_from_base = json.loads(base_websocket.recv(timeout=0)) # Doesn't block since timeout=0
             if message_from_base:
-                log("Message from base: " + str(message_from_base))
+                #log("Message from base: " + str(message_from_base))
                 queue_to_auv.put(message_from_base)
                 # Send acknowledgement back to base
                 message_from_base["ack"] = True 

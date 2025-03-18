@@ -69,10 +69,10 @@ def main_log(logging_queue=Queue, base_queue=Queue):
     while(logging_queue.qsize() > 0):
         try:
             thing += 1
-            log_message = logging_queue.get_nowait()
-            if log_message:
-                print(log_message)
-                base_queue.put(log_message)
+            message = logging_queue.get_nowait()
+            if message:
+                print(message)
+                base_queue.put(message)
         except Empty:
             return  
 

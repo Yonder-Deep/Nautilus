@@ -41,7 +41,9 @@ const StatusMessages = ({ statusMessages, setStatusMessages }) => {
 			<h2>Status Messages</h2>
 			<ul className="status-messages">
 				{statusMessages.map((message, index) => (
-				<li key={index}>{message}</li>
+				<li key={index}>
+                    <pre>{message}</pre>
+                </li>
 			    ))}
                 <div ref={messagesBottomRef}></div>
 			</ul>
