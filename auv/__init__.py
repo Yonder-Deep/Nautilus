@@ -11,68 +11,33 @@ from api import MockController
 
 import config
 from core import websocket_thread, Navigation, Control
-
-def start_threads(threads, queue, halt):
-    gps_q = Queue()
-
-    # Initialize hardware
-    try:
-        indicator_LED = Indicator()
-        print("Starting Up")
-    except:
-        print("Indicator LED not detected")
-
-    try:
-        pressure_sensor = PressureSensor()
-        pressure_sensor.init()
-        print("Pressure sensor has been found")
-    except:
-        pressure_sensor = None
-        print("Pressure sensor is not connected to the AUV.")
-
-    try:
-        gps = GPS(gps_q)
-        print("Successfully connected to GPS socket service.")
-    except Exception as error:
-        gps = None
-        print("GPS not found")
-        print(error)
-
-    try:
-        depth_cam = RealSenseCamera()
-        print("Depth cam has been found.")
-    except:
-        depth_cam = None
-        print("Depth cam could not be found.")
-
-    try:
-        imu = IMU()
-        print("IMU has been found.")
-    except Exception as e:
-        print(e)
-        imu = None
-        print("IMU is not connected to the AUV on IMU_PATH.")
-
-    motor_controller = MotorController()
-
-    # auv_auto_thread = Autonomous_Nav(queue, halt, pressure_sensor, imu, mc, gps, gps_q, depth_cam, receive_to_autonav, autonav_to_receive)
-    auv_auto_thread = None
-
-    imu_calibration_test = IMU_Calibration_Test(imu)
-
-    imu_calibration_test.start()
-    if gps is not None:
-        gps.start()
+from custom_types import State, Log
 
 def main_log(logging_queue=Queue, base_queue=Queue):
     thing = 0
     while(logging_queue.qsize() > 0):
         try:
             thing += 1
-            message = logging_queue.get_nowait()
+            message: Log = logging_queue.get_nowait()
             if message:
-                print(message)
+                if isinstance(message, Log): # If it is just a string, do nothing
+                    if message.type == "state": # If type is state, unpack the numpy arrays
+                        serial_state = State(
+                            position = message.content.position.tolist(),
+                            velocity = message.content.velocity.tolist(),
+                            local_velocity = message.content.local_velocity.tolist(),
+                            local_force = message.content.local_force.tolist(),
+                            attitude = message.content.attitude.tolist(),
+                            angular_velocity = message.content.angular_velocity.tolist(),
+                            local_torque = message.content.local_force.tolist(),
+                            forward_m_input = float(message.content.forward_m_input),
+                            turn_m_input = float(message.content.turn_m_input)
+                        )
+                        message.content = serial_state
+                    # Since message: Log, we must convert Log to JSON
+                    message = message.model_dump_json()
                 base_queue.put(message)
+                print("LOG: " + str(message))
         except Empty:
             return  
 

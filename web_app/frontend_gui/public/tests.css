@@ -39,6 +39,10 @@ ul>li {
     margin-bottom: 1rem;
 }
 
+pre {
+    text-wrap: wrap;
+}
+
 .parent-container {
     display: grid;
     grid-template-columns: 3fr 1fr;

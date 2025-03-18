@@ -1,14 +1,23 @@
+from typing import Union
 from queue import Queue, Empty
 from api import MotorController
 from threading import Thread, Event
 from functools import partial
 from time import sleep
 
-from custom_types import State, PositionState
+from custom_types import State, PositionState, Log
 
-def check_verbose(message, q=Queue, verbose=bool):
+def check_verbose(message:Union[State,str], q:Queue, verbose:bool):
     if verbose:
-        q.put("CTL: " + message)
+        log_type = "info"
+        if isinstance(message, State):
+            log_type = "state"
+        log = Log(
+            source = "CTL",
+            type = log_type,
+            content = message
+        )
+        q.put(log)
 
 class Control(Thread):
     """ This low-level navigation thread is meant to take as input
@@ -17,7 +26,7 @@ class Control(Thread):
         critically damped so that the error between the current state
         and desired state is minimized.
     """
-    def __init__(self, input_state_q=Queue, desired_state_q=Queue, logging_q=Queue, controller=MotorController, stop_event=Event):
+    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, controller:MotorController, stop_event:Event):
         super().__init__()
         self.stop_event = stop_event
         self.mc = controller
@@ -38,7 +47,7 @@ class Control(Thread):
         )
         self.input_state_q = input_state_q
         self.desired_state_q = desired_state_q
-        self.log = partial(check_verbose, q=logging_q)
+        self.log = partial(check_verbose, q=logging_q, verbose=True)
     
     def run(self):
         log = self.log
@@ -56,7 +65,7 @@ class Control(Thread):
             except Empty:
                 pass
 
-            log(str(self.mc.get_state().model_dump()))
+            log(self.mc.get_state())
         # Compare current state & desired state (setpoint), create error value
         # From error value, translate into motor speeds (signal)
 
