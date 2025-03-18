@@ -39,7 +39,6 @@ class Navigation(Thread):
         log = self.log
         while not self.stop_event.is_set():
             sleep(1)
-            self.log("Hello")
             try:
                 new_input = self.input_state_q.get(block=False)
                 if new_input:

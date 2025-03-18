@@ -17,7 +17,8 @@ def socket_handler(base_websocket=ServerConnection, stop_event=threading.Event, 
         if stop_event.is_set():
             log("Websocket stop event")
             base_websocket.close()
-        
+        time.sleep(0.001)
+
         try:
             message_from_base = json.loads(base_websocket.recv(timeout=0)) # Doesn't block since timeout=0
             if message_from_base:
@@ -64,7 +65,7 @@ def custom_log(message=str, verbose=bool, queue=Queue):
     if verbose:
         queue.put(" WS: " + message)
 
-def server(stop_event=threading.Event, logging_event=threading.Event, websocket_interface=str, websocket_port=int, ping_interval=int, queue_to_base=Queue, queue_to_auv=Queue, verbose=bool):
+def server(stop_event=threading.Event, logging_event=threading.Event, websocket_interface=str, websocket_port=int, ping_interval=int, queue_to_base=Queue, queue_to_auv=Queue, verbose=bool, shutdown_q=Queue):
     """ Websocket server that binds to the given network interface & port.
         Anything in queue_to_base will be forwarded into the websocket.
         Anything that shows up in the websocket will be forwarded to queue_to_auv.
@@ -78,4 +79,5 @@ def server(stop_event=threading.Event, logging_event=threading.Event, websocket_
     initialized_logger = functools.partial(custom_log, verbose=verbose, queue=logging_event)
     initialized_handler = functools.partial(socket_handler, stop_event=stop_event, ping_interval=ping_interval, queue_to_base=queue_to_base, queue_to_auv=queue_to_auv, log=initialized_logger)
     with serve(initialized_handler, host=websocket_interface, port=websocket_port, origins=None) as server:
+        shutdown_q.put(server.shutdown)
         server.serve_forever()

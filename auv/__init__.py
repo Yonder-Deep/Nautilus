@@ -1,15 +1,16 @@
 import time
 import threading
+import platform
 from queue import Queue, Empty
 
 from api import IMU
 from api import PressureSensor
 from api import MotorController
 from api import Indicator
+from api import MockController
 
 import config
-from core import websocket_thread
-from core import Navigation
+from core import websocket_thread, Navigation, Control
 
 def start_threads(threads, queue, halt):
     gps_q = Queue()
@@ -83,15 +84,35 @@ if __name__ == "__main__":
     # to stdout & forwarded to frontend
     logging_queue = Queue()
 
+    # Used for thread cleanup
+    threads = []
+
     queue_to_base = Queue()
     queue_to_auv = Queue()
-    websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, config.SOCKET_IP, config.SOCKET_PORT, config.PING_INTERVAL, queue_to_base, queue_to_auv, True])
+    ws_shutdown_q = Queue()
+    websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, config.SOCKET_IP, config.SOCKET_PORT, config.PING_INTERVAL, queue_to_base, queue_to_auv, True, ws_shutdown_q])
+    threads.append(websocket_thread)
     websocket_thread.start()
+    ws_shutdown = ws_shutdown_q.get(block=True) # Needed to shut down server
 
     motor_controller = MotorController()
-    queue_input_nav = Queue()
-    queue_nav_to_control = Queue()
-    navigation_thread = Navigation(input_state_q=queue_input_nav, desired_state_q=queue_nav_to_control, logging_q=logging_queue, stop_event=stop_event)
+    if platform.system() == "Darwin":
+        motor_controller = MockController()
+
+    queue_input_nav = Queue() # Input from user & state input to nav
+    queue_input_control = Queue() # State input to nav
+    queue_nav_to_control = Queue() # Setpoint input to nav
+    navigation_thread = Navigation(
+            input_state_q=queue_input_nav,
+            desired_state_q=queue_nav_to_control,
+            logging_q=logging_queue,
+            stop_event=stop_event)
+    control_thread = Control(
+            input_state_q=queue_input_control,
+            desired_state_q=queue_nav_to_control,
+            logging_q=logging_queue,
+            controller=motor_controller,
+            stop_event=stop_event)
 
     print("Beginning main loop")
     try:
@@ -110,17 +131,29 @@ if __name__ == "__main__":
                         print("Starting motor test")
                         # motor_test = threading.Thread(motor_test)
                         # motor_test.start()
+
+                        # Override control & nav thread
+                        # go directly to MC
+
                     elif command == "headingTest":
                         print("Starting heading test")
                         # TODO: Make heading test a function w/ args
                         # heading_test = Heading_Test()
                         # heading_test.start()
+
+                        # Override nav thread
+                        # go directly to control thread
+
                     elif command == "mission":
                         print("Beginning mission")
                         goal_coordinate = message_from_base["content"]
                         print("Goal: " + str(goal_coordinate))
                         if not navigation_thread.is_alive():
+                            threads.append(navigation_thread)
                             navigation_thread.start()
+                            threads.append(control_thread)
+                            control_thread.start()
+                        queue_input_nav.put(goal_coordinate)
 
             except Empty:
                 pass
@@ -128,5 +161,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         stop_event.set()
         print("Joining threads")
-        websocket_thread.join()
+        ws_shutdown()
+        for thread in threads:
+            if thread.is_alive():
+                thread.join
         print("All threads joined, process exiting")
