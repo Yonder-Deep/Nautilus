@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const ParametersForm = ({ websocket }) => {
+export const ParametersForm = ({ websocket }: any) => {
     const [pidAxis, setPidAxis] = useState('');
     const [constantP, setConstantP] = useState('');
     const [constantI, setConstantI] = useState('');
@@ -9,9 +9,9 @@ export const ParametersForm = ({ websocket }) => {
         if (!pidAxis || !constantP || !constantI || !constantD) { return; }
         const pidConstants = {
             axis: '' + pidAxis,
-            p: '' + constantP.target.value,
-            i: '' + constantI.target.value,
-            d: '' + constantD.target.value
+            p: '' + constantP,
+            i: '' + constantI,
+            d: '' + constantD
         };
         const request = {
             command: "pidConstants",
@@ -24,31 +24,31 @@ export const ParametersForm = ({ websocket }) => {
         <div className="parameters-form">
             <h2>Set PID Constants</h2>
             <div className="form-body">
-                <select defaultValue={"Default"} onChange={e => setPidAxis(e)}>
+                <select defaultValue={"Default"} onChange={e => setPidAxis(e.target.value)}>
                     <option value="Default" disabled>Select Axis</option>
                     <option value="Pitch">Pitch</option>
                     <option value="Yaw">Yaw</option>
                     <option value="Roll">Roll</option>
                 </select>
-                <input placeholder="P" onChange={e => setConstantP(e)} />
-                <input placeholder="I" onChange={e => setConstantI(e)} />
-                <input placeholder="D" onChange={e => setConstantD(e)} />
+                <input placeholder="P" onChange={e => setConstantP(e.target.value)} />
+                <input placeholder="I" onChange={e => setConstantI(e.target.value)} />
+                <input placeholder="D" onChange={e => setConstantD(e.target.value)} />
                 <button onClick={() => makePidRequest()}>Set Constants</button>
             </div>
         </div>
     )
 }
 
-export const MotorTestForm = ({ websocket }) => {
+export const MotorTestForm = ({ websocket }: any) => {
     const [motorType, setMotorType] = useState('');
     const [motorSpeed, setMotorSpeed] = useState('');
     const [motorDuration, setMotorDuration] = useState('');
     const makeMotorRequest = () => {
         console.log("Making motor request.")
         const motorTest = {
-            motor: '' + motorType.target.value,
-            speed: '' + motorSpeed.target.value,
-            duration: '' + motorDuration.target.value
+            motor: '' + motorType,
+            speed: '' + motorSpeed,
+            duration: '' + motorDuration
         };
         const request = {
             command: "motorTest",
@@ -61,7 +61,7 @@ export const MotorTestForm = ({ websocket }) => {
         <div className="motor-form">
             <h2>Motor Testing</h2>
             <div className="form-body">
-                <select defaultValue={"Default"} onChange={e => setMotorType(e)}>
+                <select defaultValue={"Default"} onChange={e => setMotorType(e.target.value)}>
                     <option value="Default" disabled>Select Motor</option>
                     <option value="Forward">Forward</option>
                     <option value="Backward">Backward</option>
@@ -69,21 +69,21 @@ export const MotorTestForm = ({ websocket }) => {
                     <option value="Left">Left</option>
                     <option value="Right">Right</option>
                 </select>
-                <input placeholder="Enter motor speed" onChange={e => setMotorSpeed(e)} />
-                <input placeholder="Enter duration of run" onChange={e => setMotorDuration(e)} />
+                <input placeholder="Enter motor speed" onChange={e => setMotorSpeed(e.target.value)} />
+                <input placeholder="Enter duration of run" onChange={e => setMotorDuration(e.target.value)} />
                 <button onClick={() => makeMotorRequest()}>Begin Test</button>
             </div>
         </div>
     )
 }
 
-export const HeadingTestForm = ({ websocket }) => {
+export const HeadingTestForm = ({ websocket }: any) => {
     const [targetHeading, setTargetHeading] = useState('');
     const headingRequest = () => {
         console.log("Making heading request.")
         const request = {
             command: "headingTest",
-            content: targetHeading.target.value 
+            content: targetHeading
         };
         websocket.send(JSON.stringify(request));
     }
@@ -92,19 +92,19 @@ export const HeadingTestForm = ({ websocket }) => {
         <div className="testing-form">
             <h2>Heading Test</h2>
             <div className="form-body">
-                <input placeholder="Enter target heading" onChange={e => (setTargetHeading(e))} />
+                <input placeholder="Enter target heading" onChange={e => (setTargetHeading(e.target.value))} />
                 <button onClick={() => headingRequest()}>Begin Test</button>
             </div>
         </div>
     )
 }
 
-export const StartMission = ({ websocket }) => {
+export const StartMission = ({ websocket }: any) => {
     const [targetPoint, setTargetPoint] = useState('');
     const missionRequest = () => {
         websocket.send(JSON.stringify({
             command: "mission",
-            content: targetPoint.target.value
+            content: targetPoint
         }))
     }
 
@@ -112,7 +112,7 @@ export const StartMission = ({ websocket }) => {
     <div className="testing-form">
         <h2>Start Mission</h2>
         <div className="form-body">
-            <input placeholder="Enter target point: (x,y,0)" onChange={e => (setTargetPoint(e))} />
+            <input placeholder="Enter target point: (x,y,0)" onChange={e => (setTargetPoint(e.target.value))} />
             <button onClick={() => missionRequest()}>Start Mission</button>
         </div>
     </div>

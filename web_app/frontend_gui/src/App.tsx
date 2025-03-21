@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./components/Forms.jsx";
+import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/Forms.js";
+import { StatusItem, StatusMessages } from "./outputs/status.js";
 
 const Graph = () => {
     return (
@@ -9,52 +10,11 @@ const Graph = () => {
     )
 }
 
-const StatusItem = ({ statusType, statusData }) => {
-    const statusListItems = statusData.map(dataPart =>
-        <li key={dataPart.id}>{dataPart.title}: {dataPart.value}</li>
-    )
-
-    return (
-        <div className="status-item">
-            <h2>{statusType}</h2>
-            <ul>{statusListItems}</ul>
-        </div>
-    )
+interface socketEvent extends Event {
+    data: string
 }
 
-const StatusMessages = ({ statusMessages, setStatusMessages }) => {
-    const messagesBottomRef = useRef(null);
-
-    const scrollToMessagesBottom = () => {
-        messagesBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-	const clearMessages = () => {
-		setStatusMessages([]);
-	};
-
-    useEffect(() => {
-        scrollToMessagesBottom()
-    }, [statusMessages]);
-
-	return (
-		<div className="status-messages-container">
-			<h2>Status Messages</h2>
-			<ul className="status-messages">
-				{statusMessages.map((message, index) => (
-				<li key={index}>
-                    <pre>{message}</pre>
-                </li>
-			    ))}
-                <div ref={messagesBottomRef}></div>
-			</ul>
-			<div className="status-messages-bottom-bar">
-				<button onClick={() => clearMessages()}>Clear Output</button>
-			</div>
-		</div>
-	)
-}
-
-export default function Tests() {
+export default function App() {
     // These are the only state variables that need full scope
     const [imuData, setImuData] = useState([
         { title: 'Magnetometer', value: '', id: 1 },
@@ -66,18 +26,18 @@ export default function Tests() {
         { title: 'Roll', value: '', id: 2 },
         { title: 'Pitch', value: '', id: 3 }
     ]);
-    const [websocket, setWebsocket] = useState(null);
-	const [statusMessages, setStatusMessages] = useState([]);
+    const [websocket, setWebsocket]: any = useState(undefined);
+	const [statusMessages, setStatusMessages]: any = useState([]);
 
-    const handleSocketData = (event) => {
-        console.log("Socket data arrived: " + event.data)
-        setStatusMessages(statusMessages => [...statusMessages, event.data]);
+    const handleSocketData = (event: MessageEvent<string>) => {
+        console.log("Socket data arrived: " + event.data);
+        setStatusMessages((prev: any)  => [...prev, event.data]);
     }
 
     // Register socket handler for server-sent data
-    const connection = useRef(null);
+    const connection: any = useRef(null);
     useEffect(() => {
-        const socket = new WebSocket("/api/websocket");
+        const socket: WebSocket = new WebSocket("/api/websocket");
 
         socket.addEventListener("open", () => setWebsocket(socket));
         socket.addEventListener("message", handleSocketData);
