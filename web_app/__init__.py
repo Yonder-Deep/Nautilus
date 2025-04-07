@@ -33,9 +33,9 @@ app.mount("/api", api)
 # Mount the static react frontend
 app.mount("/", StaticFiles(directory="./frontend_gui/dist", html=True), name="public")
 
-async def eatSocket(websocket=WebSocket, socket_status_queue=asyncio.Queue):
+async def eatSocket(websocket:WebSocket, socket_status_queue:asyncio.Queue):
     frontend_message = await websocket.receive_json()
-    await websocket.send_text(str(frontend_message)) 
+    await websocket.send_text(json.dumps(frontend_message))
     await socket_status_queue.put(True)
     queue_to_auv.put(frontend_message)
 
@@ -54,14 +54,15 @@ async def frontend_websocket(websocket: WebSocket):
             message_to_frontend = queue_to_frontend.get(block=False)
             if message_to_frontend:
                 print("Message to frontend: " + message_to_frontend)
-                await websocket.send_text(str(message_to_frontend))
+                await websocket.send_text(message_to_frontend)
         except Empty:
             pass
         # Check websocket & send to queue_to_auv
         try:
             socket_available = socket_status_queue.get_nowait()
             if socket_available:
-                asyncio.create_task(eatSocket(websocket=websocket, socket_status_queue=socket_status_queue))
+                asyncio.create_task(eatSocket(websocket=websocket,
+                                              socket_status_queue=socket_status_queue))
         except asyncio.queues.QueueEmpty:
             pass
         continue

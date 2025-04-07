@@ -1,3 +1,4 @@
+from __future__ import annotations # Depending on your version of python
 import time
 import threading
 import platform
@@ -13,12 +14,13 @@ import config
 from core import websocket_thread, Navigation, Control
 from custom_types import State, Log
 
-def main_log(logging_queue=Queue, base_queue=Queue):
+
+def main_log(logging_queue:Queue, base_queue:Queue):
     thing = 0
     while(logging_queue.qsize() > 0):
         try:
             thing += 1
-            message: Log = logging_queue.get_nowait()
+            message: Log|str = logging_queue.get_nowait()
             if message:
                 if isinstance(message, Log): # If it is just a string, do nothing
                     if message.type == "state": # If type is state, unpack the numpy arrays
@@ -52,9 +54,10 @@ if __name__ == "__main__":
     # Used for thread cleanup
     threads = []
 
+    # Websocket Initialization
     queue_to_base = Queue()
     queue_to_auv = Queue()
-    ws_shutdown_q = Queue()
+    ws_shutdown_q = Queue() # This just takes the single shutdown method for the websocket server
     websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, config.SOCKET_IP, config.SOCKET_PORT, config.PING_INTERVAL, queue_to_base, queue_to_auv, True, ws_shutdown_q])
     threads.append(websocket_thread)
     websocket_thread.start()
@@ -64,6 +67,7 @@ if __name__ == "__main__":
     if platform.system() == "Darwin":
         motor_controller = MockController()
 
+    # Control System Initialization
     queue_input_nav = Queue() # Input from user & state input to nav
     queue_input_control = Queue() # State input to nav
     queue_nav_to_control = Queue() # Setpoint input to nav

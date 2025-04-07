@@ -1,6 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/Forms.js";
-import { StatusItem, StatusMessages } from "./outputs/status.js";
+import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/Forms";
+import { StatusItem, StatusMessages } from "./outputs/status";
+import { Simulation } from "./outputs/sim";
+import { Map } from "./outputs/map"
+import {
+    Command,
+    isCommand,
+    State,
+    isState,
+    Data,
+    isData
+} from "./types"
+
+import "../public/leaflet.css"
 
 const Graph = () => {
     return (
@@ -10,8 +22,13 @@ const Graph = () => {
     )
 }
 
-interface socketEvent extends Event {
-    data: string
+const tryJson = (raw: string): any => {
+    try {
+        return JSON.parse(raw)
+    }
+    catch {
+        return undefined
+    }
 }
 
 export default function App() {
@@ -28,10 +45,19 @@ export default function App() {
     ]);
     const [websocket, setWebsocket]: any = useState(undefined);
 	const [statusMessages, setStatusMessages]: any = useState([]);
+    const [attitude, setAttitude] = useState<number[]>([0,0,0,0]);
 
     const handleSocketData = (event: MessageEvent<string>) => {
-        console.log("Socket data arrived: " + event.data);
-        setStatusMessages((prev: any)  => [...prev, event.data]);
+        //console.log("Socket data arrived: " + event.data);
+        const data: Command | Data = tryJson(event.data)
+        if (isData(data)) {
+            const state = data.content;
+            if(isState(state)) {
+                setAttitude(state.attitude)
+            }
+        } else {
+            setStatusMessages((prev: any)  => [...prev, event.data]);
+        }
     }
 
     // Register socket handler for server-sent data
@@ -52,15 +78,8 @@ export default function App() {
 			<div className="main-section">
 				<h1>Testing and Calibration</h1>
 				<div className="upper-section">
-					<div>
-						<Graph></Graph>
-					</div>
-					<div>
-						<Graph></Graph>
-					</div>
-					<div>
-						<Graph></Graph>
-					</div>
+                    <Simulation quat={attitude}></Simulation>
+                    <Map coordinates={[]}></Map>
 				</div>
 				<div className="lower-section">
 					<div className="status-section">							

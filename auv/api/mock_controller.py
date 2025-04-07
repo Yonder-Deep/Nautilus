@@ -31,7 +31,7 @@ class MockController(MotorController):
             local_velocity = np.array([0.0, 0.0, 0.0]),
             local_force = np.array([1.0, 0.0, 0.0]),
             attitude = np.array([1.0, 0.0, 0.0, 0.0]),
-            angular_velocity = np.array([0.0, 0.0, 0.0]),
+            angular_velocity = np.array([0.0, 0.0, -5.0]),
             local_torque = np.array([0.0, 0.0, 0.1]),
             mass = 1.0,
             inertia = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
@@ -83,3 +83,6 @@ class MockController(MotorController):
             self.state.position += self.state.velocity * time_delta
 
         return self.state
+    
+    def set_last_time(self):
+        self.last_time = time()

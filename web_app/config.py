@@ -1,5 +1,3 @@
-import threading
-
 # Constants for the base station connections
 THREAD_SLEEP_DELAY = 0.2  # Since we are the slave to AUV, we must run faster.
 PING_SLEEP_DELAY = 3

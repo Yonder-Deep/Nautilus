@@ -3,9 +3,11 @@ from threading import Thread, Event
 from functools import partial
 from time import sleep
 
+from numpy import array as a
+from numpy import float64 as f64
 from custom_types import PositionState, State
 
-def check_verbose(message, q=Queue, verbose=bool):
+def check_verbose(message, q:Queue, verbose:bool=True):
     if verbose:
         q.put("NAV: " + message)
 
@@ -15,11 +17,11 @@ class Navigation(Thread):
         desired state of the submarine is. It is not meant to directly
         control the state of the submarine, merely produce a desired state.
     """
-    def __init__(self, input_state_q=Queue, desired_state_q=Queue, logging_q=Queue, verbose=True, stop_event=Event):
+    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, stop_event:Event, verbose:bool=True):
         super().__init__() # For Thread class __init__()
         self.stop_event = stop_event
         self.input_state = State(
-            position = [0.0, 0.0, 0.0],
+            position = a([0.0, 0.0, 0.0], dtype=f64),
             velocity = [0.0, 0.0, 0.0],
             local_velocity = [0.0, 0.0, 0.0],
             local_force = [0., 0., 0.],

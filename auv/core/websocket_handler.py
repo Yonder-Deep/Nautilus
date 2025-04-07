@@ -6,7 +6,7 @@ import time
 import functools
 import threading
 
-def socket_handler(base_websocket=ServerConnection, stop_event=threading.Event, ping_interval=int, queue_to_base=Queue, queue_to_auv=Queue, log=object):
+def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, ping_interval:int, queue_to_base:Queue, queue_to_auv:Queue, log:callable):
     log("New websocket connection from base")
     log("stop_event" + str(stop_event))
     base_websocket.send("Hello from AUV")

@@ -7,12 +7,12 @@ import threading
 
 # TODO: Ping/Pong heartbeat
 
-def auv_socket_handler(stop_event = threading.Event, ip_address=str, ping_interval=int, queue_to_frontend=Queue, queue_to_auv=Queue):
+def auv_socket_handler(stop_event : threading.Event, ip_address:str, ping_interval:int, queue_to_frontend:Queue, queue_to_auv:Queue):
     print("AUV Socket Handler Alive")
     #with connect(uri=ip_address) as websocket:
     websocket = connect(uri=ip_address)
     hello = websocket.recv(timeout=None)
-    print("AUV Hello: " + hello)
+    print("AUV Hello: ", hello)
     while True:
         if stop_event.is_set():
             websocket.close()

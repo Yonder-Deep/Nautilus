@@ -20,17 +20,18 @@ export const StatusItem = ({ statusType, statusData }:any) => {
 }
 
 export const StatusMessages = ({ statusMessages, setStatusMessages }:any) => {
-    const messagesBottomRef: any = useRef(undefined);
+    const bottomRef = useRef<HTMLDivElement>(null!);
 
     const scrollToMessagesBottom = () => {
-        messagesBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 	const clearMessages = () => {
 		setStatusMessages([]);
 	};
 
     useEffect(() => {
-        scrollToMessagesBottom()
+        if (bottomRef.current.scrollHeight - bottomRef.current.clientHeight <= bottomRef.current.scrollTop + 5)
+            scrollToMessagesBottom()
     }, [statusMessages]);
 
 	return (
@@ -49,7 +50,7 @@ export const StatusMessages = ({ statusMessages, setStatusMessages }:any) => {
                     </li>
                     )
                 })}
-                <div ref={messagesBottomRef}></div>
+                <div ref={bottomRef}></div>
 			</ul>
 			<div className="status-messages-bottom-bar">
 				<button onClick={() => clearMessages()}>Clear Output</button>

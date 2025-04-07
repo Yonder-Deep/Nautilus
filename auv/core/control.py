@@ -5,6 +5,7 @@ from threading import Thread, Event
 from functools import partial
 from time import sleep
 
+from api.mock_controller import MockController
 from custom_types import State, PositionState, Log
 
 def check_verbose(message:Union[State,str], q:Queue, verbose:bool):
@@ -52,8 +53,10 @@ class Control(Thread):
     def run(self):
         log = self.log
         log("HELLO")
+        if type(self.mc) is MockController:
+            self.mc.set_last_time()
         while not self.stop_event.is_set():
-            sleep(1)
+            sleep(0.01)
             try:
                 new_desired_state = self.desired_state_q.get(block=False)
                 if new_desired_state:
@@ -65,6 +68,7 @@ class Control(Thread):
             except Empty:
                 pass
 
+        if type(self.mc) is MockController:
             log(self.mc.get_state())
         # Compare current state & desired state (setpoint), create error value
         # From error value, translate into motor speeds (signal)

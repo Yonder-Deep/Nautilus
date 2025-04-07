@@ -57,6 +57,7 @@ pre {
 .upper-section {
     display: flex;
     justify-content: space-around;
+    height: 20rem;
 }
 
 .graph {
