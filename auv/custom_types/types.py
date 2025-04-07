@@ -6,25 +6,17 @@ from numpydantic import NDArray, Shape
 # This partial state only has the global position and velocity
 class PositionState(BaseModel):
     # Pos-coordinates relative to global origin
-    position: NDArray[Shape["3"], np.float64]
-    velocity: NDArray[Shape["3"], np.float64]
-    #position: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    position: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
     # Velocity relative to global origin
-    #velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
 
 # This state has the rotation, its derivative, 
 class State(PositionState):
-
-    local_velocity: NDArray[Shape["3"], np.float64]
-    local_force:NDArray[Shape["3"], np.float64]
-    attitude: NDArray[Shape["3"], np.float64]
-    angular_velocity: NDArray[Shape["3"], np.float64]
-    local_torque: NDArray[Shape["3"], np.float64]
-    #local_velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')    # Velocity relative to the submarine body
-    #local_force: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
-    #attitude: Union[NDArray[Shape["4"], np.float64], float] = Field(union_mode='left_to_right')          # Quaternion: x, y, z, w
-    #angular_velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
-    #local_torque:  Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    local_velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')    # Velocity relative to the submarine body
+    local_force: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    attitude: Union[NDArray[Shape["4"], np.float64], float] = Field(union_mode='left_to_right')          # Quaternion: x, y, z, w
+    angular_velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    local_torque:  Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
 
     # These two are included since torque & force will actually be tau_net & F_net
     # and so will include drag forces in addition to motor forces

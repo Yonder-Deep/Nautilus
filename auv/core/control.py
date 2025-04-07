@@ -27,7 +27,7 @@ class Control(Thread):
         critically damped so that the error between the current state
         and desired state is minimized.
     """
-    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, controller:MotorController, stop_event:Event):
+    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, controller:MockController, stop_event:Event):
         super().__init__()
         self.stop_event = stop_event
         self.mc = controller
@@ -53,8 +53,7 @@ class Control(Thread):
     def run(self):
         log = self.log
         log("HELLO")
-        if type(self.mc) is MockController:
-            self.mc.set_last_time()
+        self.mc.set_last_time()
         while not self.stop_event.is_set():
             sleep(0.01)
             try:
@@ -68,7 +67,6 @@ class Control(Thread):
             except Empty:
                 pass
 
-        if type(self.mc) is MockController:
             log(self.mc.get_state())
         # Compare current state & desired state (setpoint), create error value
         # From error value, translate into motor speeds (signal)

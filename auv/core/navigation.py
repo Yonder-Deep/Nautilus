@@ -21,7 +21,7 @@ class Navigation(Thread):
         super().__init__() # For Thread class __init__()
         self.stop_event = stop_event
         self.input_state = State(
-            position = a([0.0, 0.0, 0.0], dtype=f64),
+            position = [0.0, 0.0, 0.0],
             velocity = [0.0, 0.0, 0.0],
             local_velocity = [0.0, 0.0, 0.0],
             local_force = [0., 0., 0.],
