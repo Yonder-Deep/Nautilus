@@ -21,19 +21,19 @@ class Navigation(Thread):
         super().__init__() # For Thread class __init__()
         self.stop_event = stop_event
         self.input_state = State(
-            position = [0.0, 0.0, 0.0],
-            velocity = [0.0, 0.0, 0.0],
-            local_velocity = [0.0, 0.0, 0.0],
-            local_force = [0., 0., 0.],
-            attitude = [0.0, 0.0, 0.0, 0.],
-            angular_velocity = [0.0, 0.0, 0.0],
-            local_torque = [0., 0., 0.],
+            position = a([0.0, 0.0, 0.0], dtype=f64),
+            velocity = a([0.0, 0.0, 0.0], dtype=f64),
+            local_velocity = a([0.0, 0.0, 0.0], dtype=f64),
+            local_force = a([0.0, 0.0, 0.0], dtype=f64),
+            attitude = a([0.0, 0.0, 0.0, 0.0], dtype=f64),
+            angular_velocity = a([0.0, 0.0, 0.0], dtype=f64),
+            local_torque = a([0.0, 0.0, 0.0], dtype=f64),
             forward_m_input = 0.0,
             turn_m_input = 0.0
         )
         self.desired_state = PositionState(
-            position = [0.0, 0.0, 0.0],
-            velocity = [0.0, 0.0, 0.0],
+            position = a([0.0, 0.0, 0.0], dtype=f64),
+            velocity = a([0.0, 0.0, 0.0], dtype=f64),
         )
         self.input_state_q = input_state_q
         self.desired_state_q = desired_state_q

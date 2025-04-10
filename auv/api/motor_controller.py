@@ -7,6 +7,7 @@ from api import Motor
 import pigpio
 import time
 import sys
+from .mock_controller import AbstractController
 # Custom Imports
 
 # GPIO Pin numbers for Motors
@@ -38,7 +39,7 @@ def log(val):
     print("[MC]\t" + val)
 
 
-class MotorController:
+class MotorController(AbstractController):
     """
     Object that contains all interactions with the motor array for the AUV
     """

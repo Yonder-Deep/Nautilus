@@ -1,10 +1,12 @@
 from typing import Union
 from queue import Queue, Empty
-from api import MotorController
+from api import AbstractController
 from threading import Thread, Event
 from functools import partial
 from time import sleep
 
+from numpy import array as ar
+from numpy import float64 as f64
 from api.mock_controller import MockController
 from custom_types import State, PositionState, Log
 
@@ -27,24 +29,24 @@ class Control(Thread):
         critically damped so that the error between the current state
         and desired state is minimized.
     """
-    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, controller:MockController, stop_event:Event):
+    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, controller:AbstractController, stop_event:Event):
         super().__init__()
         self.stop_event = stop_event
         self.mc = controller
         self.input_state = State(
-            position = [0.0, 0.0, 0.0],
-            velocity = [0.0, 0.0, 0.0],
-            local_velocity = [0.0, 0.0, 0.0],
-            local_force = [0., 0., 0.],
-            attitude = [0.0, 0.0, 0.0, 0.],
-            angular_velocity = [0.0, 0.0, 0.0],
-            local_torque = [0., 0., 0.],
+            position = ar([0.0, 0.0, 0.0], dtype=f64),
+            velocity = ar([0.0, 0.0, 0.0], dtype=f64),
+            local_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
+            local_force = ar([0.0, 0.0, 0.0], dtype=f64),
+            attitude = ar([0.0, 0.0, 0.0, 0.0], dtype=f64),
+            angular_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
+            local_torque = ar([0.0, 0.0, 0.0], dtype=f64),
             forward_m_input = 0.0,
             turn_m_input = 0.0
         )
         self.desired_state = PositionState(
-            position = [0.0, 0.0, 0.0],
-            velocity = [0.0, 0.0, 0.0],
+            position = ar([0.0, 0.0, 0.0], dtype=f64),
+            velocity = ar([0.0, 0.0, 0.0], dtype=f64),
         )
         self.input_state_q = input_state_q
         self.desired_state_q = desired_state_q

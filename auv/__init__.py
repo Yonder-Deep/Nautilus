@@ -12,7 +12,7 @@ from api import MockController
 
 import config
 from core import websocket_thread, Navigation, Control
-from custom_types import State, Log
+from custom_types import State, Log, SerialState
 
 
 def main_log(logging_queue:Queue, base_queue:Queue):
@@ -23,8 +23,8 @@ def main_log(logging_queue:Queue, base_queue:Queue):
             message: Log|str = logging_queue.get_nowait()
             if message:
                 if isinstance(message, Log): # If it is just a string, do nothing
-                    if message.type == "state": # If type is state, unpack the numpy arrays
-                        serial_state = State(
+                    if message.type == "state" and isinstance(message.content, State): # If type is state, unpack the numpy arrays
+                        serial_state = SerialState(
                             position = message.content.position.tolist(),
                             velocity = message.content.velocity.tolist(),
                             local_velocity = message.content.local_velocity.tolist(),
@@ -58,7 +58,17 @@ if __name__ == "__main__":
     queue_to_base = Queue()
     queue_to_auv = Queue()
     ws_shutdown_q = Queue() # This just takes the single shutdown method for the websocket server
-    websocket_thread = threading.Thread(target=websocket_thread, args=[stop_event, logging_queue, config.SOCKET_IP, config.SOCKET_PORT, config.PING_INTERVAL, queue_to_base, queue_to_auv, True, ws_shutdown_q])
+    websocket_thread = threading.Thread(
+            target=websocket_thread,
+            kwargs={'stop_event':stop_event,
+                    'logging_event':logging_queue,
+                    'websocket_interface': config.SOCKET_IP,
+                    'websocket_port': config.SOCKET_PORT,
+                    'ping_interval': config.PING_INTERVAL,
+                    'queue_to_base': queue_to_base,
+                    'queue_to_auv': queue_to_auv,
+                    'verbose': True,
+                    'shutdown_q': ws_shutdown_q})
     threads.append(websocket_thread)
     websocket_thread.start()
     ws_shutdown = ws_shutdown_q.get(block=True) # Needed to shut down server

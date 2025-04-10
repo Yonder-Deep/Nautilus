@@ -1,1 +1,1 @@
-from .types import PositionState, State, InitialState, Log
+from .types import PositionState, State, InitialState, Log, SerialState

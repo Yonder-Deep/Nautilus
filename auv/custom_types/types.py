@@ -1,34 +1,49 @@
+from re import L
 from pydantic import BaseModel, Field
-from typing import Union
+from typing import List, Union
 import numpy as np
-from numpydantic import NDArray, Shape
 
 # This partial state only has the global position and velocity
 class PositionState(BaseModel):
     # Pos-coordinates relative to global origin
-    position: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    position: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     # Velocity relative to global origin
-    velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 # This state has the rotation, its derivative, 
 class State(PositionState):
-    local_velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')    # Velocity relative to the submarine body
-    local_force: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
-    attitude: Union[NDArray[Shape["4"], np.float64], float] = Field(union_mode='left_to_right')          # Quaternion: x, y, z, w
-    angular_velocity: Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
-    local_torque:  Union[NDArray[Shape["3"], np.float64], float] = Field(union_mode='left_to_right')
+    local_velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+    local_force: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+    attitude: np.ndarray = Field(default_factory=lambda: np.zeros((3,3), dtype=float)) # Quaternion: x, y, z, w
+    angular_velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+    local_torque: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
 
     # These two are included since torque & force will actually be tau_net & F_net
     # and so will include drag forces in addition to motor forces
     forward_m_input: float
     turn_m_input: float
 
+# Needed because of type stupidity
+class SerialState(BaseModel):
+    position: List
+    velocity: List
+    local_velocity: List
+    local_force: List
+    attitude: List
+    angular_velocity: List
+    local_torque: List
+    forward_m_input: float
+    turn_m_input: float
+
 # Complete state required to define the system at any time, including the mass and inertia
 class InitialState(State):
     mass: float
-    inertia: Union[NDArray[Shape["3, 3"], np.float64], float] = Field(union_mode='left_to_right')
+    inertia: np.ndarray = Field(default_factory=lambda: np.zeros((3,3), dtype=float))
 
 class Log(BaseModel):
     source: str
     type: str
-    content: Union[State, str] = Field(union_mode='left_to_right')
+    content: Union[State, SerialState, str] = Field(union_mode='left_to_right')

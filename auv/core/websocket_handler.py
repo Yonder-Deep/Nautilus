@@ -5,8 +5,9 @@ from queue import Queue, Empty
 import time
 import functools
 import threading
+from _collections_abc import Callable
 
-def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, ping_interval:int, queue_to_base:Queue, queue_to_auv:Queue, log:callable):
+def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, ping_interval:int, queue_to_base:Queue, queue_to_auv:Queue, log:Callable[[str], None]):
     log("New websocket connection from base")
     log("stop_event" + str(stop_event))
     base_websocket.send("Hello from AUV")
@@ -61,11 +62,11 @@ def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, 
         else:
             time_since_last_ping = time.time() - last_ping
 
-def custom_log(message=str, verbose=bool, queue=Queue):
+def custom_log(message:str, verbose:bool, queue:Queue):
     if verbose:
         queue.put(" WS: " + message)
 
-def server(stop_event=threading.Event, logging_event=threading.Event, websocket_interface=str, websocket_port=int, ping_interval=int, queue_to_base=Queue, queue_to_auv=Queue, verbose=bool, shutdown_q=Queue):
+def server(stop_event:threading.Event, logging_event:Queue, websocket_interface:str, websocket_port:int, ping_interval:int, queue_to_base:Queue, queue_to_auv:Queue, verbose:bool, shutdown_q:Queue):
     """ Websocket server that binds to the given network interface & port.
         Anything in queue_to_base will be forwarded into the websocket.
         Anything that shows up in the websocket will be forwarded to queue_to_auv.

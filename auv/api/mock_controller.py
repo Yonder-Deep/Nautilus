@@ -1,11 +1,25 @@
-from .motor_controller import MotorController
+from abc import abstractmethod
 from custom_types import State, InitialState
 
 from time import time
 from threading import Lock
 import numpy as np
+from numpy import float64 as f64
 from scipy.spatial.transform import Rotation as R
 from scipy.integrate import solve_ivp
+
+class AbstractController():
+    @abstractmethod
+    def set_speeds(self, input):
+        pass
+
+    @abstractmethod
+    def get_state(self) -> State:
+        pass
+    
+    @abstractmethod
+    def set_last_time(self):
+        pass
 
 # Move this
 def quaternion_derivative(q, omega):
@@ -18,7 +32,7 @@ def quaternion_derivative(q, omega):
         q_w * omega[2] + q_x * omega[1] - q_y * omega[0],
     ])
 
-class MockController(MotorController):
+class MockController(AbstractController):
     """ Mock motor controller that has same input API but which
         integrates to generate fake state based on the input
     """
@@ -31,8 +45,8 @@ class MockController(MotorController):
             local_velocity = np.array([0.0, 0.0, 0.0]),
             local_force = np.array([1.0, 0.0, 0.0]),
             attitude = np.array([1.0, 0.0, 0.0, 0.0]),
-            angular_velocity = np.array([0.0, 0.0, -5.0]),
-            local_torque = np.array([0.0, 0.0, 0.1]),
+            angular_velocity = np.array([0.0, 0.0, 0.0]),
+            local_torque = np.array([0.0, 0.0, 0.0]),
             mass = 1.0,
             inertia = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
             forward_m_input = 0.0,
@@ -46,12 +60,13 @@ class MockController(MotorController):
         """
         with self.lock:
             print("MC SET")
-            self.state.forward_m_input= input[0]
-            self.state.turn_m_input = input[1]
+            forward, turn = input
+            self.state.forward_m_input= forward
+            self.state.turn_m_input = turn
 
             # This will need to be altered when drag & terminal vel is considered
-            self.state.local_force[0] = input[0]
-            self.state.local_torque[2] = input[1]
+            self.state.local_force[0] = forward
+            self.state.local_torque[2] = turn
 
             self.last_time = time()
 
@@ -76,10 +91,10 @@ class MockController(MotorController):
 
             # Not sure if this will work, overloaded * while in *= form
             rotation *= R.from_rotvec(self.state.angular_velocity * time_delta)
-            self.state.attitude = rotation.as_quat()
+            self.state.attitude = np.asarray(rotation.as_quat(True), dtype=f64)
 
             acceleration = rotation.apply(a_local) # Transform from local to global frame
-            self.state.velocity += acceleration * time_delta
+            self.state.velocity += np.asarray(acceleration * time_delta, dtype=f64)
             self.state.position += self.state.velocity * time_delta
 
         return self.state
