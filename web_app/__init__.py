@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Mount the api calls
+# Mount the api calls (to not clash with the static frontend below)
 api = FastAPI(root_path="/api")
 app.mount("/api", api)
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+
 import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/Forms";
 import { StatusItem, StatusMessages } from "./outputs/status";
 import { Simulation } from "./outputs/sim";
@@ -11,16 +12,10 @@ import {
     Data,
     isData
 } from "./types"
+import { Grid } from "./Grid";
+import { GridSvg } from "./utils/icons";
 
 import "../public/leaflet.css"
-
-const Graph = () => {
-    return (
-        <div className="graph">
-            <h3>Graph Placeholder</h3>
-        </div>
-    )
-}
 
 const tryJson = (raw: string): any => {
     try {
@@ -43,7 +38,7 @@ export default function App() {
         { title: 'Roll', value: '', id: 2 },
         { title: 'Pitch', value: '', id: 3 }
     ]);
-    const [websocket, setWebsocket]: any = useState(undefined);
+    const [websocket, setWebsocket]: any = useState();
 	const [statusMessages, setStatusMessages]: any = useState([]);
     const [attitude, setAttitude] = useState<number[]>([0,0,0,0]);
 
@@ -73,30 +68,34 @@ export default function App() {
         return () => connection.current.close();
     }, [useState]);
 
+    const [gridEnabled, setGridEnabled] = useState<boolean>(true);
+
     return (
         <div className = "parent-container">
-			<div className="main-section">
-				<h1>Testing and Calibration</h1>
-				<div className="upper-section">
-                    <Simulation quat={attitude}></Simulation>
-                    <Map coordinates={[]}></Map>
-				</div>
-				<div className="lower-section">
-					<div className="status-section">							
-						<StatusItem statusType="IMU Status" statusData={imuData}></StatusItem>
-						<StatusItem statusType="INS Status" statusData={insData}></StatusItem>
-					</div>
-					<div className="testing-section">
-						<ParametersForm websocket={websocket}></ParametersForm>
-						<MotorTestForm websocket={websocket}></MotorTestForm>
-                        <div>
-                            <HeadingTestForm websocket={websocket}></HeadingTestForm>
-                            <StartMission websocket={websocket}></StartMission>
-                        </div>
-					</div>
-				</div>
-			</div>
-			<StatusMessages statusMessages={statusMessages} setStatusMessages={ setStatusMessages}></StatusMessages>
+            <h1>Yonder Deep Nautilus Dashboard</h1>
+            <div className="btn-container">
+                <button className="btn-save-layout">Save <GridSvg /></button>
+                <button className="btn-toggle-resize"
+                        onClick={() => setGridEnabled(!gridEnabled)}
+                        style={{"color": gridEnabled ? "#ff0000" : "#00ff00"}}
+                >
+                    {gridEnabled ? "Disable" : "Enable"}
+                    {gridEnabled ? (<GridSvg color={"#ff0000"} />)
+                                 : (<GridSvg color={"#00ff00"} />)
+                    }
+                </button>
+            </div>
+            <Grid enabled={gridEnabled}>
+                <Simulation quat={attitude}></Simulation>
+                <Map coordinates={[]}></Map>
+                <StatusItem statusType="IMU Status" statusData={imuData}></StatusItem>
+                <StatusItem statusType="INS Status" statusData={insData}></StatusItem>
+                <ParametersForm websocket={websocket}></ParametersForm>
+                <MotorTestForm websocket={websocket}></MotorTestForm>
+                <HeadingTestForm websocket={websocket}></HeadingTestForm>
+                <StartMission websocket={websocket}></StartMission>
+                <StatusMessages statusMessages={statusMessages} setStatusMessages={ setStatusMessages}></StatusMessages>
+            </Grid>
         </div>
     );
 }

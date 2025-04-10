@@ -58,3 +58,12 @@ To start the React GUI alone:
 cd auv_gui
 npm start
 ```
+
+### Useful Resources:
+- Obviously, MDN Web Docs at `https://developer.mozilla.org/en-US/docs/Web/JavaScript`
+- For React, `https://react.dev/reference/react`
+- For icons and fonts, go to `https://fonts.google.com/`
+- For general Python, go to `https://docs.python.org/3/`
+- For messing with FastAPI in `__init__.py`, go to `https://fastapi.tiangolo.com/reference/`
+- For messing with the backend websocket handler (not the FastAPI websocket), go to `https://websockets.readthedocs.io/en/stable/`
+- For information about `ppp`, do `man pppd` or go to `https://linux.die.net/man/8/pppd`. If you end up on these man pages, you better start praying.
