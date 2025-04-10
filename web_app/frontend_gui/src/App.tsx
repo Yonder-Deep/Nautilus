@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Layouts } from "react-grid-layout";
 
 import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/Forms";
 import { StatusItem, StatusMessages } from "./outputs/status";
@@ -14,8 +15,6 @@ import {
 } from "./types"
 import { Grid } from "./Grid";
 import { GridSvg } from "./utils/icons";
-
-import "../public/leaflet.css"
 
 const tryJson = (raw: string): any => {
     try {
@@ -68,13 +67,35 @@ export default function App() {
         return () => connection.current.close();
     }, [useState]);
 
+    // Grid Layout Section
     const [gridEnabled, setGridEnabled] = useState<boolean>(true);
+    const [layouts, setLayouts] = useState<Layouts>();
+    // On load try to get saved layout
+    useEffect(() => {
+        const fetchLayout = async () => {
+            const response = await fetch("http://" + window.location.host + "/api/layouts");
+            const initialLayout: Layouts = await response.json();
+            setLayouts(initialLayout);
+        }
+        fetchLayout();
+    }, []);
+    // Save layouts at server
+    const saveLayout = () => {
+        fetch("http://" + window.location.host + "/api/layouts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(layouts)
+        });
+    }
 
     return (
         <div className = "parent-container">
             <h1>Yonder Deep Nautilus Dashboard</h1>
             <div className="btn-container">
-                <button className="btn-save-layout">Save <GridSvg /></button>
+                <button className="btn-save-layout"
+                        onClick={() => saveLayout()}
+                >
+                    Save <GridSvg /></button>
                 <button className="btn-toggle-resize"
                         onClick={() => setGridEnabled(!gridEnabled)}
                         style={{"color": gridEnabled ? "#ff0000" : "#00ff00"}}
@@ -85,7 +106,7 @@ export default function App() {
                     }
                 </button>
             </div>
-            <Grid enabled={gridEnabled}>
+            <Grid enabled={gridEnabled} layouts={layouts} setLayouts={setLayouts}>
                 <Simulation quat={attitude}></Simulation>
                 <Map coordinates={[]}></Map>
                 <StatusItem statusType="IMU Status" statusData={imuData}></StatusItem>

@@ -79,8 +79,8 @@ button {
 
 .btn-container {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 1rem;
+    right: 1.5rem;
     display: flex;
 }
 

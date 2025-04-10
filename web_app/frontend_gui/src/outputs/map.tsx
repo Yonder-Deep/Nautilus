@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import * as L from "leaflet"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import "../../public/leaflet.css"
 
 export const Map = ({ coordinates } : { coordinates: number[][]}) => {
     const center = L.latLng(32.865249, -117.243515);

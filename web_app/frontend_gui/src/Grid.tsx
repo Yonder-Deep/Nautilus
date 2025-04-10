@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
-import { Responsive, WidthProvider} from 'react-grid-layout';
+import React from 'react';
+import { Responsive, WidthProvider, Layout, Layouts } from 'react-grid-layout';
+
+// Import resizable styles
 import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css'; // Import resizable styles
-import { ParametersForm } from './inputs/Forms';
+import 'react-resizable/css/styles.css';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export const Grid = ({
     children,
     enabled,
+    layouts,
+    setLayouts,
 }:{
-    children: any, // TODO: Figure out typing for react children of children
-    enabled: boolean
+        children: any, // TODO: Figure out typing for react children of children
+        enabled: boolean,
+        layouts: Layouts | undefined,
+        setLayouts: React.Dispatch<React.SetStateAction<Layouts | undefined>>
     }) => {
-    const [layout, setLayout] = useState<{}>();
 
     return (
         <ResponsiveGridLayout
             className="layout"
-            layouts={layout}
+            layouts={layouts}
+            onLayoutChange={(_currentLayout: Layout[], allLayouts: Layouts) => {
+                setLayouts(allLayouts);
+            }}
             draggableHandle=".drag-handle"
             isDraggable={enabled}
             isResizable={enabled}
@@ -29,16 +36,20 @@ export const Grid = ({
             resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
         >
             {React.Children.map(children, (child, index) => {
-                if (child.props.coordinates) {
+                if (child.props.coordinates) { 
+                    /** The only one w/ coordinates as props is the map
+                      * The map needs to have a defined separate handle to allow
+                      * for movement dragging to conflict with map dragging
+                     **/
                     return (
-                    <div key={index} data-grid={{ w:2, h:2, x:0, y:0, minW:2, minH:2 }}>
-                        <div className="drag-handle map-handle"/>
-                        {child}
-                    </div>
+                        <div key={index}>
+                            <div className="drag-handle map-handle"/>
+                            {child}
+                        </div>
                     )
                 }
                 return (
-                    <div key={index} data-grid={{ w:2, h:2, x:0, y:0, minW:2, minH:2 }} className="drag-handle">
+                    <div key={index} className="drag-handle">
                         {child}
                     </div>
                 )

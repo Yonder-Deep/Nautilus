@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import asyncio
 from contextlib import asynccontextmanager
 import uvicorn
@@ -66,6 +67,35 @@ async def frontend_websocket(websocket: WebSocket):
         except asyncio.queues.QueueEmpty:
             pass
         continue
+
+layout_data_path = "./config_data/gui_layouts.json"
+
+class LayoutsModel(BaseModel):
+    class Config:
+        extra = "allow"
+
+@api.post("/layouts")
+def save_layouts(layouts: LayoutsModel) -> LayoutsModel:
+    custom_log("Saving layout to: " + layout_data_path)
+    layout_data = layouts.model_dump_json()
+    custom_log(layout_data)
+    with open(layout_data_path, 'w') as file:
+        file.write(layout_data)
+    return layouts
+
+@api.get("/layouts")
+def get_layouts():
+    custom_log("Received get request for layouts")
+    try:
+        with open(layout_data_path) as file:
+            layout_data = json.load(file)
+            custom_log("Layouts: " + json.dumps(layout_data))
+            return layout_data
+    except FileNotFoundError:
+        custom_log("Error: The gui grid layout json file at " + layout_data_path + " is missing")
+        return None
+    except json.JSONDecodeError:
+        custom_log("Error: The gui grid layout json file at " + layout_data_path + " is invalid json")
 
 def custom_log(message: str):
     queue_to_frontend.put(message)
