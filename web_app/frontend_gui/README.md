@@ -1,16 +1,21 @@
-# React Frontend
+# React Frontend for Nautilus AUV
+## Basic Map of Codebase:
+* `src/` holds all the of the React and typescript source files and the associated css styles
+* Within `src/`, entrypoint is `index.tsx`, main file is `App.tsx`, dashboard grid layout is `Grid.tsx`, `inputs/` is for user inputs, `outputs/` is for data outputs, `utils/` for miscellaneous other stuff
+* `public/` holds assets like icons and fonts
+* Building with `npm run build` will output into and clear existing files in `dist/`
+* Entrypoint is obviously the `index.html`
 
-This current frontend is a result of a migration from react-scripts to vite, which was facilitated by:
-```
-npm create vite@latest . -- --template react
-```
-Then the unneeded template files were thrown away, and the actual source files from the original react-scripts setup were migrated and partially altered to use newer React conventions.
+## General Info:
+* A local websocket to the FastAPI server is made and managed from the top level `App.tsx`, and any data put into it will go through the server and end up in the `queue_to_auv` FIFO queue in the `__init__.py` of the auv code. This is how most of the communication is done.
+* There are also simple fetch requests to the FastAPI server to manage the grid layout and persist it to json.
 
-## React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## *Relatively* minimal npm packages:
+* Built using Vite, which means you can get HMR if you run `npm run dev` from this directory
+* No component library, all custom CSS
+* Obviously `react` and `react-dom`
+* `three` and `@react-three/fiber` for the 3D model
+* `leaflet` for the map
+* `vite` for the build system
+* `react-grid-layout` for the heavy lifting on the grid dashboard
+* `typescript` and all the associated `@types/*` libraries for everything else

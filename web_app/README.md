@@ -55,7 +55,7 @@ For other runtime dependency issues, open build.sh and troubleshoot from there.
 To start the React GUI alone:
 (Has hot module replacement, good for developing the GUI alone)
 ```bash
-cd auv_gui
+cd frontend_gui/
 npm start
 ```
 

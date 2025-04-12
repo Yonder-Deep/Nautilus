@@ -51,9 +51,9 @@ export const StatusMessages = ({
     }, [statusMessages]);
 
     return (
-        <div className="status-messages-container">
+        <div className="status-messages">
             <h2>Status Messages</h2>
-            <ul ref={listRef} className="status-messages">
+            <ul ref={listRef}>
                 {statusMessages?.map((message: any, index: any) => {
                     try {
                         const newMessage: any = JSON.parse(message);
@@ -67,10 +67,7 @@ export const StatusMessages = ({
                     )
                 })}
             </ul>
-            <div className="status-messages-bottom-bar">
-                <button onClick={() => clearMessages()}>Clear Output</button>
-                <h3>Scroll?: {doScroll + ""}</h3>
-            </div>
+            <button onClick={() => clearMessages()}>Clear Output</button>
         </div>
     )
 }

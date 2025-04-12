@@ -1,9 +1,10 @@
 html, body {
-    font-family: system-ui;
+    font-family: "Open Sans", system-ui;
     padding: 0;
     margin: 0;
     height: 100vh;
     background: #CEF3FF;
+    font-size: 1.2;
 }
 
 :root {
@@ -44,7 +45,9 @@ h1 {
 }
 
 h2 {
-    margin: 0.5rem;
+    margin: 0 0 0.5rem;
+    line-height: 1;
+    text-align: center;
 }
 
 h3 {
@@ -57,12 +60,13 @@ select {
 }
 
 ul {
+    margin-top: 0;
     list-style: none;
     padding-left: 0;
 }
 
 ul>li {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 pre { /* For the gui console output*/
@@ -77,14 +81,14 @@ button {
     padding: 1rem;
 }
 
-.btn-container {
+.top-right-buttons {
     position: absolute;
     top: 1rem;
     right: 1.5rem;
     display: flex;
 }
 
-.btn-save-layout, .btn-toggle-resize {
+.top-right-buttons > button {
     margin: 0.25rem;
     border-radius: 0.75rem;
     border: none;
@@ -95,9 +99,10 @@ button {
     gap: 0.2rem;
     background: white;
     box-shadow: var(--shadow-elevation-medium);
+    font-size: 0.9rem;
 }
 
-.btn-save-layout:hover, .btn-toggle-resize:hover {
+.top-right-buttons > button:hover {
     transform: translateY(-0.1rem);
 }
 
@@ -106,6 +111,19 @@ button {
     background-color: white;
     border-radius: 1.5rem;
     box-shadow: var(--shadow-elevation-high);
+}
+
+.react-grid-layout button {
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    filter: brightness(95%);
+    font-weight: bold;
+}
+
+.react-grid-layout button:hover {
+    filter: brightness(85%);
 }
 
 .map-handle {
@@ -118,8 +136,14 @@ button {
 }
 
 .map-holder {
-    padding-top: 2rem;
-    height: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.map {
+    flex-grow: 1;
+    border-radius: 1rem;
 }
 
 .status-section {
@@ -145,39 +169,37 @@ button {
 }
 
 .form-body {
+    margin: 1rem 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
 .form-body>select,
-input,
-button {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+input {
+    margin-bottom: 0.75rem;
     padding: 0.3rem;
     padding-inline: 1rem;
 }
 
-.status-messages-container {
+.status-messages {
     height: 100%;
     width: 100%;
-    border: clamp(2px, 0.3rem, 5px) solid black;
     border-radius: 1rem;
 
     display: flex;
     flex-direction: column;
 }
 
-.status-messages-container > h2 {
-    margin: 0;
-    border-bottom: clamp(2px, 0.3rem, 5px) solid black;
-    padding: 1rem;
+.status-messages > h2 {
+    flex-grow: 0;
+    margin: 0 0 1rem;
     text-align: center;
 }
 
-.status-messages-container > ul {
+.status-messages > ul {
     flex-grow: 1;
+    border-radius: 1rem;
     margin: 0;
     padding: 1rem;
     background-color: black;
@@ -185,11 +207,8 @@ button {
     overflow-y: scroll;
 }
 
-.status-messages-bottom-bar {
-    border-top: clamp(2px, 0.3rem, 5px) solid black;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+.status-messages > button {
+    flex-grow: 0; 
+    margin: 1rem auto 0;
+    width: fit-content;
 }

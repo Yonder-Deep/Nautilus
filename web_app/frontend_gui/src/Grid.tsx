@@ -40,10 +40,10 @@ export const Grid = ({
                     /** The only one w/ coordinates as props is the map
                       * The map needs to have a defined separate handle to allow
                       * for movement dragging to conflict with map dragging
+                      * The extra class "map-flex-fix" is for the map to expand correctly
                      **/
                     return (
-                        <div key={index}>
-                            <div className="drag-handle map-handle"/>
+                        <div key={index} className="map-holder">
                             {child}
                         </div>
                     )

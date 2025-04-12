@@ -68,7 +68,7 @@ export default function App() {
     }, [useState]);
 
     // Grid Layout Section
-    const [gridEnabled, setGridEnabled] = useState<boolean>(true);
+    const [gridEnabled, setGridEnabled] = useState<boolean>(false);
     const [layouts, setLayouts] = useState<Layouts>();
     // On load try to get saved layout
     useEffect(() => {
@@ -91,13 +91,9 @@ export default function App() {
     return (
         <div className = "parent-container">
             <h1>Yonder Deep Nautilus Dashboard</h1>
-            <div className="btn-container">
-                <button className="btn-save-layout"
-                        onClick={() => saveLayout()}
-                >
-                    Save <GridSvg /></button>
-                <button className="btn-toggle-resize"
-                        onClick={() => setGridEnabled(!gridEnabled)}
+            <div className="top-right-buttons">
+                <button onClick={() => saveLayout()}>Save <GridSvg /></button>
+                <button onClick={() => setGridEnabled(!gridEnabled)}
                         style={{"color": gridEnabled ? "#ff0000" : "#00ff00"}}
                 >
                     {gridEnabled ? "Disable" : "Enable"}

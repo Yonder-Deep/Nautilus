@@ -68,7 +68,7 @@ async def frontend_websocket(websocket: WebSocket):
             pass
         continue
 
-layout_data_path = "./config_data/gui_layouts.json"
+layout_data_path = "./data/gui_layouts.json"
 
 class LayoutsModel(BaseModel):
     class Config:
