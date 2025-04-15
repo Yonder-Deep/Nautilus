@@ -3,16 +3,10 @@ The motor_controller class calibrates and sets the speed of all of the motors
 """
 
 # System imports
-from static import global_vars
 from api import Motor
-import RPi.GPIO as io
 import pigpio
 import time
 import sys
-sys.path.append('../')
-sys.path.append('/home/pi-2/dev/Nautilus/auv')
-sys.path.append('/home/pi-2/dev/Nautilus/auv/api')
-sys.path.append('/home/pi-2/dev/Nautilus/auv/static')
 # Custom Imports
 
 # GPIO Pin numbers for Motors
@@ -88,9 +82,6 @@ class MotorController:
         self.turn_speed = data[TURN_MOTOR_INDEX]
         self.front_speed = data[FRONT_MOTOR_INDEX]
         self.back_speed = data[BACK_MOTOR_INDEX]
-
-        if all([speed == 0 for speed in data]):
-            global_vars.movement_status = 0
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
@@ -193,14 +184,6 @@ class MotorController:
     def test_back(self):
         log('Testing back motor...')
         self.motors[BACK_MOTOR_INDEX].test_motor()
-
-    def check_gpio_pins(self):
-        """ This function might be deprecated... """
-        io.setmode(io.BOARD)
-        for pins in self.pi_pins:
-            io.setup(pins, io.IN)
-            print("Pin: ", pins, io.input(pins))
-            #log("Pin:", pins, io.input(pins))
 
     def calculate_pid_new_speed(self, feedback):
         # Case 1: Going backward

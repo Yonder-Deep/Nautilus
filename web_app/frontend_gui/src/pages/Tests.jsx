@@ -64,35 +64,20 @@ export default function Tests() {
         { title: 'Roll', value: '', id: 2 },
         { title: 'Pitch', value: '', id: 3 }
     ]);
+    const [websocket, setWebsocket] = useState(null);
 	const [statusMessages, setStatusMessages] = useState([]);
-
-    // Handle all POST requests to set PID or run tests
-    const handlePostRequest = async (url, data) => {
-        console.log("Attempting post of data: " + JSON.stringify(data));
-        try {
-            const response = await fetch("http://localhost:6543/api/" + url, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-            console.log("Response: " + response.data);
-        } catch (error) {
-            console.error('Error posting data:', error);
-        }
-    };
 
     const handleSocketData = (event) => {
         console.log("Socket data arrived: " + event.data)
         setStatusMessages(statusMessages => [...statusMessages, event.data]);
     }
 
-    // Register socket handlers for server-sent data
+    // Register socket handler for server-sent data
     const connection = useRef(null);
     useEffect(() => {
         const socket = new WebSocket("/api/websocket");
 
+        socket.addEventListener("open", () => setWebsocket(socket));
         socket.addEventListener("message", handleSocketData);
 
         connection.current = socket;
@@ -121,9 +106,9 @@ export default function Tests() {
 						<StatusItem statusType="INS Status" statusData={insData}></StatusItem>
 					</div>
 					<div className="testing-section">
-						<ParametersForm handlePostRequest={handlePostRequest}></ParametersForm>
-						<MotorTestForm handlePostRequest={handlePostRequest}></MotorTestForm>
-						<HeadingTestForm handlePostRequest={handlePostRequest}></HeadingTestForm>
+						<ParametersForm websocket={websocket}></ParametersForm>
+						<MotorTestForm websocket={websocket}></MotorTestForm>
+						<HeadingTestForm websocket={websocket}></HeadingTestForm>
 					</div>
 				</div>
 			</div>

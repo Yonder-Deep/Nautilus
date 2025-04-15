@@ -1,7 +1,5 @@
 import threading
-
 from api import IMU
-
 
 class IMU_Calibration_Test(threading.Thread):
     def __init__(self, imu: IMU):

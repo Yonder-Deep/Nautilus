@@ -1,24 +1,30 @@
 import React, { useState } from 'react';
 
-export const ParametersForm = ({ handlePostRequest }) => {
-    const [axis, setAxis] = useState('');
+export const ParametersForm = ({ websocket }) => {
+    const [pidAxis, setPidAxis] = useState('');
     const [constantP, setConstantP] = useState('');
     const [constantI, setConstantI] = useState('');
     const [constantD, setConstantD] = useState('');
-    const createPIDRequest = () => {
+    const makePidRequest = () => {
+        if (!pidAxis || !constantP || !constantI || !constantD) { return; }
         const pidConstants = {
+            axis: '' + pidAxis,
             p: '' + constantP.target.value,
             i: '' + constantI.target.value,
             d: '' + constantD.target.value
         };
-        handlePostRequest(axis.target.value.toLowerCase() + '_pid_constants', pidConstants);
+        const request = {
+            command: "pidConstants",
+            content: pidConstants
+        };
+        websocket.send(JSON.stringify(request));
     }
 
     return (
         <div className="parameters-form">
             <h2>Set PID Constants</h2>
             <div className="form-body">
-                <select defaultValue={"Default"} onChange={e => setAxis(e)}>
+                <select defaultValue={"Default"} onChange={e => setPidAxis(e)}>
                     <option value="Default" disabled>Select Axis</option>
                     <option value="Pitch">Pitch</option>
                     <option value="Yaw">Yaw</option>
@@ -27,23 +33,28 @@ export const ParametersForm = ({ handlePostRequest }) => {
                 <input placeholder="P" onChange={e => setConstantP(e)} />
                 <input placeholder="I" onChange={e => setConstantI(e)} />
                 <input placeholder="D" onChange={e => setConstantD(e)} />
-                <button onClick={() => createPIDRequest()}>Set Constants</button>
+                <button onClick={() => makePidRequest()}>Set Constants</button>
             </div>
         </div>
     )
 }
 
-export const MotorTestForm = ({ handlePostRequest }) => {
+export const MotorTestForm = ({ websocket }) => {
     const [motorType, setMotorType] = useState('');
     const [motorSpeed, setMotorSpeed] = useState('');
     const [motorDuration, setMotorDuration] = useState('');
-    const createMotorTest = () => {
+    const makeMotorRequest = () => {
+        console.log("Making motor request.")
         const motorTest = {
             motor: '' + motorType.target.value,
             speed: '' + motorSpeed.target.value,
             duration: '' + motorDuration.target.value
         };
-        handlePostRequest('motor_test', motorTest);
+        const request = {
+            command: "motorTest",
+            content: motorTest
+        };
+        websocket.send(JSON.stringify(request));
     }
 
     return (
@@ -60,21 +71,29 @@ export const MotorTestForm = ({ handlePostRequest }) => {
                 </select>
                 <input placeholder="Enter motor speed" onChange={e => setMotorSpeed(e)} />
                 <input placeholder="Enter duration of run" onChange={e => setMotorDuration(e)} />
-                <button onClick={() => createMotorTest()}>Begin Test</button>
+                <button onClick={() => makeMotorRequest()}>Begin Test</button>
             </div>
         </div>
     )
 }
 
-export const HeadingTestForm = ({ handlePostRequest }) => {
+export const HeadingTestForm = ({ websocket }) => {
     const [targetHeading, setTargetHeading] = useState('');
+    const headingRequest = () => {
+        console.log("Making heading request.")
+        const request = {
+            command: "headingTest",
+            content: targetHeading.target.value 
+        };
+        websocket.send(JSON.stringify(request));
+    }
 
     return (
         <div className="testing-form">
             <h2>Heading Test</h2>
             <div className="form-body">
                 <input placeholder="Enter target heading" onChange={e => (setTargetHeading(e))} />
-                <button onClick={() => handlePostRequest('heading_test', { heading: targetHeading.target.value })}>Begin Test</button>
+                <button onClick={() => headingRequest()}>Begin Test</button>
             </div>
         </div>
     )

@@ -1,15 +1,16 @@
+# Custom imports
+import adafruit_bno055 as super_imu
 import threading
 import time
-import board
+# import board
 from adafruit_lsm6ds import Rate, AccelRange, GyroRange
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 import imufusion
 import numpy as np
-from static import global_vars
+import config
 
-
-class IMU:
+class IMU():
     """ Utilize inheritance of the low-level parent class """
 
     def __init__(self):
@@ -66,13 +67,13 @@ class IMU:
         try:
             accel_x, accel_y, accel_z = self.ag_sensor.acceleration
             # print(self.ag_sensor.gyro)
-            # print(global_vars.gyro_offset_vector)
+            # print(config.gyro_offset_vector)
 
             gyro_x, gyro_y, gyro_z = (
-                np.array(self.ag_sensor.gyro) - np.array(global_vars.gyro_offset_vector)
+                np.array(self.ag_sensor.gyro) - np.array(config.gyro_offset_vector)
             )
             mag_x, mag_y, mag_z = (
-                np.array(self.m_sensor.magnetic) - np.array(global_vars.mag_offset_vector)
+                np.array(self.m_sensor.magnetic) - np.array(config.mag_offset_vector)
             )
 
             # Update the offset for sensor drift correction

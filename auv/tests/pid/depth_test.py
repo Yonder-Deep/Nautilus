@@ -4,7 +4,7 @@ import threading
 from api import PID
 from api import Motor
 from api import IMU
-from static import constants
+from auv import config
 from queue import LifoQueue
 import time
 
@@ -54,5 +54,5 @@ class Depth_Test(threading.Thread):
         self.in_q = in_q
         self.out_q = out_q
         self.heading_pid = PID(self.mc, 0, 5, 0.1, debug=True, name="Heading", 
-                               p=constants.P_HEADING, i=constants.I_HEADING, 
-                               d=constants.D_HEADING)
+                               p=config.P_HEADING, i=config.I_HEADING, 
+                               d=config.D_HEADING)
