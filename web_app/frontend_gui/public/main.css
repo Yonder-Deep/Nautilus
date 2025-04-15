@@ -106,6 +106,11 @@ button {
     transform: translateY(-0.1rem);
 }
 
+/* This section has `react-grid-layout` package class names that are not found
+*  in the JSX source. They are added by react-grid-layout. If they break in the
+*  future, it is due to react-grid-layout changing their class names. Change
+*  them to match, or if that is impossible simply track the grid state manually
+*  and apply custom class names. */
 .react-grid-item { /* Assigned to grid items by react-grid-layout*/
     padding: 1rem;
     background-color: white;
@@ -125,6 +130,17 @@ button {
 .react-grid-layout button:hover {
     filter: brightness(85%);
 }
+
+/* For cursor when hovering in drag mode*/
+.react-grid-item.react-draggable {
+    cursor: grab;
+}
+
+/* For cursor when actively dragging*/
+.react-grid-item.react-draggable-dragging {
+    cursor: grabbing;
+}
+/* END of weird section with react-grid-layout classes*/
 
 .map-handle {
     position: absolute;

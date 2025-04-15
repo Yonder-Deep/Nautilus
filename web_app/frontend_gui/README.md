@@ -11,7 +11,7 @@
 * There are also simple fetch requests to the FastAPI server to manage the grid layout and persist it to json.
 
 ## *Relatively* minimal npm packages:
-* Built using Vite, which means you can get HMR if you run `npm run dev` from this directory
+* Built using Vite, which means you can get HMR if you run `npm run dev` from this directory. Also using `react-scan` so you can inspect React rendering when in dev mode.
 * No component library, all custom CSS
 * Obviously `react` and `react-dom`
 * `three` and `@react-three/fiber` for the 3D model

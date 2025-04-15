@@ -34,11 +34,14 @@ const Mesh = ({quat}: {quat: number[]}) => {
 export const Simulation = ({quat}: {quat: number[]}) => {
 
     return (
-        <Canvas frameloop="demand" camera={{rotation: [0, -0.25, Math.PI/2] ,position: [-2,0,6]}}>
-            <Mesh quat={quat}></Mesh>
-            <ambientLight intensity={0.1} />
-            <directionalLight position={[0, 0, 5]} color="red" />
-            <axesHelper position={[2, 0, 0]}/>
-        </Canvas>
+        <>
+            <h2>Visualization</h2>
+            <Canvas frameloop="demand" camera={{rotation: [0, -0.25, Math.PI/2] ,position: [-2,0,6]}}>
+                <Mesh quat={quat}></Mesh>
+                <ambientLight intensity={0.1} />
+                <directionalLight position={[0, 0, 5]} color="red" />
+                <axesHelper position={[2, 0, 0]}/>
+            </Canvas>
+        </>
     )
 }
