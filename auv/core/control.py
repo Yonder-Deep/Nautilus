@@ -36,13 +36,13 @@ class Control(Thread):
         self.input_state = State(
             position = ar([0.0, 0.0, 0.0], dtype=f64),
             velocity = ar([0.0, 0.0, 0.0], dtype=f64),
-            local_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
+            #local_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
             local_force = ar([0.0, 0.0, 0.0], dtype=f64),
             attitude = ar([0.0, 0.0, 0.0, 0.0], dtype=f64),
             angular_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
             local_torque = ar([0.0, 0.0, 0.0], dtype=f64),
-            forward_m_input = 0.0,
-            turn_m_input = 0.0
+            #forward_m_input = 0.0,
+            #turn_m_input = 0.0
         )
         self.desired_state = PositionState(
             position = ar([0.0, 0.0, 0.0], dtype=f64),

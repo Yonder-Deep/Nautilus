@@ -23,13 +23,13 @@ class Navigation(Thread):
         self.input_state = State(
             position = a([0.0, 0.0, 0.0], dtype=f64),
             velocity = a([0.0, 0.0, 0.0], dtype=f64),
-            local_velocity = a([0.0, 0.0, 0.0], dtype=f64),
+            #local_velocity = a([0.0, 0.0, 0.0], dtype=f64),
             local_force = a([0.0, 0.0, 0.0], dtype=f64),
             attitude = a([0.0, 0.0, 0.0, 0.0], dtype=f64),
             angular_velocity = a([0.0, 0.0, 0.0], dtype=f64),
             local_torque = a([0.0, 0.0, 0.0], dtype=f64),
-            forward_m_input = 0.0,
-            turn_m_input = 0.0
+            #forward_m_input = 0.0,
+            #turn_m_input = 0.0
         )
         self.desired_state = PositionState(
             position = a([0.0, 0.0, 0.0], dtype=f64),

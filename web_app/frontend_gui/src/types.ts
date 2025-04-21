@@ -16,13 +16,13 @@ export const isCommand = (obj: any): obj is Command => {
 export interface State {
     position: number[]
     velocity: number[]
-    local_velocity: number[]
+    //local_velocity: number[]
     local_force: number[]
     attitude: number[]
     angular_velocity: number[]
     local_torque: number[]
-    forward_m_input: number
-    turn_m_input: number
+    //forward_m_input: number
+    //turn_m_input: number
 }
 
 const isNumberArray = (value: any): value is number[] => {
@@ -35,13 +35,13 @@ export const isState = (obj: any): obj is State => {
         obj !== null &&
         isNumberArray(obj.position) &&
         isNumberArray(obj.velocity) &&
-        isNumberArray(obj.local_velocity) &&
+        //isNumberArray(obj.local_velocity) &&
         isNumberArray(obj.local_force) &&
         isNumberArray(obj.attitude) &&
         isNumberArray(obj.angular_velocity) &&
-        isNumberArray(obj.local_torque) &&
-        typeof obj.forward_m_input === 'number' &&
-        typeof obj.turn_m_input === 'number'
+        isNumberArray(obj.local_torque)// &&
+        //typeof obj.forward_m_input === 'number' &&
+        //typeof obj.turn_m_input === 'number'
     )
 }
 

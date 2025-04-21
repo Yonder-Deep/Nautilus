@@ -17,6 +17,7 @@ const Mesh = ({quat}: {quat: number[]}) => {
         const last: number | undefined = tempQuat.pop();
         tempQuat.unshift(last);
         setAttitude(quaternion.fromArray(tempQuat))
+        console.log("quat: " + JSON.stringify(tempQuat));
     },[quat])
 
     useFrame(() => {

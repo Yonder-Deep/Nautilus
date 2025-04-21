@@ -6,6 +6,8 @@ SOCKET_IP= "localhost"#"192.168.100.10"
 SOCKET_PORT=8080
 PING_INTERVAL=6 
 
+GPS_PATH = "/dev/tty.usbmodem101"
+
 gyro_offset_vector = (0, 0, 0)
 mag_offset_vector = (0, 0, 0)
 

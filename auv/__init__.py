@@ -4,11 +4,12 @@ import threading
 import platform
 from queue import Queue, Empty
 
-from api import IMU
-from api import PressureSensor
+#from api import IMU
+#from api import PressureSensor
 from api import MotorController
-from api import Indicator
+#from api import Indicator
 from api import MockController
+from api import GPS
 
 import config
 from core import websocket_thread, Navigation, Control
@@ -27,13 +28,13 @@ def main_log(logging_queue:Queue, base_queue:Queue):
                         serial_state = SerialState(
                             position = message.content.position.tolist(),
                             velocity = message.content.velocity.tolist(),
-                            local_velocity = message.content.local_velocity.tolist(),
+                            #local_velocity = message.content.local_velocity.tolist(),
                             local_force = message.content.local_force.tolist(),
                             attitude = message.content.attitude.tolist(),
                             angular_velocity = message.content.angular_velocity.tolist(),
                             local_torque = message.content.local_force.tolist(),
-                            forward_m_input = float(message.content.forward_m_input),
-                            turn_m_input = float(message.content.turn_m_input)
+                            #forward_m_input = float(message.content.forward_m_input),
+                            #turn_m_input = float(message.content.turn_m_input)
                         )
                         message.content = serial_state
                     # Since message: Log, we must convert Log to JSON
@@ -85,13 +86,24 @@ if __name__ == "__main__":
             input_state_q=queue_input_nav,
             desired_state_q=queue_nav_to_control,
             logging_q=logging_queue,
-            stop_event=stop_event)
+            stop_event=stop_event
+    )
     control_thread = Control(
             input_state_q=queue_input_control,
             desired_state_q=queue_nav_to_control,
             logging_q=logging_queue,
             controller=motor_controller,
-            stop_event=stop_event)
+            stop_event=stop_event
+    )
+
+    """
+    gps_queue=Queue()
+    gps_thread = GPS(
+        out_queue=gps_queue,
+        path=config.GPS_PATH,
+        stop_event=stop_event
+    )
+    """
 
     print("Beginning main loop")
     try:
