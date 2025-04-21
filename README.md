@@ -1,5 +1,5 @@
 # Nautilus
-Repository for the [YonderDeep](https://www.yonderdeep.org/) 2020-2022 Nautilus AUV (Autonomous Underwater Vehicle) developed in the MESOM Laboratory at the Scripps Institution of Oceanography, UC San Diego for the research and study of global anthropogenic climate change.
+Repository for the [YonderDeep](https://www.yonderdeep.org/) Nautilus AUV.
 
 ## Basics
 The codebase is split among two machines: 
@@ -16,29 +16,8 @@ Feel free to use the included settings.json file for VSCode development
   * Format-on-save enabled by default.
   * Python linting disabled by default. (a runtime language like python should not rely on linting)
 
-# Base Station
-This machine communicates with the AUV using radio communication. Its main role is selecting and beginning missions for the AUV. It also receives data wirelessly from the AUV and outputs to an in-house Python GUI.
-
-## Hardware:
-    Any Unix-like Machine (preferebly Ubuntu 16.04LTS+)
-    A 915 MHz Radio (required)
-    Xbox 360 Controller (optional)
-    GPS device compatible with gpsd (optional)
-
-## System Dependencies:
-    python3-tk (for use with tkinter UI development)
-    python3-pip (enable pip package manager)
-    xboxdrv (Xbox Controller Driver)
-    gpsd
-    gpsd-clients (for the cgps program, optional)
-
-## Python Packages (in requirements.txt):
-    tkinter
-    matplotlib
-    pyserial
-    gps3
-    screeninfo
-    autopep8 (optional)
+## Base Station
+The base station communicates with the AUV over a radio plugged into a serial USB port. A TCP/IP connection is initiated and maintained over the serial interface, and the 
 
 # Nautilus (the AUV)
 A practical, 3D-printed multi-mission modular AUV, housing many sensors including pressure, audio (hydrophones), and GPS. It can also be adapted to implement sonar, salinity, PH, and temperature sensors.
@@ -58,65 +37,3 @@ A fully assembled, 3D-printed Nautilus AUV also includes:
 NOTE: that this does NOT include specialized YonderDeep PCBs, PDMs, batteries, or cables.
 
 ## System Dependencies:
-    Python 3.5+ with pip
-    gpsd
-    gpsd-clients
-    IMU Library/Drivers
-    and many more...
-This will continue to be updated as development continues.
-
-## Python Packages (in requirements.txt):
-    pyserial
-    adafruit-circuitpython-bno055 (our Inertial Measurement Unit)
-    and many more...
-    
-# Missions
-The Nautilus AUV is designed to perform a wide variety of aquatic "missions", many of which involve the research and development of:
-
-  * Underwater acoustic processing (acoustic)
-  * Autonomous underwater navigation
-  * Sonar echolocation 
-
-# Development
-Most development takes place at the MESOM Laboratory in the Scripps Institution of Oceanography at the University of California, San Diego. Due to the COVID-19 pandemic, software development will continue remotely for the forseeable future.
-
-# Contributors
-Abirami Sabbani,
-Software Development Lead
-* Math - Computer Science
-* UCSD Graduation: 2022
-
-Stephen Boussarov,
-Software Team Advisor
-* Computer Science
-* UCSD Graduation: 2022
-
-Eric Estabaya,
-Software Development
-* Computer Science
-* UCSD Graduation: 2022
-
-Clair Ma,
-Software Development
-* Computer Science - Bioinformatics
-* UCSD Graduation: 2023
-
-Kevin Medzorian,
-Former Software Team Lead
-* Computer Science
-* UCSD Graduation: 2021
-
-Sean Chen,
-Software Development
-* Mathematics - Computer Science
-* UCSD Graduation: 2024
-
-Christopher Hughes,
-Software Development
-* Computer Engineering
-* UCSD Graduation: 2024
-
-Aleksa Stamenkovic,
-Software Development
-* Computer Science
-* UCSD Graduation: 2023

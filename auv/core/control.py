@@ -8,6 +8,7 @@ from time import sleep
 from numpy import array as ar
 from numpy import float64 as f64
 from api.mock_controller import MockController
+from api.motor_controller import MotorController
 from custom_types import State, PositionState, Log
 
 def check_verbose(message:Union[State,str], q:Queue, verbose:bool):
