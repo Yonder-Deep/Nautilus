@@ -13,7 +13,11 @@ Qa - acceleration process noise
 Rw - angular velocity measurement noise
 Ra - acceleration measurement noise
 W0 - weight for the mean sigma values
-Note: state vector = [e, w, Qw, Qa]
+State Vector = [e, w, Qw, Qa]
+________________________________________________________________________________
+TODO
+-Optimize (Use numpy whenever possible, modify objects in-place (use x[:]=))
+-Add position tracking with GPS and motor input signal (Bu term in literature)
 """
 
 from math import sqrt, sin, cos
@@ -24,6 +28,7 @@ from scipy.linalg import cholesky, solve_triangular
 
 class MUKF:
     def __init__(self):
+        # Make sure to tune process and measurement noise
         self.q0 = np.array([1.0, 0.0, 0.0, 0.0])
         self.q = np.array([1.0, 0.0, 0.0, 0.0])
         self.e = np.zeros(3)
@@ -31,8 +36,10 @@ class MUKF:
         self.P = np.eye(6) * 0.1
         self.Qw = np.eye(3) * 0.1
         self.Qa = np.eye(3) * 0.1
+        self.Qm = np.eye(3) * 0.1
         self.Rw = np.eye(3) * 0.01
         self.Ra = np.eye(3) * 0.01
+        self.Rm = np.eye(3) * 0.01
         self.W0 = 1.0/25.0
         self.chartUpdate = True
 
@@ -52,48 +59,48 @@ class MUKF:
         """ Gets the current quaternion orientation """
         return self.q
 
-    def update_imu(self, am, wm, dt):
-        """ 
-        Takes in acceleration, angular velocity, and delta time to repeatedly 
-        update the estimated state
+    def update_imu(self, am, wm, mm, dt):
         """
-        Pe = np.zeros((12, 12))
+        Takes in acceleration (m/s), angular velocity (rad/s), magnetic field 
+        strength (T), and delta time to repeatedly update the estimated state
+        """
+        Pe = np.zeros((15, 15))
         Pe[0:6, 0:6] = self.P
         Pe[6:9, 6:9] = self.Qw
         Pe[9:12, 9:12] = self.Qa
+        Pe[12:15, 12:15] = self.Qm
 
         L_pe_upper = cholesky(Pe)
         Pe_L = L_pe_upper.T
         Pe[:] = Pe_L
-
         Wi = (1.0 - self.W0) / (2.0 * 12)
         alpha = 1.0 / sqrt(2.0 * Wi)
         Pe *= alpha        
         
-        X = np.zeros((25, 13))
-        Y = np.zeros((25, 6))
+        X = np.zeros((31, 16))
+        Y = np.zeros((31, 9))
 
         X[0, :4] = self.q
         X[0, 4:7] = self.w
-        X[0, 7:13] = 0.0
+        X[0, 7:16] = 0.0
 
         # if not self.chartUpdate:
         #     self.q0[:] = self.q
         #     self.e[:] = 0.0
 
-        for j in range(12):
+        for j in range(15):
             eP_plus = self.e + Pe[:, j][0:3]
             X[j+1, :4] = MUKF.chart_to_manifold(self.q0, eP_plus)
             X[j+1, 4:7] = self.w + Pe[:, j][3:6]
-            X[j+1, 7:13] = Pe[:, j][6:12]
+            X[j+1, 7:16] = Pe[:, j][6:15]
 
-        for j in range(12):
+        for j in range(15):
             eP_minus = self.e - Pe[:, j][0:3]
             X[j+13, :4] = MUKF.chart_to_manifold(self.q0, eP_minus)
             X[j+13, 4:7] = self.w - Pe[:, j][3:6]
-            X[j+13, 7:13] = -Pe[:, j][6:12]
+            X[j+13, 7:16] = -Pe[:, j][6:15]
 
-        for j in range(25):
+        for j in range(31):
             MUKF.state_transition(X[j], dt)
             prod = X[0, :4] @ X[j, :4]
             if prod < 0.0:
@@ -101,25 +108,25 @@ class MUKF:
             MUKF.state_to_measurement(Y[j], X[j])
 
         xmean = np.zeros(7)
-        ymean = np.zeros(6)
+        ymean = np.zeros(9)
         xmean[:7] = self.W0*X[0, :7]
-        ymean[:6] = self.W0*Y[0, :6]
-        for j in range(1, 25):
+        ymean[:9] = self.W0*Y[0, :9]
+        for j in range(1, 31):
             xmean[:7] += Wi*X[j, :7]
-            ymean[:6] += Wi*Y[j, :6]
+            ymean[:9] += Wi*Y[j, :9]
 
         qmeanNorm = np.linalg.norm(xmean[:4])
         xmean[:4] /= qmeanNorm
-
+        
         Pxx = np.zeros((6, 6))
-        Pxy = np.zeros((6, 6))
-        Pyy = np.zeros((6, 6))
+        Pxy = np.zeros((6, 9))
+        Pyy = np.zeros((9, 9))
         dX = np.zeros(6)
-        dY = np.zeros(6)
+        dY = np.zeros(9)
 
         dX[:3] = MUKF.manifold_to_chart(xmean[:4], X[0, :4])
         dX[3:6] = X[0, 4:7] - xmean[4:7]
-        dY[:] = Y[0, :6] - ymean[:6]
+        dY[:] = Y[0, :9] - ymean[:9]
 
         Pxx += self.W0 * np.outer(dX, dX)
         Pxy += self.W0 * np.outer(dX, dY)
@@ -128,17 +135,19 @@ class MUKF:
         for k in range(1, 25):
             dX[:3] = MUKF.manifold_to_chart(xmean[:4], X[k, :4])
             dX[3:6] = X[k, 4:7] - xmean[4:7]
-            dY[:] = Y[k, :6] - ymean[:6]
+            dY[:] = Y[k, :9] - ymean[:9]
             Pxx += Wi * np.outer(dX, dX)
             Pxy += Wi * np.outer(dX, dY)
             Pyy += Wi * np.outer(dY, dY)
 
         Pyy[0:3, 0:3] += self.Ra
         Pyy[3:6, 3:6] += self.Rw
+        Pyy[6:9, 6:9] += self.Rm
 
         K = MUKF.solve_kalman_gain(np.copy(Pyy), Pxy)
-
-        y = np.concatenate((am - ymean[:3], wm - ymean[3:6]))
+        y = np.concatenate(((am) - ymean[:3],
+                            (wm) - ymean[3:6],
+                            (mm) - ymean[6:]))
         dx = K @ y
 
         self.q0 = xmean[:4]
@@ -146,7 +155,7 @@ class MUKF:
         self.q = MUKF.chart_to_manifold(np.copy(self.q0), np.copy(self.e))
         self.q /= np.linalg.norm(self.q)
         self.w = xmean[4:7] + dx[3:6]
-        self.P = Pxx - K @ Pyy @ K.T
+        self.P = Pxx - K @ Pyy @ K.T 
         self.P = 0.5 * (self.P + self.P.T)
     
     def manifold_to_chart(qm, q):
@@ -193,9 +202,8 @@ class MUKF:
         qw = np.zeros(4)
         if wnorm != 0.0:
             wdt05 = 0.5 * wnorm * dt
-            swdt = sin(wdt05) / wnorm
             qw[0] = cos(wdt05)
-            qw[1:4] = wp * swdt 
+            qw[1:4] = wp * (sin(wdt05) / wnorm )
         else:
             qw[0] = 1.0
             qw[1:4] = 0.0
@@ -225,19 +233,16 @@ class MUKF:
         RT[2, 1] = 2.0*(x[2]*x[3] + x[1]*x[0])
         RT[2, 2] = 1.0 - 2.0*(x[1]*x[1] + x[2]*x[2])
 
-        ag = np.array([x[10], x[11], x[12] + 1.0])
-        y[:3] = 9.80665 * (RT.T @ ag)
+        ap = np.array([0, 0, 9.81])
+        y[:3] = RT @ ap
         y[3:6] = x[4:7]
+        mp = np.array([23.7631, 4.630, 38.6221])
+        y[6:] = RT @ mp
 
     def solve_kalman_gain(S, M):
         """ Solves for K using Cholesky decomposition """
-        n = S.shape[0]
         L_upper = cholesky(S)
-        L = L_upper.transpose()
-        S[:] = L
-        y = np.zeros((n, n))
-        for i in range(n):
-            y[i, :] = solve_triangular(L_upper, M[i, :], lower=False)
-        for i in range(n):
-            M[i, :] = solve_triangular(L, y[i, :], lower=True)
-        return M
+        L_lower = L_upper.T
+        Y = solve_triangular(L_lower, M.T, lower=True)
+        K = solve_triangular(L_upper, Y, lower=False)
+        return K.T

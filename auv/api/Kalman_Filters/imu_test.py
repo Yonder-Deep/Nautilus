@@ -28,6 +28,7 @@ class IMU:
         i2c = board.I2C()  # uses board.SCL and board.SDA
         self.ag_sensor = LSM6DS(i2c)
         self.m_sensor = LIS3MDL(i2c)
+        # Set Filter
         self.filter = MUKF()
 
         self.prev_time = time.time()
@@ -47,6 +48,26 @@ class IMU:
             yaw, pitch, roll = Rotation.from_quat(self.q).as_euler("ZYX", degrees=True)
             return yaw, pitch, roll
     
+    def apply_high_pass_filter(self, gyro_raw, dt):
+        """ Apply the high-pass filter to the gyroscope data """
+        high_pass_cutoff_freq = 0
+        alpha = 1 / (2 * np.pi * dt * high_pass_cutoff_freq + 1)
+        with self.lock:
+            filtered = alpha * (self.filtered_gyro + gyro_raw - self.prev_gyro)
+            self.filtered_gyro = filtered
+            self.prev_gyro = gyro_raw
+            return filtered
+        
+    def apply_low_pass_filter(self, gyro_raw, dt):
+        """ Apply the high-pass filter to the gyroscope data """
+        low_pass_cutoff_freq = 0.1
+        alpha = 0
+        with self.lock:
+            filtered = alpha * (self.filtered_gyro + gyro_raw - self.prev_gyro)
+            self.filtered_gyro = filtered
+            self.prev_gyro = gyro_raw
+            return filtered
+    
     def update_imu_reading(self):
         """ Reads sensor data and updates estimated state """
         try:
@@ -54,11 +75,11 @@ class IMU:
             dt = new_time - self.prev_time
 
             # Read data from sensor(s)
-            ax, ay, az = self.ag_sensor.acceleration
-            wx, wy, wz = self.apply_high_pass_filter(self.ag_sensor.gyro)
-            mx, my, mz = IMU.Ainv @ (np.array(self.m_sensor.magnetic) - IMU.B)
+            am = np.array(self.ag_sensor.acceleration)
+            wm = np.array(self.apply_high_pass_filter(self.ag_sensor.gyro))
+            mm = np.array(IMU.Ainv @ (np.array(self.m_sensor.magnetic) - IMU.B))
             
-            self.filter.update_imu(np.array([ax, ay, az]), np.array([wx, wy, wz]), dt)
+            self.filter.update_imu(am, wm, mm, dt)
 
             self.prev_time = new_time
             

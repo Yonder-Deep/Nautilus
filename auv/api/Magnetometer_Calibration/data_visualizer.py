@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 # Load data with error handling
 try:
-    df = pd.read_csv("mag_raw.csv", names=["x", "y", "z"])
+    df = pd.read_csv("raw_mag_data/mag_raw.csv", names=["x", "y", "z"])
 except FileNotFoundError:
     print("Error: mag_raw.csv not found!")
     exit()

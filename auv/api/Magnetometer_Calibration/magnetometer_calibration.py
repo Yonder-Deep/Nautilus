@@ -11,15 +11,16 @@ Calibration Process:
 Output:
 - mag_raw.csv: Contains raw magnetometer readings collected during calibration.
 """
-
-from adafruit_lsm6ds.lsm6dsox import LSM6DSOX
+import os
 import threading
 import time
 import csv
+
 import board
 import busio
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX
 from adafruit_lis3mdl import LIS3MDL
+
 
 class KeyListener:
     """Object for listening for input in a separate thread"""
@@ -93,7 +94,8 @@ def main():
     if key_listener.pressed:
         print("Calibration stopped due to keyboard input.")
     elif (time.time() - start_time) >= CALIBRATION_TIME:
-        with open('mag_raw.csv', mode='w', newline='') as file:
+        num_files = len([name for name in os.listdir('.') if os.path.isfile(name)])
+        with open(f'raw_mag_data/mag_raw{num_files}.csv', mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(data)
         print("Calibration completed successfully")
