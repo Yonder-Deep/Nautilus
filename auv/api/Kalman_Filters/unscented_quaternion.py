@@ -145,9 +145,11 @@ class MUKF:
         Pyy[6:9, 6:9] += self.Rm
 
         K = MUKF.solve_kalman_gain(np.copy(Pyy), Pxy)
-        y = np.concatenate(((am) - ymean[:3],
+        anorm = np.linalg.norm(am)
+        mnorm = np.linalg.norm(mm)
+        y = np.concatenate(((am) / anorm - ymean[:3],
                             (wm) - ymean[3:6],
-                            (mm) - ymean[6:]))
+                            (mm) / mnorm - ymean[6:]))
         dx = K @ y
 
         self.q0 = xmean[:4]
@@ -233,10 +235,10 @@ class MUKF:
         RT[2, 1] = 2.0*(x[2]*x[3] + x[1]*x[0])
         RT[2, 2] = 1.0 - 2.0*(x[1]*x[1] + x[2]*x[2])
 
-        ap = np.array([0, 0, 9.81])
+        ap = np.array([0, 0, 1])
         y[:3] = RT @ ap
         y[3:6] = x[4:7]
-        mp = np.array([23.7631, 4.630, 38.6221])
+        mp = np.array([1, 0, 0])
         y[6:] = RT @ mp
 
     def solve_kalman_gain(S, M):
