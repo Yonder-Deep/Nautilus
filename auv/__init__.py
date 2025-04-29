@@ -11,6 +11,7 @@ from api import MotorController
 from api import MockController
 from api import GPS
 
+from time import sleep
 import config
 from core import websocket_thread, Navigation, Control
 from custom_types import State, Log, SerialState
@@ -75,8 +76,8 @@ if __name__ == "__main__":
     ws_shutdown = ws_shutdown_q.get(block=True) # Needed to shut down server
 
     motor_controller = MotorController()
-    if platform.system() == "Darwin":
-        motor_controller = MockController()
+    #if platform.system() == "Darwin":
+        #motor_controller = MockController()
 
     # Control System Initialization
     queue_input_nav = Queue() # Input from user & state input to nav
@@ -122,6 +123,12 @@ if __name__ == "__main__":
                         print("Starting motor test")
                         # motor_test = threading.Thread(motor_test)
                         # motor_test.start()
+                        try:
+                            motor_controller.update_motor_speeds(message_from_base["content"])
+                            print(message_from_base["content"])
+                        finally:
+                            sleep(10)
+                            motor_controller.zero_out_motors();
 
                         # Override control & nav thread
                         # go directly to MC

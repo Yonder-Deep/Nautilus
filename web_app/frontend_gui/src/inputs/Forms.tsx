@@ -43,13 +43,20 @@ export const MotorTestForm = ({ websocket }: any) => {
     const [motorType, setMotorType] = useState('');
     const [motorSpeed, setMotorSpeed] = useState('');
     const [motorDuration, setMotorDuration] = useState('');
+
+    const [motor1, setMotor1] = useState<number>();
+    const [motor2, setMotor2] = useState<number>();
+    const [motor3, setMotor3] = useState<number>();
+    const [motor4, setMotor4] = useState<number>();
+
     const makeMotorRequest = () => {
         console.log("Making motor request.")
-        const motorTest = {
-            motor: '' + motorType,
-            speed: '' + motorSpeed,
-            duration: '' + motorDuration
-        };
+        const motorTest = [
+            motor1,
+            motor2,
+            motor3,
+            motor4,
+        ];
         const request = {
             command: "motorTest",
             content: motorTest
@@ -61,16 +68,10 @@ export const MotorTestForm = ({ websocket }: any) => {
         <div className="motor-form">
             <h2>Motor Testing</h2>
             <div className="form-body">
-                <select defaultValue={"Default"} onChange={e => setMotorType(e.target.value)}>
-                    <option value="Default" disabled>Select Motor</option>
-                    <option value="Forward">Forward</option>
-                    <option value="Backward">Backward</option>
-                    <option value="Down">Down</option>
-                    <option value="Left">Left</option>
-                    <option value="Right">Right</option>
-                </select>
-                <input placeholder="Enter motor speed" onChange={e => setMotorSpeed(e.target.value)} />
-                <input placeholder="Enter duration of run" onChange={e => setMotorDuration(e.target.value)} />
+                <input placeholder="Enter motor 1 speed" onChange={e => setMotor1(parseInt(e.target.value))} />
+                <input placeholder="Enter motor 2 speed" onChange={e => setMotor2(parseInt(e.target.value))} />
+                <input placeholder="Enter motor 3 speed" onChange={e => setMotor3(parseInt(e.target.value))} />
+                <input placeholder="Enter motor 4 speed" onChange={e => setMotor4(parseInt(e.target.value))} />
                 <button onClick={() => makeMotorRequest()}>Begin Test</button>
             </div>
         </div>
