@@ -1,9 +1,5 @@
-from abc import abstractmethod
-
-if __name__ == "__main__":
-    import sys
-    sys.path.append("..")
-from custom_types import State, InitialState, SerialState
+from .abstract import AbstractController
+from custom_types import InitialState, SerialState, MotorSpeeds
 
 from time import time
 from threading import Lock
@@ -12,19 +8,6 @@ from numpy import ndarray as arr
 from numpy import float64 as f64
 from scipy.spatial.transform import Rotation as R
 from scipy.integrate import solve_ivp
-
-class AbstractController():
-    @abstractmethod
-    def set_speeds(self, input):
-        pass
-
-    @abstractmethod
-    def get_state(self) -> State:
-        pass
-    
-    @abstractmethod
-    def set_last_time(self):
-        pass
 
 def quaternion_multiply(q1, q2):
     """
@@ -44,7 +27,6 @@ def quaternion_multiply(q1, q2):
     y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
     z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
     return np.array([x, y, z, w])
-
 
 def quaternion_derivative(q, omega):
     """
@@ -90,7 +72,6 @@ def motion_model(_time_delta:float, y:arr, mass: float, rotational_inertia:arr, 
     rotation_to_global = R.from_quat(theta)
 
     alpha_local = np.linalg.solve(rotational_inertia, local_torque)
-    #alpha = rotation_to_global.apply(alpha_local)
 
     a_local = thrust_force / mass
     accel = rotation_to_global.apply(a_local)
@@ -120,21 +101,44 @@ class MockController(AbstractController):
             inertia = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
         )
         self.last_time = time()
+        self.motor_speeds = MotorSpeeds(
+            forward = 0,
+            turn = 0,
+            front = 0,
+            back = 0,
+        )
     
-    def set_speeds(self, input=tuple[float, float]):
+    def set_speeds(self, input:MotorSpeeds):
         """ Replicates API of real motor controller, setting motor speeds to manipulate 
             state of system. Also records initial time to integrate against
         """
         with self.lock:
             print("MC SET")
-            # This must be called so that the previous integration 
-            # is taken into account
+            # This must be called so that the previous integration is taken into account
             self.get_state()
-            forward, turn = input
 
-            # This will need to be altered when drag & terminal vel is considered
-            self.state.local_force[0] = forward
-            self.state.local_torque[1] = turn
+            self.motor_speeds.forward = input.forward 
+            self.motor_speeds.turn = input.turn
+            
+            self.state.local_force[0] = input.forward 
+            self.state.local_torque[1] = input.turn
+
+            self.set_last_time()
+
+    def set_zeros(self):
+        """ Sets all fake motor values to zero.
+        """
+        with self.lock:
+            print("Mock Controller: set_zeros");
+            self.get_state()
+
+            self.motor_speeds.forward = 0
+            self.motor_speeds.turn = 0
+            self.motor_speeds.front = 0
+            self.motor_speeds.back = 0
+
+            self.state.local_force[0] = 0
+            self.state.local_torque[1] = 0
 
             self.set_last_time()
 
@@ -177,37 +181,6 @@ class MockController(AbstractController):
             self.state.velocity, \
             self.state.attitude, \
             self.state.angular_velocity = unpack(solution.y[:,-1]);
-
-            return self.state
-
-    def get_state_euler(self):
-        """ Simple first order euler implementation of get_state()
-        """
-        with self.lock:
-            print("MC GET")
-            time_delta = time() - self.last_time
-            self.last_time = time()
-
-            quat = self.state.attitude / np.linalg.norm(self.state.attitude) 
-            rotation = R.from_quat(quat)
-
-            # a = F / m
-            a_local = self.state.local_force / self.state.mass
-            self.state.local_velocity += a_local * time_delta
-
-            # alpha = I / tau
-            alpha_local = np.linalg.solve(self.state.inertia, self.state.local_torque)  # Solve I * alpha = tau
-
-            # omega = omega_i + alpha * ∆t
-            self.state.angular_velocity += alpha_local * time_delta
-
-            # Not sure if this will work, overloaded * while in *= form
-            rotation *= R.from_rotvec(self.state.angular_velocity * time_delta)
-            self.state.attitude = np.asarray(rotation.as_quat(True), dtype=f64)
-
-            acceleration = rotation.apply(a_local) # Transform from local to global frame
-            self.state.velocity += np.asarray(acceleration * time_delta, dtype=f64)
-            self.state.position += self.state.velocity * time_delta
 
             return self.state
 

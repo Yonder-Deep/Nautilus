@@ -7,7 +7,8 @@ from api import Motor
 import pigpio
 import time
 import sys
-from .mock_controller import AbstractController
+from .abstract import AbstractController
+from custom_types import MotorSpeeds
 # Custom Imports
 
 # GPIO Pin numbers for Motors
@@ -66,23 +67,18 @@ class MotorController(AbstractController):
         self.front_speed = 0
         self.back_speed = 0
 
-    def update_motor_speeds(self, data) -> None:
+    def set_speeds(self, input:MotorSpeeds) -> None:
         """
         Sets motor speeds to each individual motor. This is for manual (xbox) control when the
         radio sends a data packet of size 4.
 
         data: String read from the serial connection containing motor speed values.
         """
-        if len(data) != len(self.motors):
-            raise Exception(
-                "Data packet length does not equal motor array length.")
-            return
-
         # Parse motor speed from data object.
-        self.forward_speed = data[FORWARD_MOTOR_INDEX]
-        self.turn_speed = data[TURN_MOTOR_INDEX]
-        self.front_speed = data[FRONT_MOTOR_INDEX]
-        self.back_speed = data[BACK_MOTOR_INDEX]
+        self.forward_speed = input.forward
+        self.turn_speed = input.turn
+        self.front_speed = input.front
+        self.back_speed = input.back
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
@@ -152,7 +148,7 @@ class MotorController(AbstractController):
         self.motors[FRONT_MOTOR_INDEX].set_speed(self.front_speed)
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
 
-    def zero_out_motors(self):
+    def set_zeros(self):
         """
         Sets motor speeds of each individual motor to 0.
         """

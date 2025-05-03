@@ -68,10 +68,10 @@ export const MotorTestForm = ({ websocket }: any) => {
         <div className="motor-form">
             <h2>Motor Testing</h2>
             <div className="form-body">
-                <input placeholder="Enter motor 1 speed" onChange={e => setMotor1(parseInt(e.target.value))} />
-                <input placeholder="Enter motor 2 speed" onChange={e => setMotor2(parseInt(e.target.value))} />
-                <input placeholder="Enter motor 3 speed" onChange={e => setMotor3(parseInt(e.target.value))} />
-                <input placeholder="Enter motor 4 speed" onChange={e => setMotor4(parseInt(e.target.value))} />
+                <input placeholder="Enter motor 1 speed" onChange={e => setMotor1(parseFloat(e.target.value))} />
+                <input placeholder="Enter motor 2 speed" onChange={e => setMotor2(parseFloat(e.target.value))} />
+                <input placeholder="Enter motor 3 speed" onChange={e => setMotor3(parseFloat(e.target.value))} />
+                <input placeholder="Enter motor 4 speed" onChange={e => setMotor4(parseFloat(e.target.value))} />
                 <button onClick={() => makeMotorRequest()}>Begin Test</button>
             </div>
         </div>

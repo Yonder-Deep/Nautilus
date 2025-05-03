@@ -73,12 +73,13 @@ def server(stop_event:threading.Event, logging_event:Queue, websocket_interface:
         Before joining thread, be sure to: stop_event.set()
     """
 
-    print("AUV websocket server is alive")
     """ Partially initialize these functions so that the socket handler
         be passed as a single callable to the serve() function
     """
     initialized_logger = functools.partial(custom_log, verbose=verbose, queue=logging_event)
     initialized_handler = functools.partial(socket_handler, stop_event=stop_event, ping_interval=ping_interval, queue_to_base=queue_to_base, queue_to_auv=queue_to_auv, log=initialized_logger)
+    initialized_logger("AUV websocket server is alive")
+    initialized_logger("Hosting on " + websocket_interface + ":" + str(websocket_port))
     with serve(initialized_handler, host=websocket_interface, port=websocket_port, origins=None) as server:
         shutdown_q.put(server.shutdown)
         server.serve_forever()

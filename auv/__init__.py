@@ -3,19 +3,39 @@ import time
 import threading
 import platform
 from queue import Queue, Empty
+from time import sleep
+from typing import Tuple
+import asyncio
 
 #from api import IMU
 #from api import PressureSensor
+from api import AbstractController
 from api import MotorController
-#from api import Indicator
+from api import Indicator
 from api import MockController
 from api import GPS
 
-from time import sleep
 import config
 from core import websocket_thread, Navigation, Control
 from custom_types import State, Log, SerialState
+from custom_types.types import MotorSpeeds
 
+async def motor_test(motor_controller:AbstractController, speeds:Tuple[float, float, float, float]):
+    try:
+        motor_speeds = MotorSpeeds(
+            forward = speeds[0],
+            turn = speeds[1],
+            front = speeds[2],
+            back = speeds[3],
+        )
+        motor_controller.set_speeds(motor_speeds)
+        print("Set motor speeds: " + motor_speeds.model_dump_json())
+    except ValueError as e:
+        print("Motor speeds invalid: " + str(speeds))
+        print(e)
+    finally:
+        await asyncio.sleep(10)
+        motor_controller.set_zeros()
 
 def main_log(logging_queue:Queue, base_queue:Queue):
     thing = 0
@@ -60,7 +80,7 @@ if __name__ == "__main__":
     queue_to_base = Queue()
     queue_to_auv = Queue()
     ws_shutdown_q = Queue() # This just takes the single shutdown method for the websocket server
-    websocket_thread = threading.Thread(
+    ws_thread = threading.Thread(
             target=websocket_thread,
             kwargs={'stop_event':stop_event,
                     'logging_event':logging_queue,
@@ -72,39 +92,38 @@ if __name__ == "__main__":
                     'verbose': True,
                     'shutdown_q': ws_shutdown_q})
     threads.append(websocket_thread)
-    websocket_thread.start()
+    ws_thread.start()
     ws_shutdown = ws_shutdown_q.get(block=True) # Needed to shut down server
 
     motor_controller = MotorController()
-    #if platform.system() == "Darwin":
-        #motor_controller = MockController()
+    if platform.system() == "Darwin":
+        motor_controller = MockController()
 
     # Control System Initialization
     queue_input_nav = Queue() # Input from user & state input to nav
-    queue_input_control = Queue() # State input to nav
-    queue_nav_to_control = Queue() # Setpoint input to nav
+    control_state_q = Queue() # State input to nav
+    control_desired_q = Queue() # Setpoint input to nav
     navigation_thread = Navigation(
             input_state_q=queue_input_nav,
-            desired_state_q=queue_nav_to_control,
+            desired_state_q=control_desired_q,
             logging_q=logging_queue,
             stop_event=stop_event
     )
     control_thread = Control(
-            input_state_q=queue_input_control,
-            desired_state_q=queue_nav_to_control,
+            input_state_q=control_state_q,
+            desired_state_q=control_desired_q,
             logging_q=logging_queue,
             controller=motor_controller,
             stop_event=stop_event
     )
 
-    """
-    gps_queue=Queue()
-    gps_thread = GPS(
-        out_queue=gps_queue,
-        path=config.GPS_PATH,
-        stop_event=stop_event
-    )
-    """
+    if platform.system() == "Linux":
+        gps_queue=Queue()
+        gps_thread = GPS(
+            out_queue=gps_queue,
+            path=config.GPS_PATH,
+            stop_event=stop_event
+        )
 
     print("Beginning main loop")
     try:
@@ -119,28 +138,17 @@ if __name__ == "__main__":
                     command = message_from_base["command"]
                     if command == "pidConstants":
                         print("Setting PID Constants")
+
                     elif command == "motorTest":
                         print("Starting motor test")
-                        # motor_test = threading.Thread(motor_test)
-                        # motor_test.start()
-                        try:
-                            motor_controller.update_motor_speeds(message_from_base["content"])
-                            print(message_from_base["content"])
-                        finally:
-                            sleep(10)
-                            motor_controller.zero_out_motors();
-
-                        # Override control & nav thread
-                        # go directly to MC
+                        async def motor():
+                            await motor_test(motor_controller, message_from_base["content"])
+                        asyncio.run(motor())
+                        print("hello")
 
                     elif command == "headingTest":
                         print("Starting heading test")
-                        # TODO: Make heading test a function w/ args
-                        # heading_test = Heading_Test()
-                        # heading_test.start()
-
-                        # Override nav thread
-                        # go directly to control thread
+                        control_desired_q.put(message_from_base["content"])
 
                     elif command == "mission":
                         print("Beginning mission")

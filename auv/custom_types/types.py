@@ -1,5 +1,5 @@
 from re import L
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import List, Union
 import numpy as np
 
@@ -42,6 +42,19 @@ class SerialState(BaseModel):
 class InitialState(State):
     mass: float
     inertia: np.ndarray = Field(default_factory=lambda: np.zeros((3,3), dtype=float))
+
+class MotorSpeeds(BaseModel):
+    forward: float
+    turn: float
+    front: float
+    back: float
+
+    @model_validator(mode='after')
+    def valid_speeds(self):
+        for speed in [self.forward, self.turn, self.front, self.back]:
+            if not -1.0 <= speed <= 1.0:
+                raise ValueError('speeds must be from -1.0 to 1.0')
+        return self
 
 class Log(BaseModel):
     source: str
