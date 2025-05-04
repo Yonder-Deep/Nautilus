@@ -1,15 +1,39 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-import asyncio
-from contextlib import asynccontextmanager
 import uvicorn
+
+from contextlib import asynccontextmanager
+import asyncio
 from queue import Queue, Empty
 import threading
 import json
+from typing import Optional
+from pathlib import Path
 
-from config import AUV_IP_ADDRESS, AUV_PING_INTERVAL # The AUV ip address, ping interval, etc.
 from backend import auv_socket_handler
+from pydantic_yaml import parse_yaml_file_as
+from ruamel.yaml import YAML
+yaml = YAML()
+
+class ConfigSchema(BaseModel):
+    auv_url: str
+    ping_interval: int
+
+def load_config() -> ConfigSchema:
+    default_config = parse_yaml_file_as(ConfigSchema, 'data/config.yaml').model_dump()
+    local_path = Path('data/local/config.yaml')
+    if local_path.exists():
+        local_file = open(local_path, 'r')
+        local_config = yaml.load(local_file)
+        local_file.close()
+        local_filtered = {k:v for (k,v) in local_config.items() if v}
+        default_config.update(local_filtered)
+    return ConfigSchema(**default_config)
+
+config = load_config()
+print("STARTUP WITH CONFIGURATION:")
+print(config.model_dump())
 
 queue_to_frontend = Queue()
 queue_to_auv = Queue()
@@ -18,7 +42,7 @@ queue_to_auv = Queue()
 async def lifespan(app: FastAPI):
     custom_log("Initializing auv socket handler")
     stop_event = threading.Event()
-    backend_thread = threading.Thread(target=auv_socket_handler, args=[stop_event, AUV_IP_ADDRESS, AUV_PING_INTERVAL, queue_to_frontend, queue_to_auv])
+    backend_thread = threading.Thread(target=auv_socket_handler, args=[stop_event, config.auv_url, config.ping_interval, queue_to_frontend, queue_to_auv])
     backend_thread.start()
     yield
     custom_log("Waiting for websocket thread to join")

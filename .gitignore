@@ -4,3 +4,6 @@ base_station/lib/
 node_modules/
 **/.venv
 *.vscode
+
+web_app/data/local/*
+!web_app/data/local/.gitkeep
