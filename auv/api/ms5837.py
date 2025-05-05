@@ -4,7 +4,7 @@ except:
     print('Try sudo apt-get install python3-smbus')
 
 from time import sleep
-from static import constants
+import config
 
 # Models
 MODEL_02BA = 0
@@ -54,7 +54,7 @@ class MS5837(object):
             print("Available busses are listed as /dev/i2c*")
             self._bus = None
 
-        self._fluidDensity = constants.FLUID_DENSITY
+        self._fluidDensity = config.FLUID_DENSITY
         self._pressure = 0
         self._temperature = 0
         self._D1 = 0
