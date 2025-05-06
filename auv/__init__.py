@@ -117,13 +117,13 @@ if __name__ == "__main__":
             stop_event=stop_event
     )
 
-    if platform.system() == "Linux":
-        gps_queue=Queue()
-        gps_thread = GPS(
-            out_queue=gps_queue,
-            path=config.GPS_PATH,
-            stop_event=stop_event
-        )
+    #if platform.system() == "Linux":
+    #    gps_queue=Queue()
+    #    gps_thread = GPS(
+    #        out_queue=gps_queue,
+    #        path=config.GPS_PATH,
+    #        stop_event=stop_event
+    #    )
 
     print("Beginning main loop")
     try:

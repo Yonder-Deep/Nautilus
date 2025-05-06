@@ -45,7 +45,7 @@ class Motor:
         """
         Test the motor by setting speed values between time intervals.
         """
-        print("TESTING MOTOR 2")
+        print(f"TESTING MOTOR (GPIO = {self.pin})")
         self.set_speed(MAX_SPEED / 3)
         time.sleep(5)
         self.set_speed(0)
@@ -54,10 +54,10 @@ class Motor:
 if __name__ == "__main__":
     pi = pigpio.pi()
     while True:
-        for i in range(50):
+        for i in range(0, 25):
             try:
                 motor = Motor(i, pi)
+                #print("Testing Motor: {}".format(str(i)))
                 motor.test_motor()
-                print("Motor: {}".format(str(i)))
             except:
                 print("Skipped: {}".format(str(i)))

@@ -3,19 +3,24 @@ The motor_controller class calibrates and sets the speed of all of the motors
 """
 
 # System imports
-from api import Motor
+# from static import global_vars
+# from api import Motor
+from . import Motor
+import RPi.GPIO as io
 import pigpio
 import time
 import sys
-from .abstract import AbstractController
-from custom_types import MotorSpeeds
+sys.path.append('../')
+sys.path.append('/home/pi-2/dev/Nautilus/auv')
+sys.path.append('/home/pi-2/dev/Nautilus/auv/api')
+sys.path.append('/home/pi-2/dev/Nautilus/auv/static')
 # Custom Imports
 
 # GPIO Pin numbers for Motors
 FORWARD_GPIO_PIN = 4
-TURN_GPIO_PIN = 11
-FRONT_GPIO_PIN = 18
-BACK_GPIO_PIN = 24
+TURN_GPIO_PIN = 24
+FRONT_GPIO_PIN = 11
+BACK_GPIO_PIN = 18
 
 # Define pin numbers for PI (the number of the pins when counting them physically, different because some Pi pins are not GPIO pins)
 FORWARD_PI_PIN = 7          # Left pins
@@ -40,7 +45,7 @@ def log(val):
     print("[MC]\t" + val)
 
 
-class MotorController(AbstractController):
+class MotorController:
     """
     Object that contains all interactions with the motor array for the AUV
     """
@@ -67,18 +72,26 @@ class MotorController(AbstractController):
         self.front_speed = 0
         self.back_speed = 0
 
-    def set_speeds(self, input:MotorSpeeds) -> None:
+    def update_motor_speeds(self, data) -> None:
         """
         Sets motor speeds to each individual motor. This is for manual (xbox) control when the
         radio sends a data packet of size 4.
 
         data: String read from the serial connection containing motor speed values.
         """
+        if len(data) != len(self.motors):
+            raise Exception(
+                "Data packet length does not equal motor array length.")
+            return
+
         # Parse motor speed from data object.
-        self.forward_speed = input.forward
-        self.turn_speed = input.turn
-        self.front_speed = input.front
-        self.back_speed = input.back
+        self.forward_speed = data[FORWARD_MOTOR_INDEX]
+        self.turn_speed = data[TURN_MOTOR_INDEX]
+        self.front_speed = data[FRONT_MOTOR_INDEX]
+        self.back_speed = data[BACK_MOTOR_INDEX]
+
+        #if all([speed == 0 for speed in data]):
+        #    global_vars.movement_status = 0
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
@@ -148,7 +161,7 @@ class MotorController(AbstractController):
         self.motors[FRONT_MOTOR_INDEX].set_speed(self.front_speed)
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
 
-    def set_zeros(self):
+    def zero_out_motors(self):
         """
         Sets motor speeds of each individual motor to 0.
         """
@@ -181,6 +194,14 @@ class MotorController(AbstractController):
     def test_back(self):
         log('Testing back motor...')
         self.motors[BACK_MOTOR_INDEX].test_motor()
+
+    def check_gpio_pins(self):
+        """ This function might be deprecated... """
+        io.setmode(io.BOARD)
+        for pins in self.pi_pins:
+            io.setup(pins, io.IN)
+            print("Pin: ", pins, io.input(pins))
+            #log("Pin:", pins, io.input(pins))
 
     def calculate_pid_new_speed(self, feedback):
         # Case 1: Going backward
