@@ -21,6 +21,16 @@ class Motor:
         self.pi = pi
         self.speed = 0
 
+    def arm_motor(self): 
+        """
+        Arms the ESC by sending a minimum throttle signal for a few seconds.
+        """
+        print(f"Arming motor on GPIO {self.pin}...")
+        self.pi.set_servo_pulsewidth(self.pin, 1000)  # Send 1000 µs (min throttle)
+        time.sleep(3)
+        self.pi.set_servo_pulsewidth(self.pin, 0)     # Optional: stop signal
+        print("ESC should now be armed.")
+
     def set_speed(self, speed):
         """
         Sets the speed of the motor.

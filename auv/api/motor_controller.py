@@ -72,6 +72,10 @@ class MotorController:
         self.front_speed = 0
         self.back_speed = 0
 
+        for motor in self.motors: 
+            motor.arm_motor()
+
+
     def update_motor_speeds(self, data) -> None:
         """
         Sets motor speeds to each individual motor. This is for manual (xbox) control when the
