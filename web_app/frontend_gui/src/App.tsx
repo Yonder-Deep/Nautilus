@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Layouts } from "react-grid-layout";
 
-import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/Forms";
+import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/forms";
 import { StatusItem, StatusMessages } from "./outputs/status";
 import { Simulation } from "./outputs/sim";
 import { Map } from "./outputs/map"

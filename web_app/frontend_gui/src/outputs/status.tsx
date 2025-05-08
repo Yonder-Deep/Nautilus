@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState} from "react"
 
+import styles from "./status.module.css"
+
 interface dataPart {
     id: number,
     title: string,
@@ -51,7 +53,7 @@ export const StatusMessages = ({
     }, [statusMessages]);
 
     return (
-        <div className="status-messages">
+        <div className={styles.StatusMessages}>
             <h2>Status Messages</h2>
             <ul ref={listRef}>
                 {statusMessages?.map((message: any, index: any) => {

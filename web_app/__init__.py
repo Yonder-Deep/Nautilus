@@ -14,7 +14,7 @@ from pathlib import Path
 from backend import auv_socket_handler
 from pydantic_yaml import parse_yaml_file_as
 from ruamel.yaml import YAML
-yaml = YAML()
+yaml = YAML(typ='safe')
 
 class ConfigSchema(BaseModel):
     auv_url: str
@@ -27,27 +27,50 @@ def load_config() -> ConfigSchema:
         local_file = open(local_path, 'r')
         local_config = yaml.load(local_file)
         local_file.close()
-        local_filtered = {k:v for (k,v) in local_config.items() if v}
-        default_config.update(local_filtered)
+        if local_config:
+            local_filtered = {k:v for (k,v) in local_config.items() if v}
+            default_config.update(local_filtered)
     return ConfigSchema(**default_config)
-
-config = load_config()
-print("STARTUP WITH CONFIGURATION:")
-print(config.model_dump())
 
 queue_to_frontend = Queue()
 queue_to_auv = Queue()
 
+def log(message: str):
+    queue_to_frontend.put(message)
+    print("\033[44mMAIN:\033[0m " + message)
+
+config = load_config()
+log("STARTUP WITH CONFIGURATION:")
+log(str(config.model_dump()))
+
+log("Initializing remote websocket")
+stop_event = threading.Event()
+backend_thread = threading.Thread(target=auv_socket_handler, args=[stop_event, config.auv_url, config.ping_interval, queue_to_frontend, queue_to_auv])
+
+def start_backend():
+    """ If the backend websocket thread is not alive, start it.
+        If it is alive, do nothing. 
+    """
+    if not backend_thread.is_alive():
+        backend_thread.start()
+
+def kill_backend():
+    """ If the backend websocket thread is alive, tell it to stop
+        and join until it does.
+    """
+    if backend_thread.is_alive():
+        stop_event.set()
+        backend_thread.join()
+
+
+
+start_backend()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    custom_log("Initializing auv socket handler")
-    stop_event = threading.Event()
-    backend_thread = threading.Thread(target=auv_socket_handler, args=[stop_event, config.auv_url, config.ping_interval, queue_to_frontend, queue_to_auv])
-    backend_thread.start()
     yield
-    custom_log("Waiting for websocket thread to join")
-    stop_event.set()
-    backend_thread.join()
+    log("Waiting for websocket thread to join")
+    kill_backend()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -67,8 +90,9 @@ async def eatSocket(websocket:WebSocket, socket_status_queue:asyncio.Queue):
 @api.websocket("/websocket")
 async def frontend_websocket(websocket: WebSocket):
     await websocket.accept()
-    custom_log("Websocket created")
-    await websocket.send_text("I'm alive")
+    log("Websocket created")
+    await websocket.send_text("Local websocket live")
+    await websocket.send_text("STARTUP WITH CONFIGURATION\n" + str(config.model_dump()))
     socket_status_queue = asyncio.Queue()
     await socket_status_queue.put(True)
     while True:
@@ -78,7 +102,7 @@ async def frontend_websocket(websocket: WebSocket):
         try:
             message_to_frontend = queue_to_frontend.get(block=False)
             if message_to_frontend:
-                print("Message to frontend: " + message_to_frontend)
+                print("\033[45mTO FRONT:\033[0m " + message_to_frontend)
                 await websocket.send_text(message_to_frontend)
         except Empty:
             pass
@@ -100,30 +124,26 @@ class LayoutsModel(BaseModel):
 
 @api.post("/layouts")
 def save_layouts(layouts: LayoutsModel) -> LayoutsModel:
-    custom_log("Saving layout to: " + layout_data_path)
+    log("Saving layout to: " + layout_data_path)
     layout_data = layouts.model_dump_json()
-    custom_log(layout_data)
+    log(layout_data)
     with open(layout_data_path, 'w') as file:
         file.write(layout_data)
     return layouts
 
 @api.get("/layouts")
 def get_layouts():
-    custom_log("Received get request for layouts")
+    log("Received get request for layouts")
     try:
         with open(layout_data_path) as file:
             layout_data = json.load(file)
-            custom_log("Layouts: " + json.dumps(layout_data))
+            log("Layouts found")
             return layout_data
     except FileNotFoundError:
-        custom_log("Error: The gui grid layout json file at " + layout_data_path + " is missing")
+        log("Error: The gui grid layout json file at " + layout_data_path + " is missing")
         return None
     except json.JSONDecodeError:
-        custom_log("Error: The gui grid layout json file at " + layout_data_path + " is invalid json")
-
-def custom_log(message: str):
-    queue_to_frontend.put(message)
-    print("\033[34mMAIN:\033[0m " + message)
+        log("Error: The gui grid layout json file at " + layout_data_path + " is invalid json")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=6543)

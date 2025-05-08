@@ -64,6 +64,7 @@ char* find_radio() {
             kIORegistryIterateRecursively);
     NSLog(@"hi");
     NSLog(@"%@", deviceNameAsCFString);*/
+
     if (deviceBSDName_cf) {
         //NSLog(@"BSDName found, finding path...");
         char deviceFilePath[MAXPATHLEN];
@@ -83,8 +84,8 @@ char* find_radio() {
             return finalResult;
         } /*else {
             NSLog(@"Radio device not found.");
-        }
-    } else {
+        }*/
+    }/* else {
         NSLog(@"Radio device not found.");
     }*/
     char* notFound = malloc(21);

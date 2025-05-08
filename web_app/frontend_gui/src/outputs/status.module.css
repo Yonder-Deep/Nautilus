@@ -1,0 +1,39 @@
+.StatusMessages {
+    height: 100%;
+    width: 100%;
+    border-radius: 1rem;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.StatusMessages > h2 {
+    flex-grow: 0;
+    margin: 0 0 1rem;
+    text-align: center;
+}
+
+.StatusMessages > ul {
+    flex-grow: 1;
+    border-radius: 1rem;
+    margin: 0;
+    padding: 1rem;
+    background-color: black;
+    color: white;
+    overflow-y: scroll;
+}
+
+.StatusMessages li {
+    border-top: 1px solid grey;
+}
+
+.StatusMessage pre {
+    margin: 0.5rem;
+}
+
+.StatusMessages > button {
+    flex-grow: 0; 
+    margin: 1rem auto 0;
+    width: fit-content;
+}
+

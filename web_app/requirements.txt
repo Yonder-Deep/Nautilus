@@ -2,4 +2,7 @@ fastapi==0.115.5
 pydantic==2.9.2
 uvicorn==0.32.0
 websockets==14.1
-pyyaml==6.0.2
+pydantic_yaml==1.4.0
+
+# Included with pydantic_yaml, this is just to be explicit
+ruamel.yaml==0.18.10

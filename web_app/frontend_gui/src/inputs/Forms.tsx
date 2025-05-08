@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from "./forms.module.css"
 
 export const ParametersForm = ({ websocket }: any) => {
     const [pidAxis, setPidAxis] = useState('');
@@ -21,18 +22,20 @@ export const ParametersForm = ({ websocket }: any) => {
     }
 
     return (
-        <div className="parameters-form">
+        <div>
             <h2>Set PID Constants</h2>
-            <div className="form-body">
-                <select defaultValue={"Default"} onChange={e => setPidAxis(e.target.value)}>
-                    <option value="Default" disabled>Select Axis</option>
-                    <option value="Pitch">Pitch</option>
-                    <option value="Yaw">Yaw</option>
-                    <option value="Roll">Roll</option>
-                </select>
-                <input placeholder="P" onChange={e => setConstantP(e.target.value)} />
-                <input placeholder="I" onChange={e => setConstantI(e.target.value)} />
-                <input placeholder="D" onChange={e => setConstantD(e.target.value)} />
+            <div className={styles.formBody}>
+                <div className={styles.parameterForm}>
+                    <select defaultValue={"Default"} onChange={e => setPidAxis(e.target.value)}>
+                        <option value="Default" disabled>Select Axis</option>
+                        <option value="Pitch">Pitch</option>
+                        <option value="Yaw">Yaw</option>
+                        <option value="Roll">Roll</option>
+                    </select>
+                    <input placeholder="P" onChange={e => setConstantP(e.target.value)} />
+                    <input placeholder="I" onChange={e => setConstantI(e.target.value)} />
+                    <input placeholder="D" onChange={e => setConstantD(e.target.value)} />
+                </div>
                 <button onClick={() => makePidRequest()}>Set Constants</button>
             </div>
         </div>
@@ -65,13 +68,27 @@ export const MotorTestForm = ({ websocket }: any) => {
     }
 
     return (
-        <div className="motor-form">
+        <div>
             <h2>Motor Testing</h2>
-            <div className="form-body">
-                <input placeholder="Enter motor 1 speed" onChange={e => setMotor1(parseFloat(e.target.value))} />
-                <input placeholder="Enter motor 2 speed" onChange={e => setMotor2(parseFloat(e.target.value))} />
-                <input placeholder="Enter motor 3 speed" onChange={e => setMotor3(parseFloat(e.target.value))} />
-                <input placeholder="Enter motor 4 speed" onChange={e => setMotor4(parseFloat(e.target.value))} />
+            <div className={styles.formBody}>
+                <div className={styles.motorForm}>
+                    <input
+                        placeholder="↑" 
+                        onChange={e => setMotor1(parseFloat(e.target.value))}
+                    />
+                    <input
+                        placeholder="↻"
+                        onChange={e => setMotor2(parseFloat(e.target.value))}
+                    />
+                    <input
+                        placeholder="⇅"
+                        onChange={e => setMotor3(parseFloat(e.target.value))}
+                    />
+                    <input
+                        placeholder="⇅"
+                        onChange={e => setMotor4(parseFloat(e.target.value))}
+                    />
+                </div>
                 <button onClick={() => makeMotorRequest()}>Begin Test</button>
             </div>
         </div>
@@ -92,7 +109,7 @@ export const HeadingTestForm = ({ websocket }: any) => {
     return (
         <div className="testing-form">
             <h2>Heading Test</h2>
-            <div className="form-body">
+            <div className={styles.formBody}>
                 <input placeholder="Enter target heading" onChange={e => (setTargetHeading(e.target.value))} />
                 <button onClick={() => headingRequest()}>Begin Test</button>
             </div>
@@ -112,7 +129,7 @@ export const StartMission = ({ websocket }: any) => {
     return (
     <div className="testing-form">
         <h2>Start Mission</h2>
-        <div className="form-body">
+        <div className={styles.formBody}>
             <input placeholder="Enter target point: (x,y,0)" onChange={e => (setTargetPoint(e.target.value))} />
             <button onClick={() => missionRequest()}>Start Mission</button>
         </div>
