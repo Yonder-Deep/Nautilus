@@ -1,7 +1,7 @@
 """
 unscented_quaternion.py
 
-An Unscented Kalman Filter that uses quaternions
+An Unscented Kalman Filter that uses quaternions to estimate orientation
 ________________________________________________________________________________
 q0 - the reference or mean quaternion that represents the center of the chart
 q - quaternion representing the current orientation~real component first
@@ -13,11 +13,8 @@ Qa - acceleration process noise
 Rw - angular velocity measurement noise
 Ra - acceleration measurement noise
 W0 - weight for the mean sigma values
-State Vector = [e, w, Qw, Qa]
+Note: state vector = [e, w, Qw, Qa]
 ________________________________________________________________________________
-TODO
--Optimize (Use numpy whenever possible, modify objects in-place (use x[:]=))
--Add position tracking with GPS and motor input signal (Bu term in literature)
 """
 
 from math import sqrt, sin, cos
@@ -28,7 +25,6 @@ from scipy.linalg import cholesky, solve_triangular
 
 class MUKF:
     def __init__(self):
-        # Make sure to tune process and measurement noise
         self.q0 = np.array([1.0, 0.0, 0.0, 0.0])
         self.q = np.array([1.0, 0.0, 0.0, 0.0])
         self.e = np.zeros(3)
@@ -36,10 +32,10 @@ class MUKF:
         self.P = np.eye(6) * 0.1
         self.Qw = np.eye(3) * 0.1
         self.Qa = np.eye(3) * 0.1
-        self.Qm = np.eye(3) * 0.1
+        self.Qm = np.eye(3) * 1
         self.Rw = np.eye(3) * 0.01
         self.Ra = np.eye(3) * 0.01
-        self.Rm = np.eye(3) * 0.01
+        self.Rm = np.eye(3) * 0.25
         self.W0 = 1.0/25.0
         self.chartUpdate = True
 
@@ -58,10 +54,10 @@ class MUKF:
     def get_current_orientation(self):
         """ Gets the current quaternion orientation """
         return self.q
-
-    def update_imu(self, am, wm, mm, dt):
+    
+    def update_imu(self, dt, am, wm, mm):
         """
-        Takes in acceleration (m/s), angular velocity (rad/s), magnetic field 
+        Takes in acceleration (m/s), angular velocity (rad/s), magnetic field
         strength (T), and delta time to repeatedly update the estimated state
         """
         Pe = np.zeros((15, 15))
@@ -75,8 +71,8 @@ class MUKF:
         Pe[:] = Pe_L
         Wi = (1.0 - self.W0) / (2.0 * 12)
         alpha = 1.0 / sqrt(2.0 * Wi)
-        Pe *= alpha        
-        
+        Pe *= alpha
+
         X = np.zeros((31, 16))
         Y = np.zeros((31, 9))
 
@@ -96,9 +92,9 @@ class MUKF:
 
         for j in range(15):
             eP_minus = self.e - Pe[:, j][0:3]
-            X[j+13, :4] = MUKF.chart_to_manifold(self.q0, eP_minus)
-            X[j+13, 4:7] = self.w - Pe[:, j][3:6]
-            X[j+13, 7:16] = -Pe[:, j][6:15]
+            X[j+16, :4] = MUKF.chart_to_manifold(self.q0, eP_minus)
+            X[j+16, 4:7] = self.w - Pe[:, j][3:6]
+            X[j+16, 7:16] = -Pe[:, j][6:15]
 
         for j in range(31):
             MUKF.state_transition(X[j], dt)
@@ -117,7 +113,7 @@ class MUKF:
 
         qmeanNorm = np.linalg.norm(xmean[:4])
         xmean[:4] /= qmeanNorm
-        
+
         Pxx = np.zeros((6, 6))
         Pxy = np.zeros((6, 9))
         Pyy = np.zeros((9, 9))
@@ -132,7 +128,7 @@ class MUKF:
         Pxy += self.W0 * np.outer(dX, dY)
         Pyy += self.W0 * np.outer(dY, dY)
 
-        for k in range(1, 25):
+        for k in range(1, 31):
             dX[:3] = MUKF.manifold_to_chart(xmean[:4], X[k, :4])
             dX[3:6] = X[k, 4:7] - xmean[4:7]
             dY[:] = Y[k, :9] - ymean[:9]
@@ -157,9 +153,9 @@ class MUKF:
         self.q = MUKF.chart_to_manifold(np.copy(self.q0), np.copy(self.e))
         self.q /= np.linalg.norm(self.q)
         self.w = xmean[4:7] + dx[3:6]
-        self.P = Pxx - K @ Pyy @ K.T 
+        self.P = Pxx - K @ Pyy @ K.T
         self.P = 0.5 * (self.P + self.P.T)
-    
+
     def manifold_to_chart(qm, q):
         """ Maps the quaternion q to the qm-centered orthographic chart """
         delta = np.zeros(4)
@@ -224,15 +220,15 @@ class MUKF:
         """ Predicts IMU measurements given the state """
         RT = np.zeros((3, 3))
         RT[0, 0] = 1.0 - 2.0*(x[2]*x[2] + x[3]*x[3])
-        RT[0, 1] = 2.0*(x[1]*x[2] - x[3]*x[0])
-        RT[0, 2] = 2.0*(x[1]*x[3] + x[2]*x[0])
+        RT[0, 1] = 2.0*(x[1]*x[2] + x[3]*x[0])
+        RT[0, 2] = 2.0*(x[1]*x[3] - x[2]*x[0])
 
-        RT[1, 0] = 2.0*(x[1]*x[2] + x[3]*x[0])
+        RT[1, 0] = 2.0*(x[1]*x[2] - x[3]*x[0])
         RT[1, 1] = 1.0 - 2.0*(x[1]*x[1] + x[3]*x[3])
-        RT[1, 2] = 2.0*(x[2]*x[3] - x[1]*x[0])
+        RT[1, 2] = 2.0*(x[2]*x[3] + x[1]*x[0])
 
-        RT[2, 0] = 2.0*(x[1]*x[3] - x[2]*x[0])
-        RT[2, 1] = 2.0*(x[2]*x[3] + x[1]*x[0])
+        RT[2, 0] = 2.0*(x[1]*x[3] + x[2]*x[0])
+        RT[2, 1] = 2.0*(x[2]*x[3] - x[1]*x[0])
         RT[2, 2] = 1.0 - 2.0*(x[1]*x[1] + x[2]*x[2])
 
         ap = np.array([0, 0, 1])

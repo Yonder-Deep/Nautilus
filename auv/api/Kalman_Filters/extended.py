@@ -2,7 +2,21 @@ import numpy as np
 import math
 
 
-# Tried adding individual class
+SIG_W_A = 0.05
+SIG_A_D = 0.075
+TAU_A = 5.0
+SIG_GPS_P_NE = 3.0
+SIG_GPS_P_D = 6.0
+SIG_GPS_V_NE = 0.5
+SIG_GPS_V_D = 1.0
+P_P_INIT = 10.0
+P_V_INIT = 1.0
+P_AB_INIT = 1.0
+G = 9.807
+ECC2 = 0.0066943799901
+EARTH_RADIUS = 6378137.0
+
+
 class GpsCoordinate:
     def __init__(self, lat, lon, alt):
         self.lat = lat
@@ -20,22 +34,6 @@ class ImuData:
         self.accX = accX
         self.accY = accY
         self.accZ = accZ
-
-
-SIG_W_A = 0.05
-SIG_A_D = 0.01
-TAU_A = 100.0
-SIG_GPS_P_NE = 3.0
-SIG_GPS_P_D = 6.0 
-SIG_GPS_V_NE = 0.5
-SIG_GPS_V_D = 1.0
-P_P_INIT = 10.0 
-P_V_INIT = 1.0
-P_AB_INIT = 0.9810
-G = 9.807
-ECC2 = 0.0066943799901
-EARTH_RADIUS = 6378137.0
-
 
 class EKF:
     def __init__(self):
@@ -79,16 +77,14 @@ class EKF:
         self.R[3:5, 3:5] = (SIG_GPS_V_NE*SIG_GPS_V_NE) * np.identity(2)
         self.R[5, 5] = SIG_GPS_V_D*SIG_GPS_V_D
 
-    def initialized(self) -> bool:
+    def initialized(self):
         return self.initialized_
 
     def get_latitude_rad(self): return self.lat_ins
     def get_longitude_rad(self): return self.lon_ins
-    # Altitude is basically 0 here...
     def get_altitude_m(self): return self.alt_ins
     def get_vel_north_ms(self): return self.vn_ins
     def get_vel_east_ms(self): return self.ve_ins
-    # Velocity down is also 0 here since we used Course Made Good for direction...
     def get_vel_down_ms(self): return self.vd_ins
 
     # Helper Functions
@@ -107,21 +103,21 @@ class EKF:
         Rew, Rns = self._earth_radius(lat)
         lla_dot = np.zeros(3, dtype=np.float64)
         vn, ve, vd = V_ned
-        
+
         # Protect against division by zero or invalid latitude
         cos_lat = np.cos(lat)
         if abs(cos_lat) < 1e-8: # Avoid division by zero near poles
             cos_lat = 1e-8 * np.sign(cos_lat) if cos_lat != 0 else 1e-8
-        
+
         h_Rns = Rns + alt
         h_Rew = Rew + alt
-        
+
         if h_Rns < 1e-3: h_Rns = 1e-3
         if h_Rew < 1e-3: h_Rew = 1e-3
 
         lla_dot[0] = vn / h_Rns
         lla_dot[1] = ve / (h_Rew * cos_lat)
-        lla_dot[2] = -vd 
+        lla_dot[2] = -vd
         return lla_dot
 
     def _lla2ecef(self, lla):
@@ -156,7 +152,7 @@ class EKF:
 
         ned = R_ecef2ned @ ecef_vec
         return ned
-    
+
     def _quat2dcm(self, q):
         """Converts quaternion (w, x, y, z) to a DCM"""
         q0, q1, q2, q3 = q
@@ -166,10 +162,10 @@ class EKF:
         q2q3 = q2*q3; q0q1 = q0*q1
 
         dcm = np.zeros((3, 3), dtype=np.float32)
-        
-        # Check with textbook if this Quaternion -> DCM is correct 
+
+        # Check with textbook if this Quaternion -> DCM is correct
         dcm[0,0] = q0_2 + q1_2 - q2_2 - q3_2
-    
+
         dcm[0,0] = 2.0 * q0_2 - 1.0 + 2.0 * q1_2
         dcm[1,1] = 2.0 * q0_2 - 1.0 + 2.0 * q2_2
         dcm[2,2] = 2.0 * q0_2 - 1.0 + 2.0 * q3_2
@@ -192,8 +188,8 @@ class EKF:
         self.lla_ins[:] = [self.lat_ins, self.lon_ins, self.alt_ins]
         self.V_ins[:] = [self.vn_ins, self.ve_ins, self.vd_ins]
 
-        self.abx, self.aby, self.abz = 0.0, 0.0, 0.0
-        self.accel_bias[:] = [self.abx, self.aby, self.abz]
+#        self.abx, self.aby, self.abz = 0.0, 0.0, 0.0
+#        self.accel_bias[:] = [self.abx, self.aby, self.abz]
 
         self.P = np.zeros((9, 9), dtype=np.float32)
         self.P[0:3, 0:3] = (P_P_INIT**2.0) * np.identity(3)
@@ -206,12 +202,12 @@ class EKF:
 
     def predict(self, dt, imu_data, q):
         C_N2B = self._quat2dcm(q)
+        C_N2B[:,1] *= -1.0
         C_B2N = C_N2B.T
 
         acc_raw = np.array([imu_data.accX, imu_data.accY, imu_data.accZ], dtype=np.float32)
         self.f_b = acc_raw - self.accel_bias
 
-        print(C_B2N @ self.f_b)
         accel_nav = C_B2N @ self.f_b + self.grav
 
         self.vn_ins += accel_nav[0] * dt
@@ -238,7 +234,7 @@ class EKF:
         Gs[6:9, 3:6] = np.identity(3)
         Q = PHI @ Gs @ self.Rw @ Gs.T * dt
         Q = 0.5 * (Q + Q.T)
-        
+
         self.P = PHI @ self.P @ PHI.T + Q
         self.P = 0.5 * (self.P + self.P.T)
         self.P += np.identity(9) * 1e-12
