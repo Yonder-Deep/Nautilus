@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Layouts } from "react-grid-layout";
 
-import { ParametersForm, MotorTestForm, HeadingTestForm, StartMission } from "./inputs/forms";
+import {
+    ParametersForm,
+    MotorTestForm,
+    HeadingTestForm,
+    StartMission
+} from "./inputs/forms";
+import { SocketHealth } from "./inputs/SocketHealth"
 import { StatusItem, StatusMessages } from "./outputs/status";
 import { Simulation } from "./outputs/sim";
 import { Map } from "./outputs/map"
@@ -112,6 +118,7 @@ export default function App() {
                 <HeadingTestForm websocket={websocket}></HeadingTestForm>
                 <StartMission websocket={websocket}></StartMission>
                 <StatusMessages statusMessages={statusMessages} setStatusMessages={ setStatusMessages}></StatusMessages>
+                <SocketHealth websocket={websocket}></SocketHealth>
             </Grid>
         </div>
     );

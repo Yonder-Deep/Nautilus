@@ -1,29 +1,86 @@
 from websockets.sync.client import connect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+
 import json
 from queue import Queue, Empty
 from functools import partial
 import threading
+from time import time
+from typing import Optional, Union, Callable
+from dataclasses import dataclass, asdict
 
-# TODO: Ping/Pong heartbeat
+@dataclass
+class Ping:
+    event: Optional[threading.Event]
+    init_time: float
+    elapsed_time: Optional[float] = None
+
+@dataclass
+class Data:
+    type: str
+    content: Union[Ping, str]
+    source: str = "WSKT"
 
 def custom_log(message: str, queue:Queue):
-    queue.put(message)
+    queue.put("WSKT: \n" + message)
     print("\033[42mWSKT:\033[0m " + message)
 
-def auv_socket_handler(stop_event : threading.Event, ip_address:str, ping_interval:int, queue_to_frontend:Queue, queue_to_auv:Queue):
-    log = partial(custom_log, queue=queue_to_frontend)
-    log("AUV Socket Handler Alive")
-    #with connect(uri=ip_address) as websocket:
+def socket_handler(
+    stop_event: threading.Event,
+    ip_address: str,
+    ping_interval: int,
+    queue_to_frontend: Queue,
+    queue_to_auv: Queue,
+    meta_from_frontend: Queue,
+    log: Callable,
+):
+    last_ping = time() - ping_interval # To do first ping immediately
+    active_pings = []
     try:
         websocket = connect(uri=ip_address)
         hello = websocket.recv(timeout=None)
-        log("AUV Hello: " +  str(hello))
+        log("AUV Hello: " + str(hello))
         while True:
             if stop_event.is_set():
                 websocket.close()
                 return
 
+            # For any active pings, check if the pong has been received
+            for ping in active_pings:
+                if ping.event.is_set():
+                    ping.elapsed_time = time() - ping.init_time
+                    ping.event = None
+                    ping_result = Data(
+                        type = "ping",
+                        content = ping
+                    )
+                    queue_to_frontend.put(json.dumps(asdict(ping_result)))
+                    active_pings.remove(ping)
+            
+            if time() - last_ping > ping_interval:
+                active_pings.append(
+                    Ping(
+                        event = websocket.ping(),
+                        init_time = time()
+                    )
+                )
+                last_ping = time()
+
+            # If ping requested, ping and set up object
+            try:
+                meta_command = meta_from_frontend.get_nowait()
+                log("Received meta command: \n" + json.dumps(meta_command))
+                if meta_command["content"] == "ping":
+                    event = websocket.ping()
+                    new_ping = Ping(
+                        event = event,
+                        init_time = time()
+                    )
+                    active_pings.append(new_ping)
+            except Empty:
+                pass
+
+            # Forward messages from both ends
             try:
                 message_to_frontend = json.loads(websocket.recv(timeout=0.0001)) # Doesn't block since timeout=0
                 if message_to_frontend:
@@ -45,5 +102,37 @@ def auv_socket_handler(stop_event : threading.Event, ip_address:str, ping_interv
             log("AUV disconnected (ERROR)")
         else:
             log("Unknown error")
-        log(str(err))
+        log(repr(err))
+        dead_object = Data(
+            type = "WSKT",
+            content = "WSKT DEAD"
+        )
+        log(json.dumps(asdict(dead_object)))
         return
+
+def socket_thread(
+    stop_event: threading.Event,
+    ip_address: str,
+    ping_interval: int,
+    queue_to_frontend: Queue,
+    queue_to_auv: Queue,
+    meta_from_frontend: Queue,
+    restart_event: threading.Event,
+):
+    log = partial(custom_log, queue=queue_to_frontend)
+    log("AUV Socket Handler Alive")
+    restart_event.set() # To start the first time
+    while True:
+        if stop_event.is_set():
+            return
+        if restart_event.is_set():
+            restart_event.clear()
+            socket_handler(
+                    stop_event,
+                    ip_address,
+                    ping_interval,
+                    queue_to_frontend,
+                    queue_to_auv,
+                    meta_from_frontend,
+                    log
+            )

@@ -11,7 +11,7 @@ import json
 from typing import Optional
 from pathlib import Path
 
-from backend import auv_socket_handler
+from backend import socket_thread 
 from pydantic_yaml import parse_yaml_file_as
 from ruamel.yaml import YAML
 yaml = YAML(typ='safe')
@@ -34,35 +34,47 @@ def load_config() -> ConfigSchema:
 
 queue_to_frontend = Queue()
 queue_to_auv = Queue()
+meta_from_frontend = Queue()
+meta_to_frontend = Queue()
 
 def log(message: str):
-    queue_to_frontend.put(message)
+    queue_to_frontend.put("MAIN: \n" + message)
     print("\033[44mMAIN:\033[0m " + message)
 
 config = load_config()
-log("STARTUP WITH CONFIGURATION:")
-log(str(config.model_dump()))
 
+log("STARTUP WITH CONFIGURATION: \n" + str(config.model_dump()))
 log("Initializing remote websocket")
+
 stop_event = threading.Event()
-backend_thread = threading.Thread(target=auv_socket_handler, args=[stop_event, config.auv_url, config.ping_interval, queue_to_frontend, queue_to_auv])
+restart_event = threading.Event()
+backend_thread = threading.Thread(
+    target=socket_thread,
+    args=[
+        stop_event,
+        config.auv_url,
+        config.ping_interval,
+        queue_to_frontend,
+        queue_to_auv,
+        meta_from_frontend,
+        restart_event
+    ]
+)
 
 def start_backend():
     """ If the backend websocket thread is not alive, start it.
         If it is alive, do nothing. 
     """
-    if not backend_thread.is_alive():
+    if backend_thread.is_alive() == False:
         backend_thread.start()
 
 def kill_backend():
     """ If the backend websocket thread is alive, tell it to stop
         and join until it does.
     """
-    if backend_thread.is_alive():
+    if backend_thread.is_alive() == True:
         stop_event.set()
         backend_thread.join()
-
-
 
 start_backend()
 
@@ -85,14 +97,20 @@ async def eatSocket(websocket:WebSocket, socket_status_queue:asyncio.Queue):
     frontend_message = await websocket.receive_json()
     await websocket.send_text(json.dumps(frontend_message))
     await socket_status_queue.put(True)
-    queue_to_auv.put(frontend_message)
+    if frontend_message["command"] == "websocket":
+        if frontend_message["content"] == "ping":
+            meta_from_frontend.put(frontend_message)
+        elif frontend_message["content"] == "restart":
+            restart_event.set()
+
+    else:
+        queue_to_auv.put(frontend_message)
 
 @api.websocket("/websocket")
 async def frontend_websocket(websocket: WebSocket):
     await websocket.accept()
-    log("Websocket created")
     await websocket.send_text("Local websocket live")
-    await websocket.send_text("STARTUP WITH CONFIGURATION\n" + str(config.model_dump()))
+    log("Setup Done")
     socket_status_queue = asyncio.Queue()
     await socket_status_queue.put(True)
     while True:
@@ -100,7 +118,7 @@ async def frontend_websocket(websocket: WebSocket):
         await asyncio.sleep(0.001)
         # Check queue_to_frontend & send to frontend
         try:
-            message_to_frontend = queue_to_frontend.get(block=False)
+            message_to_frontend = queue_to_frontend.get_nowait()
             if message_to_frontend:
                 print("\033[45mTO FRONT:\033[0m " + message_to_frontend)
                 await websocket.send_text(message_to_frontend)

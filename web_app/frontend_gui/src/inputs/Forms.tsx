@@ -26,15 +26,30 @@ export const ParametersForm = ({ websocket }: any) => {
             <h2>Set PID Constants</h2>
             <div className={styles.formBody}>
                 <div className={styles.parameterForm}>
-                    <select defaultValue={"Default"} onChange={e => setPidAxis(e.target.value)}>
+                    <select 
+                        defaultValue={"Default"} 
+                        onChange={e => setPidAxis(e.target.value)}
+                    >
                         <option value="Default" disabled>Select Axis</option>
                         <option value="Pitch">Pitch</option>
                         <option value="Yaw">Yaw</option>
                         <option value="Roll">Roll</option>
                     </select>
-                    <input placeholder="P" onChange={e => setConstantP(e.target.value)} />
-                    <input placeholder="I" onChange={e => setConstantI(e.target.value)} />
-                    <input placeholder="D" onChange={e => setConstantD(e.target.value)} />
+                    <input 
+                        placeholder="P"
+                        value={constantP}
+                        onChange={e => setConstantP(e.target.value)}
+                    />
+                    <input 
+                        placeholder="I"
+                        value={constantI}
+                        onChange={e => setConstantI(e.target.value)}
+                    />
+                    <input 
+                        placeholder="D"
+                        value={constantD}
+                        onChange={e => setConstantD(e.target.value)}
+                    />
                 </div>
                 <button onClick={() => makePidRequest()}>Set Constants</button>
             </div>
@@ -43,28 +58,38 @@ export const ParametersForm = ({ websocket }: any) => {
 }
 
 export const MotorTestForm = ({ websocket }: any) => {
-    const [motorType, setMotorType] = useState('');
-    const [motorSpeed, setMotorSpeed] = useState('');
-    const [motorDuration, setMotorDuration] = useState('');
+    const [motor1, setMotor1] = useState<string>("0");
+    const [motor2, setMotor2] = useState<string>("0");
+    const [motor3, setMotor3] = useState<string>("0");
+    const [motor4, setMotor4] = useState<string>("0");
 
-    const [motor1, setMotor1] = useState<number>();
-    const [motor2, setMotor2] = useState<number>();
-    const [motor3, setMotor3] = useState<number>();
-    const [motor4, setMotor4] = useState<number>();
-
-    const makeMotorRequest = () => {
+    const makeMotorRequest = (arr: number[] | undefined = undefined) => {
         console.log("Making motor request.")
-        const motorTest = [
-            motor1,
-            motor2,
-            motor3,
-            motor4,
-        ];
+        let motorTest = []
+        try {
+            if (arr) motorTest = arr;
+            else motorTest = [
+                parseFloat(motor1),
+                parseFloat(motor2),
+                parseFloat(motor3),
+                parseFloat(motor4),
+            ];
+        } catch {
+            return
+        }
         const request = {
             command: "motorTest",
             content: motorTest
         };
         websocket.send(JSON.stringify(request));
+    }
+
+    const zeroOut = () => {
+        setMotor1("0");
+        setMotor2("0");
+        setMotor3("0");
+        setMotor4("0");
+        makeMotorRequest([0,0,0,0]);
     }
 
     return (
@@ -74,22 +99,29 @@ export const MotorTestForm = ({ websocket }: any) => {
                 <div className={styles.motorForm}>
                     <input
                         placeholder="↑" 
-                        onChange={e => setMotor1(parseFloat(e.target.value))}
+                        value={motor1}
+                        onChange={e => setMotor1(e.target.value)}
                     />
                     <input
                         placeholder="↻"
-                        onChange={e => setMotor2(parseFloat(e.target.value))}
+                        value={motor2}
+                        onChange={e => setMotor2(e.target.value)}
                     />
                     <input
                         placeholder="⇅"
-                        onChange={e => setMotor3(parseFloat(e.target.value))}
+                        value={motor3}
+                        onChange={e => setMotor3(e.target.value)}
                     />
                     <input
                         placeholder="⇅"
-                        onChange={e => setMotor4(parseFloat(e.target.value))}
+                        value={motor4}
+                        onChange={e => setMotor4(e.target.value)}
                     />
                 </div>
-                <button onClick={() => makeMotorRequest()}>Begin Test</button>
+                <div className={styles.motorForm}>
+                    <button onClick={() => makeMotorRequest()}>Set Speeds</button>
+                    <button onClick={() => zeroOut()}>Zero All</button>
+                </div>
             </div>
         </div>
     )
@@ -110,7 +142,11 @@ export const HeadingTestForm = ({ websocket }: any) => {
         <div className="testing-form">
             <h2>Heading Test</h2>
             <div className={styles.formBody}>
-                <input placeholder="Enter target heading" onChange={e => (setTargetHeading(e.target.value))} />
+                <input
+                    placeholder="Enter target heading"
+                    value={targetHeading}
+                    onChange={e => (setTargetHeading(e.target.value))}
+                />
                 <button onClick={() => headingRequest()}>Begin Test</button>
             </div>
         </div>
@@ -130,7 +166,11 @@ export const StartMission = ({ websocket }: any) => {
     <div className="testing-form">
         <h2>Start Mission</h2>
         <div className={styles.formBody}>
-            <input placeholder="Enter target point: (x,y,0)" onChange={e => (setTargetPoint(e.target.value))} />
+            <input
+                placeholder="Enter target point: (x,y,0)"
+                value={targetPoint}
+                onChange={e => (setTargetPoint(e.target.value))}
+                />
             <button onClick={() => missionRequest()}>Start Mission</button>
         </div>
     </div>

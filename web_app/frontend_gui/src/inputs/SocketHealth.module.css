@@ -1,0 +1,22 @@
+.socketForm, .socketButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.socketButtons {
+    place-items: center;
+    justify-content: space-around;
+}
+
+.socketButtons > button {
+    margin-left: 0;
+    padding: 0.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+.socketForm > p {
+    margin: 0.25rem;
+}

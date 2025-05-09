@@ -121,6 +121,7 @@ button {
 .react-grid-layout button {
     border: none;
     border-radius: 0.75rem;
+    margin: 0.5rem;
     padding: 0.75rem 1rem;
     background: white;
     filter: brightness(95%);
