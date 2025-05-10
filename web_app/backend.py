@@ -33,6 +33,7 @@ def socket_handler(
     queue_to_auv: Queue,
     meta_from_frontend: Queue,
     log: Callable,
+    connected_event: threading.Event,
 ):
     last_ping = time() - ping_interval # To do first ping immediately
     active_pings = []
@@ -40,8 +41,10 @@ def socket_handler(
         websocket = connect(uri=ip_address)
         hello = websocket.recv(timeout=None)
         log("AUV Hello: " + str(hello))
+        connected_event.set()
         while True:
             if stop_event.is_set():
+                stop_event.clear()
                 websocket.close()
                 return
 
@@ -108,6 +111,7 @@ def socket_handler(
             content = "WSKT DEAD"
         )
         log(json.dumps(asdict(dead_object)))
+        connected_event.clear()
         return
 
 def socket_thread(
@@ -118,21 +122,35 @@ def socket_thread(
     queue_to_auv: Queue,
     meta_from_frontend: Queue,
     restart_event: threading.Event,
+    shutdown_event: threading.Event,
+    connected_event: threading.Event,
 ):
+    """ stop_event does not stop the thread, it merely closes the websocket
+        ping_interval not yet implemented.
+        queue_to_frontend and queue_to_auv are the passthrough "pipe" queues
+        meta_from_frontend is for websocket ping commands
+        restart_event tries to reconnect the websocket
+        shutdown_event exits the thread so it can be joined
+
+        Note: to fully end the connection and shut down, both stop_event and
+        shutdown_event must be set.
+    """
     log = partial(custom_log, queue=queue_to_frontend)
     log("AUV Socket Handler Alive")
     restart_event.set() # To start the first time
     while True:
-        if stop_event.is_set():
+        if shutdown_event.is_set():
             return
         if restart_event.is_set():
+            stop_event.clear()
             restart_event.clear()
             socket_handler(
-                    stop_event,
-                    ip_address,
-                    ping_interval,
-                    queue_to_frontend,
-                    queue_to_auv,
-                    meta_from_frontend,
-                    log
+                stop_event,
+                ip_address,
+                ping_interval,
+                queue_to_frontend,
+                queue_to_auv,
+                meta_from_frontend,
+                log,
+                connected_event,
             )

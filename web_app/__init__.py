@@ -48,6 +48,8 @@ log("Initializing remote websocket")
 
 stop_event = threading.Event()
 restart_event = threading.Event()
+shutdown_event = threading.Event()
+connected_event = threading.Event()
 backend_thread = threading.Thread(
     target=socket_thread,
     args=[
@@ -57,7 +59,9 @@ backend_thread = threading.Thread(
         queue_to_frontend,
         queue_to_auv,
         meta_from_frontend,
-        restart_event
+        restart_event,
+        shutdown_event,
+        connected_event,
     ]
 )
 
@@ -74,6 +78,7 @@ def kill_backend():
     """
     if backend_thread.is_alive() == True:
         stop_event.set()
+        shutdown_event.set()
         backend_thread.join()
 
 start_backend()
@@ -99,8 +104,11 @@ async def eatSocket(websocket:WebSocket, socket_status_queue:asyncio.Queue):
     await socket_status_queue.put(True)
     if frontend_message["command"] == "websocket":
         if frontend_message["content"] == "ping":
+            if backend_thread.is_alive() == False or connected_event.is_set() == False:
+                log("Cannot ping, no active websocket connection")
             meta_from_frontend.put(frontend_message)
         elif frontend_message["content"] == "restart":
+            stop_event.set()
             restart_event.set()
 
     else:
