@@ -1,7 +1,9 @@
 from re import L
 from pydantic import BaseModel, Field, model_validator
-from typing import List, Union
+from typing import List, Union, Callable, Optional
 import numpy as np
+from dataclasses import dataclass
+from time import time
 
 # This partial state only has the global position and velocity
 class PositionState(BaseModel):
@@ -60,3 +62,16 @@ class Log(BaseModel):
     source: str
     type: str
     content: Union[State, SerialState, str] = Field(union_mode='left_to_right')
+
+@dataclass
+class Promise:
+    """ If appended to the promises array of the main loop, the callback 
+        function will be called after the approximate time of the duration
+        has elapsed.
+    """
+    duration: float
+    callback: Callable
+    init: float = 0.0 # Will be overriden post init by current time
+
+    def __post_init__(self):
+        self.init = time()

@@ -89,7 +89,8 @@ class MockController(AbstractController):
     """
     def __init__(self):
         print("MC INIT")
-        self.lock = Lock() # Prevent access by multiple threads simultaneously -> `with self.lock`
+        self.getter_lock = Lock()
+        self.setter_lock = Lock()
         self.state = InitialState(
             position = np.array([0.0, 0.0, 0.0]),
             velocity = np.array([0.0, 0.0, 0.0]),
@@ -112,8 +113,8 @@ class MockController(AbstractController):
         """ Replicates API of real motor controller, setting motor speeds to manipulate 
             state of system. Also records initial time to integrate against
         """
-        with self.lock:
-            print("MC SET")
+        with self.setter_lock:
+            print("Mock Controller: set_speeds()")
             # This must be called so that the previous integration is taken into account
             self.get_state()
 
@@ -124,12 +125,12 @@ class MockController(AbstractController):
             self.state.local_torque[1] = input.turn
 
             self.set_last_time()
+            return
 
     def set_zeros(self):
         """ Sets all fake motor values to zero.
         """
-        with self.lock:
-            print("Mock Controller: set_zeros");
+        with self.setter_lock:
             self.get_state()
 
             self.motor_speeds.forward = 0
@@ -141,6 +142,7 @@ class MockController(AbstractController):
             self.state.local_torque[1] = 0
 
             self.set_last_time()
+            return
 
     def set_last_time(self):
         """ Call this when the state is changed by an input (changing a motor
@@ -152,9 +154,9 @@ class MockController(AbstractController):
         """ Returns the simulated state using the last known position, velocity,
             attitude, and angular velocity, as well as the known time elapsed.
         """
-        with self.lock:
+        with self.getter_lock:
 
-            print("MC GET")
+            print("Motor Controller: get_state()")
             time_delta = time() - self.last_time
             self.last_time = time()
 
@@ -181,7 +183,6 @@ class MockController(AbstractController):
             self.state.velocity, \
             self.state.attitude, \
             self.state.angular_velocity = unpack(solution.y[:,-1]);
-
             return self.state
 
 if __name__ == "__main__":

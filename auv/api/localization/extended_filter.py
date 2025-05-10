@@ -1,6 +1,4 @@
 import numpy as np
-import math
-
 
 # Tried adding individual class
 class GpsCoordinate:

@@ -2,7 +2,9 @@ from __future__ import annotations # Depending on your version of python
 import threading
 import platform
 from queue import Queue, Empty
-from typing import Tuple
+from multiprocessing import Queue as MP_Queue
+from typing import Tuple, List
+import time
 import asyncio
 from pathlib import Path
 
@@ -15,9 +17,13 @@ from api.motor_controller import MotorController
 from api.mock_controller import MockController
 
 import config
-from core import websocket_thread, Navigation, Control
-from custom_types import State, Log, SerialState
-from custom_types.types import MotorSpeeds
+from core import \
+    websocket_thread,\
+    Navigation, \
+    Control, \
+    motor_speeds, \
+    main_log
+from custom_types import *
 
 from pydantic import BaseModel
 from pydantic_yaml import parse_yaml_file_as
@@ -46,51 +52,6 @@ config = load_config()
 print("STARTUP WITH CONFIGURATION:")
 print(config.model_dump())
 
-async def motor_test(motor_controller:AbstractController, speeds:Tuple[float, float, float, float]):
-    try:
-        motor_speeds = MotorSpeeds(
-            forward = speeds[0],
-            turn = speeds[1],
-            front = speeds[2],
-            back = speeds[3],
-        )
-        motor_controller.set_speeds(motor_speeds)
-        print("Set motor speeds: " + motor_speeds.model_dump_json())
-    except ValueError as e:
-        print("Motor speeds invalid: " + str(speeds))
-        print(e)
-    finally:
-        await asyncio.sleep(10)
-        motor_controller.set_zeros()
-
-def main_log(logging_queue:Queue, base_queue:Queue):
-    thing = 0
-    while(logging_queue.qsize() > 0):
-        try:
-            thing += 1
-            message: Log|str = logging_queue.get_nowait()
-            if message:
-                if isinstance(message, Log): # If it is just a string, do nothing
-                    if message.type == "state" and isinstance(message.content, State): # If type is state, unpack the numpy arrays
-                        serial_state = SerialState(
-                            position = message.content.position.tolist(),
-                            velocity = message.content.velocity.tolist(),
-                            #local_velocity = message.content.local_velocity.tolist(),
-                            local_force = message.content.local_force.tolist(),
-                            attitude = message.content.attitude.tolist(),
-                            angular_velocity = message.content.angular_velocity.tolist(),
-                            local_torque = message.content.local_force.tolist(),
-                            #forward_m_input = float(message.content.forward_m_input),
-                            #turn_m_input = float(message.content.turn_m_input)
-                        )
-                        message.content = serial_state
-                    # Since message: Log, we must convert Log to JSON
-                    message = message.model_dump_json()
-                base_queue.put(message)
-                print("LOG: " + str(message))
-        except Empty:
-            return  
-
 if __name__ == "__main__":
     # This event is set so that all the threads know to end
     stop_event = threading.Event()
@@ -117,11 +78,11 @@ if __name__ == "__main__":
                     'queue_to_auv': queue_to_auv,
                     'verbose': True,
                     'shutdown_q': ws_shutdown_q})
-    threads.append(websocket_thread)
+    threads.append(ws_thread)
     ws_thread.start()
     ws_shutdown = ws_shutdown_q.get(block=True) # Needed to shut down server
 
-    motor_controller = MotorController()
+    motor_controller: AbstractController = MotorController()
     if platform.system() == "Darwin":
         motor_controller = MockController()
 
@@ -144,19 +105,32 @@ if __name__ == "__main__":
     )
 
     if platform.system() == "Linux":
-        gps_queue=Queue()
+        """gps_queue=Queue()
         gps_thread = GPS(
             out_queue=gps_queue,
             path=config.gps_path,
             stop_event=stop_event
+        )"""
+        from core.localization import Localization
+        localization_q = MP_Queue()
+        localization_thread = Localization(
+            stop_event=stop_event,
+            output_q=localization_q
         )
 
     print("Beginning main loop")
     try:
+        promises: List[Promise] = []
         while True:
             main_log(logging_queue, queue_to_base)
 
             try:
+                current_time = time.time()
+                for promise in promises:
+                    if current_time - promise.init > promise.duration:
+                        promises.remove(promise)
+                        promise.callback()
+                    
                 message_from_base = queue_to_auv.get_nowait()
                 # Based on commands, execute functions and/or subroutines
                 if message_from_base:
@@ -167,10 +141,11 @@ if __name__ == "__main__":
 
                     elif command == "motorTest":
                         print("Starting motor test")
-                        async def motor():
-                            await motor_test(motor_controller, message_from_base["content"])
-                        asyncio.run(motor())
-                        print("hello")
+                        motor_speeds(
+                            motor_controller,
+                            message_from_base["content"],
+                            promises=promises
+                        )
 
                     elif command == "headingTest":
                         print("Starting heading test")
@@ -196,5 +171,5 @@ if __name__ == "__main__":
         ws_shutdown()
         for thread in threads:
             if thread.is_alive():
-                thread.join
+                thread.join()
         print("All threads joined, process exiting")

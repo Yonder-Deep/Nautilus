@@ -1,1 +1,1 @@
-from .types import PositionState, State, InitialState, Log, SerialState, MotorSpeeds
+from .types import PositionState, State, InitialState, Log, SerialState, MotorSpeeds, Promise
