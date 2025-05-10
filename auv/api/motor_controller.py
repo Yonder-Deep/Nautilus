@@ -3,7 +3,7 @@ The motor_controller class calibrates and sets the speed of all of the motors
 """
 
 # System imports
-from api import Motor
+from .motor import Motor
 import pigpio
 import time
 import sys

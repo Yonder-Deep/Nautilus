@@ -1,6 +1,6 @@
 from typing import Union
 from queue import Queue, Empty
-from api import AbstractController
+from api.abstract import AbstractController
 from threading import Thread, Event
 from functools import partial
 from time import sleep

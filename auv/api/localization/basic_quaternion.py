@@ -16,12 +16,9 @@ TODO
 -Fix residual calculation, should multiply the inverse of the first quaternion 
 by the second quaternion to find the difference not just subtract
 """
-
 from math import atan2, sqrt, cos, sin
-
 import numpy as np
 from scipy.spatial.transform import Rotation
-
 
 class MUKF:
     def __init__(self):
@@ -59,7 +56,7 @@ class MUKF:
         theta = atan2(-am[0], sqrt(am[1] * am[1] + am[2] * am[2]))
         psi = atan2(mm[0] * cos(theta) + mm[1] * sin(phi) * sin(theta) + mm[2] * cos(phi) * sin(theta),
                     mm[1] * cos(phi) - mm[2] * sin(phi))
-        z = Rotation.from_euler('ZYX', [psi, theta, phi]).as_quat()
+        z = Rotation.from_euler('ZYX', [psi, theta, phi]).as_quat(True)
 
         # Calculate residual
         y = (z - self.H @ x_p)

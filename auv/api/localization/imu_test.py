@@ -13,7 +13,7 @@ from scipy.spatial.transform import Rotation
 from adafruit_lis3mdl import LIS3MDL
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 
-from unscented_quaternion import MUKF
+from unscented_quat import MUKF
 
 class IMU:
     # Hard iron offset vector
@@ -76,7 +76,7 @@ class IMU:
 
             # Read data from sensor(s)
             am = np.array(self.ag_sensor.acceleration)
-            wm = np.array(self.apply_high_pass_filter(self.ag_sensor.gyro))
+            wm = np.array(self.apply_high_pass_filter(self.ag_sensor.gyro, dt))
             mm = np.array(IMU.Ainv @ (np.array(self.m_sensor.magnetic) - IMU.B))
             
             self.filter.update_imu(am, wm, mm, dt)

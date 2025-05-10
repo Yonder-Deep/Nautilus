@@ -1,24 +1,50 @@
 from __future__ import annotations # Depending on your version of python
-import time
 import threading
 import platform
 from queue import Queue, Empty
-from time import sleep
 from typing import Tuple
 import asyncio
+from pathlib import Path
 
 #from api import IMU
 #from api import PressureSensor
-from api import AbstractController
-from api import MotorController
-from api import Indicator
-from api import MockController
-from api import GPS
+#from api import Indicator
+from api.gps import GPS
+from api.abstract import AbstractController
+from api.motor_controller import MotorController
+from api.mock_controller import MockController
 
 import config
 from core import websocket_thread, Navigation, Control
 from custom_types import State, Log, SerialState
 from custom_types.types import MotorSpeeds
+
+from pydantic import BaseModel
+from pydantic_yaml import parse_yaml_file_as
+from ruamel.yaml import YAML
+yaml = YAML(typ='safe')
+
+class ConfigSchema(BaseModel):
+    testing_mode: bool 
+    socket_ip: str
+    socket_port: int
+    ping_interval: int
+    gps_path: str
+
+def load_config() -> ConfigSchema:
+    default_config = parse_yaml_file_as(ConfigSchema, 'data/config.yaml').model_dump()
+    local_path = Path('data/local/config.yaml')
+    if local_path.exists():
+        local_file = open(local_path, 'r')
+        local_config = yaml.load(local_file)
+        local_file.close()
+        local_filtered = {k:v for (k,v) in local_config.items() if v}
+        default_config.update(local_filtered)
+    return ConfigSchema(**default_config)
+
+config = load_config()
+print("STARTUP WITH CONFIGURATION:")
+print(config.model_dump())
 
 async def motor_test(motor_controller:AbstractController, speeds:Tuple[float, float, float, float]):
     try:
@@ -84,9 +110,9 @@ if __name__ == "__main__":
             target=websocket_thread,
             kwargs={'stop_event':stop_event,
                     'logging_event':logging_queue,
-                    'websocket_interface': config.SOCKET_IP,
-                    'websocket_port': config.SOCKET_PORT,
-                    'ping_interval': config.PING_INTERVAL,
+                    'websocket_interface': config.socket_ip,
+                    'websocket_port': config.socket_port,
+                    'ping_interval': config.ping_interval,
                     'queue_to_base': queue_to_base,
                     'queue_to_auv': queue_to_auv,
                     'verbose': True,
@@ -121,7 +147,7 @@ if __name__ == "__main__":
         gps_queue=Queue()
         gps_thread = GPS(
             out_queue=gps_queue,
-            path=config.GPS_PATH,
+            path=config.gps_path,
             stop_event=stop_event
         )
 

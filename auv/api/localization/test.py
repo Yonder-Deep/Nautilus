@@ -9,8 +9,8 @@ from adafruit_lis3mdl import LIS3MDL
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from scipy.spatial.transform import Rotation
 
-from extended import EKF, ImuData, GpsCoordinate, GpsVelocity
-from unscented_quaternion import MUKF
+from extended_filter import EKF, ImuData, GpsCoordinate, GpsVelocity
+from unscented_quat import MUKF
 
 # --- magnetometer calibration constants ---
 B = np.array([  -10.37,   67.69,   72.69])
@@ -32,7 +32,7 @@ def heading_to_ned(speed_kt, course_deg):
     v_e = speed_ms * math.sin(rad)
     return v_n, v_e
 
-def main():
+def localize():
     prev_time = time.time()
     
     # I²C sensors
@@ -45,7 +45,6 @@ def main():
 
     ekf = EKF()
     mukf = MUKF()
-
     
     while True:
         cur_time = time.time()
@@ -69,8 +68,8 @@ def main():
             print(parsed)
             if parsed:
                 lat_deg, lon_deg, spd_kt, crs_deg = parsed
-                lat_rad = math.radians(lat_deg)
-                lon_rad = math.radians(lon_deg)
+                lat_rad = math.radians(float(str(lat_deg)))
+                lon_rad = math.radians(float(str(lon_deg)))
                 v_n, v_e = heading_to_ned(spd_kt, crs_deg)
 
                 gps_coor = GpsCoordinate(lat=lat_rad, lon=lon_rad, alt=0.0)
@@ -91,4 +90,4 @@ def main():
         time.sleep(0.1)
 
 if __name__ == "__main__":
-    main()
+    localize()

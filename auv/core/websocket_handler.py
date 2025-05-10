@@ -9,10 +9,9 @@ from _collections_abc import Callable
 
 def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, ping_interval:int, queue_to_base:Queue, queue_to_auv:Queue, log:Callable[[str], None]):
     log("New websocket connection from base")
-    log("stop_event" + str(stop_event))
     base_websocket.send("Hello from AUV")
-    last_ping = time.time()
-    time_since_last_ping = 0
+    """last_ping = time.time()
+    time_since_last_ping = 0"""
     while True:
         #log("Websocket loop")
         if stop_event.is_set():
@@ -54,6 +53,7 @@ def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, 
             log(str(err))
             return
             
+        """
         if time_since_last_ping > ping_interval:
             log("Sending Pong")
             last_ping = time.time()
@@ -61,6 +61,7 @@ def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, 
             base_websocket.send(json.dumps('pong'))
         else:
             time_since_last_ping = time.time() - last_ping
+        """
 
 def custom_log(message:str, verbose:bool, queue:Queue):
     if verbose:
