@@ -1,1 +1,1 @@
-from .types import PositionState, State, InitialState, Log, SerialState, MotorSpeeds, Promise
+from .types import PositionState, State, InitialState, Log, SerialState, MotorSpeeds, Promise, GpsData

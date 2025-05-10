@@ -1,4 +1,5 @@
 from api.localization import localize, localize_setup
+from custom_types import GpsData
 
 from multiprocessing import Process
 from multiprocessing.queues import Queue
@@ -22,4 +23,8 @@ class Localization(Process):
             quat, current_time = localize(current_time, *localizer_classes)
             lat = math.degrees(ekf.get_latitude_rad())
             lon = math.degrees(ekf.get_longitude_rad())
-            self.output_q.put((quat,lat,lon))
+            self.output_q.put(GpsData(
+                lat=lat,
+                lon=lon,
+                attitude=quat
+            ))

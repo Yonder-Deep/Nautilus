@@ -75,3 +75,10 @@ class Promise:
 
     def __post_init__(self):
         self.init = time()
+
+@dataclass
+class GpsData:
+    lat: float
+    lon: float
+    attitude: np.ndarray = Field(default_factory=lambda: np.zeros(4, dtype=float))
+ 

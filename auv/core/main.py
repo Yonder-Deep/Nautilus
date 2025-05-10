@@ -4,6 +4,7 @@
 
 from typing import Tuple, List, Union
 from queue import Queue, Empty
+import threading
 
 from api.abstract import AbstractController
 from custom_types import Promise, MotorSpeeds, Log, State, SerialState
@@ -42,8 +43,10 @@ def motor_speeds(
     speeds:Tuple[float, float, float, float],
     *,
     promises: List[Promise],
+    disable_controller: threading.Event,
 ):
     try:
+        disable_controller.set()
         motor_speeds = MotorSpeeds(
             forward = speeds[0],
             turn = speeds[1],

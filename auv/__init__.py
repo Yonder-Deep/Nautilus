@@ -96,14 +96,17 @@ if __name__ == "__main__":
             logging_q=logging_queue,
             stop_event=stop_event
     )
+    disable_control_event = threading.Event()
     control_thread = Control(
             input_state_q=control_state_q,
             desired_state_q=control_desired_q,
             logging_q=logging_queue,
             controller=motor_controller,
-            stop_event=stop_event
+            stop_event=stop_event,
+            disabled_event=disable_control_event,
     )
 
+    localization_q = MP_Queue()
     if platform.system() == "Linux":
         """gps_queue=Queue()
         gps_thread = GPS(
@@ -112,7 +115,6 @@ if __name__ == "__main__":
             stop_event=stop_event
         )"""
         from core.localization import Localization
-        localization_q = MP_Queue()
         localization_thread = Localization(
             stop_event=stop_event,
             output_q=localization_q
@@ -137,14 +139,19 @@ if __name__ == "__main__":
                     print("Message from base: " + str(message_from_base))
                     command = message_from_base["command"]
                     if command == "pidConstants":
-                        print("Setting PID Constants")
+                        print("Starting controller")
+                        disable_control_event.clear() 
+                        if not control_thread.is_alive():
+                            threads.append(control_thread)
+                            control_thread.start()
 
                     elif command == "motorTest":
                         print("Starting motor test")
                         motor_speeds(
                             motor_controller,
                             message_from_base["content"],
-                            promises=promises
+                            promises=promises,
+                            disable_controller=disable_control_event,
                         )
 
                     elif command == "headingTest":
@@ -162,6 +169,11 @@ if __name__ == "__main__":
                             control_thread.start()
                         queue_input_nav.put(goal_coordinate)
 
+            except Empty:
+                pass
+
+            try:
+                control_state_q.put(localization_q.get_nowait())
             except Empty:
                 pass
 

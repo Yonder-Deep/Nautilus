@@ -41,7 +41,7 @@ def localize_setup(): # Temporary for instatiation
     m_sensor  = LIS3MDL(i2c)
 
     # GPS serial
-    ser = serial.Serial("/dev/gps0", baudrate=9600, timeout=1)
+    ser = serial.Serial("/dev/tty0", baudrate=9600, timeout=1)
 
     ekf = EKF()
     mukf = MUKF()
