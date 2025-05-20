@@ -1,26 +1,23 @@
-from re import L
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Union, Callable, Optional
 import numpy as np
 from dataclasses import dataclass
 from time import time
 
-# This partial state only has the global position and velocity
-class PositionState(BaseModel):
-    # Pos-coordinates relative to global origin
+class KinematicState(BaseModel):
+    # All in NED global flat earth frame
     position: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
-    # Velocity relative to global origin
     velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+    attitude: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+    angular_velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     
     class Config:
         arbitrary_types_allowed = True
 
 # This state has the rotation, its derivative, 
-class State(PositionState):
+class State(KinematicState):
     #local_velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     local_force: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
-    attitude: np.ndarray = Field(default_factory=lambda: np.zeros((3,3), dtype=float)) # Quaternion: x, y, z, w
-    angular_velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     local_torque: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
 
     # These two are included since torque & force will actually be tau_net & F_net
@@ -33,10 +30,10 @@ class SerialState(BaseModel):
     position: List
     velocity: List
     #local_velocity: List
-    local_force: List
+    #local_force: List
     attitude: List
     angular_velocity: List
-    local_torque: List
+    #local_torque: List
     #forward_m_input: float
     #turn_m_input: float
 
@@ -61,7 +58,7 @@ class MotorSpeeds(BaseModel):
 class Log(BaseModel):
     source: str
     type: str
-    content: Union[State, SerialState, str] = Field(union_mode='left_to_right')
+    content: Union[KinematicState, State, SerialState, str] = Field(union_mode='left_to_right')
 
 @dataclass
 class Promise:
@@ -69,9 +66,17 @@ class Promise:
         function will be called after the approximate time of the duration
         has elapsed.
     """
+    name: str
     duration: float
     callback: Callable
     init: float = 0.0 # Will be overriden post init by current time
 
     def __post_init__(self):
         self.init = time()
+
+@dataclass
+class GpsData:
+    lat: float
+    lon: float
+    attitude: np.ndarray = Field(default_factory=lambda: np.zeros(4, dtype=float))
+ 

@@ -7,21 +7,20 @@ import * as THREE from "three"
 
 THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
-const Mesh = ({quat}: {quat: number[]}) => {
-    const quaternion = new THREE.Quaternion()
+const Mesh = ({euler}: {euler: number[]}) => {
+    const eulerAngles = new THREE.Euler()
     let meshRef = useRef<THREE.Mesh>(null!);
-    const [attitude, setAttitude] = useState<THREE.Quaternion>(null!);
+    const [attitude, setAttitude] = useState<THREE.Euler>(null!);
 
     useEffect(() => {
-        const tempQuat: any = [...quat];
-        const last: number | undefined = tempQuat.pop();
-        tempQuat.unshift(last);
-        setAttitude(quaternion.fromArray(tempQuat))
-        console.log("quat: " + JSON.stringify(tempQuat));
-    },[quat])
+        const temp: any = [...euler];
+        setAttitude(eulerAngles.set(temp[0], temp[1], temp[2], "ZYX"))
+        console.log("Euler Angles: " + JSON.stringify(temp));
+    }, [eulerAngles])
 
     useFrame(() => {
-        meshRef.current.rotation.setFromQuaternion(attitude);
+        const [z, y, x] = eulerAngles.toArray();
+        meshRef.current.rotation.set(x, y, z);
     })
 
     return (
@@ -32,13 +31,13 @@ const Mesh = ({quat}: {quat: number[]}) => {
     )
 }
 
-export const Simulation = ({quat}: {quat: number[]}) => {
+export const Simulation = ({euler}: {euler: number[]}) => {
 
     return (
         <>
             <h2>Visualization</h2>
             <Canvas frameloop="demand" camera={{rotation: [0, -0.25, Math.PI/2] ,position: [-2,0,6]}}>
-                <Mesh quat={quat}></Mesh>
+                <Mesh euler={euler}></Mesh>
                 <ambientLight intensity={0.1} />
                 <directionalLight position={[0, 0, 5]} color="red" />
                 <axesHelper position={[2, 0, 0]}/>

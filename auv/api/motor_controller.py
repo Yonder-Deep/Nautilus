@@ -1,15 +1,13 @@
 """
 The motor_controller class calibrates and sets the speed of all of the motors
 """
-
-# System imports
-from .motor import Motor
 import pigpio
 import time
 import sys
+
+from .motor import Motor
 from .abstract import AbstractController
-from custom_types import MotorSpeeds
-# Custom Imports
+from models.data_types import MotorSpeeds
 
 # GPIO Pin numbers for Motors
 FORWARD_GPIO_PIN = 4
@@ -75,10 +73,10 @@ class MotorController(AbstractController):
         data: String read from the serial connection containing motor speed values.
         """
         # Parse motor speed from data object.
-        self.forward_speed = input.forward
-        self.turn_speed = input.turn
-        self.front_speed = input.front
-        self.back_speed = input.back
+        self.forward_speed = input.forward * 255
+        self.turn_speed = input.turn * 255
+        self.front_speed = input.front * 255
+        self.back_speed = input.back * 255
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)

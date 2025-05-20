@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from typing import Union
-from custom_types import State, MotorSpeeds
+import sys
+sys.path.append("../..")
+from models.data_types import KinematicState, MotorSpeeds
 
 class AbstractController():
     @abstractmethod
@@ -16,7 +18,7 @@ class AbstractController():
         pass
 
     @abstractmethod
-    def get_state(self) -> Union[State, None]:
+    def get_state(self) -> Union[KinematicState, None]:
         pass
     
     @abstractmethod

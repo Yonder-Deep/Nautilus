@@ -4,9 +4,11 @@
 
 from typing import Tuple, List, Union
 from queue import Queue, Empty
+import threading
+from time import time
 
 from api.abstract import AbstractController
-from custom_types import Promise, MotorSpeeds, Log, State, SerialState
+from models.data_types import Promise, MotorSpeeds, Log, State, SerialState
 
 def main_log(logging_queue:Queue, base_queue:Queue):
     thing = 0
@@ -42,8 +44,10 @@ def motor_speeds(
     speeds:Tuple[float, float, float, float],
     *,
     promises: List[Promise],
+    disable_controller: threading.Event,
 ):
     try:
+        disable_controller.set()
         motor_speeds = MotorSpeeds(
             forward = speeds[0],
             turn = speeds[1],
@@ -56,8 +60,16 @@ def motor_speeds(
         print("Motor speeds invalid: " + str(speeds))
         print(e)
     finally:
-        print("Appended motor reset promise")
-        promises.append(Promise(
-            duration = 10,
-            callback = lambda: motor_controller.set_zeros()
-        ))
+        noExistingPromise = True 
+        for promise in promises:
+            if promise.name=="motorReset":
+                promise.init = time()
+                noExistingPromise = False 
+                print("Mutated existing motor reset promise")
+        if noExistingPromise: 
+            promises.append(Promise(
+                name="motorReset",
+                duration = 10,
+                callback = lambda: motor_controller.set_zeros()
+            ))
+            print("Appended motor reset promise")

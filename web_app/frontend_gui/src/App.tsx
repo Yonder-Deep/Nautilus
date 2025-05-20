@@ -109,7 +109,7 @@ export default function App() {
                 </button>
             </div>
             <Grid enabled={gridEnabled} layouts={layouts} setLayouts={setLayouts}>
-                <Simulation quat={attitude}></Simulation>
+                <Simulation euler={attitude}></Simulation>
                 <Map coordinates={[]}></Map>
                 <StatusItem statusType="IMU Status" statusData={imuData}></StatusItem>
                 <StatusItem statusType="INS Status" statusData={insData}></StatusItem>

@@ -5,7 +5,7 @@ from time import sleep
 
 from numpy import array as a
 from numpy import float64 as f64
-from custom_types import PositionState, State
+from models.data_types import KinematicState, State
 
 def check_verbose(message, q:Queue, verbose:bool=True):
     if verbose:
@@ -31,7 +31,7 @@ class Navigation(Thread):
             #forward_m_input = 0.0,
             #turn_m_input = 0.0
         )
-        self.desired_state = PositionState(
+        self.desired_state = KinematicState(
             position = a([0.0, 0.0, 0.0], dtype=f64),
             velocity = a([0.0, 0.0, 0.0], dtype=f64),
         )

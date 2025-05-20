@@ -12,6 +12,7 @@ from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from scipy.spatial.transform import Rotation
 
 from extended_filter import EKF, ImuData, GpsCoordinate, GpsVelocity
+from models.data_types import KinematicState
 from unscented_quat import MUKF
 
 # --- magnetometer calibration constants ---
@@ -41,7 +42,7 @@ def localize_setup(): # Temporary for instatiation
     m_sensor  = LIS3MDL(i2c)
 
     # GPS serial
-    ser = serial.Serial("/dev/gps0", baudrate=9600, timeout=1)
+    ser = serial.Serial("/dev/tty0", baudrate=9600, timeout=1)
 
     ekf = EKF()
     mukf = MUKF()
@@ -56,7 +57,7 @@ def localize(
     ser: serial.Serial,
     ekf: EKF,
     mukf: MUKF,
-):
+) -> KinematicState:
     cur_time = time.time()
     dt = cur_time - prev_time
          
@@ -89,14 +90,19 @@ def localize(
             else:
                 ekf.initialize(gps_vel, gps_coor)
         
-    return q, cur_time 
-
+    return KinematicState(
+        position = np.zeros(3, dtype=float),
+        velocity = np.zeros(3, dtype=float),
+        attitude = np.zeros(3, dtype=float),
+        angular_velocity = np.zeros(3, dtype=float),
+    )
 
 if __name__ == "__main__":
     i2c, ag_sensor, m_sensor, ser, ekf, mukf = localize_setup()
     current_time = time.time()
     while True:
-        quat, current_time = localize(current_time, i2c, ag_sensor, m_sensor, ser, ekf, mukf)
+        #quat, current_time = localize(current_time, i2c, ag_sensor, m_sensor, ser, ekf, mukf)
+        """
         e = Rotation.from_quat(quat).as_euler("ZYX", degrees=True)
         print(f"Latitude: {math.degrees(ekf.get_latitude_rad())}, "
               f"Longitude: {math.degrees(ekf.get_longitude_rad())}, "
@@ -104,3 +110,4 @@ if __name__ == "__main__":
               f"Roll: {e[0]}, "
               f"Heading: {e[2]}")
         time.sleep(0.1)
+        """

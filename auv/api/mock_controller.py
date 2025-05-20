@@ -1,5 +1,10 @@
-from .abstract import AbstractController
-from custom_types import InitialState, SerialState, MotorSpeeds
+try:
+    from .abstract import AbstractController
+except:
+    import sys
+    sys.path.append("..")
+    from abstract import AbstractController
+from models.data_types import KinematicState, InitialState, SerialState, MotorSpeeds
 
 from time import time
 from threading import Lock
@@ -95,7 +100,7 @@ class MockController(AbstractController):
             position = np.array([0.0, 0.0, 0.0]),
             velocity = np.array([0.0, 0.0, 0.0]),
             local_force = np.array([0.2, 0.0, 0.0]),
-            attitude = np.array([0.0, 0.0, 0.0, 1.0]), # X Y Z W
+            attitude = np.array([0.0, 0.0, 0.0]),
             angular_velocity = np.array([0.0, 0.2, 0.0]),
             local_torque = np.array([0.0, 0.0, 0.1]),
             mass = 1.0,
@@ -131,6 +136,7 @@ class MockController(AbstractController):
         """ Sets all fake motor values to zero.
         """
         with self.setter_lock:
+            print("Mock Controller: set_zeros()")
             self.get_state()
 
             self.motor_speeds.forward = 0
@@ -150,20 +156,19 @@ class MockController(AbstractController):
         """
         self.last_time = time()
 
-    def get_state(self) -> InitialState:
+    def get_state(self) -> KinematicState:
         """ Returns the simulated state using the last known position, velocity,
             attitude, and angular velocity, as well as the known time elapsed.
         """
         with self.getter_lock:
-
-            print("Motor Controller: get_state()")
+            #print("Motor Controller: get_state()")
             time_delta = time() - self.last_time
             self.last_time = time()
 
             packed = pack([
                 self.state.position,
                 self.state.velocity,
-                self.state.attitude,
+                R.from_euler('XYZ', self.state.attitude, True).as_quat(True),
                 self.state.angular_velocity
             ]);
 
@@ -181,8 +186,11 @@ class MockController(AbstractController):
 
             self.state.position, \
             self.state.velocity, \
-            self.state.attitude, \
+            quat_attitude, \
             self.state.angular_velocity = unpack(solution.y[:,-1]);
+            
+            self.state.attitude = R.from_quat(quat_attitude).as_euler('XYZ', True)
+
             return self.state
 
 if __name__ == "__main__":
@@ -193,10 +201,10 @@ if __name__ == "__main__":
             serial_state = SerialState(
                 position = state.position.tolist(),
                 velocity = state.velocity.tolist(),
-                local_force = state.local_force.tolist(),
+                #local_force = state.local_force.tolist(),
                 attitude = state.attitude.tolist(),
                 angular_velocity = state.angular_velocity.tolist(),
-                local_torque = state.local_torque.tolist(),
+                #local_torque = state.local_torque.tolist(),
             )
             print(serial_state.model_dump_json(indent=2))
 
