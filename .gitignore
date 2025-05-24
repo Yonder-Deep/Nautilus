@@ -4,3 +4,4 @@ base_station/lib/
 node_modules/
 **/.venv
 *.vscode
+__pycache__
