@@ -43,7 +43,7 @@ class MotorController(AbstractController):
     Object that contains all interactions with the motor array for the AUV
     """
 
-    def __init__(self):
+    def __init__(self, log):
         """
         Initializes MotorController object and individual motor objects
         to respective gpio pins.
@@ -64,6 +64,7 @@ class MotorController(AbstractController):
         self.turn_speed = 0
         self.front_speed = 0
         self.back_speed = 0
+        self.log = log
 
     def set_speeds(self, input:MotorSpeeds) -> None:
         """

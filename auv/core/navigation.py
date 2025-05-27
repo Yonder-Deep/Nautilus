@@ -17,7 +17,14 @@ class Navigation(Thread):
         desired state of the submarine is. It is not meant to directly
         control the state of the submarine, merely produce a desired state.
     """
-    def __init__(self, input_state_q:Queue, desired_state_q:Queue, logging_q:Queue, stop_event:Event, verbose:bool=True):
+    def __init__(
+            self,
+            stop_event:Event,
+            input_state_q:Queue,
+            desired_state_q:Queue,
+            logging_q:Queue,
+            verbose:bool=True
+    ):
         super().__init__() # For Thread class __init__()
         self.stop_event = stop_event
         self.input_state = State(

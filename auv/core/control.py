@@ -35,7 +35,7 @@ class Control(Thread):
         critically damped so that the error between the current state
         and desired state is minimized.
     """
-    def __init__(self, input_shared_state:str, desired_state_q:Queue, logging_q:Queue, controller:AbstractController, stop_event:Event, disabled_event:Event):
+    def __init__(self, stop_event:Event, input_q:Queue, input_shared_state:str, logging_q:Queue, controller:AbstractController, disabled_event:Event):
         super().__init__()
         self.stop_event = stop_event
         self.mc = controller
@@ -49,7 +49,7 @@ class Control(Thread):
         )
         self.desired_state = KinematicState()
         self.input_shared_state = input_shared_state
-        self.desired_state_q = desired_state_q
+        self.desired_state_q = input_q 
         self.log = partial(check_verbose, q=logging_q, verbose=True)
         self.disabled_event = disabled_event
         self.last_time = time()
@@ -111,7 +111,10 @@ class Control(Thread):
 
 
     def enable(self):
+        self.log("Control enable() called")
         self.disabled_event.clear()
 
+
     def disable(self):
+        self.log("Control disable() called")
         self.disabled_event.set()

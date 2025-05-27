@@ -2,42 +2,57 @@
     base and oversee general instructions for the other threads.
 """
 
-from typing import Tuple, List, Union
+from typing import Dict, Tuple, List, Union, Optional, Any
 from queue import Queue, Empty
 import threading
 from time import time
 
+import msgspec
+
 from api.abstract import AbstractController
 from models.data_types import Promise, MotorSpeeds, Log, State, SerialState
 
-def main_log(logging_queue:Queue, base_queue:Queue):
-    thing = 0
-    while(logging_queue.qsize() > 0):
+# This is the shorthand log function used in the main thread
+def log(x: Any):
+    print("\033[96;100mMAIN:\033[0m " + str(x))
+
+# Down here are the actual log parsing functions for actual Log objects
+log_prefixes: Dict[str, str] = {
+    "MAIN": "\033[100mMAIN:\033[0m ",
+    "PID": "\033[103m PID:\033[0m ",
+    "NAV": "\033[104m NAV:\033[0m ",
+    "WSKT": "\033[105mWSKT:\033[0m ",
+    "LCAL": "\033[106mLOCALIZE:\033[0m ",
+    "PRCP": "\033[102mPERCEPT:\033[0m ",
+}
+
+def parse_log(message: Log, base_q: Queue) -> Optional[str]:
+    if message.type == "state" and isinstance(message.content, State): 
+        # If type is state, unpack the numpy arrays
+        serial_state = SerialState(
+            position = message.content.position.tolist(),
+            velocity = message.content.velocity.tolist(),
+            attitude = message.content.attitude.tolist(),
+            angular_velocity = message.content.angular_velocity.tolist(),
+        )
+        message.content = serial_state.model_dump_json()
+    # Since message: Log, we must convert Log to JSON
+    result = msgspec.json.encode(message).decode()
+    base_q.put(result)
+    return log_prefixes[message.source] + str(message.content)
+
+def main_log(logging_q: Queue, base_q: Queue) -> None:
+    while(logging_q.qsize() > 0):
         try:
-            thing += 1
-            message: Union[Log,str] = logging_queue.get_nowait()
+            message: Union[Log, str] = logging_q.get_nowait()
             if message:
-                if isinstance(message, Log): # If it is just a string, do nothing
-                    if message.type == "state" and isinstance(message.content, State): 
-                        # If type is state, unpack the numpy arrays
-                        serial_state = SerialState(
-                            position = message.content.position.tolist(),
-                            velocity = message.content.velocity.tolist(),
-                            #local_velocity = message.content.local_velocity.tolist(),
-                            local_force = message.content.local_force.tolist(),
-                            attitude = message.content.attitude.tolist(),
-                            angular_velocity = message.content.angular_velocity.tolist(),
-                            local_torque = message.content.local_force.tolist(),
-                            #forward_m_input = float(message.content.forward_m_input),
-                            #turn_m_input = float(message.content.turn_m_input)
-                        )
-                        message.content = serial_state
-                    # Since message: Log, we must convert Log to JSON
-                    message = message.model_dump_json()
-                base_queue.put(message)
-                print("LOG: " + str(message))
+                try:
+                    if isinstance(message, Log):
+                        print(parse_log(message, base_q))
+                except:
+                    print("\033[101mError Decoding Log:\033[0m " + repr(message))
         except Empty:
-            return  
+            return 
 
 def motor_test(
     motor_controller:AbstractController,
@@ -45,7 +60,13 @@ def motor_test(
     *,
     promises: List[Promise],
     disable_controller: threading.Event,
-):
+    time_to_zero: float = 10.0
+) -> None:
+    """ Safely parse the speeds and dispatch them to the motor controller. Also
+        handles disabling any PID control execution while the motor test is
+        underway. Also adds a promise to zero the motors after a default of 10
+        seconds, which can be customized via `time_to_zero`.
+    """
     try:
         disable_controller.set()
         motor_speeds = MotorSpeeds(
@@ -55,21 +76,21 @@ def motor_test(
             back = speeds[3],
         )
         motor_controller.set_speeds(motor_speeds)
-        print("Set motor speeds: " + motor_speeds.model_dump_json())
+        log("Set motor speeds: " + motor_speeds.model_dump_json())
     except ValueError as e:
-        print("Motor speeds invalid: " + str(speeds))
-        print(e)
+        log("Motor speeds invalid: " + str(speeds))
+        log(e)
     finally:
         noExistingPromise = True 
         for promise in promises:
             if promise.name=="motorReset":
                 promise.init = time()
                 noExistingPromise = False 
-                print("Mutated existing motor reset promise")
+                log("Mutated existing motor reset promise")
         if noExistingPromise: 
             promises.append(Promise(
                 name="motorReset",
-                duration = 10,
+                duration = time_to_zero,
                 callback = lambda: motor_controller.set_zeros()
             ))
-            print("Appended motor reset promise")
+            log("Appended motor reset promise")

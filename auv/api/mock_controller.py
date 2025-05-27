@@ -92,8 +92,8 @@ class MockController(AbstractController):
     """ Mock motor controller that has same input API but which
         integrates to generate fake state based on the input
     """
-    def __init__(self):
-        print("MC INIT")
+    def __init__(self, log):
+        log("Mock Controller: __init__()")
         self.getter_lock = Lock()
         self.setter_lock = Lock()
         self.state = InitialState(
@@ -113,13 +113,14 @@ class MockController(AbstractController):
             front = 0,
             back = 0,
         )
+        self.log = log
     
     def set_speeds(self, input:MotorSpeeds):
         """ Replicates API of real motor controller, setting motor speeds to manipulate 
             state of system. Also records initial time to integrate against
         """
         with self.setter_lock:
-            print("Mock Controller: set_speeds()")
+            self.log("Mock Controller: set_speeds()")
             # This must be called so that the previous integration is taken into account
             self.get_state()
 
@@ -136,7 +137,7 @@ class MockController(AbstractController):
         """ Sets all fake motor values to zero.
         """
         with self.setter_lock:
-            print("Mock Controller: set_zeros()")
+            self.log("Mock Controller: set_zeros()")
             self.get_state()
 
             self.motor_speeds.forward = 0
@@ -161,7 +162,7 @@ class MockController(AbstractController):
             attitude, and angular velocity, as well as the known time elapsed.
         """
         with self.getter_lock:
-            #print("Motor Controller: get_state()")
+            #log("Motor Controller: get_state()")
             time_delta = time() - self.last_time
             self.last_time = time()
 
@@ -194,7 +195,7 @@ class MockController(AbstractController):
             return self.state
 
 if __name__ == "__main__":
-    mock = MockController()
+    mock = MockController(print)
     try:
         while True:
             state = mock.get_state()

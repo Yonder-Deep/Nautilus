@@ -1,11 +1,14 @@
 from websockets.sync.server import serve, ServerConnection
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+
+from models.data_types import Log
+
 import json
 from queue import Queue, Empty
 import time
 import functools
 import threading
-from _collections_abc import Callable
+from typing import Callable
 
 def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, ping_interval:int, queue_to_base:Queue, queue_from_base:Queue, log:Callable[[str], None]):
     log("New websocket connection from base")
@@ -55,7 +58,11 @@ def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, 
             
 def custom_log(message:str, verbose:bool, queue:Queue):
     if verbose:
-        queue.put(" WS: " + message)
+        queue.put(Log(
+            source="WSKT",
+            type="text",
+            content=message,
+        ))
 
 def websocket_server(stop_event:threading.Event, logging_q:Queue, websocket_interface:str, websocket_port:int, ping_interval:int, queue_to_base:Queue, queue_from_base:Queue, verbose:bool, shutdown_q:Queue):
 

@@ -3,6 +3,7 @@ from models.shared_memory import write_shared_state
 
 import multiprocessing
 import threading
+import queue
 from time import time
 from typing import Tuple, Callable, Union
 
@@ -48,11 +49,13 @@ class Mock_Localization(threading.Thread):
     def __init__(
         self,
         stop_event: threading.Event,
+        input_q: queue.Queue,
         output: str,
         localize_func: Callable[[], Union[KinematicState, None]],
     ):
         super().__init__()
         self.stop_event = stop_event
+        self.input_q = input_q
         self.output = output
         self.localize_func = localize_func
 

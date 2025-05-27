@@ -1,4 +1,3 @@
-from __future__ import annotations # Depending on your version of python
 import multiprocessing
 from multiprocessing.shared_memory import SharedMemory
 import threading
@@ -13,12 +12,8 @@ from pathlib import Path
 #from api import Indicator
 from api.gps import GPS
 from api.abstract import AbstractController
-if platform.system() == "Linux":
-    from api.motor_controller import MotorController
-else:
-    from api.mock_controller import MockController as MotorController
 
-from core.main import main_log, motor_test
+from core.main import main_log, motor_test, log
 from core.websocket_handler import websocket_server as websocket_thread
 from core.control import Control
 from core.localization import Localization
@@ -26,7 +21,7 @@ from core.navigation import Navigation
 
 from models.data_types import *
 from models.shared_memory import create_shared_state
-from models.execution import Executor
+from models.execution import Executor, executor_factory
 
 from pydantic import BaseModel
 from pydantic_yaml import parse_yaml_file_as
@@ -53,8 +48,8 @@ def load_config() -> ConfigSchema:
 
 if __name__ == "__main__":
     config = load_config()
-    print("STARTUP WITH CONFIGURATION:")
-    print(config.model_dump())
+    log("STARTUP WITH CONFIGURATION:")
+    log(config.model_dump())
 
     # Anything put into this queue will be printed
     # to stdout & forwarded to frontend
@@ -88,52 +83,46 @@ if __name__ == "__main__":
     )
     executors.append(ws_exec)
     ws_exec.start()
-    ws_shutdown = ws_shutdown_q.get(block=True) # Needed to shut down server
+    ws_shutdown = ws_shutdown_q.get(block=True) # Needed for stopping server
 
     # DI the motor controller
-    motor_controller: AbstractController = MotorController()
+    if not config.simulation:
+        from api.motor_controller import MotorController
+    else:
+        from api.mock_controller import MockController as MotorController
+    motor_controller: AbstractController = MotorController(log)
 
     # Control System Initialization
     shared_state_name = "shared_state"
     measured_state = create_shared_state(name=shared_state_name);
     shared_memories.append(measured_state)
 
-    queue_input_nav = Queue() # Input from user & state input to nav
     control_desired_q = Queue() # Setpoint input to nav
-    nav_stop = threading.Event()
-    navigation_inner = Navigation(
-            input_state_q=queue_input_nav,
-            desired_state_q=control_desired_q,
+    navigation_exec = executor_factory(
+            constructor=Navigation,
+            input_q=queue.Queue(),
+            stop_event=threading.Event(),
             logging_q=logging_queue,
-            stop_event=nav_stop
-    )
-    navigation_exec = Executor(
-            type="Thread",
-            value=navigation_inner,
-            input_q=queue_input_nav,
-            stop_event=nav_stop,
+            desired_state_q=control_desired_q,
     )
     executors.append(navigation_exec)
+
     disable_control_event = threading.Event()
-    control_stop = threading.Event()
-    control_inner = Control(
+    control_exec = executor_factory(
+            constructor=Control,
+            input_q=control_desired_q,
+            stop_event=threading.Event(),
             input_shared_state=shared_state_name,
-            desired_state_q=control_desired_q,
             logging_q=logging_queue,
             controller=motor_controller,
-            stop_event=control_stop,
             disabled_event=disable_control_event,
-    )
-    control_exec = Executor(
-            type="Thread",
-            value=control_inner,
-            input_q=control_desired_q,
-            stop_event=control_stop,
     )
     executors.append(control_exec)
     
-    if platform.system == "Linux":
+    # Initialize the real or fake localization executor
+    if not config.simulation:
         from api.localization import localize, localize_setup
+        # TODO: Convert this to executor factory
         localization_input_q = multiprocessing.Queue()
         localization_stop = multiprocessing.Event()
         localization_inner = Localization(
@@ -151,45 +140,42 @@ if __name__ == "__main__":
         )
     else:
         from core.localization import Mock_Localization
-        localization_input_q = Queue()
-        localization_stop = threading.Event()
-        localization_inner = Mock_Localization(
-                stop_event=localization_stop,
+        localization_exec = executor_factory(
+                Mock_Localization,
+                input_q=Queue(),
+                stop_event=threading.Event(),
                 output=shared_state_name,
-                localize_func=motor_controller.get_state
-        )
-        localization_exec = Executor(
-                type="Process",
-                value=localization_inner,
-                input_q=localization_input_q,
-                stop_event=localization_stop,
+                localize_func=motor_controller.get_state,
         )
     executors.append(localization_exec)
     localization_exec.start()
 
-    print("Beginning main loop")
+    log("Beginning main loop")
     try:
         promises: List[Promise] = []
         while True:
+            # Parse logs
             main_log(logging_queue, queue_to_base)
 
+            # Check promises
+            current_time = time()
+            for promise in promises:
+                if current_time - promise.init > promise.duration:
+                    promises.remove(promise)
+                    promise.callback()
+
             try:
-                current_time = time()
-                for promise in promises:
-                    if current_time - promise.init > promise.duration:
-                        promises.remove(promise)
-                        promise.callback()
-                    
                 message_from_base = queue_from_base.get_nowait()
                 # Based on commands, execute functions and/or subroutines
                 if message_from_base:
-                    print("Message from base: " + str(message_from_base))
+                    log("Message from base: " + str(message_from_base))
                     command = message_from_base["command"]
                     if command == "pid":
-                        print("Changing PID constants not yet implemented")
+                        log("Changing PID constants not yet implemented")
+                        control_exec.input(command)
 
                     elif command == "motor":
-                        print("Starting motor test")
+                        log("Starting motor test")
                         motor_test(
                             motor_controller,
                             message_from_base["content"],
@@ -197,31 +183,32 @@ if __name__ == "__main__":
                             disable_controller=disable_control_event,
                         )
 
-                    elif command == "ctl":
-                        print("Starting heading test")
+                    elif command == "control":
+                        log("Starting heading test")
                         control_desired_q.put(message_from_base["content"])
 
-                    elif command == "nav":
-                        print("Beginning mission")
+                    elif command == "mission":
+                        log("Beginning mission")
                         goal_coordinate = message_from_base["content"]
-                        print("Goal: " + str(goal_coordinate))
+                        log("Goal: " + str(goal_coordinate))
                         if not navigation_exec.value.is_alive():
                             navigation_exec.value.start()
+                        if not control_exec.value.is_alive():
                             control_exec.value.start()
-                        queue_input_nav.put(goal_coordinate)
+                        navigation_exec.input_q.put(goal_coordinate)
 
             except Empty:
                 pass
 
     except KeyboardInterrupt:
-        print("Joining threads")
+        log("Joining threads")
         ws_shutdown() # The WS server blocks, so has custom shutdown
         for executor in executors:
             if executor.value.is_alive():
                 executor.stop()
                 executor.value.join()
-        print("Closing shared memory")
+        log("Closing shared memory")
         for shm in shared_memories:
             shm.close()
             shm.unlink()
-        print("All threads and processes joined, all shared memory released, process exiting")
+        log("All threads and processes joined, all shared memory released, process exiting")

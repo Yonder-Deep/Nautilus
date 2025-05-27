@@ -61,13 +61,13 @@ class MotorSpeeds(BaseModel):
                 raise ValueError('speeds must be from -1.0 to 1.0')
         return self
 
-class Log(BaseModel):
-    source: str
+class Log(msgspec.Struct):
+    source: Union[Literal["MAIN"], Literal["PID"], Literal["NAV"], Literal["WSKT"], Literal["LCAL"], Literal["PRCP"], str]
     type: str
     content: Union[KinematicState, State, SerialState, str] = Field(union_mode='left_to_right')
 
 class Promise(msgspec.Struct):
-    """ This is a not really a javascript-style "Promise" but instead is a
+    """ This is a not really a javascript-style "Promise" but is instead a
         simple scheduled callback. If appended to the promises array of the
         main loop, the callback function will be called after the approximate
         time of the duration has elapsed. 
@@ -75,7 +75,7 @@ class Promise(msgspec.Struct):
     name: str
     duration: float
     callback: Callable
-    init: float # Will be overriden post init by current time
+    init: float = 0.0 # Will be overriden post init by current time
 
     def __post_init__(self):
         self.init = time()
