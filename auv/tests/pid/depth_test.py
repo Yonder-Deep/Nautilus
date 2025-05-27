@@ -1,12 +1,7 @@
 """Contains test for AUV depth and PID control of depth"""
 
 import threading
-from api import PID
-from api import Motor
-from api import IMU
-from auv import config
 from queue import LifoQueue
-import time
 
 # Constants
 # Indices for motor array

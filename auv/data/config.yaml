@@ -1,7 +1,7 @@
 %YAML 1.2
 ---
 # Whether or not to mock the submarine with the model
-testing_mode: True
+simulation: True
 
 # Communication with base
 socket_ip: "localhost"

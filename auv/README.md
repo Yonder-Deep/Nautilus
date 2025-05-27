@@ -4,16 +4,12 @@ Embedded side of the Nautilus AUV
 * Install everything with pip. Please use a virtual environment as follows:
 ```bash
 python3 -m venv .venv
-. .venv/bin/activate
+source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
-* Create the TCP/IP connection with PPP (point-to-point protocol) `sudo pppd /dev/tty.usbserial-D30AFALT 57600 nodetach noauth passive lock local 192.168.100.10:192.168.100.11`
-* Raspberry Pi OS Lite comes with `pppd`, if you don't have it do `sudo apt-get pppd` or use a package manager to get it
-* TODO: Instructions on binding systemd with `udev` to start up automatically
-* Ensure that `config.py` has the correct `SOCKET_IP` and `SOCKET_PORT` to communicate with the base station
-* Run `python __init__.py` with the virtual environment active
-* **To run locally for testing, simply change `SOCKET_IP` to localhost**
+*
+*
 
 ## Developing this code
 ### Here is a general map of what everything does:
@@ -31,3 +27,4 @@ pip install -r requirements.txt
 * Keep the flow of imports understandable. If an class instance is needed in `core/`, and is defined in `api/`, instantiate it in `__init__.py` and pass it into the thread you are creating.
 * When you create a thread in `__init__.py`, make sure you add it to the `threads` array so that it is cleaned up when the process is quit. Look at `core/websocket_handler.py` for proper thread cleanup when defined as a function, and look at `core/navigation.py` for proper thread cleanup when defined as a class.
 * Format functions and classes with docstrings and typed parameters so LSPs can recognize them.
+

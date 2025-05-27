@@ -53,21 +53,12 @@ def socket_handler(base_websocket:ServerConnection, stop_event:threading.Event, 
             log(str(err))
             return
             
-        """
-        if time_since_last_ping > ping_interval:
-            log("Sending Pong")
-            last_ping = time.time()
-            time_since_last_ping=0
-            base_websocket.send(json.dumps('pong'))
-        else:
-            time_since_last_ping = time.time() - last_ping
-        """
-
 def custom_log(message:str, verbose:bool, queue:Queue):
     if verbose:
         queue.put(" WS: " + message)
 
-def server(stop_event:threading.Event, logging_q:Queue, websocket_interface:str, websocket_port:int, ping_interval:int, queue_to_base:Queue, queue_from_base:Queue, verbose:bool, shutdown_q:Queue):
+def websocket_server(stop_event:threading.Event, logging_q:Queue, websocket_interface:str, websocket_port:int, ping_interval:int, queue_to_base:Queue, queue_from_base:Queue, verbose:bool, shutdown_q:Queue):
+
     """ Websocket server that binds to the given network interface & port.
         Anything in queue_to_base will be forwarded into the websocket.
         Anything that shows up in the websocket will be forwarded to queue_from_base.

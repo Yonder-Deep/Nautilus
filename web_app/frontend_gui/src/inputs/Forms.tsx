@@ -15,7 +15,7 @@ export const ParametersForm = ({ websocket }: any) => {
             d: '' + constantD
         };
         const request = {
-            command: "pidConstants",
+            command: "pid",
             content: pidConstants
         };
         websocket.send(JSON.stringify(request));
@@ -78,7 +78,7 @@ export const MotorTestForm = ({ websocket }: any) => {
             return
         }
         const request = {
-            command: "motorTest",
+            command: "motor",
             content: motorTest
         };
         websocket.send(JSON.stringify(request));
@@ -132,7 +132,7 @@ export const HeadingTestForm = ({ websocket }: any) => {
     const headingRequest = () => {
         console.log("Making heading request.")
         const request = {
-            command: "headingTest",
+            command: "control",
             content: targetHeading
         };
         websocket.send(JSON.stringify(request));

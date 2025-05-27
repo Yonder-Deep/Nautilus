@@ -1,10 +1,8 @@
 from models.data_types import KinematicState
 from models.shared_memory import write_shared_state
-from api.localization import I2C, LSM6DS, LIS3MDL, serial, EKF, MUKF
 
 import multiprocessing
 import threading
-import queue
 from time import time
 from typing import Tuple, Callable, Union
 
@@ -14,15 +12,17 @@ class Localization(multiprocessing.Process):
     def __init__(
         self,
         stop_event: multiprocessing.Event, # type: ignore
+        input_q: multiprocessing.Queue,
         output_shared_memory: str,
         setup_args: Tuple,
         localize_func: Callable[
-                [Tuple[I2C, LSM6DS, LIS3MDL, serial.Serial, EKF, MUKF]],
+                ...,
                 KinematicState
         ],
     ):
         super().__init__()
         self.stop_event = stop_event
+        self.inputhreadt_q = multiprocessing.Queue
         self.output_shared_memory = output_shared_memory
         self.setup_args = setup_args
         self.localize_func = localize_func
@@ -40,6 +40,9 @@ class Localization(multiprocessing.Process):
                     angular_velocity = np.zeros(3, dtype=float),
             )
             write_shared_state(name=self.output_shared_memory, state=output_state)
+
+    def stop(self):
+        self.stop_event.set()
 
 class Mock_Localization(threading.Thread):
     def __init__(

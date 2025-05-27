@@ -39,7 +39,7 @@ def main_log(logging_queue:Queue, base_queue:Queue):
         except Empty:
             return  
 
-def motor_speeds(
+def motor_test(
     motor_controller:AbstractController,
     speeds:Tuple[float, float, float, float],
     *,

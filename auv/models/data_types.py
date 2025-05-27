@@ -1,8 +1,14 @@
-from pydantic import BaseModel, Field, model_validator
-from typing import List, Union, Callable, Optional
-import numpy as np
-from dataclasses import dataclass
+from typing import List, Union, Callable, Optional, Literal
+import msgspec
+
+import multiprocessing
+import multiprocessing.queues
+import threading
+import queue
 from time import time
+
+from pydantic import BaseModel, Field, model_validator
+import numpy as np
 
 class KinematicState(BaseModel):
     # All in NED global flat earth frame
@@ -60,23 +66,21 @@ class Log(BaseModel):
     type: str
     content: Union[KinematicState, State, SerialState, str] = Field(union_mode='left_to_right')
 
-@dataclass
-class Promise:
-    """ If appended to the promises array of the main loop, the callback 
-        function will be called after the approximate time of the duration
-        has elapsed.
+class Promise(msgspec.Struct):
+    """ This is a not really a javascript-style "Promise" but instead is a
+        simple scheduled callback. If appended to the promises array of the
+        main loop, the callback function will be called after the approximate
+        time of the duration has elapsed. 
     """
     name: str
     duration: float
     callback: Callable
-    init: float = 0.0 # Will be overriden post init by current time
+    init: float # Will be overriden post init by current time
 
     def __post_init__(self):
         self.init = time()
 
-@dataclass
-class GpsData:
+class GpsData(msgspec.Struct):
     lat: float
     lon: float
     attitude: np.ndarray = Field(default_factory=lambda: np.zeros(4, dtype=float))
- 

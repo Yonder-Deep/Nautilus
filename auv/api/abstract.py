@@ -7,20 +7,20 @@ from models.data_types import KinematicState, MotorSpeeds
 class AbstractController():
     @abstractmethod
     def set_speeds(self, input:MotorSpeeds):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def set_zeros(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_speeds(self) -> MotorSpeeds:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def get_state(self) -> Union[KinematicState, None]:
-        pass
+    def get_state(self) -> KinematicState:
+        raise NotImplementedError
     
     @abstractmethod
     def set_last_time(self):
-        pass
+        raise NotImplementedError

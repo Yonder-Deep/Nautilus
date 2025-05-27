@@ -53,8 +53,3 @@ class Navigation(Thread):
             
             except Empty:
                 pass
-
-    def stop(self):
-        """ Probably won't actually use this """
-        self.stop_event.set()
-        

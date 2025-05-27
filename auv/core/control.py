@@ -39,7 +39,7 @@ class Control(Thread):
         super().__init__()
         self.stop_event = stop_event
         self.mc = controller
-        self.input_state = State(
+        self.estimated_state = State(
             position = ar([0.0, 0.0, 0.0], dtype=f64),
             velocity = ar([0.0, 0.0, 0.0], dtype=f64),
             local_force = ar([0.0, 0.0, 0.0], dtype=f64),
@@ -47,11 +47,7 @@ class Control(Thread):
             angular_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
             local_torque = ar([0.0, 0.0, 0.0], dtype=f64),
         )
-        self.desired_state = 0.0 # Now desired heading only
-        """PositionState(
-            position = ar([0.0, 0.0, 0.0], dtype=f64),
-            velocity = ar([0.0, 0.0, 0.0], dtype=f64),
-        )"""
+        self.desired_state = KinematicState()
         self.input_shared_state = input_shared_state
         self.desired_state_q = desired_state_q
         self.log = partial(check_verbose, q=logging_q, verbose=True)
@@ -79,6 +75,10 @@ class Control(Thread):
             try:
                 new_current_state = read_shared_state(name=self.input_shared_state)
                 if new_current_state:
+                    # Calculate error
+                    # Generate signal
+                    # Allocate signal to motors
+
                     log(new_current_state)
                     heading_err = self.desired_state - new_current_state.attitude[2] 
                     if heading_err > 180:
@@ -103,17 +103,13 @@ class Control(Thread):
                         front=0.0,
                         back= 0.0
                     ))
+                    # Compare current state & desired state (setpoint), create error value
+                    # From error value, translate into motor speeds (signal)
                     
             except Empty:
                 pass
 
-        # Compare current state & desired state (setpoint), create error value
-        # From error value, translate into motor speeds (signal)
 
-    def stop(self):
-        """ Probably won't actually use this """
-        self.stop_event.set()
-    
     def enable(self):
         self.disabled_event.clear()
 
