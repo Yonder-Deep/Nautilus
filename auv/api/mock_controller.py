@@ -99,7 +99,7 @@ class MockController(AbstractController):
         self.state = InitialState(
             position = np.array([0.0, 0.0, 0.0]),
             velocity = np.array([0.0, 0.0, 0.0]),
-            local_force = np.array([0.2, 0.0, 0.0]),
+            local_force = np.array([0.0, 0.0, 0.0]),
             attitude = np.array([0.0, 0.0, 0.0]),
             angular_velocity = np.array([0.0, 0.2, 0.0]),
             local_torque = np.array([0.0, 0.0, 0.1]),

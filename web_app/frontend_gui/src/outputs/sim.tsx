@@ -10,13 +10,11 @@ THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 const Mesh = ({euler}: {euler: number[]}) => {
     const eulerAngles = new THREE.Euler()
     let meshRef = useRef<THREE.Mesh>(null!);
-    const [attitude, setAttitude] = useState<THREE.Euler>(null!);
 
     useEffect(() => {
-        const temp: any = [...euler];
-        setAttitude(eulerAngles.set(temp[0], temp[1], temp[2], "ZYX"))
-        console.log("Euler Angles: " + JSON.stringify(temp));
-    }, [eulerAngles])
+        eulerAngles.set(euler[0], euler[1], euler[2], "ZYX");
+        console.log("Euler Angles: " + JSON.stringify(euler));
+    }, [euler])
 
     useFrame(() => {
         const [z, y, x] = eulerAngles.toArray();

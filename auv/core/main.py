@@ -3,7 +3,7 @@
 """
 
 from typing import Dict, Tuple, List, Union, Optional, Any
-from queue import Queue, Empty
+from queue import Queue, Empty, Full
 import threading
 from time import time
 
@@ -26,8 +26,10 @@ log_prefixes: Dict[str, str] = {
     "PRCP": "\033[102mPERCEPT:\033[0m ",
 }
 
-def parse_log(message: Log, base_q: Queue) -> Optional[str]:
+def handle_log(message: Log, base_q: Queue) -> Optional[str]:
+    print_log: bool = True
     if message.type == "state" and isinstance(message.content, State): 
+        print_log = False
         # If type is state, unpack the numpy arrays
         serial_state = SerialState(
             position = message.content.position.tolist(),
@@ -38,19 +40,23 @@ def parse_log(message: Log, base_q: Queue) -> Optional[str]:
         message.content = serial_state.model_dump_json()
     # Since message: Log, we must convert Log to JSON
     result = msgspec.json.encode(message).decode()
-    base_q.put(result)
-    return log_prefixes[message.source] + str(message.content)
+    try:
+        base_q.put_nowait(result)
+    except Full:
+        pass
+    if print_log:
+        print(log_prefixes[message.source] + str(message.content))
 
 def main_log(logging_q: Queue, base_q: Queue) -> None:
     while(logging_q.qsize() > 0):
         try:
             message: Union[Log, str] = logging_q.get_nowait()
             if message:
-                try:
-                    if isinstance(message, Log):
-                        print(parse_log(message, base_q))
-                except:
-                    print("\033[101mError Decoding Log:\033[0m " + repr(message))
+                #try:
+                if isinstance(message, Log):
+                    handle_log(message, base_q)
+                #except:
+                    #print("\033[101mError Handling Log:\033[0m " + repr(message))
         except Empty:
             return 
 

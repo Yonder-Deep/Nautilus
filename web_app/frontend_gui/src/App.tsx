@@ -45,15 +45,17 @@ export default function App() {
     ]);
     const [websocket, setWebsocket]: any = useState();
 	const [statusMessages, setStatusMessages]: any = useState([]);
-    const [attitude, setAttitude] = useState<number[]>([0,0,0,0]);
+    const [attitude, setAttitude] = useState<number[]>([0,0,0]);
 
     const handleSocketData = (event: MessageEvent<string>) => {
-        //console.log("Socket data arrived: " + event.data);
+        console.log("Socket data arrived: " + event.data);
         const data: Command | Data = tryJson(event.data)
+        console.log(data);
         if (isData(data)) {
             const state = data.content;
-            if(isState(state)) {
+            if(data.type == "state" && isState(state)) {
                 setAttitude(state.attitude)
+                console.log(state.attitude)
             }
         } else {
             setStatusMessages((prev: any)  => [...prev, event.data]);

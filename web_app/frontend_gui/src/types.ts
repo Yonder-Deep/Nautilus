@@ -36,10 +36,10 @@ export const isState = (obj: any): obj is State => {
         isNumberArray(obj.position) &&
         isNumberArray(obj.velocity) &&
         //isNumberArray(obj.local_velocity) &&
-        isNumberArray(obj.local_force) &&
+        //isNumberArray(obj.local_force) &&
         isNumberArray(obj.attitude) &&
-        isNumberArray(obj.angular_velocity) &&
-        isNumberArray(obj.local_torque)// &&
+        isNumberArray(obj.angular_velocity) //&&
+        //isNumberArray(obj.local_torque)// &&
         //typeof obj.forward_m_input === 'number' &&
         //typeof obj.turn_m_input === 'number'
     )

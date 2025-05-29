@@ -1,17 +1,6 @@
-import multiprocessing
-from multiprocessing.shared_memory import SharedMemory
-import threading
-import platform
-from queue import Queue, Empty
-from typing import List
-from time import time
-from pathlib import Path
-
-#from api import IMU
-#from api import PressureSensor
-#from api import Indicator
-from api.gps import GPS
-from api.abstract import AbstractController
+from models.data_types import *
+from models.shared_memory import create_shared_state
+from models.tasks import Task, task_factory
 
 from core.main import main_log, motor_test, log
 from core.websocket_handler import websocket_server as websocket_thread
@@ -19,9 +8,19 @@ from core.control import Control
 from core.localization import Localization
 from core.navigation import Navigation
 
-from models.data_types import *
-from models.shared_memory import create_shared_state
-from models.execution import Executor, executor_factory
+#from api import IMU
+#from api import PressureSensor
+#from api import Indicator
+from api.gps import GPS
+from api.abstract import AbstractController
+
+import multiprocessing
+from multiprocessing.shared_memory import SharedMemory
+import threading
+from queue import Queue, Empty
+from typing import List
+from time import time
+from pathlib import Path
 
 from pydantic import BaseModel
 from pydantic_yaml import parse_yaml_file_as
@@ -56,11 +55,11 @@ if __name__ == "__main__":
     logging_queue = Queue()
 
     # For tracking and cleanup
-    executors: List[Executor] = []
+    tasks: List[Task] = []
     shared_memories: List[SharedMemory] = []
 
     # Websocket Initialization
-    queue_to_base = Queue()
+    queue_to_base = Queue(maxsize=10) # When there's no connection, messages pile up
     queue_from_base= Queue()
     ws_shutdown_q = Queue() # This just takes the single shutdown method for the websocket server
     ws_stop = threading.Event()
@@ -74,15 +73,16 @@ if __name__ == "__main__":
                     'queue_to_base': queue_to_base,
                     'queue_from_base': queue_from_base,
                     'verbose': True,
-                    'shutdown_q': ws_shutdown_q})
-    ws_exec = Executor(
+                    'shutdown_q': ws_shutdown_q}
+    )
+    ws_task = Task(
         type="Thread",
         value=ws_inner,
         input_q=queue_to_base,
         stop_event=ws_stop,
     )
-    executors.append(ws_exec)
-    ws_exec.start()
+    tasks.append(ws_task)
+    ws_task.start()
     ws_shutdown = ws_shutdown_q.get(block=True) # Needed for stopping server
 
     # DI the motor controller
@@ -98,17 +98,17 @@ if __name__ == "__main__":
     shared_memories.append(measured_state)
 
     control_desired_q = Queue() # Setpoint input to nav
-    navigation_exec = executor_factory(
+    navigation_task = task_factory(
             constructor=Navigation,
             input_q=queue.Queue(),
             stop_event=threading.Event(),
             logging_q=logging_queue,
             desired_state_q=control_desired_q,
     )
-    executors.append(navigation_exec)
+    tasks.append(navigation_task)
 
     disable_control_event = threading.Event()
-    control_exec = executor_factory(
+    control_task = task_factory(
             constructor=Control,
             input_q=control_desired_q,
             stop_event=threading.Event(),
@@ -117,12 +117,12 @@ if __name__ == "__main__":
             controller=motor_controller,
             disabled_event=disable_control_event,
     )
-    executors.append(control_exec)
+    tasks.append(control_task)
     
-    # Initialize the real or fake localization executor
+    # Initialize the real or fake localization task
     if not config.simulation:
         from api.localization import localize, localize_setup
-        # TODO: Convert this to executor factory
+        # TODO: Convert this to task factory
         localization_input_q = multiprocessing.Queue()
         localization_stop = multiprocessing.Event()
         localization_inner = Localization(
@@ -132,7 +132,7 @@ if __name__ == "__main__":
                 setup_args=localize_setup(),
                 localize_func=localize,
         )
-        localization_exec = Executor(
+        localization_task = Task(
                 type="Process",
                 value=localization_inner,
                 input_q=localization_input_q,
@@ -140,19 +140,20 @@ if __name__ == "__main__":
         )
     else:
         from core.localization import Mock_Localization
-        localization_exec = executor_factory(
+        localization_task = task_factory(
                 Mock_Localization,
                 input_q=Queue(),
                 stop_event=threading.Event(),
                 output=shared_state_name,
+                logging_q=logging_queue,
                 localize_func=motor_controller.get_state,
         )
-    executors.append(localization_exec)
-    localization_exec.start()
+    tasks.append(localization_task)
+    localization_task.start()
 
+    promises: List[Promise] = []
     log("Beginning main loop")
     try:
-        promises: List[Promise] = []
         while True:
             # Parse logs
             main_log(logging_queue, queue_to_base)
@@ -166,13 +167,13 @@ if __name__ == "__main__":
 
             try:
                 message_from_base = queue_from_base.get_nowait()
-                # Based on commands, execute functions and/or subroutines
+                # Based on commands, taskute functions and/or subroutines
                 if message_from_base:
                     log("Message from base: " + str(message_from_base))
                     command = message_from_base["command"]
                     if command == "pid":
                         log("Changing PID constants not yet implemented")
-                        control_exec.input(command)
+                        control_task.input(message_from_base)
 
                     elif command == "motor":
                         log("Starting motor test")
@@ -185,17 +186,17 @@ if __name__ == "__main__":
 
                     elif command == "control":
                         log("Starting heading test")
-                        control_desired_q.put(message_from_base["content"])
+                        control_task.input(message_from_base)
 
                     elif command == "mission":
                         log("Beginning mission")
                         goal_coordinate = message_from_base["content"]
                         log("Goal: " + str(goal_coordinate))
-                        if not navigation_exec.value.is_alive():
-                            navigation_exec.value.start()
-                        if not control_exec.value.is_alive():
-                            control_exec.value.start()
-                        navigation_exec.input_q.put(goal_coordinate)
+                        if not navigation_task.value.is_alive():
+                            navigation_task.value.start()
+                        if not control_task.value.is_alive():
+                            control_task.value.start()
+                        navigation_task.input_q.put(goal_coordinate)
 
             except Empty:
                 pass
@@ -203,12 +204,12 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log("Joining threads")
         ws_shutdown() # The WS server blocks, so has custom shutdown
-        for executor in executors:
-            if executor.value.is_alive():
-                executor.stop()
-                executor.value.join()
+        for task in tasks:
+            if task.value.is_alive():
+                task.stop()
+                task.value.join()
         log("Closing shared memory")
         for shm in shared_memories:
             shm.close()
             shm.unlink()
-        log("All threads and processes joined, all shared memory released, process exiting")
+        log("All tasks joined, all shared memory released, process exiting")
