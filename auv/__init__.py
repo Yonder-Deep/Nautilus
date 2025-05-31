@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     # Control System Initialization
     shared_state_name = "shared_state"
-    measured_state = create_shared_state(name=shared_state_name);
+    measured_state = create_shared_state(name=shared_state_name)
     shared_memories.append(measured_state)
 
     control_desired_q = Queue() # Setpoint input to nav

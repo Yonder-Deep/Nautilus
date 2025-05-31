@@ -1,10 +1,9 @@
 try:
-    import smbus
-except:
+    import smbus2
+except ImportError:
     print('Try sudo apt-get install python3-smbus')
 
 from time import sleep
-import config
 
 # Models
 MODEL_02BA = 0
@@ -33,8 +32,12 @@ UNITS_Centigrade = 1
 UNITS_Farenheit = 2
 UNITS_Kelvin = 3
 
+# IMU sensor constants (kg/m^3 convenience)
+DENSITY_FRESHWATER = 997
+DENSITY_SALTWATER = 1029
+FLUID_DENSITY = DENSITY_FRESHWATER
 
-class MS5837(object):
+class PressureSensor(object):
 
     # Registers
     _MS5837_ADDR = 0x76
@@ -48,13 +51,13 @@ class MS5837(object):
         self._model = model
 
         try:
-            self._bus = smbus.SMBus(bus)
-        except:
-            print("Bus %d is not available." % bus)
+            self._bus = smbus2.SMBus(bus)
+        except Exception as e:
+            print(f"Bus {bus} is not available. Error: {e}")
             print("Available busses are listed as /dev/i2c*")
             self._bus = None
 
-        self._fluidDensity = config.FLUID_DENSITY
+        self._fluidDensity = FLUID_DENSITY
         self._pressure = 0
         self._temperature = 0
         self._D1 = 0
@@ -62,7 +65,7 @@ class MS5837(object):
 
     def init(self):
         if self._bus is None:
-            "No bus!"
+            print("No bus!")
             return False
 
         self._bus.write_byte(self._MS5837_ADDR, self._MS5837_RESET)
@@ -101,7 +104,7 @@ class MS5837(object):
         # max time (seconds) ~= 2.2e-6(x) where x = OSR = (2^8, 2^9, ..., 2^13)
         # We use 2.5e-6 for some overhead
         sleep(2.5e-6 * 2**(8+oversampling))
-
+        
         d = self._bus.read_i2c_block_data(self._MS5837_ADDR, self._MS5837_ADC_READ, 3)
         self._D1 = d[0] << 16 | d[1] << 8 | d[2]
 
@@ -120,8 +123,8 @@ class MS5837(object):
 
         return True
 
-    def setFluidDensity(self, denisty):
-        self._fluidDensity = denisty
+    def setFluidDensity(self, density):
+        self._fluidDensity = density
 
     # Pressure in requested units
     # mbar * conversion
@@ -221,11 +224,31 @@ class MS5837(object):
         return n_rem ^ 0x00
 
 
-class MS5837_30BA(MS5837):
+class MS5837_30BA(PressureSensor):
     def __init__(self, bus=1):
-        MS5837.__init__(self, MODEL_30BA, bus)
+        PressureSensor.__init__(self, MODEL_30BA, bus)
 
 
-class MS5837_02BA(MS5837):
+class MS5837_02BA(PressureSensor):
     def __init__(self, bus=1):
-        MS5837.__init__(self, MODEL_02BA, bus)
+        PressureSensor.__init__(self, MODEL_02BA, bus)
+
+if __name__ == "__main__":
+    try:
+        sensor = PressureSensor()
+        if not sensor.init():
+            print("Pressure Sensor init failed!")
+            exit()
+    except Exception as e:
+        print(f"ERROR: failed to initialize pressure sensor: {e}")
+        exit()
+
+    while True:
+        try:
+            print("Read successful? ", sensor.read(OSR_8192))
+            depth = sensor.depth()
+            pressure = sensor.pressure()
+            print("Depth = ", depth, "Pressure = ", pressure)
+            sleep(3)
+        except Exception as e:
+            print("ERROR: Read failed -", e)
