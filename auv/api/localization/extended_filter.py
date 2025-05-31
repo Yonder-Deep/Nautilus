@@ -167,10 +167,8 @@ class EKF:
         
         # Check with textbook if this Quaternion -> DCM is correct 
         dcm[0,0] = q0_2 + q1_2 - q2_2 - q3_2
-    
-        dcm[0,0] = 2.0 * q0_2 - 1.0 + 2.0 * q1_2
-        dcm[1,1] = 2.0 * q0_2 - 1.0 + 2.0 * q2_2
-        dcm[2,2] = 2.0 * q0_2 - 1.0 + 2.0 * q3_2
+        dcm[1,1] = q0_2 - q1_2 + q2_2 - q3_2
+        dcm[2,2] = q0_2 - q1_2 - q2_2 + q3_2
 
         dcm[0,1] = 2.0 * q1q2 + 2.0 * q0q3
         dcm[0,2] = 2.0 * q1q3 - 2.0 * q0q2
@@ -226,7 +224,7 @@ class EKF:
         # Calculate Jacobian Fs (9x9) - relates error state derivative to error state
         Fs = np.zeros((9, 9), dtype=np.float32)
         Fs[0:3, 3:6] = np.identity(3)
-        Fs[5, 2] = 2.0 * G / EARTH_RADIUS
+        # Fs[5, 2] = 2.0 * G / EARTH_RADIUS
         Fs[3:6, 6:9] = -C_B2N
         Fs[6:9, 6:9] = (-1.0 / TAU_A) * np.identity(3)
         PHI = np.identity(9, dtype=np.float32) + Fs * dt

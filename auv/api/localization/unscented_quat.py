@@ -96,9 +96,9 @@ class MUKF:
 
         for j in range(15):
             eP_minus = self.e - Pe[:, j][0:3]
-            X[j+13, :4] = MUKF.chart_to_manifold(self.q0, eP_minus)
-            X[j+13, 4:7] = self.w - Pe[:, j][3:6]
-            X[j+13, 7:16] = -Pe[:, j][6:15]
+            X[j+16, :4] = MUKF.chart_to_manifold(self.q0, eP_minus)
+            X[j+16, 4:7] = self.w - Pe[:, j][3:6]
+            X[j+16, 7:16] = -Pe[:, j][6:15]
 
         for j in range(31):
             MUKF.state_transition(X[j], dt)

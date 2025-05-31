@@ -1,11 +1,14 @@
+import time
+import math
+
 import serial
 import pynmea2
 import board
-from busio import I2C
-import time
-import math
 import numpy as np
+import utm
+from busio import I2C
 from typing import Callable
+
 
 from adafruit_lis3mdl import LIS3MDL
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
@@ -16,11 +19,23 @@ from models.data_types import KinematicState
 from unscented_quat import MUKF
 
 # --- magnetometer calibration constants ---
-B = np.array([  -10.37,   67.69,   72.69])
+# Just in case MotionCal calibration algorithm doesn't correct fully
+delta_deg = 30.0
+delta_rad = math.radians(delta_deg)
+Rz_extra = np.array([
+    [ math.cos(-delta_rad),  -math.sin(-delta_rad),  0.0 ],
+    [ math.sin(-delta_rad),   math.cos(-delta_rad),  0.0 ],
+    [ 0.0,                    0.0,                   1.0 ]
+])
 
+# NEED TO CALIBRATE THESE ONLY WHEN REMOUNTING SENSOR TO NEW LOCATION
+B = np.array([  -10.37,   67.69,   72.69])
 Ainv = np.array([[ 23.53008,  0.22607, -0.41871],
-            [  0.22607, 26.72366, -0.43045],
-            [ -0.41871, -0.43045, 21.73834]])
+                 [  0.22607, 26.72366, -0.43045],
+                 [ -0.41871, -0.43045, 21.73834]])
+
+M_matrix = Rz_extra @ Ainv
+
 
 def parse_gprmc(sentence):
     msg = pynmea2.parse(sentence)
@@ -42,7 +57,7 @@ def localize_setup(): # Temporary for instatiation
     m_sensor  = LIS3MDL(i2c)
 
     # GPS serial
-    ser = serial.Serial("/dev/tty0", baudrate=9600, timeout=1)
+    ser = serial.Serial("/dev/USB0", baudrate=9600, timeout=1)
 
     ekf = EKF()
     mukf = MUKF()
@@ -64,9 +79,9 @@ def localize(
     # --- read IMU & mag ---
     am = np.array(ag_sensor.acceleration)
     wm = np.array(ag_sensor.gyro)
-    mm = np.array(Ainv @ (np.array(m_sensor.magnetic) - B))
+    mm = np.array(M_matrix @ (np.array(m_sensor.magnetic) - B))
     
-    mukf.update_imu(dt, am, wm, mm)
+    mukf.update_imu(am, wm, mm, dt)
     q = mukf.get_current_orientation()
 
     imu = ImuData(accX=am[0], accY=am[1], accZ=am[2])
@@ -89,13 +104,21 @@ def localize(
                 ekf.correct(gps_vel, gps_coor)
             else:
                 ekf.initialize(gps_vel, gps_coor)
-        
-    return KinematicState(
-        position = np.zeros(3, dtype=float),
-        velocity = np.zeros(3, dtype=float),
-        attitude = np.zeros(3, dtype=float),
-        angular_velocity = np.zeros(3, dtype=float),
+                
+    easting, northing, zone_number, zone_letter = utm.from_latlon(
+        math.degrees(ekf.get_latitude_rad()), 
+        math.degrees(ekf.get_longitude_rad())
     )
+    
+    w, q0, q1, q2 = q
+    yaw, pitch, roll = Rotation.from_quat([q0, q1, q2, w]).as_euler("zyx", degrees=True)
+    
+    return {
+        "position": np.array([easting, northing]),
+        "velocity": np.zeros(3, dtype=float),
+        "attitude": np.array([yaw, pitch, roll]),
+        "angular_velocity": wm,
+    }
 
 if __name__ == "__main__":
     i2c, ag_sensor, m_sensor, ser, ekf, mukf = localize_setup()
