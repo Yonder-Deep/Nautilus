@@ -6,7 +6,7 @@ import {
     MotorTestForm,
     HeadingTestForm,
     StartMission
-} from "./inputs/forms";
+} from "./inputs/Forms";
 import { SocketHealth } from "./inputs/SocketHealth"
 import { StatusItem, StatusMessages } from "./outputs/status";
 import { Simulation } from "./outputs/sim";
