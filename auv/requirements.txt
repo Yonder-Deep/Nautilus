@@ -10,6 +10,7 @@ adafruit_circuitpython_busdevice>=5.2.11
 adafruit_circuitpython_gps>=3.11.1
 adafruit_circuitpython_lis3mdl>=1.2.2
 adafruit_circuitpython_lsm6ds>=4.5.14
+opencv-python
 
 # More I/O
 pyserial>=3.5

@@ -6,7 +6,7 @@ import {
     MotorTestForm,
     HeadingTestForm,
     StartMission
-} from "./inputs/forms";
+} from "./inputs/Forms";
 import { SocketHealth } from "./inputs/SocketHealth"
 import { StatusItem, StatusMessages } from "./outputs/status";
 import { Simulation } from "./outputs/sim";
@@ -65,7 +65,7 @@ export default function App() {
     // Register socket handler for server-sent data
     const connection: any = useRef(null);
     useEffect(() => {
-        const socket: WebSocket = new WebSocket("/api/websocket");
+        const socket: WebSocket = new WebSocket("ws://localhost:6543/api/websocket");
 
         socket.addEventListener("open", () => setWebsocket(socket));
         socket.addEventListener("message", handleSocketData);
