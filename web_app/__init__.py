@@ -16,7 +16,6 @@ from pathlib import Path
 from time import sleep
 
 from backend import socket_thread 
-from video import VideoThread
 
 from pydantic_yaml import parse_yaml_file_as
 from ruamel.yaml import YAML
@@ -179,6 +178,7 @@ def get_layouts():
         log("Error: The gui grid layout json file at " + layout_data_path + " is invalid json")
 
 if config.video:
+    from video import VideoThread
     video_q = Queue()
     video_thread = VideoThread(video_q)
 

@@ -6,9 +6,9 @@ import {
     MotorTestForm,
     HeadingTestForm,
     StartMission,
-    TasksForm,
 } from "./inputs/Forms";
 import { SocketHealth } from "./inputs/SocketHealth"
+import { TaskManager} from "./inputs/TaskManager";
 import { StatusItem, StatusMessages } from "./outputs/status";
 import { Simulation } from "./outputs/sim";
 import { Map } from "./outputs/map"
@@ -52,13 +52,8 @@ export default function App() {
     const handleSocketData = (event: MessageEvent<string>) => {
         console.log("Socket data arrived: " + event.data);
         const data: Command | Data = tryJson(event.data)
-        console.log(data);
-        if (isData(data)) {
-            const state = data.content;
-            if(data.type == "state" && isState(state)) {
-                setAttitude(state.attitude)
-                console.log(state.attitude)
-            }
+        if (isData(data) && data.type == "state" && isState(data.content)) {
+            setAttitude(data.content.attitude)
         } else {
             setStatusMessages((prev: any)  => [...prev, event.data]);
         }
@@ -123,7 +118,7 @@ export default function App() {
                 <StartMission websocket={websocket}></StartMission>
                 <StatusMessages statusMessages={statusMessages} setStatusMessages={ setStatusMessages}></StatusMessages>
                 <SocketHealth websocket={websocket}></SocketHealth>
-                <TasksForm websocket={websocket} />
+                <TaskManager websocket={websocket} />
                 <VideoStream />
             </Grid>
         </div>

@@ -1,9 +1,9 @@
 try:
     import sys
     sys.path.append("..")
-    from data_types import KinematicState 
+    from data_types import State 
 except:
-    from .data_types import KinematicState 
+    from .data_types import State 
 
 import numpy as np
 from multiprocessing import shared_memory, Process
@@ -35,7 +35,7 @@ def create_shared_state(name: str) -> shared_memory.SharedMemory:
  
     return shm
 
-def write_shared_state(name:str, state:KinematicState):
+def write_shared_state(name: str, state: State):
     existing_shm = shared_memory.SharedMemory(name=name)
     data_type = np.float64
     num_elements_per_array = 3
@@ -55,7 +55,7 @@ def write_shared_state(name:str, state:KinematicState):
     shared_array3[:] = state.attitude
     shared_array4[:] = state.angular_velocity
 
-def read_shared_state(name:str) -> KinematicState:
+def read_shared_state(name: str) -> State:
     existing_shm = shared_memory.SharedMemory(name=name)
     data_type = np.float64
 
@@ -69,7 +69,7 @@ def read_shared_state(name:str) -> KinematicState:
     shared_array3 = np.ndarray((3,), dtype=data_type, buffer=existing_shm.buf, offset=array3_offset)
     shared_array4 = np.ndarray((3,), dtype=data_type, buffer=existing_shm.buf, offset=array4_offset)
 
-    state = KinematicState(
+    state = State(
         position=shared_array1.copy(),
         velocity=shared_array2.copy(),
         attitude=shared_array3.copy(),

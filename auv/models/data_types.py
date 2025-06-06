@@ -1,17 +1,13 @@
 from typing import List, Union, Callable, Optional, Literal
 import msgspec
 
-import multiprocessing
-import multiprocessing.queues
-import threading
-import queue
 from time import time
 
 from pydantic import BaseModel, Field, model_validator
 import numpy as np
 
-class KinematicState(BaseModel):
-    # All in NED global flat earth frame
+# All in NED global flat earth frame
+class State(BaseModel):
     position: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     attitude: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
@@ -21,30 +17,19 @@ class KinematicState(BaseModel):
         arbitrary_types_allowed = True
 
 # This state has the rotation, its derivative, 
-class State(KinematicState):
-    #local_velocity: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
+class ExpandedState(State):
     local_force: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
     local_torque: np.ndarray = Field(default_factory=lambda: np.zeros(3, dtype=float))
-
-    # These two are included since torque & force will actually be tau_net & F_net
-    # and so will include drag forces in addition to motor forces
-    #forward_m_input: float
-    #turn_m_input: float
 
 # Needed because of type stupidity
 class SerialState(BaseModel):
     position: List
     velocity: List
-    #local_velocity: List
-    #local_force: List
     attitude: List
     angular_velocity: List
-    #local_torque: List
-    #forward_m_input: float
-    #turn_m_input: float
 
 # Complete state required to define the system at any time, including the mass and inertia
-class InitialState(State):
+class InitialState(ExpandedState):
     mass: float
     inertia: np.ndarray = Field(default_factory=lambda: np.zeros((3,3), dtype=float))
 
@@ -62,9 +47,10 @@ class MotorSpeeds(BaseModel):
         return self
 
 class Log(msgspec.Struct):
-    source: Union[Literal["MAIN"], Literal["CTRL"], Literal["NAV"], Literal["WSKT"], Literal["LCAL"], Literal["PRCP"], str]
+    source: Literal["MAIN", "CTRL", "NAV", "WSKT", "LCAL", "PRCP"]
     type: str
-    content: Union[KinematicState, State, SerialState, str] = Field(union_mode='left_to_right')
+    content: Union[State, SerialState, dict, str]
+    dest: Union[Literal["BASE", "LOG"], str] = "LOG"
 
 class Promise(msgspec.Struct):
     """ This is a not really a javascript-style "Promise" but is instead a
@@ -80,11 +66,10 @@ class Promise(msgspec.Struct):
     def __post_init__(self):
         self.init = time()
 
-class GpsData(msgspec.Struct):
-    lat: float
-    lon: float
-    attitude: np.ndarray = Field(default_factory=lambda: np.zeros(4, dtype=float))
-
 class Dispatch(msgspec.Struct):
     log: str
     func: Callable
+
+class Cmd(msgspec.Struct):
+    command: str
+    content: dict

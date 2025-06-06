@@ -4,7 +4,7 @@ except:
     import sys
     sys.path.append("..")
     from abstract import AbstractController
-from models.data_types import KinematicState, InitialState, SerialState, MotorSpeeds
+from models.data_types import State, InitialState, SerialState, MotorSpeeds
 
 from time import time
 from threading import Lock
@@ -84,7 +84,7 @@ def motion_model(_time_delta:float, y:arr, mass: float, rotational_inertia:arr, 
     d_position_dt = velocity
     d_velocity_dt = accel - velocity
     d_theta_dt = quaternion_derivative(theta, omega)
-    d_omega_dt = alpha_local
+    d_omega_dt = alpha_local - omega
 
     return pack([d_position_dt, d_velocity_dt, d_theta_dt, d_omega_dt])
 
@@ -97,8 +97,8 @@ class MockController(AbstractController):
         self.getter_lock = Lock()
         self.setter_lock = Lock()
         self.state = InitialState(
-            position = np.array([-20.0, 0.0, 0.0]),
-            velocity = np.array([-10.0, 0.0, 0.0]),
+            position = np.array([0.0, 0.0, 0.0]),
+            velocity = np.array([0.0, 0.0, 0.0]),
             local_force = np.array([0.0, 0.0, 0.0]),
             attitude = np.array([0.0, 0.0, 0.0]),
             angular_velocity = np.array([0.0, 0.0, 0.0]),
@@ -166,7 +166,7 @@ class MockController(AbstractController):
         """
         self.last_time = time()
 
-    def get_state(self) -> KinematicState:
+    def get_state(self) -> State:
         """ Returns the simulated state using the last known position, velocity,
             attitude, and angular velocity, as well as the known time elapsed.
         """
@@ -211,10 +211,8 @@ if __name__ == "__main__":
             serial_state = SerialState(
                 position = state.position.tolist(),
                 velocity = state.velocity.tolist(),
-                #local_force = state.local_force.tolist(),
                 attitude = state.attitude.tolist(),
                 angular_velocity = state.angular_velocity.tolist(),
-                #local_torque = state.local_torque.tolist(),
             )
             print(serial_state.model_dump_json(indent=2))
 

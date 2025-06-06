@@ -1,10 +1,10 @@
 **/.DS_Store
-test/
-base_station/lib/
-node_modules/
+**/node_modules
 **/.venv
-*.vscode
+**/.vscode
 **/__pycache__
 
+auv/data/local/*
+!auv/data/local/.gitkeep
 web_app/data/local/*
 !web_app/data/local/.gitkeep

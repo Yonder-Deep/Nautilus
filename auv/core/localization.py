@@ -1,4 +1,4 @@
-from models.data_types import KinematicState, Log
+from models.data_types import State, Log, SerialState
 from models.shared_memory import write_shared_state
 
 import multiprocessing
@@ -13,7 +13,7 @@ import numpy as np
 def logger(message: str, q: Union[queue.Queue,multiprocessing.Queue], verbose: bool):
     if verbose and message:
         log_type = "info"
-        if isinstance(message, KinematicState):
+        if isinstance(message, State):
             log_type = "state"
         q.put(Log(
                 source = "LCAL",
@@ -48,7 +48,7 @@ class Localization(multiprocessing.Process):
                 return
             current_time = time()
             kf_output = self.kalman_filter()
-            output_state = KinematicState(
+            output_state = State(
                 position=np.array([kf_output.position[0], kf_output.position[1], -self.depth_func()]),
                 velocity=np.array([0., 0., 0.]),
                 attitude=kf_output["attitude"],
@@ -63,7 +63,7 @@ class Mock_Localization(threading.Thread):
         input_q: queue.Queue,
         output: str,
         logging_q: queue.Queue,
-        localize_func: Callable[[], Union[KinematicState, None]],
+        localize_func: Callable[[], Union[State, None]],
     ):
         super().__init__(name="MockLocalization")
         self.stop_event = stop_event
@@ -84,5 +84,11 @@ class Mock_Localization(threading.Thread):
                 self.logging_q.put(Log(
                         source="LCAL",
                         type="state",
-                        content=state
+                        content=SerialState(
+                                position=state.position.tolist(),
+                                velocity=state.velocity.tolist(),
+                                attitude=state.attitude.tolist(),
+                                angular_velocity=state.angular_velocity.tolist(),
+                        ),
+                        dest="BASE",
                 ))

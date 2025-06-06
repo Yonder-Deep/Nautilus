@@ -2,7 +2,7 @@ from models.data_types import *
 from models.shared_memory import create_shared_state
 from models.tasks import Task, task_factory
 
-from core.main import main_log, motor_test, log, manage_tasks
+from core.main import handle_log, motor_test, log, manage_tasks
 from core.websocket_handler import websocket_server as websocket_thread
 from core.control import Control
 from core.localization import Localization
@@ -15,10 +15,9 @@ import multiprocessing
 from multiprocessing.shared_memory import SharedMemory
 import threading
 from queue import Queue, Empty
-from typing import List
+from typing import List, Literal
 from time import time
 from pathlib import Path
-import json
 
 from pydantic import BaseModel
 from pydantic_yaml import parse_yaml_file_as
@@ -65,17 +64,19 @@ if __name__ == "__main__":
     ws_shutdown_q = Queue() # This just takes the single shutdown method for the websocket server
     ws_stop = threading.Event()
     ws_inner = threading.Thread(
-            target=websocket_thread,
-            name="Websocket",
-            kwargs={'stop_event': ws_stop,
-                    'logging_q':logging_queue,
-                    'websocket_interface': config.socket_ip,
-                    'websocket_port': config.socket_port,
-                    'ping_interval': config.ping_interval,
-                    'queue_to_base': queue_to_base,
-                    'queue_from_base': queue_from_base,
-                    'verbose': True,
-                    'shutdown_q': ws_shutdown_q}
+        target=websocket_thread,
+        name="Websocket",
+        kwargs={
+            'stop_event': ws_stop,
+            'logging_q':logging_queue,
+            'websocket_interface': config.socket_ip,
+            'websocket_port': config.socket_port,
+            'ping_interval': config.ping_interval,
+            'queue_to_base': queue_to_base,
+            'queue_from_base': queue_from_base,
+            'verbose': True,
+            'shutdown_q': ws_shutdown_q
+        }
     )
     ws_task = Task(
         name="Websocket",
@@ -102,25 +103,24 @@ if __name__ == "__main__":
 
     control_desired_q = Queue() # Setpoint input to nav
     navigation_task = task_factory(
-            constructor=Navigation,
-            name="Navigation",
-            input_q=queue.Queue(),
-            stop_event=threading.Event(),
-            logging_q=logging_queue,
-            desired_state_q=control_desired_q,
+        constructor=Navigation,
+        name="Navigation",
+        input_q=Queue(),
+        stop_event=threading.Event(),
+        logging_q=logging_queue,
+        desired_state_q=control_desired_q,
     )
     tasks.append(navigation_task)
 
-    disable_control_event = threading.Event()
     control_task = task_factory(
-            constructor=Control,
-            name="Control",
-            input_q=control_desired_q,
-            stop_event=threading.Event(),
-            input_shared_state=shared_state_name,
-            logging_q=logging_queue,
-            controller=motor_controller,
-            disabled_event=disable_control_event,
+        constructor=Control,
+        name="Control",
+        input_q=control_desired_q,
+        stop_event=threading.Event(),
+        input_shared_state=shared_state_name,
+        logging_q=logging_queue,
+        controller=motor_controller,
+        disable_event=threading.Event(),
     )
     tasks.append(control_task)
     
@@ -133,83 +133,99 @@ if __name__ == "__main__":
         localization_input_q = multiprocessing.Queue()
         localization_stop = multiprocessing.Event()
         localization_inner = Localization(
-                stop_event=localization_stop,
-                input_q=localization_input_q,
-                output_shared_memory=shared_state_name,
-                setup_args=localize_setup(),
-                kalman_filter=localize,
-                depth_func=depth_func,
+            stop_event=localization_stop,
+            input_q=localization_input_q,
+            output_shared_memory=shared_state_name,
+            setup_args=localize_setup(),
+            kalman_filter=localize,
+            depth_func=depth_func,
         )
         localization_task = Task(
-                name="Localization",
-                type="Process",
-                value=localization_inner,
-                input_q=localization_input_q,
-                stop_event=localization_stop,
+            name="Localization",
+            type="Process",
+            value=localization_inner,
+            input_q=localization_input_q,
+            stop_event=localization_stop,
         )
     else:
         from core.localization import Mock_Localization
         localization_task = task_factory(
-                Mock_Localization,
-                name="Localization",
-                input_q=Queue(),
-                stop_event=threading.Event(),
-                output=shared_state_name,
-                logging_q=logging_queue,
-                localize_func=motor_controller.get_state,
+            Mock_Localization,
+            name="Localization",
+            input_q=Queue(),
+            stop_event=threading.Event(),
+            output=shared_state_name,
+            logging_q=logging_queue,
+            localize_func=motor_controller.get_state,
         )
     tasks.append(localization_task)
 
     if config.perception:
         from core.perception import Perception
         perception_task = task_factory(
-                Perception,
-                name="Perception",
-                input_q=Queue(),
-                stop_event=threading.Event(),
-                camera_path=config.camera_path,
-                ip=config.video_ip,
-                port=config.video_port,
-                fps=30,
+            Perception,
+            name="Perception",
+            input_q=Queue(),
+            stop_event=threading.Event(),
+            camera_path=config.camera_path,
+            ip=config.video_ip,
+            port=config.video_port,
+            fps=30,
         )
+        tasks.append(perception_task)
 
     promises: List[Promise] = []
-    dispatch = {
+    dispatch: dict[
+        Literal["pid", "motor", "control", "mission", "tasks", "promise"],
+        Dispatch,
+    ] = {
         "pid": Dispatch(
-                log="Changing PID constants",
-                func=lambda msg: control_desired_q.put(msg),
+            log="Changing PID constants",
+            func=lambda msg: control_desired_q.put(msg),
         ),
         "motor": Dispatch(
-                log="Starting motor test",
-                func=lambda msg: motor_test(
-                        msg["content"],
-                        motor_controller=motor_controller,
-                        promises=promises,
-                        disable_controller=disable_control_event,
-                ),
+            log="Starting motor test",
+            func=lambda msg: motor_test(
+                msg["content"],
+                motor_controller=motor_controller,
+                promises=promises,
+                disable_controller=control_task.disable,
+            ),
         ),
         "control": Dispatch(
-                log="Starting PID test",
-                func=lambda msg: control_task.input(msg),
+            log="Starting PID test",
+            func=lambda msg: control_task.input(msg),
         ),
         "mission": Dispatch(
-                log="Beginning mission (loading trajectory)",
-                func=lambda msg: navigation_task.input(msg["content"]),
+            log="Beginning mission (loading trajectory)",
+            func=lambda msg: navigation_task.input(msg["content"]),
         ),
         "tasks": Dispatch(
-                log="Managing tasks",
-                func=lambda msg: manage_tasks(msg, tasks=tasks, logging_q=logging_queue),
+            log="Managing tasks",
+            func=lambda msg: manage_tasks(msg, tasks=tasks, logging_q=logging_queue),
+        ),
+        "promise": Dispatch(
+            log="Registering promise",
+            func=lambda msg: promises.append(msg),
         ),
     }
-    control_task.start()
-    log("Tasks: ")
-    for task in tasks:
-        log(str(task))
+
     try:
+        initial_task_log: str = "Tasks: "
+        for task in tasks:
+            initial_task_log += "\n\t" + str(task)
+        log(initial_task_log)
+        del initial_task_log
         log("Beginning main loop")
         while True:
             # Parse logs
-            main_log(logging_queue, queue_to_base)
+            while logging_queue.qsize() > 0:
+                try:
+                    log_msg: Union[Log, str] = logging_queue.get_nowait()
+                    if log_msg:
+                        handle_log(log_msg, queue_to_base)
+                except Empty:
+                    break
 
             # Check promises
             for promise in promises:
@@ -221,9 +237,9 @@ if __name__ == "__main__":
             try:
                 message = queue_from_base.get_nowait()
                 if message:
-                    log("Message from base: " + str(message))
+                    log("Evaluating dispatch: " + str(message))
                     if dispatch[message["command"]]:
-                        log(dispatch[message["command"]].log)
+                        log("DISPATCH: " + dispatch[message["command"]].log)
                         dispatch[message["command"]].func(message)
                     else:
                         log("Dispatch function not found for: " \

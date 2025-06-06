@@ -1,4 +1,4 @@
-from typing import Union, Literal, Callable
+from typing import Union, Literal, Callable, Optional
 import multiprocessing
 import multiprocessing.queues
 import threading
@@ -14,6 +14,7 @@ class Task(msgspec.Struct):
     value: Union[multiprocessing.Process, threading.Thread]
     input_q: Union[multiprocessing.queues.Queue, queue.Queue]
     stop_event: Union[multiprocessing.Event, threading.Event] # type: ignore
+    disable_event: Optional[Union [multiprocessing.Event, threading.Event]] = None # type: ignore
     started: bool = False
     
     def start(self):
@@ -25,6 +26,14 @@ class Task(msgspec.Struct):
 
     def input(self, thing):
         self.input_q.put(thing)
+
+    def disable(self):
+        if self.disable_event:
+            self.disable_event.set()
+
+    def enable(self):
+        if self.disable_event:
+            self.disable_event.clear()
     
 def task_factory(
         constructor: Callable,
@@ -33,6 +42,7 @@ def task_factory(
         stop_event: Union[multiprocessing.Event, threading.Event], # type: ignore
         **kwargs,
 ) -> Task:
+
     value = constructor(
             stop_event,
             input_q,
@@ -44,10 +54,16 @@ def task_factory(
         type = "Process"
     else:
         raise TypeError("Executor constructor must return a Thread or Process object")
+
+    disable_event = None
+    if "disable_event" in kwargs:
+        disable_event = kwargs.get("disable_event")
+
     return Task(
             name=name,
             type=type,
             value=value,
             input_q=input_q,
             stop_event=stop_event,
+            disable_event=disable_event,
     )

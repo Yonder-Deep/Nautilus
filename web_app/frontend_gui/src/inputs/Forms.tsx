@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import styles from "./forms.module.css"
-import { RestartSvg } from '../utils/icons';
 
 export const ParametersForm = ({ websocket }: any) => {
     const [pidAxis, setPidAxis] = useState('');
@@ -129,97 +128,6 @@ export const MotorTestForm = ({ websocket }: any) => {
                     <button onClick={() => zeroOut()}>Zero All</button>
                     <button onClick={() => setKeymap(!keymap)}>K</button>
                 </div>
-            </div>
-        </div>
-    )
-}
-
-type Status = "unknown" | "enabled" | "disabled";
-
-const statusToBool = (status: Status) => {
-    if (status == "enabled")
-        return true
-    else if (status == "disabled")
-        return false
-    else
-        return true
-}
-
-export const TasksForm = ({ websocket }: any) => {
-    const [localization, setLocalization] = useState<Status>("unknown");
-    const [perception, setPerception] = useState<Status>("unknown");
-    const [control, setControl] = useState<Status>("unknown");
-    const [navigation, setNavigation] = useState<Status>("unknown");
-
-    const editTask = (taskName: string, currentStatus: Status) => {
-        let subcommand;
-        if (currentStatus=="unknown") {
-            getInfo();
-            return;
-        }
-        else if (currentStatus=="enabled") {
-            subcommand = "disable";
-        }
-        else if (currentStatus=="disabled") {
-            subcommand = "enable";
-        }
-
-        const request = {
-            command: "tasks",
-            content: {
-                sub: subcommand,
-                task: taskName,
-            },
-        };
-        websocket.send(JSON.stringify(request));
-    }
-    const getInfo = () => {
-        const request = {
-            command: "tasks",
-            content: {
-                sub: "info"
-            },
-        };
-        websocket.send(JSON.stringify(request));
-    }
-
-    return (
-        <div>
-            <h2>Task Manager</h2>
-            <div className={styles.taskOuter}>
-                <div className={styles.taskMiddle}>
-                    <div className={styles.taskInner}>
-                        <p>Localization</p>
-                        <button onClick={() => editTask("localization", localization)}>
-                            {statusToBool(localization) ? "Disable" : "Enable"}
-                        </button>
-                    </div>
-                    <div className={styles.taskInner}>
-                        <p>Perception</p>
-                        <button onClick={() => editTask("perception", perception)}>
-                            {statusToBool(perception) ? "Disable" : "Enable"}
-                        </button>
-                    </div>
-                </div>
-                <div className={styles.taskMiddle}>
-                    <div className={styles.taskInner}>
-                        <p>Control</p>
-                        <button onClick={() => editTask("control", control)}>
-                            {statusToBool(control) ? "Disable" : "Enable"}
-                        </button>
-                    </div>
-                    <div className={styles.taskInner}>
-                        <p>Navigation</p>
-                        <button onClick={() => editTask("navigation", navigation)}>
-                            {statusToBool(navigation) ? "Disable" : "Enable"}
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div className={styles.taskInner}>
-                <button className={styles.taskButton} onClick={() => getInfo()}>
-                    Refresh <RestartSvg/>
-                </button>
             </div>
         </div>
     )

@@ -1,0 +1,27 @@
+.taskOuter {
+    padding-inline: 0.5rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.taskInner {
+    width: 100%;
+    padding-inline: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.taskMiddle {
+    display: flex;
+    flex-direction: column;
+}
+
+button.taskButton {
+    margin: 0.5rem auto;
+    display: flex;
+    place-items: center;
+    gap: 0.5rem;
+}

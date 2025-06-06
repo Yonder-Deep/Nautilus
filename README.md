@@ -28,11 +28,11 @@ Sofina Fei,
 Software Development
 * Computer Science
 
-Abijit Jayachandran
+Abijit Jayachandran,
 Former Software Lead
 * Computer Engineering
 
-Pranav Mehta
+Pranav Mehta,
 Former Software Lead
 * Computer Engineering
 

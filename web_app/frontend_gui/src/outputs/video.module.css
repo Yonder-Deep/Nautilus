@@ -1,5 +1,11 @@
+.videoContainer {
+    display: flex;
+    flex-direction: column;
+}
+
 .video {
+    margin: auto;
+    border-radius: 1rem;
     display: block;
-    width: 100%;
     height: 100%;
 }

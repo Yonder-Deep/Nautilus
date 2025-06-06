@@ -16,13 +16,8 @@ export const isCommand = (obj: any): obj is Command => {
 export interface State {
     position: number[]
     velocity: number[]
-    //local_velocity: number[]
-    local_force: number[]
     attitude: number[]
     angular_velocity: number[]
-    local_torque: number[]
-    //forward_m_input: number
-    //turn_m_input: number
 }
 
 const isNumberArray = (value: any): value is number[] => {
@@ -35,20 +30,24 @@ export const isState = (obj: any): obj is State => {
         obj !== null &&
         isNumberArray(obj.position) &&
         isNumberArray(obj.velocity) &&
-        //isNumberArray(obj.local_velocity) &&
-        //isNumberArray(obj.local_force) &&
         isNumberArray(obj.attitude) &&
         isNumberArray(obj.angular_velocity) //&&
-        //isNumberArray(obj.local_torque)// &&
-        //typeof obj.forward_m_input === 'number' &&
-        //typeof obj.turn_m_input === 'number'
     )
+}
+
+export type Status = "unknown" | "active" | "inactive";
+
+export interface Tasks {
+    "Localization": Status,
+    "Perception": Status,
+    "Control": Status,
+    "Navigation": Status,
 }
 
 export interface Data {
     source: string
     type: string
-    content: State | string
+    content: Tasks | State | string
 } 
 
 export const isData = (obj: any): obj is Data => {
@@ -57,6 +56,6 @@ export const isData = (obj: any): obj is Data => {
         obj !== null &&
         typeof obj.source === 'string' &&
         typeof obj.type === 'string' &&
-        (isState(obj.content) || typeof obj.content === 'string')
+        (typeof obj.content === 'object' || typeof obj.content === 'string')
     )
 }

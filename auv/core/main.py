@@ -2,9 +2,8 @@
     base and oversee general instructions for the other threads.
 """
 
-from typing import Dict, Tuple, List, Union, Optional, Any
+from typing import Dict, Tuple, List, Union, Optional, Any, Callable
 from queue import Queue, Empty, Full
-import threading
 from time import time
 
 import msgspec
@@ -15,58 +14,45 @@ from models.tasks import Task
 
 # This is the shorthand log function used in the main thread
 def log(x: Any):
-    print("\033[96;100mMAIN:\033[0m " + str(x))
+    print("\033[42mMAIN:\033[0m " + str(x))
 
 # Down here are the actual log parsing functions for actual Log objects
 log_prefixes: Dict[str, str] = {
-    "MAIN": "\033[100mMAIN:\033[0m ",
-    "CTRL": "\033[103mCTRL:\033[0m ",
-    "NAV": "\033[104mNAV:\033[0m ",
-    "WSKT": "\033[105mWSKT:\033[0m ",
-    "LCAL": "\033[106mLOCALIZE:\033[0m ",
-    "PRCP": "\033[102mPERCEPT:\033[0m ",
+    "MAIN": "\033[42mMAIN:\033[0m ",
+    "CTRL": "\033[43mCTRL:\033[0m ",
+    "NAV": "\033[44mNAV:\033[0m ",
+    "WSKT": "\033[45mWSKT:\033[0m ",
+    "LCAL": "\033[46mLOCALIZE:\033[0m ",
+    "PRCP": "\033[46mPERCEPT:\033[0m ",
 }
 
-def handle_log(message: Log, base_q: Queue) -> Optional[str]:
-    print_log: bool = True
-    if message.type == "state" and isinstance(message.content, State): 
-        print_log = False
-        # If type is state, unpack the numpy arrays
-        serial_state = SerialState(
-            position = message.content.position.tolist(),
-            velocity = message.content.velocity.tolist(),
-            attitude = message.content.attitude.tolist(),
-            angular_velocity = message.content.angular_velocity.tolist(),
-        )
-        message.content = serial_state.model_dump_json()
-    # Since message: Log, we must convert Log to JSON
-    result = msgspec.json.encode(message).decode()
+def handle_log(message: Union[Log, str], base_q: Queue) -> Optional[str]:
     try:
-        base_q.put_nowait(result)
-    except Full:
-        pass
-    if print_log:
-        print(log_prefixes[message.source] + str(message.content))
-
-def main_log(logging_q: Queue, base_q: Queue) -> None:
-    while(logging_q.qsize() > 0):
-        try:
-            message: Union[Log, str] = logging_q.get_nowait()
-            if message:
-                #try:
-                if isinstance(message, Log):
-                    handle_log(message, base_q)
-                #except:
-                    #print("\033[101mError Handling Log:\033[0m " + repr(message))
-        except Empty:
-            return 
-
+        if isinstance(message, str):
+            raise Exception
+        print_log: bool = True
+        if message.type == "state" and isinstance(message.content, SerialState): 
+            print_log = False
+            message.content = message.content.model_dump_json()
+        # Since message: Log, we must convert Log to JSON
+        result = msgspec.json.encode(message).decode()
+        if message.dest == "BASE":
+            try:
+                base_q.put_nowait(result)
+            except Full:
+                pass
+        if print_log:
+            if message.dest == "BASE":
+                print("\033[101mTO BASE: " + str(message) + "\033[0m")
+            print(log_prefixes[message.source] + str(message.content))
+    except:
+            print("\033[41mError handling log:\033[0m " + str(message))
 def motor_test(
     speeds:Tuple[float, float, float, float],
     *,
     motor_controller:AbstractController,
     promises: List[Promise],
-    disable_controller: threading.Event,
+    disable_controller: Callable,
     time_to_zero: float = 10.0
 ) -> None:
     """ Safely parse the speeds and dispatch them to the motor controller. Also
@@ -75,7 +61,7 @@ def motor_test(
         seconds, which can be customized via `time_to_zero`.
     """
     try:
-        disable_controller.set()
+        disable_controller()
         motor_speeds = MotorSpeeds(
             forward = speeds[0],
             turn = speeds[1],
@@ -103,25 +89,34 @@ def motor_test(
             log("Appended motor reset promise")
 
 def manage_tasks(msg, tasks: List[Task], logging_q: Queue):
-    subcommand = msg["content"]["sub"]
-    if subcommand == "info":
-        pass
-    elif subcommand == "enable":
-        task = tasks[msg["content"]["task"]]
-        log("Enabling task: " + task.name)
-        task.start()
-    elif subcommand == "disable":
-        task = tasks[msg["content"]["task"]]
-        log("Disabling task: " + task.name)
-        task.stop()
-    else:
-        log("Task manage parsing error")
-    response = {}
+    subcommand: str = msg["content"]["sub"]
+    try:
+        if subcommand == "info":
+            pass
+        elif subcommand == "enable":
+            matching_task = [task for task in tasks if task.name == msg["content"]["task"]][0]
+            log("Enabling task: " + matching_task.name)
+            matching_task.start()
+        elif subcommand == "disable":
+            matching_task = [task for task in tasks if task.name == msg["content"]["task"]][0]
+            log("Disabling task: " + matching_task.name)
+            matching_task.stop()
+    except Exception as e:
+        log("Error parsing/executing subcommand in manage_tasks: ")
+        log(e)
+
+    state_map = {
+        True: "active",
+        False: "inactive",
+    }
+    task_state: dict[str, str] = {}
     for task in tasks:
-        response[task.name] = task.started
-    log("Task info: \n" + str(response))
-    logging_q.put(Log(
+        task_state[task.name] = state_map[task.started]
+    response = Log(
         source="MAIN",
-        type="important",
-        content=msgspec.json.encode(response).decode(),
-    ))
+        type="tasks",
+        content=task_state,
+        dest="BASE",
+    )
+    log("Task info: " + msgspec.json.encode(response).decode())
+    logging_q.put(response)

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Union
 import sys
 sys.path.append("../..")
-from models.data_types import KinematicState, MotorSpeeds
+from models.data_types import State, MotorSpeeds
 
 class AbstractController():
     @abstractmethod
@@ -18,7 +18,7 @@ class AbstractController():
         raise NotImplementedError
 
     @abstractmethod
-    def get_state(self) -> KinematicState:
+    def get_state(self) -> State:
         raise NotImplementedError
     
     @abstractmethod
