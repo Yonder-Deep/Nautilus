@@ -11,6 +11,7 @@ import msgspec
 
 from api.abstract import AbstractController
 from models.data_types import Promise, MotorSpeeds, Log, State, SerialState
+from models.tasks import Task
 
 # This is the shorthand log function used in the main thread
 def log(x: Any):
@@ -19,8 +20,8 @@ def log(x: Any):
 # Down here are the actual log parsing functions for actual Log objects
 log_prefixes: Dict[str, str] = {
     "MAIN": "\033[100mMAIN:\033[0m ",
-    "PID": "\033[103m PID:\033[0m ",
-    "NAV": "\033[104m NAV:\033[0m ",
+    "CTRL": "\033[103mCTRL:\033[0m ",
+    "NAV": "\033[104mNAV:\033[0m ",
     "WSKT": "\033[105mWSKT:\033[0m ",
     "LCAL": "\033[106mLOCALIZE:\033[0m ",
     "PRCP": "\033[102mPERCEPT:\033[0m ",
@@ -61,9 +62,9 @@ def main_log(logging_q: Queue, base_q: Queue) -> None:
             return 
 
 def motor_test(
-    motor_controller:AbstractController,
     speeds:Tuple[float, float, float, float],
     *,
+    motor_controller:AbstractController,
     promises: List[Promise],
     disable_controller: threading.Event,
     time_to_zero: float = 10.0
@@ -81,7 +82,7 @@ def motor_test(
             front = speeds[2],
             back = speeds[3],
         )
-        motor_controller.set_speeds(motor_speeds)
+        motor_controller.set_speeds(motor_speeds, verbose=True)
         log("Set motor speeds: " + motor_speeds.model_dump_json())
     except ValueError as e:
         log("Motor speeds invalid: " + str(speeds))
@@ -100,3 +101,27 @@ def motor_test(
                 callback = lambda: motor_controller.set_zeros()
             ))
             log("Appended motor reset promise")
+
+def manage_tasks(msg, tasks: List[Task], logging_q: Queue):
+    subcommand = msg["content"]["sub"]
+    if subcommand == "info":
+        pass
+    elif subcommand == "enable":
+        task = tasks[msg["content"]["task"]]
+        log("Enabling task: " + task.name)
+        task.start()
+    elif subcommand == "disable":
+        task = tasks[msg["content"]["task"]]
+        log("Disabling task: " + task.name)
+        task.stop()
+    else:
+        log("Task manage parsing error")
+    response = {}
+    for task in tasks:
+        response[task.name] = task.started
+    log("Task info: \n" + str(response))
+    logging_q.put(Log(
+        source="MAIN",
+        type="important",
+        content=msgspec.json.encode(response).decode(),
+    ))

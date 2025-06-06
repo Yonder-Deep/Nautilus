@@ -62,7 +62,7 @@ class MotorSpeeds(BaseModel):
         return self
 
 class Log(msgspec.Struct):
-    source: Union[Literal["MAIN"], Literal["PID"], Literal["NAV"], Literal["WSKT"], Literal["LCAL"], Literal["PRCP"], str]
+    source: Union[Literal["MAIN"], Literal["CTRL"], Literal["NAV"], Literal["WSKT"], Literal["LCAL"], Literal["PRCP"], str]
     type: str
     content: Union[KinematicState, State, SerialState, str] = Field(union_mode='left_to_right')
 
@@ -84,3 +84,7 @@ class GpsData(msgspec.Struct):
     lat: float
     lon: float
     attitude: np.ndarray = Field(default_factory=lambda: np.zeros(4, dtype=float))
+
+class Dispatch(msgspec.Struct):
+    log: str
+    func: Callable

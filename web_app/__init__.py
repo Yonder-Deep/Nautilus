@@ -1,7 +1,10 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import uvicorn
+
+import cv2
 
 from contextlib import asynccontextmanager
 import asyncio
@@ -10,8 +13,11 @@ import threading
 import json
 from typing import Optional
 from pathlib import Path
+from time import sleep
 
 from backend import socket_thread 
+from video import VideoThread
+
 from pydantic_yaml import parse_yaml_file_as
 from ruamel.yaml import YAML
 yaml = YAML(typ='safe')
@@ -19,6 +25,7 @@ yaml = YAML(typ='safe')
 class ConfigSchema(BaseModel):
     auv_url: str
     ping_interval: int
+    video: bool
 
 def load_config() -> ConfigSchema:
     default_config = parse_yaml_file_as(ConfigSchema, 'data/config.yaml').model_dump()
@@ -170,6 +177,36 @@ def get_layouts():
         return None
     except json.JSONDecodeError:
         log("Error: The gui grid layout json file at " + layout_data_path + " is invalid json")
+
+if config.video:
+    video_q = Queue()
+    video_thread = VideoThread(video_q)
+
+async def generate_frames():
+    if not config.video:
+        return
+    while True:
+        try:
+            img = video_q.get()
+            ret, jpeg = cv2.imencode('.jpg', img)
+            if not ret:
+                log(f"Error: Could not encode image to JPEG")
+                continue
+
+            yield b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n'
+
+        except Exception as e:
+            log(f"An error occurred while processing: {str(e)}")
+
+@api.get('/video_feed')
+async def video_feed():
+    if config.video:
+        return StreamingResponse(
+                generate_frames(),
+                media_type='multipart/x-mixed-replace; boundary=frame',
+        )
+    else:
+        raise HTTPException(status_code=404, detail="Video disabled in config")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=6543)

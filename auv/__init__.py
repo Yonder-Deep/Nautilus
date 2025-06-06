@@ -2,15 +2,12 @@ from models.data_types import *
 from models.shared_memory import create_shared_state
 from models.tasks import Task, task_factory
 
-from core.main import main_log, motor_test, log
+from core.main import main_log, motor_test, log, manage_tasks
 from core.websocket_handler import websocket_server as websocket_thread
 from core.control import Control
 from core.localization import Localization
 from core.navigation import Navigation
 
-#from api import IMU
-#from api import PressureSensor
-#from api import Indicator
 from api.gps import GPS
 from api.abstract import AbstractController
 
@@ -21,6 +18,7 @@ from queue import Queue, Empty
 from typing import List
 from time import time
 from pathlib import Path
+import json
 
 from pydantic import BaseModel
 from pydantic_yaml import parse_yaml_file_as
@@ -31,6 +29,10 @@ class ConfigSchema(BaseModel):
     simulation: bool 
     socket_ip: str
     socket_port: int
+    perception: bool
+    video_ip: str
+    video_port: int
+    camera_path: str
     ping_interval: int
     gps_path: str
 
@@ -47,8 +49,7 @@ def load_config() -> ConfigSchema:
 
 if __name__ == "__main__":
     config = load_config()
-    log("STARTUP WITH CONFIGURATION:")
-    log(config.model_dump())
+    log("STARTUP WITH CONFIGURATION:\n" + config.model_dump_json(indent=2))
 
     # Anything put into this queue will be printed
     # to stdout & forwarded to frontend
@@ -65,6 +66,7 @@ if __name__ == "__main__":
     ws_stop = threading.Event()
     ws_inner = threading.Thread(
             target=websocket_thread,
+            name="Websocket",
             kwargs={'stop_event': ws_stop,
                     'logging_q':logging_queue,
                     'websocket_interface': config.socket_ip,
@@ -76,6 +78,7 @@ if __name__ == "__main__":
                     'shutdown_q': ws_shutdown_q}
     )
     ws_task = Task(
+        name="Websocket",
         type="Thread",
         value=ws_inner,
         input_q=queue_to_base,
@@ -94,12 +97,13 @@ if __name__ == "__main__":
 
     # Control System Initialization
     shared_state_name = "shared_state"
-    measured_state = create_shared_state(name=shared_state_name);
+    measured_state = create_shared_state(name=shared_state_name)
     shared_memories.append(measured_state)
 
     control_desired_q = Queue() # Setpoint input to nav
     navigation_task = task_factory(
             constructor=Navigation,
+            name="Navigation",
             input_q=queue.Queue(),
             stop_event=threading.Event(),
             logging_q=logging_queue,
@@ -110,6 +114,7 @@ if __name__ == "__main__":
     disable_control_event = threading.Event()
     control_task = task_factory(
             constructor=Control,
+            name="Control",
             input_q=control_desired_q,
             stop_event=threading.Event(),
             input_shared_state=shared_state_name,
@@ -122,6 +127,8 @@ if __name__ == "__main__":
     # Initialize the real or fake localization task
     if not config.simulation:
         from api.localization import localize, localize_setup
+        def depth_func() -> float:
+            return 0.
         # TODO: Convert this to task factory
         localization_input_q = multiprocessing.Queue()
         localization_stop = multiprocessing.Event()
@@ -130,9 +137,11 @@ if __name__ == "__main__":
                 input_q=localization_input_q,
                 output_shared_memory=shared_state_name,
                 setup_args=localize_setup(),
-                localize_func=localize,
+                kalman_filter=localize,
+                depth_func=depth_func,
         )
         localization_task = Task(
+                name="Localization",
                 type="Process",
                 value=localization_inner,
                 input_q=localization_input_q,
@@ -142,6 +151,7 @@ if __name__ == "__main__":
         from core.localization import Mock_Localization
         localization_task = task_factory(
                 Mock_Localization,
+                name="Localization",
                 input_q=Queue(),
                 stop_event=threading.Event(),
                 output=shared_state_name,
@@ -149,55 +159,75 @@ if __name__ == "__main__":
                 localize_func=motor_controller.get_state,
         )
     tasks.append(localization_task)
-    localization_task.start()
+
+    if config.perception:
+        from core.perception import Perception
+        perception_task = task_factory(
+                Perception,
+                name="Perception",
+                input_q=Queue(),
+                stop_event=threading.Event(),
+                camera_path=config.camera_path,
+                ip=config.video_ip,
+                port=config.video_port,
+                fps=30,
+        )
 
     promises: List[Promise] = []
-    log("Beginning main loop")
+    dispatch = {
+        "pid": Dispatch(
+                log="Changing PID constants",
+                func=lambda msg: control_desired_q.put(msg),
+        ),
+        "motor": Dispatch(
+                log="Starting motor test",
+                func=lambda msg: motor_test(
+                        msg["content"],
+                        motor_controller=motor_controller,
+                        promises=promises,
+                        disable_controller=disable_control_event,
+                ),
+        ),
+        "control": Dispatch(
+                log="Starting PID test",
+                func=lambda msg: control_task.input(msg),
+        ),
+        "mission": Dispatch(
+                log="Beginning mission (loading trajectory)",
+                func=lambda msg: navigation_task.input(msg["content"]),
+        ),
+        "tasks": Dispatch(
+                log="Managing tasks",
+                func=lambda msg: manage_tasks(msg, tasks=tasks, logging_q=logging_queue),
+        ),
+    }
+    control_task.start()
+    log("Tasks: ")
+    for task in tasks:
+        log(str(task))
     try:
+        log("Beginning main loop")
         while True:
             # Parse logs
             main_log(logging_queue, queue_to_base)
 
             # Check promises
-            current_time = time()
             for promise in promises:
-                if current_time - promise.init > promise.duration:
+                if time() - promise.init > promise.duration:
                     promises.remove(promise)
                     promise.callback()
 
+            # Based on commands, dispatch functions and/or subroutines
             try:
-                message_from_base = queue_from_base.get_nowait()
-                # Based on commands, taskute functions and/or subroutines
-                if message_from_base:
-                    log("Message from base: " + str(message_from_base))
-                    command = message_from_base["command"]
-                    if command == "pid":
-                        log("Changing PID constants not yet implemented")
-                        control_task.input(message_from_base)
-
-                    elif command == "motor":
-                        log("Starting motor test")
-                        motor_test(
-                            motor_controller,
-                            message_from_base["content"],
-                            promises=promises,
-                            disable_controller=disable_control_event,
-                        )
-
-                    elif command == "control":
-                        log("Starting heading test")
-                        control_task.input(message_from_base)
-
-                    elif command == "mission":
-                        log("Beginning mission")
-                        goal_coordinate = message_from_base["content"]
-                        log("Goal: " + str(goal_coordinate))
-                        if not navigation_task.value.is_alive():
-                            navigation_task.value.start()
-                        if not control_task.value.is_alive():
-                            control_task.value.start()
-                        navigation_task.input_q.put(goal_coordinate)
-
+                message = queue_from_base.get_nowait()
+                if message:
+                    log("Message from base: " + str(message))
+                    if dispatch[message["command"]]:
+                        log(dispatch[message["command"]].log)
+                        dispatch[message["command"]].func(message)
+                    else:
+                        log("Dispatch function not found for: " \
+                            + str(message["command"]))
             except Empty:
                 pass
 

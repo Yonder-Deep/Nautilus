@@ -1,14 +1,21 @@
 %YAML 1.2
 ---
 # Whether or not to mock the submarine with the model
-simulation: True
+simulation: true
 
 # Communication with base
 socket_ip: "localhost"
 socket_port: 8080
 ping_interval: 6 
 
+# Localization
 gps_path: "/dev/tty.usbmodem101"
+
+# Perception
+perception: false
+video_ip: "localhost"
+video_port: 8081
+camera_path: "/dev/video0"
 
 #gyro_offset_vector: (0, 0, 0)
 #mag_offset_vector: (0, 0, 0)

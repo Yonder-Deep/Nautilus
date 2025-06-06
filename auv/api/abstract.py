@@ -6,7 +6,7 @@ from models.data_types import KinematicState, MotorSpeeds
 
 class AbstractController():
     @abstractmethod
-    def set_speeds(self, input:MotorSpeeds):
+    def set_speeds(self, input:MotorSpeeds, verbose=True):
         raise NotImplementedError
 
     @abstractmethod

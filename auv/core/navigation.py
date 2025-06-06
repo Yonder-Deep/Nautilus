@@ -25,7 +25,7 @@ class Navigation(Thread):
             logging_q:Queue,
             verbose:bool=True
     ):
-        super().__init__() # For Thread class __init__()
+        super().__init__(name="Navigation") # For Thread class __init__()
         self.stop_event = stop_event
         self.input_state = State(
             position = a([0.0, 0.0, 0.0], dtype=f64),

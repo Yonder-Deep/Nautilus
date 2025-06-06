@@ -82,7 +82,7 @@ def motion_model(_time_delta:float, y:arr, mass: float, rotational_inertia:arr, 
     accel = rotation_to_global.apply(a_local)
 
     d_position_dt = velocity
-    d_velocity_dt = accel
+    d_velocity_dt = accel - velocity
     d_theta_dt = quaternion_derivative(theta, omega)
     d_omega_dt = alpha_local
 
@@ -97,12 +97,12 @@ class MockController(AbstractController):
         self.getter_lock = Lock()
         self.setter_lock = Lock()
         self.state = InitialState(
-            position = np.array([0.0, 0.0, 0.0]),
-            velocity = np.array([0.0, 0.0, 0.0]),
+            position = np.array([-20.0, 0.0, 0.0]),
+            velocity = np.array([-10.0, 0.0, 0.0]),
             local_force = np.array([0.0, 0.0, 0.0]),
             attitude = np.array([0.0, 0.0, 0.0]),
-            angular_velocity = np.array([0.0, 0.2, 0.0]),
-            local_torque = np.array([0.0, 0.0, 0.1]),
+            angular_velocity = np.array([0.0, 0.0, 0.0]),
+            local_torque = np.array([0.0, 0.0, 0.0]),
             mass = 1.0,
             inertia = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
         )
@@ -115,20 +115,29 @@ class MockController(AbstractController):
         )
         self.log = log
     
-    def set_speeds(self, input:MotorSpeeds):
+    def set_speeds(self, input:MotorSpeeds, verbose=False):
         """ Replicates API of real motor controller, setting motor speeds to manipulate 
             state of system. Also records initial time to integrate against
         """
         with self.setter_lock:
-            self.log("Mock Controller: set_speeds()")
+            if verbose:
+                self.log("Mock Controller: set_speeds()")
             # This must be called so that the previous integration is taken into account
             self.get_state()
 
             self.motor_speeds.forward = input.forward 
             self.motor_speeds.turn = input.turn
+            self.motor_speeds.front = input.front
+            self.motor_speeds.back = input.back
             
             self.state.local_force[0] = input.forward 
-            self.state.local_torque[1] = input.turn
+            self.state.local_torque[2] = input.turn
+            self.state.local_force[2] = input.front * 0.5
+            self.state.local_force[2] = input.back * 0.5
+
+            self.state.local_torque[1] = 0
+            self.state.local_torque[1] += input.front * 0.5
+            self.state.local_torque[1] -= input.back * 0.5
 
             self.set_last_time()
             return

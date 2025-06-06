@@ -28,17 +28,16 @@ class Localization(multiprocessing.Process):
         input_q: multiprocessing.Queue,
         output_shared_memory: str,
         setup_args: Tuple,
-        localize_func: Callable[
-                ...,
-                KinematicState
-        ],
+        kalman_filter: Callable,
+        depth_func: Callable[[], float]
     ):
-        super().__init__()
+        super().__init__(name="Localization")
         self.stop_event = stop_event
         self.input_q = input_q
         self.output_shared_memory = output_shared_memory
         self.setup_args = setup_args
-        self.localize_func = localize_func
+        self.kalman_filter = kalman_filter
+        self.depth_func = depth_func
         self.log = partial(logger, q=input_q, verbose=True)
 
     def run(self):
@@ -47,17 +46,15 @@ class Localization(multiprocessing.Process):
         while True:
             if self.stop_event.is_set():
                 return
-            quat, current_time = self.localize_func(current_time, *self.setup_args)
+            current_time = time()
+            kf_output = self.kalman_filter()
             output_state = KinematicState(
-                    position = np.zeros(3, dtype=float),
-                    velocity = np.zeros(3, dtype=float),
-                    attitude = np.zeros(4, dtype=float),
-                    angular_velocity = np.zeros(3, dtype=float),
+                position=np.array([kf_output.position[0], kf_output.position[1], -self.depth_func()]),
+                velocity=np.array([0., 0., 0.]),
+                attitude=kf_output["attitude"],
+                angular_velocity=kf_output["angular_velocity"],
             )
             write_shared_state(name=self.output_shared_memory, state=output_state)
-
-    def stop(self):
-        self.stop_event.set()
 
 class Mock_Localization(threading.Thread):
     def __init__(
@@ -68,7 +65,7 @@ class Mock_Localization(threading.Thread):
         logging_q: queue.Queue,
         localize_func: Callable[[], Union[KinematicState, None]],
     ):
-        super().__init__()
+        super().__init__(name="MockLocalization")
         self.stop_event = stop_event
         self.input_q = input_q
         self.output = output

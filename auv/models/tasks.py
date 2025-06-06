@@ -9,6 +9,7 @@ class Task(msgspec.Struct):
     """ A data class describing an executing piece of python code, wrapping it
         into an easier common data interface over processes and threads.
     """
+    name: str
     type: Union[Literal["Process"], Literal["Thread"]]
     value: Union[multiprocessing.Process, threading.Thread]
     input_q: Union[multiprocessing.queues.Queue, queue.Queue]
@@ -16,6 +17,7 @@ class Task(msgspec.Struct):
     started: bool = False
     
     def start(self):
+        self.started = True
         self.value.start()
 
     def stop(self):
@@ -26,6 +28,7 @@ class Task(msgspec.Struct):
     
 def task_factory(
         constructor: Callable,
+        name: str,
         input_q: Union[multiprocessing.queues.Queue, queue.Queue],
         stop_event: Union[multiprocessing.Event, threading.Event], # type: ignore
         **kwargs,
@@ -42,6 +45,7 @@ def task_factory(
     else:
         raise TypeError("Executor constructor must return a Thread or Process object")
     return Task(
+            name=name,
             type=type,
             value=value,
             input_q=input_q,
