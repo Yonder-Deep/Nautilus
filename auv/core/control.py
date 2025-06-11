@@ -6,7 +6,6 @@ from time import sleep, time
 
 import numpy as np
 from numpy import array as ar, float64 as f64
-from scipy.spatial.transform import Rotation as R
 
 from api.abstract import AbstractController
 from models.data_types import State, Log, MotorSpeeds
