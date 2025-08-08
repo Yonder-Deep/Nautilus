@@ -1,4 +1,4 @@
-from models.data_types import Log
+from models.data_types import Log, logger
 from models.tasks import PTask
 
 import multiprocessing
@@ -6,14 +6,6 @@ from functools import partial
 import os
 import signal
 import subprocess
-
-def logger(message: str, q: multiprocessing.Queue, verbose: bool):
-    if verbose and message:
-        q.put(Log(
-                source = "PRCP",
-                type = "info",
-                content = message
-        ))
 
 class Perception(PTask):
     def __init__(
@@ -26,7 +18,7 @@ class Perception(PTask):
     ):
         super().__init__(name="Perception-Process")
         self.logging_q = logging_q
-        self.log = partial(logger, q=logging_q, verbose=True)
+        self.log = partial(logger, q=logging_q, source="PRCP", verbose=True)
         self.path = camera_path
         self.host = ip
         self.port = port

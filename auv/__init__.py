@@ -179,19 +179,12 @@ if __name__ == "__main__":
         localization_task.startup()
         initial_task_log: str = "Tasks: "
         for task in tasks:
-            initial_task_log += "\n\t" + str(task)
+            initial_task_log += "\n\t" + str(task) + "\n\t" + str(task.meta) + "\n"
         log(initial_task_log)
         del initial_task_log
         log("Beginning main loop")
         while True:
             # Parse logs
-            while True:
-                try:
-                    log_msg: Union[Log, str] = logging_queue.get_nowait()
-                    if log_msg:
-                        handle_log(log_msg, queue_to_base)
-                except Empty:
-                    break
             while True:
                 try:
                     log_msg: Union[Log, str] = logging_queue.get_nowait()

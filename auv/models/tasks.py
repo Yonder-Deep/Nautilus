@@ -11,6 +11,7 @@ class TaskInfo(Struct):
     name: str
     type: Union[Literal["Process"], Literal["Thread"]]
     input_q: Union[multiprocessing.queues.Queue, queue.Queue]
+    logging_q: Union[multiprocessing.queues.Queue, queue.Queue]
     started_event: Union[multiprocessing.Event, threading.Event] # type: ignore
     enabled_event: Union[multiprocessing.Event, threading.Event] # type: ignore
     started: bool = False
@@ -22,6 +23,9 @@ class Task(abc):
 
     @abstractmethod
     def run(self):
+        raise NotImplementedError
+    @abstractmethod
+    def input(self, x):
         raise NotImplementedError
 
     @abstractmethod
@@ -48,19 +52,16 @@ class Task(abc):
     def deactivate(self):
         raise NotImplementedError
 
-    @abstractmethod
-    def input(self, x):
-        raise NotImplementedError
-
 class TTask(threading.Thread, Task): # type: ignore
     def __init__(self, name: str):
         super().__init__(name=name)
         self.meta = TaskInfo(
             name=name,
             type="Thread",
-            input_q=queue.Queue(), # type: ignore
-            started_event=multiprocessing.Event(), # type: ignore
-            enabled_event=multiprocessing.Event(), # type: ignore
+            input_q=queue.Queue(),
+            logging_q=queue.Queue(),
+            started_event=threading.Event(),
+            enabled_event=threading.Event(),
             started=False,
         )
         
@@ -133,9 +134,10 @@ class PTask(multiprocessing.Process, Task): # type: ignore
         self.meta = TaskInfo(
             name=name,
             type="Process",
-            input_q=multiprocessing.Queue(), # type: ignore
-            started_event=multiprocessing.Event(), # type: ignore
-            enabled_event=multiprocessing.Event(), # type: ignore
+            input_q=multiprocessing.Queue(),
+            logging_q=multiprocessing.Queue(),
+            started_event=multiprocessing.Event(),
+            enabled_event=multiprocessing.Event(),
             started=False,
         )
         

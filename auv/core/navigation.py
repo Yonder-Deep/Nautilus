@@ -1,17 +1,11 @@
 from queue import Queue, Empty
-from threading import Thread, Event
 from functools import partial
-from time import sleep
 
 from numpy import array as a
 from numpy import float64 as f64
 
-from models.data_types import State, State
+from models.data_types import State, logger
 from models.tasks import TTask
-
-def check_verbose(message, q:Queue, verbose:bool=True):
-    if verbose:
-        q.put("NAV: " + message)
 
 class Navigation(TTask):
     """ This top-level navigation thread is meant to take as input
@@ -21,9 +15,9 @@ class Navigation(TTask):
     """
     def __init__(
             self,
-            logging_q:Queue,
-            desired_state_q:Queue,
-            verbose:bool=True,
+            logging_q: Queue,
+            desired_state_q: Queue,
+            verbose: bool = True,
     ):
         super().__init__(name="Navigation") # For Thread class __init__()
         self.input_state = State(
@@ -37,7 +31,7 @@ class Navigation(TTask):
             velocity = a([0.0, 0.0, 0.0], dtype=f64),
         )
         self.desired_state_q = desired_state_q
-        self.log = partial(check_verbose, q=logging_q, verbose=verbose)
+        self.log = partial(logger, q=logging_q, source="LCAL", verbose=verbose)
     
     def loop(self):
         meta = self.meta

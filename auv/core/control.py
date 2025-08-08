@@ -1,6 +1,5 @@
 from typing import Union
 from queue import Queue, Empty
-from threading import Thread, Event
 from functools import partial
 from time import sleep, time
 
@@ -8,21 +7,9 @@ import numpy as np
 from numpy import array as ar, float64 as f64
 
 from api.abstract import AbstractController
-from models.data_types import State, Log, MotorSpeeds
+from models.data_types import State, Log, MotorSpeeds, logger
 from models.shared_memory import read_shared_state
 from models.tasks import TTask
-
-def check_verbose(message:Union[State,str, None], q:Queue, verbose:bool):
-    if verbose and message:
-        log_type = "info"
-        if isinstance(message, State):
-            log_type = "state"
-        log = Log(
-            source = "CTRL",
-            type = log_type,
-            content = message
-        )
-        q.put(log)
 
 def sigmoid(x):
     """ Maps from input of all real numbers to output between 0 and 1
@@ -51,7 +38,7 @@ class Control(TTask):
                 attitude = ar([0.0, 0.0, 50.0], dtype=f64),
                 angular_velocity = ar([0.0, 0.0, 0.0], dtype=f64),
         )
-        self.log = partial(check_verbose, q=logging_q, verbose=True)
+        self.log = partial(logger, q=logging_q, source="CTRL", verbose=True)
         self._last_time = time()
         self._last_err = 0.
         self._integral = np.zeros(6, dtype=f64)

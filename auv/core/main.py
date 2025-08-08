@@ -19,9 +19,9 @@ def log(x: Any):
 # Down here are the actual log parsing functions for actual Log objects
 log_prefixes: Dict[str, str] = {
     "MAIN": "\033[42mMAIN:\033[0m ",
-    "CTRL": "\033[43mCTRL:\033[0m ",
+    "CTRL": "\033[43mCONTROL:\033[0m ",
     "NAV": "\033[44mNAV:\033[0m ",
-    "WSKT": "\033[45mWSKT:\033[0m ",
+    "WSKT": "\033[45mWEBSOCKET:\033[0m ",
     "LCAL": "\033[46mLOCALIZE:\033[0m ",
     "PRCP": "\033[46mPERCEPT:\033[0m ",
 }

@@ -1,4 +1,4 @@
-from models.data_types import State, Log, SerialState
+from models.data_types import State, Log, SerialState, logger
 from models.shared_memory import write_shared_state
 from models.tasks import PTask, TTask
 
@@ -6,21 +6,10 @@ import multiprocessing
 import threading
 import queue
 from time import time
-from typing import Tuple, Callable, Union
+from typing import Tuple, Callable, Union, Literal
 from functools import partial
 
 import numpy as np
-
-def logger(message: str, q: Union[queue.Queue,multiprocessing.Queue], verbose: bool):
-    if verbose and message:
-        log_type = "info"
-        if isinstance(message, State):
-            log_type = "state"
-        q.put(Log(
-                source = "LCAL",
-                type = log_type,
-                content = message
-        ))
 
 class Localization(PTask):
     def __init__(
@@ -36,7 +25,7 @@ class Localization(PTask):
         self.setup_args = setup_args
         self.kalman_filter = kalman_filter
         self.depth_func = depth_func
-        self.log = partial(logger, q=logging_q, verbose=True)
+        self.log = partial(logger, q=logging_q, source="LCAL", verbose=True)
 
     def run(self):
         meta = self.meta
@@ -67,11 +56,11 @@ class Mock_Localization(TTask):
         self.output = output
         self.logging_q = logging_q
         self.localize_func = localize_func
-        self.log = partial(logger, q=logging_q, verbose=True)
+        self.log = partial(logger, q=logging_q, source="LCAL", verbose=True)
 
     def run(self):
         meta = self.meta
-        self.log("Localization started")
+        self.log("Localization started", source="LCAL")
         while True:
             if not meta.started_event.is_set() or not meta.enabled_event.is_set():
                 if not meta.enabled_event.is_set():

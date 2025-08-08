@@ -95,9 +95,10 @@ class WebsocketHandler(TTask):
         self.meta = TaskInfo(
             name="WebsocketHandler",
             type="Thread",
-            input_q=queue_to_base, # type: ignore
-            started_event=threading.Event(), # type: ignore
-            enabled_event=threading.Event(), # type: ignore
+            input_q=queue_to_base,
+            logging_q=queue_to_base,
+            started_event=threading.Event(),
+            enabled_event=threading.Event(),
             started=False,
         )
         self.queue_to_base = queue_to_base

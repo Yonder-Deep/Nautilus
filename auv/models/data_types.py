@@ -2,6 +2,8 @@ from typing import List, Union, Callable, Optional, Literal
 import msgspec
 
 from time import time
+from multiprocessing import Queue as MPQueue
+from queue import Queue as TQueue
 
 from pydantic import BaseModel, Field, model_validator
 import numpy as np
@@ -73,3 +75,18 @@ class Dispatch(msgspec.Struct):
 class Cmd(msgspec.Struct):
     command: str
     content: dict
+
+def logger(
+    message: str,
+    q: Union[TQueue,MPQueue],
+    source: Literal["MAIN", "CTRL", "NAV", "WSKT", "LCAL", "PRCP"],
+    log_type: str = "info",
+    verbose: bool = False,
+):
+    if verbose and message:
+        q.put(Log(
+                source = source,
+                type = log_type,
+                content = message
+        ))
+
