@@ -1,6 +1,7 @@
 **/.DS_Store
 **/node_modules
 **/.venv
+<<<<<<< HEAD
 **/.vscode
 **/__pycache__
 
@@ -8,3 +9,7 @@ auv/data/local/*
 !auv/data/local/.gitkeep
 web_app/data/local/*
 !web_app/data/local/.gitkeep
+=======
+*.vscode
+__pycache__
+>>>>>>> main

@@ -21,6 +21,7 @@ pigpio>=1.78
 
 # Parsing GPS messages
 pynmea2>=1.19.0
+<<<<<<< HEAD
 
 # Communication with base
 websockets>=14.2
@@ -39,4 +40,3 @@ scipy==1.13.1
 
 # For transfering GPS coords to grid system
 utm==0.8.1
-
