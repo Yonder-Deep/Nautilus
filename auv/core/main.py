@@ -26,7 +26,7 @@ log_prefixes: Dict[str, str] = {
     "PRCP": "\033[46mPERCEPT:\033[0m ",
 }
 
-def handle_log(message: Union[Log, str], base_q: Queue) -> Optional[str]:
+def handle_log(message: Union[Log, str], base_q: Queue):
     try:
         if isinstance(message, str):
             raise Exception
@@ -47,6 +47,7 @@ def handle_log(message: Union[Log, str], base_q: Queue) -> Optional[str]:
             print(log_prefixes[message.source] + str(message.content))
     except:
             print("\033[41mError handling log:\033[0m " + str(message))
+
 def motor_test(
     speeds:Tuple[float, float, float, float],
     *,
@@ -94,13 +95,13 @@ def manage_tasks(msg, tasks: List[Task], logging_q: Queue):
         if subcommand == "info":
             pass
         elif subcommand == "enable":
-            matching_task = [task for task in tasks if task.name == msg["content"]["task"]][0]
-            log("Enabling task: " + matching_task.name)
-            matching_task.start()
+            matching_task = [task for task in tasks if task.meta.name == msg["content"]["task"]][0]
+            log("Activating task: " + matching_task.meta.name)
+            matching_task.activate()
         elif subcommand == "disable":
-            matching_task = [task for task in tasks if task.name == msg["content"]["task"]][0]
-            log("Disabling task: " + matching_task.name)
-            matching_task.stop()
+            matching_task = [task for task in tasks if task.meta.name == msg["content"]["task"]][0]
+            log("Deactivating task: " + matching_task.meta.name)
+            matching_task.deactivate()
     except Exception as e:
         log("Error parsing/executing subcommand in manage_tasks: ")
         log(e)
@@ -111,7 +112,7 @@ def manage_tasks(msg, tasks: List[Task], logging_q: Queue):
     }
     task_state: dict[str, str] = {}
     for task in tasks:
-        task_state[task.name] = state_map[task.started]
+        task_state[task.meta.name] = state_map[task.meta.active]
     response = Log(
         source="MAIN",
         type="tasks",

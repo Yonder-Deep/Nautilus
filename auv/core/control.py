@@ -10,6 +10,7 @@ from numpy import array as ar, float64 as f64
 from api.abstract import AbstractController
 from models.data_types import State, Log, MotorSpeeds
 from models.shared_memory import read_shared_state
+from models.tasks import TTask
 
 def check_verbose(message:Union[State,str, None], q:Queue, verbose:bool):
     if verbose and message:
@@ -24,9 +25,11 @@ def check_verbose(message:Union[State,str, None], q:Queue, verbose:bool):
         q.put(log)
 
 def sigmoid(x):
-  return 1 / (1 + np.exp(-x))
+    """ Maps from input of all real numbers to output between 0 and 1
+    """
+    return 1 / (1 + np.exp(-x))
 
-class Control(Thread):
+class Control(TTask):
     """ This low-level navigation thread is meant to take as input the current
         state and desired state of the submarine, and write to motor controller
         in order to keep the system critically damped so that the error between
@@ -34,20 +37,14 @@ class Control(Thread):
     """
     def __init__(
             self, 
-            stop_event: Event, 
-            input_q: Queue, 
-            input_shared_state: str, 
+            shared_state_name: str, 
             logging_q: Queue, 
             controller: AbstractController, 
-            disable_event: Event
     ):
         super().__init__(name="Control")
-        self.stop_event = stop_event
-        self.input_q = input_q 
-        self.input_shared_state = input_shared_state
+        self.shared_state_name = shared_state_name 
         self.mc = controller
-        self.disable_event = disable_event
-        self.estimated_state = read_shared_state(name=self.input_shared_state)
+        self.estimated_state = read_shared_state(name=shared_state_name)
         self.desired_state = State(
                 position = ar([10.0, 0.0, 10.0], dtype=f64),
                 velocity = ar([0.0, 0.0, 0.0], dtype=f64),
@@ -71,13 +68,20 @@ class Control(Thread):
         self.Kd = ar([0., 0., 0., 0., 0., 0.1])
     
     def run(self):
+        meta = self.meta
         log = self.log
         log("Control alive")
-        self.mc.set_last_time()
-        while not self.stop_event.is_set() and not self.disable_event.is_set():
+        mc = self.mc
+        mc.set_last_time()
+        while True:
+            if not meta.started_event.is_set() or not meta.enabled_event.is_set():
+                if not meta.enabled_event.is_set():
+                    meta.enabled_event.wait()
+                if not meta.started_event.is_set():
+                    break;
             sleep(0.0001)
             try:
-                msg = self.input_q.get_nowait()
+                msg = meta.input_q.get_nowait()
                 if msg:
                     log("Control input received")
                     try:
@@ -98,7 +102,7 @@ class Control(Thread):
                 pass
 
             try:
-                self.estimated_state: State = read_shared_state(name=self.input_shared_state)
+                self.estimated_state: State = read_shared_state(name=self.shared_state_name)
                 if self.estimated_state:
                     setpoint = np.concatenate((self.desired_state.position, self.desired_state.attitude))
                     estimated = np.concatenate((self.estimated_state.position, self.estimated_state.attitude))
@@ -121,7 +125,7 @@ class Control(Thread):
                     signal = self.Kp * err + self.Ki * integral + self.Kd * derivative
                     # Thruster allocation with final values between 0 and 1
                     speeds = np.maximum(np.minimum(np.dot(self.thrust_allocation, signal), 1), -1)
-                    #log("ERR: " + str(err.round(2)))
+                    log("ERR: " + str(err.round(2)))
                     #log("SGL: " + str(signal.round(2)))
                     #log("SPD: " + str(speeds))
                     self.mc.set_speeds(MotorSpeeds(
@@ -133,11 +137,3 @@ class Control(Thread):
                     )
             except Empty:
                 pass
-
-    def enable(self):
-        self.log("Control enable() called")
-        self.disable_event.clear()
-
-    def disable(self):
-        self.log("Control disable() called")
-        self.disable_event.set()

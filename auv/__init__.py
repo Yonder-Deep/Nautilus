@@ -1,9 +1,9 @@
 from models.data_types import *
 from models.shared_memory import create_shared_state
-from models.tasks import Task, task_factory
+from models.tasks import Task
 
 from core.main import handle_log, motor_test, log, manage_tasks
-from core.websocket_handler import websocket_server as websocket_thread
+from core.websocket_handler import WebsocketHandler
 from core.control import Control
 from core.localization import Localization
 from core.navigation import Navigation
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     # Anything put into this queue will be printed
     # to stdout & forwarded to frontend
     logging_queue = Queue()
+    logging_pqueue = multiprocessing.Queue()
 
     # For tracking and cleanup
     tasks: List[Task] = []
@@ -62,28 +63,15 @@ if __name__ == "__main__":
     queue_to_base = Queue(maxsize=10) # When there's no connection, messages pile up
     queue_from_base= Queue()
     ws_shutdown_q = Queue() # This just takes the single shutdown method for the websocket server
-    ws_stop = threading.Event()
-    ws_inner = threading.Thread(
-        target=websocket_thread,
-        name="Websocket",
-        kwargs={
-            'stop_event': ws_stop,
-            'logging_q':logging_queue,
-            'websocket_interface': config.socket_ip,
-            'websocket_port': config.socket_port,
-            'ping_interval': config.ping_interval,
-            'queue_to_base': queue_to_base,
-            'queue_from_base': queue_from_base,
-            'verbose': True,
-            'shutdown_q': ws_shutdown_q
-        }
-    )
-    ws_task = Task(
-        name="Websocket",
-        type="Thread",
-        value=ws_inner,
-        input_q=queue_to_base,
-        stop_event=ws_stop,
+    ws_task = WebsocketHandler(
+        websocket_interface=config.socket_ip,
+        websocket_port=config.socket_port,
+        ping_interval=config.ping_interval,
+        queue_to_base=queue_to_base,
+        queue_from_base=queue_from_base,
+        verbose=True,
+        shutdown_q=ws_shutdown_q,
+        logging_q=logging_queue,
     )
     tasks.append(ws_task)
     ws_task.start()
@@ -102,25 +90,16 @@ if __name__ == "__main__":
     shared_memories.append(measured_state)
 
     control_desired_q = Queue() # Setpoint input to nav
-    navigation_task = task_factory(
-        constructor=Navigation,
-        name="Navigation",
-        input_q=Queue(),
-        stop_event=threading.Event(),
+    navigation_task: Task = Navigation(
         logging_q=logging_queue,
         desired_state_q=control_desired_q,
     )
     tasks.append(navigation_task)
 
-    control_task = task_factory(
-        constructor=Control,
-        name="Control",
-        input_q=control_desired_q,
-        stop_event=threading.Event(),
-        input_shared_state=shared_state_name,
+    control_task: Task = Control(
+        shared_state_name=shared_state_name,
         logging_q=logging_queue,
         controller=motor_controller,
-        disable_event=threading.Event(),
     )
     tasks.append(control_task)
     
@@ -132,28 +111,16 @@ if __name__ == "__main__":
         # TODO: Convert this to task factory
         localization_input_q = multiprocessing.Queue()
         localization_stop = multiprocessing.Event()
-        localization_inner = Localization(
-            stop_event=localization_stop,
-            input_q=localization_input_q,
+        localization_task: Task = Localization(
+            logging_q=logging_pqueue,
             output_shared_memory=shared_state_name,
             setup_args=localize_setup(),
             kalman_filter=localize,
             depth_func=depth_func,
         )
-        localization_task = Task(
-            name="Localization",
-            type="Process",
-            value=localization_inner,
-            input_q=localization_input_q,
-            stop_event=localization_stop,
-        )
     else:
         from core.localization import Mock_Localization
-        localization_task = task_factory(
-            Mock_Localization,
-            name="Localization",
-            input_q=Queue(),
-            stop_event=threading.Event(),
+        localization_task = Mock_Localization(
             output=shared_state_name,
             logging_q=logging_queue,
             localize_func=motor_controller.get_state,
@@ -162,11 +129,8 @@ if __name__ == "__main__":
 
     if config.perception:
         from core.perception import Perception
-        perception_task = task_factory(
-            Perception,
-            name="Perception",
-            input_q=Queue(),
-            stop_event=threading.Event(),
+        perception_task = Perception(
+            logging_q=logging_pqueue,
             camera_path=config.camera_path,
             ip=config.video_ip,
             port=config.video_port,
@@ -189,7 +153,7 @@ if __name__ == "__main__":
                 msg["content"],
                 motor_controller=motor_controller,
                 promises=promises,
-                disable_controller=control_task.disable,
+                disable_controller=control_task.deactivate,
             ),
         ),
         "control": Dispatch(
@@ -211,6 +175,8 @@ if __name__ == "__main__":
     }
 
     try:
+        control_task.startup()
+        localization_task.startup()
         initial_task_log: str = "Tasks: "
         for task in tasks:
             initial_task_log += "\n\t" + str(task)
@@ -219,7 +185,14 @@ if __name__ == "__main__":
         log("Beginning main loop")
         while True:
             # Parse logs
-            while logging_queue.qsize() > 0:
+            while True:
+                try:
+                    log_msg: Union[Log, str] = logging_queue.get_nowait()
+                    if log_msg:
+                        handle_log(log_msg, queue_to_base)
+                except Empty:
+                    break
+            while True:
                 try:
                     log_msg: Union[Log, str] = logging_queue.get_nowait()
                     if log_msg:
@@ -251,9 +224,9 @@ if __name__ == "__main__":
         log("Joining threads")
         ws_shutdown() # The WS server blocks, so has custom shutdown
         for task in tasks:
-            if task.value.is_alive():
-                task.stop()
-                task.value.join()
+            if task.meta.started:
+                task.shutdown()
+                task.join()
         log("Closing shared memory")
         for shm in shared_memories:
             shm.close()

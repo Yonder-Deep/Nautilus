@@ -2,6 +2,7 @@ from websockets.sync.server import serve, ServerConnection
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 
 from models.data_types import Log
+from models.tasks import TTask, TaskInfo
 
 import json
 from queue import Queue, Empty, Full
@@ -73,9 +74,13 @@ def custom_log(message:str, verbose:bool, queue:Queue):
             content=message,
         ))
 
-def websocket_server(
-        stop_event:threading.Event,
-        logging_q:Queue,
+class WebsocketHandler(TTask):
+    """ Websocket server that binds to the given network interface & port.
+        Anything in queue_to_base will be forwarded into the websocket.
+        Anything that shows up in the websocket will be forwarded to queue_from_base.
+    """
+    def __init__(
+        self,
         websocket_interface:str,
         websocket_port:int,
         ping_interval:int,
@@ -83,20 +88,38 @@ def websocket_server(
         queue_from_base:Queue,
         verbose:bool,
         shutdown_q:Queue,
-):
-
-    """ Websocket server that binds to the given network interface & port.
-        Anything in queue_to_base will be forwarded into the websocket.
-        Anything that shows up in the websocket will be forwarded to queue_from_base.
-        Before joining thread, be sure to: stop_event.set()
-
-        Partially initialize these functions so that the socket handler
-        be passed as a single callable to the serve() function
-    """
-    initialized_logger = functools.partial(custom_log, verbose=verbose, queue=logging_q)
-    initialized_handler = functools.partial(socket_handler, stop_event=stop_event, ping_interval=ping_interval, queue_to_base=queue_to_base, queue_from_base=queue_from_base, log=initialized_logger)
-    initialized_logger("AUV websocket server is alive")
-    initialized_logger("Hosting on " + websocket_interface + ":" + str(websocket_port))
-    with serve(initialized_handler, host=websocket_interface, port=websocket_port, origins=None) as server:
-        shutdown_q.put(server.shutdown)
-        server.serve_forever()
+        logging_q:Queue,
+    ):
+        super().__init__(name="WebsocketHandler")
+        # Overriding self.meta for custom queues
+        self.meta = TaskInfo(
+            name="WebsocketHandler",
+            type="Thread",
+            input_q=queue_to_base, # type: ignore
+            started_event=threading.Event(), # type: ignore
+            enabled_event=threading.Event(), # type: ignore
+            started=False,
+        )
+        self.queue_to_base = queue_to_base
+        self.queue_from_base = queue_from_base
+        self.shutdown_q = shutdown_q
+        self.log = functools.partial(custom_log, verbose=verbose, queue=logging_q)
+        self.ping_interval = ping_interval
+        self.host = websocket_interface
+        self.port = websocket_port
+    
+    # Overriding run() since the websocket isn't a spinloop
+    def run(self):
+        initialized_handler = functools.partial(
+            socket_handler,
+            stop_event=self.meta.started_event,
+            ping_interval=self.ping_interval,
+            queue_to_base=self.queue_to_base,
+            queue_from_base=self.queue_from_base,
+            log=self.log,
+        )
+        self.log("AUV websocket server is alive")
+        self.log("Hosting on " + self.host + ":" + str(self.port))
+        with serve(initialized_handler, host=self.host, port=self.port, origins=None) as server:
+            self.shutdown_q.put(server.shutdown)
+            server.serve_forever()

@@ -5,13 +5,15 @@ from time import sleep
 
 from numpy import array as a
 from numpy import float64 as f64
+
 from models.data_types import State, State
+from models.tasks import TTask
 
 def check_verbose(message, q:Queue, verbose:bool=True):
     if verbose:
         q.put("NAV: " + message)
 
-class Navigation(Thread):
+class Navigation(TTask):
     """ This top-level navigation thread is meant to take as input
         the current state of the submarine and output what the
         desired state of the submarine is. It is not meant to directly
@@ -19,14 +21,11 @@ class Navigation(Thread):
     """
     def __init__(
             self,
-            stop_event:Event,
-            input_state_q:Queue,
-            desired_state_q:Queue,
             logging_q:Queue,
-            verbose:bool=True
+            desired_state_q:Queue,
+            verbose:bool=True,
     ):
         super().__init__(name="Navigation") # For Thread class __init__()
-        self.stop_event = stop_event
         self.input_state = State(
             position = a([0.0, 0.0, 0.0], dtype=f64),
             velocity = a([0.0, 0.0, 0.0], dtype=f64),
@@ -37,21 +36,20 @@ class Navigation(Thread):
             position = a([0.0, 0.0, 0.0], dtype=f64),
             velocity = a([0.0, 0.0, 0.0], dtype=f64),
         )
-        self.input_state_q = input_state_q
         self.desired_state_q = desired_state_q
         self.log = partial(check_verbose, q=logging_q, verbose=verbose)
     
-    def run(self):
+    def loop(self):
+        meta = self.meta
         log = self.log
-        while not self.stop_event.is_set():
-            sleep(1)
-            try:
-                new_input = self.input_state_q.get(block=False)
-                if new_input:
-                    log("Navigation sees new input: \n" + str(new_input))
-                    # No processing here yet, just putting directly into queue
+        try:
+            new_input = meta.input_q.get(block=False)
+            if new_input:
+                log("Navigation sees new input: \n" + str(new_input))
 
-                    self.desired_state_q.put(new_input)
-            
-            except Empty:
-                pass
+                # No processing here yet, just putting directly into queue
+
+                self.desired_state_q.put(new_input)
+        
+        except Empty:
+            pass

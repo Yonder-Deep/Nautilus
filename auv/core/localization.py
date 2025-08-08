@@ -1,5 +1,6 @@
 from models.data_types import State, Log, SerialState
 from models.shared_memory import write_shared_state
+from models.tasks import PTask, TTask
 
 import multiprocessing
 import threading
@@ -21,32 +22,31 @@ def logger(message: str, q: Union[queue.Queue,multiprocessing.Queue], verbose: b
                 content = message
         ))
 
-class Localization(multiprocessing.Process):
+class Localization(PTask):
     def __init__(
         self,
-        stop_event: multiprocessing.Event, # type: ignore
-        input_q: multiprocessing.Queue,
+        logging_q: multiprocessing.Queue,
         output_shared_memory: str,
         setup_args: Tuple,
         kalman_filter: Callable,
         depth_func: Callable[[], float]
     ):
         super().__init__(name="Localization")
-        self.stop_event = stop_event
-        self.input_q = input_q
         self.output_shared_memory = output_shared_memory
         self.setup_args = setup_args
         self.kalman_filter = kalman_filter
         self.depth_func = depth_func
-        self.log = partial(logger, q=input_q, verbose=True)
+        self.log = partial(logger, q=logging_q, verbose=True)
 
     def run(self):
+        meta = self.meta
         self.log("Localization started")
-        current_time = time()
         while True:
-            if self.stop_event.is_set():
-                return
-            current_time = time()
+            if not meta.started_event.is_set() or not meta.enabled_event.is_set():
+                if not meta.enabled_event.is_set():
+                    meta.enabled_event.wait()
+                if not meta.started_event.is_set():
+                    break;
             kf_output = self.kalman_filter()
             output_state = State(
                 position=np.array([kf_output.position[0], kf_output.position[1], -self.depth_func()]),
@@ -56,28 +56,28 @@ class Localization(multiprocessing.Process):
             )
             write_shared_state(name=self.output_shared_memory, state=output_state)
 
-class Mock_Localization(threading.Thread):
+class Mock_Localization(TTask):
     def __init__(
         self,
-        stop_event: threading.Event,
-        input_q: queue.Queue,
-        output: str,
         logging_q: queue.Queue,
+        output: str,
         localize_func: Callable[[], Union[State, None]],
     ):
-        super().__init__(name="MockLocalization")
-        self.stop_event = stop_event
-        self.input_q = input_q
+        super().__init__(name="Localization")
         self.output = output
         self.logging_q = logging_q
         self.localize_func = localize_func
         self.log = partial(logger, q=logging_q, verbose=True)
 
     def run(self):
+        meta = self.meta
         self.log("Localization started")
         while True:
-            if self.stop_event.is_set():
-                return
+            if not meta.started_event.is_set() or not meta.enabled_event.is_set():
+                if not meta.enabled_event.is_set():
+                    meta.enabled_event.wait()
+                if not meta.started_event.is_set():
+                    break;
             state = self.localize_func()
             if state:
                 write_shared_state(name=self.output, state=state)

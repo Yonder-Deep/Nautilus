@@ -1,4 +1,5 @@
 from models.data_types import Log
+from models.tasks import PTask
 
 import multiprocessing
 from functools import partial
@@ -14,20 +15,18 @@ def logger(message: str, q: multiprocessing.Queue, verbose: bool):
                 content = message
         ))
 
-class Perception(multiprocessing.Process):
+class Perception(PTask):
     def __init__(
         self,
-        stop_event: multiprocessing.Event, # type: ignore
-        input_q: multiprocessing.Queue,
+        logging_q: multiprocessing.Queue,
         camera_path: str,
         ip: str,
         port: int,
         fps: int,
     ):
         super().__init__(name="Perception-Process")
-        self.stop_event = stop_event
-        self.input_q = input_q
-        self.log = partial(logger, q=input_q, verbose=True)
+        self.logging_q = logging_q
+        self.log = partial(logger, q=logging_q, verbose=True)
         self.path = camera_path
         self.host = ip
         self.port = port
@@ -44,6 +43,7 @@ class Perception(multiprocessing.Process):
                 preexec_fn=os.setsid
         )
         self.log("Perception streamer launched")
-        self.stop_event.wait(): # type: ignore
+        # Block until event is cleared
+        self.meta.started_event.wait() # type: ignore
         os.killpg(os.getpgid(process.pid), signal.SIGTERM)
         self.log("Perception streamer killed")
