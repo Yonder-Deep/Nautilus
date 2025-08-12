@@ -1,3 +1,8 @@
+# Basics
+pip>=25.0
+setuptools>=58.1.0
+
+# Sensor I/O
 Adafruit_Blinka>=8.51.0
 adafruit_circuitpython_bno055>=5.4.18
 adafruit_circuitpython_register>=1.10.2
@@ -5,14 +10,33 @@ adafruit_circuitpython_busdevice>=5.2.11
 adafruit_circuitpython_gps>=3.11.1
 adafruit_circuitpython_lis3mdl>=1.2.2
 adafruit_circuitpython_lsm6ds>=4.5.14
-numpy>=2.0.2
-imufusion>=1.2.8
-pigpio>=1.78
-pip>=25.0
+opencv-python>=4.11.0.86
+
+# More I/O
 pyserial>=3.5
-setuptools>=58.1.0
+imufusion>=1.2.8 # Do we need this still?
+pigpio>=1.78
 #smbus>=1.1.post2
 #soundcard>=0.4.2
+
+# Parsing GPS messages
 pynmea2>=1.19.0
+<<<<<<< HEAD
+
+# Communication with base
 websockets>=14.2
-pydantic==2.9.2
+
+# For better dataclasses and objects
+pydantic==2.11.5
+msgspec==0.19.0
+
+# YAML configuration
+pydantic_yaml==1.4.0
+ruamel.yaml==0.18.10
+
+# Matrix math
+numpy==2.0.2
+scipy==1.13.1
+
+# For transfering GPS coords to grid system
+utm==0.8.1

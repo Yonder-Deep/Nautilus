@@ -1,0 +1,42 @@
+%YAML 1.2
+---
+# Whether or not to mock the submarine with the model
+simulation: true
+
+# Communication with base
+socket_ip: "localhost"
+socket_port: 8080
+ping_interval: 6 
+
+# Localization
+gps_path: "/dev/tty.usbmodem101"
+
+# Perception
+perception: false
+video_ip: "localhost"
+video_port: 8081
+camera_path: "/dev/video0"
+
+#gyro_offset_vector: (0, 0, 0)
+#mag_offset_vector: (0, 0, 0)
+
+# Constants for the AUV
+# encode sizes and generalizations
+#imu_path: "/dev/serial0"
+#imu_reset_pin: 8
+
+# Dive PID constants
+#P_PITCH = 0.05
+#I_PITCH = 0.7
+#D_PITCH = 0.01
+#P_DEPTH = 80.0
+#I_DEPTH = 0.1
+#D_DEPTH = 0.1
+#P_HEADING = 0.7
+#I_HEADING = 0.5
+#D_HEADING = 0.0
+#
+#DEF_DIVE_SPD = 100
+#MAX_TIME = 600
+#
+#DIVE_LOG = "dive_log.txt"

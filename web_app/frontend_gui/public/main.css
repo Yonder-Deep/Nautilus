@@ -1,0 +1,186 @@
+html, body {
+    font-family: "Open Sans", system-ui;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    background: #CEF3FF;
+    font-size: 1.2;
+}
+
+:root {
+    /* Generated with https://www.joshwcomeau.com/shadow-palette/*/
+    --shadow-color: 195deg 39% 56%; /* Same as #CEF3FF */
+    --shadow-elevation-low:
+        0px 0.3px 0.3px hsl(var(--shadow-color) / 0.52),
+        0px 0.5px 0.5px -1.9px hsl(var(--shadow-color) / 0.4),
+        0px 1.3px 1.2px -3.7px hsl(var(--shadow-color) / 0.29);
+    --shadow-elevation-medium:
+        0px 0.3px 0.3px hsl(var(--shadow-color) / 0.43),
+        0px 0.6px 0.6px -0.9px hsl(var(--shadow-color) / 0.38),
+        0px 1.3px 1.2px -1.9px hsl(var(--shadow-color) / 0.32),
+        0px 3.1px 2.9px -2.8px hsl(var(--shadow-color) / 0.26),
+        0px 6.3px 5.9px -3.7px hsl(var(--shadow-color) / 0.2);
+    --shadow-elevation-high:
+        0px 0.2px 0.2px hsl(var(--shadow-color) / 0.32),
+        0px 0.8px 0.8px -0.5px hsl(var(--shadow-color) / 0.3),
+        0px 1.4px 1.4px -1px hsl(var(--shadow-color) / 0.28),
+        0px 2.5px 2.4px -1.5px hsl(var(--shadow-color) / 0.25),
+        -0.1px 4.3px 4.2px -2px hsl(var(--shadow-color) / 0.23),
+        -0.1px 7.1px 6.9px -2.5px hsl(var(--shadow-color) / 0.21),
+        -0.2px 11.3px 11px -3px hsl(var(--shadow-color) / 0.19),
+        -0.3px 17.1px 16.7px -3.5px hsl(var(--shadow-color) / 0.16);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+h1 {
+    margin: -0.25rem auto 0.25rem auto;
+    width: fit-content;
+    background-color: white;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-elevation-medium);
+}
+
+h2 {
+    margin: 0 0 0.5rem;
+    line-height: 1;
+    text-align: center;
+}
+
+h3 {
+    margin: 0;
+}
+
+input,
+select {
+        font-family: inherit;
+}
+
+ul {
+    margin-top: 0;
+    list-style: none;
+    padding-left: 0;
+}
+
+ul>li {
+    margin-bottom: 0.75rem;
+}
+
+pre { /* For the gui console output*/
+    text-wrap: wrap;
+}
+
+button {
+    cursor: pointer;
+}
+
+.parent-container {
+    padding: 1rem;
+}
+
+.top-right-buttons {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    display: flex;
+}
+
+.top-right-buttons > button {
+    margin: 0.25rem;
+    border-radius: 0.75rem;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    background: white;
+    box-shadow: var(--shadow-elevation-medium);
+    font-size: 0.9rem;
+}
+
+.top-right-buttons > button:hover {
+    transform: translateY(-0.1rem);
+}
+
+/* This section has `react-grid-layout` package class names that are not found
+*  in the JSX source. They are added by react-grid-layout. If they break in the
+*  future, it is due to react-grid-layout changing their class names. Change
+*  them to match, or if that is impossible simply track the grid state manually
+*  and apply custom class names. */
+.react-grid-item { /* Assigned to grid items by react-grid-layout*/
+    padding: 1rem;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-elevation-high);
+}
+
+.react-grid-layout button {
+    border: none;
+    border-radius: 0.75rem;
+    margin: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    filter: brightness(95%);
+    font-weight: bold;
+}
+
+.react-grid-layout button:hover {
+    filter: brightness(85%);
+}
+
+/* For cursor when hovering in drag mode*/
+.react-grid-item.react-draggable {
+    cursor: grab;
+}
+
+/* For cursor when actively dragging*/
+.react-grid-item.react-draggable-dragging {
+    cursor: grabbing;
+}
+/* END of weird section with react-grid-layout classes*/
+
+.map-handle {
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 2rem;
+    cursor: grab;
+}
+
+.map-holder {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.map {
+    flex-grow: 1;
+    border-radius: 1rem;
+}
+
+.status-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-inline: 1rem;
+}
+
+.status-item {
+    width: 20ch;
+}
+
+.testing-section {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+.testing-section > div {
+    padding-inline: 1rem;
+}

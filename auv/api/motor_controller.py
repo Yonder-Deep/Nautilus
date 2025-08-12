@@ -1,13 +1,23 @@
-"""
-The motor_controller class calibrates and sets the speed of all of the motors
-"""
-
-# System imports
-from api import Motor
 import pigpio
 import time
 import sys
-# Custom Imports
+
+try:
+    from .motor import Motor
+    from .abstract import AbstractController
+    from models.data_types import MotorSpeeds
+except ImportError: # When running standalone, import differently
+    import sys
+    sys.path.append("..")
+    from motor import Motor
+    from abstract import AbstractController
+    from models.data_types import MotorSpeeds
+
+# Indices for motor array [WHEN REMAPPING, CHANGE THESE AND NOT GPIOS]
+FORWARD_MOTOR_INDEX = 0         # in the back
+TURN_MOTOR_INDEX = 3            # in the front
+FRONT_MOTOR_INDEX = 1           # goes up/down
+BACK_MOTOR_INDEX = 2            # goes up/down
 
 # GPIO Pin numbers for Motors
 FORWARD_GPIO_PIN = 4
@@ -21,29 +31,17 @@ TURN_PI_PIN = 23            # Right pins
 FRONT_PI_PIN = 12           # Back pins
 BACK_PI_PIN = 18            # Front pins
 
-# Indices for motor array
-FORWARD_MOTOR_INDEX = 0         # in the back
-TURN_MOTOR_INDEX = 1            # in the front
-FRONT_MOTOR_INDEX = 2           # goes up/down
-BACK_MOTOR_INDEX = 3            # goes up/down
-
 # Constants
 BALLAST = 4
 MAX_PITCH = 30
 MAX_CORRECTION_MOTOR_SPEED = 25  # Max turning speed during pid correction
 
-
-def log(val):
-    """ Adapt log to note the object we are in """
-    print("[MC]\t" + val)
-
-
-class MotorController:
-    """
-    Object that contains all interactions with the motor array for the AUV
+class MotorController(AbstractController):
+    """ Object that manages and abstracts all interactions with the motor array
+        for the AUV
     """
 
-    def __init__(self):
+    def __init__(self, log):
         """
         Initializes MotorController object and individual motor objects
         to respective gpio pins.
@@ -64,24 +62,20 @@ class MotorController:
         self.turn_speed = 0
         self.front_speed = 0
         self.back_speed = 0
+        self.log = log
 
-    def update_motor_speeds(self, data) -> None:
+    def set_speeds(self, input:MotorSpeeds, verbose=False) -> None:
         """
         Sets motor speeds to each individual motor. This is for manual (xbox) control when the
         radio sends a data packet of size 4.
 
         data: String read from the serial connection containing motor speed values.
         """
-        if len(data) != len(self.motors):
-            raise Exception(
-                "Data packet length does not equal motor array length.")
-            return
-
         # Parse motor speed from data object.
-        self.forward_speed = data[FORWARD_MOTOR_INDEX]
-        self.turn_speed = data[TURN_MOTOR_INDEX]
-        self.front_speed = data[FRONT_MOTOR_INDEX]
-        self.back_speed = data[BACK_MOTOR_INDEX]
+        self.forward_speed = input.forward * 255
+        self.turn_speed = input.turn * 255
+        self.front_speed = input.front * 255
+        self.back_speed = input.back * 255
 
         # Set motor speed
         self.motors[FORWARD_MOTOR_INDEX].set_speed(self.forward_speed)
@@ -151,38 +145,38 @@ class MotorController:
         self.motors[FRONT_MOTOR_INDEX].set_speed(self.front_speed)
         self.motors[BACK_MOTOR_INDEX].set_speed(self.back_speed)
 
-    def zero_out_motors(self):
+    def set_zeros(self):
         """
         Sets motor speeds of each individual motor to 0.
         """
         for motor in self.motors:
             motor.set_speed(0)
 
-        log("motors set to [0, 0, 0, 0]")
+        self.log("motors set to [0, 0, 0, 0]")
 
     def test_all(self):
         """
         Calibrates each individual motor.
         """
-        log('Testing all motors...')
+        self.log("Testing all motors...")
         for motor in self.motors:
             motor.test_motor()
             time.sleep(1)
 
     def test_forward(self):  
-        log('Testing forward motor...')
+        self.log("Testing forward motor...")
         self.motors[FORWARD_MOTOR_INDEX].test_motor()
 
     def test_turn(self): 
-        log('Testing turn motor...')
+        self.log("Testing turn motor...")
         self.motors[TURN_MOTOR_INDEX].test_motor()
 
     def test_front(self):
-        log('Testing front motor...')
+        self.log("Testing front motor...")
         self.motors[FRONT_MOTOR_INDEX].test_motor()
 
     def test_back(self):
-        log('Testing back motor...')
+        self.log("Testing back motor...")
         self.motors[BACK_MOTOR_INDEX].test_motor()
 
     def calculate_pid_new_speed(self, feedback):
@@ -200,11 +194,11 @@ class MotorController:
 
 
 def main():
-    mc = MotorController()
+    mc = MotorController(lambda msg: print("MC: " + msg))
     mc.test_all()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
     # def calculate_pid_new_speed(self, last_speed, speed_change):
     #     #log(">>Last speed\t" + str(last_speed) + "speed_change\t" + str(speed_change))

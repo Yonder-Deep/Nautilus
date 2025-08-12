@@ -1,0 +1,15 @@
+%YAML 1.2
+---
+# This file is the default YAML configuration. This should not change that
+# often. Local overrides areplaced in the gitignored `web_app/data/local`
+# directory.
+
+# Constants for the base station connections
+auv_url: 'ws://localhost:8080'
+ping_interval: 6
+video: false
+
+# Heat Regulation in Pi
+temps:
+  safe: 60
+  hot: 80
