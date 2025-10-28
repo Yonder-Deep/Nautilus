@@ -21,7 +21,6 @@ pigpio>=1.78
 
 # Parsing GPS messages
 pynmea2>=1.19.0
-<<<<<<< HEAD
 
 # Communication with base
 websockets>=14.2
