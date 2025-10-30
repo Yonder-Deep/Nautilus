@@ -1,3 +1,3 @@
 echo "Starting basestation web app..."
-.venv/Scripts/activate.bat
+./.venv/Scripts/Activate.ps1
 python app.py
