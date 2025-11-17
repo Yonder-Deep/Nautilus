@@ -179,8 +179,8 @@ def get_layouts():
 
 if config.video:
     from video import VideoThread
-    video_q = Queue()
-    video_thread = VideoThread(video_q)
+    video_thread = VideoThread()
+    video_thread.start()
 
 async def generate_frames():
     if not config.video:
@@ -201,10 +201,8 @@ async def generate_frames():
 @api.get('/video_feed')
 async def video_feed():
     if config.video:
-        return StreamingResponse(
-                generate_frames(),
-                media_type='multipart/x-mixed-replace; boundary=frame',
-        )
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="http://localhost:8081/video.mjpg")
     else:
         raise HTTPException(status_code=404, detail="Video disabled in config")
 
