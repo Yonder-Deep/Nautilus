@@ -110,7 +110,7 @@ class VideoThread(threading.Thread):
             '-i', '-', #-i is input file/stream and - reads from stdin which is connected to the file descriptor from GStreamer
             '-f', 'mjpeg', #each frame is a JPEG
             '-q:v', '3', #quality of video goes from 1-31 with lower=better quality
-            '-' #tcp server instead of HTTP
+            '-'
         ]
 
         #starts GStreamer
