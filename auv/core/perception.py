@@ -26,9 +26,9 @@ class Perception(PTask):
     def run(self): 
         process=subprocess.Popen( 
 
-            #-v v4l2src device={self.path}
+            #
 
-                f"gst-launch-1.0 -v ksvideosrc device-index=0 ! videoconvert \
+                f"gst-launch-1.0 -v v4l2src device={self.path} ! videoconvert \
                 ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
                 ! rtph264pay config-interval=1 pt=96 ! udpsink \
                 host={self.host} port={self.port}",
