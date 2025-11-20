@@ -92,7 +92,8 @@ class VideoThread(threading.Thread):
             '!', 'h264parse', 
             '!', 'avdec_h264', 
             '!', 'videoconvert', 
-            '!', 'video/x-raw,format=RGB',
+            '!', 'video/x-raw,format=RGB,width=320,height=240,framerate=30/1',
+            #'!', 'rawvideoparse', 'width=320', 'height=240', 'format=rgb',
             '!', 'fdsink',
             'fd=1'
         ]
