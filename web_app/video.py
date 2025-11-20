@@ -101,7 +101,7 @@ class VideoThread(threading.Thread):
             'ffmpeg',
             '-f', 'rawvideo',
             '-pixel_format', 'rgb24', 
-            '-video_size', '640x480',
+            '-video_size', '320x240',
             '-framerate', '30',
             '-i', '-', 
             '-f', 'mjpeg', 
