@@ -5,13 +5,11 @@ import numpy as np
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
 
-from queue import Queue
 import threading
 
 import subprocess
 import sys
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import socketserver
 
 # Initialize GStreamer
 Gst.init(None)
@@ -86,54 +84,49 @@ class VideoThread(threading.Thread):
 
     def run(self):
         gst_command = [
-            'gst-launch-1.0', #gst-launch-1.0 launches gstreamer version 1.0; 
-            'udpsrc', #GStreamer reads from UDP socket
+            'gst-launch-1.0', 
+            'udpsrc', 
             'port=5000', 
             'caps=application/x-rtp,media=video,encoding-name=H264,payload=96',
-            #application/x-rtp is the RTP protocol format
-            #payLoad=96 is the RTP payload type (96 is the standard for H.264)
-            '!', 'rtph264depay', #! is the pipeline connector; depay extracts H.264  NAL units from RTP packets
-            '!', 'h264parse', #parses H.264 bitstream
-            '!', 'avdec_h264', #H.264 decoder which decodes H.264 into raw video frames
-            '!', 'videoconvert', #converts video
-            '!', 'video/x-raw,format=RGB', #specifies format of raw uncompressed video and RGB pixel format
-            '!', 'fdsink', #writes frames to file descriptor (stdout)
-            'fd=1' #file descriptor is 1 (stdout)
+            '!', 'rtph264depay', 
+            '!', 'h264parse', 
+            '!', 'avdec_h264', 
+            '!', 'videoconvert', 
+            '!', 'video/x-raw,format=RGB',
+            '!', 'fdsink',
+            'fd=1'
         ]
 
         ffmpeg_command = [
             'ffmpeg',
             '-f', 'rawvideo',
-            '-pixel_format', 'rgb24', #24-bit RGB with 8 bits for red, green, and blue per pixel
+            '-pixel_format', 'rgb24', 
             '-video_size', '640x480',
             '-framerate', '30',
-            '-i', '-', #-i is input file/stream and - reads from stdin which is connected to the file descriptor from GStreamer
-            '-f', 'mjpeg', #each frame is a JPEG
-            '-q:v', '3', #quality of video goes from 1-31 with lower=better quality
+            '-i', '-', 
+            '-f', 'mjpeg', 
+            '-q:v', '3', 
             '-'
         ]
 
         #starts GStreamer
-        self.gst_process = subprocess.Popen( #Popen(Process Open) starts gst_command as new separate process
+        self.gst_process = subprocess.Popen( 
             gst_command, 
-            stdout=subprocess.PIPE, #PIPE is connection between processes so they can send each other data
+            stdout=subprocess.PIPE, 
             stderr=subprocess.PIPE,
             bufsize=0
         )
 
-        #starts ffmpeg and pipes GStreamer stdout to ffmpeg stdin
-        self.ffmpeg_process = subprocess.Popen( #same as gst_process but for ffmpeg
+        self.ffmpeg_process = subprocess.Popen( 
             ffmpeg_command,
-            stdin=self.gst_process.stdout, #ffmpeg reads from GStreamer stdout
+            stdin=self.gst_process.stdout, 
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             bufsize=0
         )
 
-        #close GStreamer stdout - ffmpeg now owns the pipe
         self.gst_process.stdout.close()
 
-        #start stderr logging threads before starting HTTP server to avoid race conditions
         stderr_thread_gst = threading.Thread(target=log_stderr, args=(self.gst_process, "GST"))
         stderr_thread_ffmpeg = threading.Thread(target=log_stderr, args=(self.ffmpeg_process, "FFMPEG"))
         stderr_thread_gst.daemon = True
