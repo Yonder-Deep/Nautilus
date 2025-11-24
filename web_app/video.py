@@ -14,6 +14,9 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 # Initialize GStreamer
 Gst.init(None)
 
+#lock to ensure only one client reads from ffmepg
+ffmpeg_read_lock = threading.Lock()
+
 class MJPEGHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/video.mjpg':
@@ -29,39 +32,40 @@ class MJPEGHandler(BaseHTTPRequestHandler):
 
                 #read from ffmpeg stdout (passed via server instance)
                 while True:
+                    #lock is to prevent multiple clients interfering
+                    with ffmpeg_read_lock:
 
-                    #read larger chunks for better performance
-                    chunk = self.server.ffmpeg_stdout.read(8192)
-                    if not chunk:
-                        return
-                    
-                    buffer += chunk
+                        #read larger chunks for better performance
+                        chunk = self.server.ffmpeg_stdout.read(8192)
+                        if not chunk:
+                            return
+                        buffer += chunk
 
-                    #look for complete JPEG frames (start: FF D8, end: FF D9)
-                    while True:
-                        #find JPEG start marker
-                        start_idx = buffer.find(b'\xff\xd8')
-                        if start_idx == -1:
-                            #no start marker found, keep only last few bytes (might be partial)
-                            buffer = buffer[-1:] if len(buffer) > 0 else b''
-                            break
+                    #look for complete JPEG frames (start: FF D8, end: FF D9) 
+                    #only send one frame per iteration
+                    #find JPEG start marker
+                    start_idx = buffer.find(b'\xff\xd8')
+                    if start_idx == -1:
+                        #no start marker found, keep only last few bytes (might be partial)
+                        buffer = buffer[-1:] if len(buffer) > 0 else b''
+                        continue
 
-                        #find JPEG end marker after start
-                        end_idx = buffer.find(b'\xff\xd9', start_idx + 2)
-                        if end_idx == -1:
-                            #end marker not found yet, need more data
-                            break
+                    #find JPEG end marker after start
+                    end_idx = buffer.find(b'\xff\xd9', start_idx + 2)
+                    if end_idx == -1:
+                        #end marker not found yet, need more data
+                        continue
 
-                        #complete frame found
-                        frame_data = buffer[start_idx:end_idx + 2]
-                        buffer = buffer[end_idx + 2:]
+                    #complete frame found
+                    frame_data = buffer[start_idx:end_idx + 2]
+                    buffer = buffer[end_idx + 2:]
 
-                        #send fram with multipart headers
-                        self.wfile.write(boundary)
-                        self.wfile.write(content_type)
-                        self.wfile.write(frame_data)
-                        self.wfile.write(b'\r\n')
-                        self.wfile.flush()
+                    #send fram with multipart headers
+                    self.wfile.write(boundary)
+                    self.wfile.write(content_type)
+                    self.wfile.write(frame_data)
+                    self.wfile.write(b'\r\n')
+                    self.wfile.flush()
             except Exception as e:
                 print(f"MJPEG handler error: {e}")
                 import traceback
