@@ -91,13 +91,13 @@ class VideoThread(threading.Thread):
             'gst-launch-1.0', 
             'udpsrc', 
             'port=5000', 
-            'caps=application/x-rtp,media=video,clock-rate=90000,encoding-name=H264,payload=96',
+            'buffer-size=524288',
+            '!', 'capsfilter', 'caps=application/x-rtp,media=video,clock-rate=90000,encoding-name=H264,payload=96',
             '!', 'rtph264depay', 
             '!', 'h264parse', 
             '!', 'avdec_h264', 
             '!', 'videoconvert', 
-            '!', 'video/x-raw,format=RGB,width=320,height=240,framerate=30/1',
-            #'!', 'rawvideoparse', 'width=320', 'height=240', 'format=rgb',
+            '!', 'video/x-raw,format=RGB,width=320,height=240,framerate=30/1', 
             '!', 'fdsink',
             'fd=1'
         ]
@@ -148,6 +148,11 @@ class VideoThread(threading.Thread):
         self.http_server.serve_forever()
 
     def quit_loop(self):
+        #shut down HTTP server first
+        if self.http_server:
+            self.http_server.shutdown()
+
+        #termiante processes
         if self.ffmpeg_process:
             self.ffmpeg_process.terminate()
             self.ffmpeg_process.wait()
